@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+        <div class="container-fuild main-content">
+            <table>
+                <tr>
+                    <th>
+                        <h3 class="page-title">Heatmap</h3>
+                    </th>
+                </tr>            
+            </table>
+            <form class="form-horizontal" th:object="${filter}" th:action="@{/build/heatmap/filtered}" method="post">
+                <div class="form-group space-top space-left space-right">  
+                    <span id="date-range-filter">
+                        <div class="col-sm-2">
+                            <label>From</label>  
+                            <input name="dateFrom" id="date-from" type="text" class="form-control" th:field="*{dateFrom}"/>
+                        </div>
+
+                        <div class="col-sm-2">
+                            <label>To</label> 
+                            <input name="dateTo" id="date-to" type="text" class="form-control" th:field="*{dateTo}"/>
+                        </div>
+                    </span>
+
+                    <div class="col-sm-6">
+                        <label>Phase</label> 
+                        <select name="phase" id="phase" class="selectpicker form-control" data-live-search="true" th:field="*{phase}" required="true" placeholder="Phase">
+                            <option th:each="phase : ${T(br.com.dafiti.hanger.option.Phase).values()}" 
+                                    th:value="${phase}" 
+                                    th:text="${phase}"
+                                    th:if="${phase != T(br.com.dafiti.hanger.option.Phase).NONE}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-sm-2 btn-filter">
+                        <button type="submit" class="btn btn-generic btn-group-justified pull-right">
+                            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Filter
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group space-left space-right">
+                    <div class="col-sm-12">
+                        <label>Build in the period: </label> 
+                        <span th:inline="text"> <b>[[${#aggregates.sum(total)}]]</b></span>
+                    </div>
+                </div>
+            </form>                
+
+            <table id="table_clean" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width:70%" class="no-sort"></th>
+                        <th:block th:each="hour : ${#numbers.sequence( 0, 23)}">
+                            <th class="no-sort" style="width:0.5%" th:text="${hour}"></th>
+                        </th:block>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td th:text="${filter.phase}"></td>                           
+                        <th:block th:each="value : ${total}">
+                            <td th:text="${value == 0 ? '' : value }"></td>
+                        </th:block>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr/>
+
+            <table id="table_heatmap" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width:5%">Server</th>
+                        <th style="width:70%">Job</th>
+                        <th class="no-sort" style="width:1%"><span class="glyphicon glyphicon-link"></span></th>
+                        <th:block th:each="hour : ${#numbers.sequence( 0, 23)}">
+                            <th class="compact-sort" style="width:0.5%" th:text="${hour}"></th>
+                        </th:block>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="map : ${detail}">
+                        <td th:text="${map.key.server.name}"></td>
+                        <td><a class="link" th:text="${map.key.name}" th:href="@{'/job/view/' + ${map.key.id}}" target="_blank"></a></td>
+                        <td><a class="link" th:href="@{ ${map.key.server.url} + 'job/' + ${map.key.name}}" target="_blank"> +</a></td>                            
+                        <th:block th:each="value : ${map.value}">
+                            <td th:text="${value}"></td>
+                        </th:block>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>    
+</html>

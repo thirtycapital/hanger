@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+        <script th:src="@{/js/google-timeline-chart.js}"/>
+        <div class="container-fluid main-content">
+            <table>
+                <tr>
+                    <th>
+                        <h3 class="page-title">Gantt</h3>
+                    </th>
+                </tr>            
+            </table>
+            <form class="form-horizontal"  th:object="${filter}" action="" method="get" id="form">
+                <div class="form-group space-top space-left space-right">  
+                    <div class="col-sm-2">
+                        <label>Date</label>
+                        <input name="dateFrom" 
+                               id="date-filter" 
+                               type="text" 
+                               class="form-control" 
+                               th:field="*{dateFrom}"/>
+                    </div>
+
+                    <div class="col-sm-8">
+                        <label>Interval</label>
+                        <div class="form-group space-left space-right">
+                            <input id="slider_hour" 
+                                   name="slider_hour" 
+                                   type="text" 
+                                   value="" 
+                                   data-slider-min="0" 
+                                   data-slider-max="23" 
+                                   data-slider-step="1" 
+                                   data-slider-value="[0,23]"/>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2 btn-filter">
+                        <button type="button" 
+                                class="btn btn-generic btn-group-justified pull-right" 
+                                th:id="modal_job_list">
+
+                            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Filter
+                        </button>
+                    </div>
+                </div>
+
+                <!--AJAX Job list modal --> 
+                <div id="modalHolder"/>
+            </form>
+
+            <center>
+                <button id="chart-wait" 
+                        type="button" 
+                        class="btn btn-generic btn-sm" 
+                        style="display:none;">
+
+                    <img th:src="@{'/images/ajax-loader.gif'}"></img>
+                </button>
+
+                <div class="form-group space-top space-left space-right" id="gantt_chart"></div>
+            </center>
+
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                google.setOnLoadCallback(drawChart);
+
+                function drawChart(arr) {
+                    var rows;
+                    var options;
+                    var jobs = new Set();
+                    var chartHeight;
+                    var data = new google.visualization.DataTable();
+
+                    data.addColumn({type: 'string', id: 'name'});
+                    data.addColumn({type: 'string', id: 'phase'});
+                    data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
+                    data.addColumn({type: 'date', id: 'Start'});
+                    data.addColumn({type: 'date', id: 'End'});
+
+                    if (arr != null || arr != "[]") {
+                        rows = JSON.parse(arr);
+                        for (var i = 0; i < rows.length; i++) {
+                            var row = rows[i];
+                            data.addRow([row[0], row[1], row[2], new Date(row[3]), new Date(row[4])]);
+                            jobs.add(row[0]);
+                        }
+                    }
+
+                    chartHeight = ( jobs.size * 45 ) + 100;
+
+                    options = {
+                        height: chartHeight,
+                        colors: ['#cd5c5c', '#71b4e4'],
+                        timeline: {},
+                        tooltip: {isHtml: true}
+                    };
+
+                    var chart = new google.visualization.Timeline(document.getElementById('gantt_chart'));
+                    chart.draw(data, options);
+                }
+
+                $(function () {
+                    /**
+                     * Show wait panel.
+                     */
+                    $(document).ajaxStart(function () {
+                        $("#chart-wait").css("display", "block");
+                    });
+
+                    /**
+                     * Hide wait panel.
+                     */
+                    $(document).ajaxComplete(function () {
+                        $("#chart-wait").css("display", "none");
+                    });
+
+                    /**
+                     * Show job list modal. 
+                     * @returns {undefined}
+                     */
+                    $("#modal_job_list").click(function () {
+                        var url = /*[[@{/build/gantt/list}]]*/ "/build/gantt/list";
+                        var server = $(this).val();
+
+                        $.ajax({
+                            type: "GET",
+                            url: url + server,
+                            timeout: 30000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalJobList").modal({backdrop: 'static', keyboard: false});
+                                $('.selectpicker').selectpicker();
+                            },
+                            error: function(xhr, status, error) {
+                                alert("Error loading jobs from database " + xhr.responseText);
+                            }
+                        });
+                    });
+
+                    /**
+                     * Draw the gantt chart. 
+                     */
+                    $("#form").submit(function () {
+                        var dados = $(this).serialize();
+
+                        $("#modalJobList").modal('hide');
+
+                        $.ajax({
+                            type: "GET",
+                            url: /*[[@{/build/gantt/filtered}]]*/ "/build/gantt/filtered",
+                            data: dados,
+                            success: function (result) {
+                                drawChart(result);
+                            },
+                            error: function(xhr, status, error) {
+                                alert("something went wrong! Could not draw the chart " + xhr.responseText);
+                            }
+                        });
+                        return false;
+                    });
+
+                    /**
+                     * Define the initial hour slider value.
+                     */
+                    $("#slider_hour").slider({value: [new Date().getHours(), new Date().getHours()]});
+                });
+                /*]]>*/
+            </script>
+        </div>
+    </body>    
+</html>

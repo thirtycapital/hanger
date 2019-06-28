@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+        <div class="container-fluid main-content">
+            <table>
+                <tr>
+                    <th th:inline="text">
+                        <h3 class="page-title">[[${job.name}]]</h3>
+                    </th>
+
+                    <th class="btn-action">
+                        <a th:href="@{'/job/view/' + ${job.id}}" title="View">
+                            <span class="glyphicon glyphicon-eye-open"></span>
+                        </a>
+                    </th>
+
+                    <th class="btn-action">
+                        <a th:href="@{'/flow/job/' + ${job.id}}" title="Flow">
+                            <span class="glyphicon glyphicon-random"></span>
+                        </a>
+                    </th>
+
+                    <th class="btn-action">
+                        <a th:href="@{'/propagation/job/' + ${job.id}}" title="Propagation">
+                            <span class="glyphicon glyphicon-transfer"></span>
+                        </a>
+                    </th>
+
+                    <div th:if="${approval}">
+                        <th class="btn-action">
+                            <a th:href="@{'/approval/approval/' + ${job.id}}" title="Approval">
+                                <span class="glyphicon glyphicon-check"></span>
+                            </a>
+                        </th>                        
+                    </div>
+                </tr>
+            </table>
+
+            <div th:if="${not #lists.isEmpty(approvals)}">
+                <table id="table_clean_0" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width:10%">Status</th>
+                            <th style="width:15%">Date</th>                                
+                            <th style="width:15%">Description</th>
+                            <th>Approver</th>                             
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="approval, approvalStat : ${approvals}" th:unless="${approvalStat.index > 9}">                                
+                            <td><img class="status" th:src="@{'/images/' + ${ approval.approved ? 'APPROVED' : 'DISAPPROVED' } + '.png' }" th:attr="title=${ approval.approved ? 'APPROVED' : 'DISAPPROVED' }"></img></td>
+                            <td th:text="${#dates.format(approval.createdAt, 'yyyy-MM-dd HH:mm:ss')}" ></td>
+                            <td>
+                                <div class="btn-group">
+                                    <button class="dropdown-toggle close" data-toggle="dropdown"><span class="caret"></span></button>
+                                    <ul class="dropdown-menu">                                                
+                                        <li>
+                                            <pre>
+                                                 <code class="language-text" th:text="${approval.description}"></code>
+                                            </pre>
+                                        </li>  
+                                    </ul>
+                                </div>
+                            </td>
+                            <td th:text="${approval.user.firstName + ' ' + approval.user.lastName}" ></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div th:if="${not #lists.isEmpty(job.checkup)}">  
+                <div th:each="checkup, checkupStat : ${job.checkup}" th:remove="tag">
+                    <div th:if="${not #lists.isEmpty(checkup.log)}">      
+                        <label class="space-top" th:inline="text"><b>[[${ checkup.description }]]</b></label>
+
+                        <table th:id="'table_clean' + ${checkup.id}" class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="width:10%" class="img-sort">Status</th> 
+                                    <th style="width:15%">Date</th> 
+                                    <th style="width:10%">Scope</th> 
+                                    <th style="width:15%">SQL</th>
+                                    <th style="width:10%">Result</th>
+                                    <th style="width:10%" class="no-sort" ></th>    
+                                    <th style="width:10%" >Threshold</th>     
+                                    <th style="width:10%" >Action</th> 
+                                    <th class="no-sort"></th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr th:each="checkupLog, checkupLogStat : ${checkup.log}" th:unless="${checkupLogStat.index > 9}">
+                                    <td><img class="status" th:src="@{'/images/' + ${ checkupLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="title=${ checkupLog.success ? 'SUCCESS' : 'FAILURE' }"></img></td>                                 
+                                    <td th:text="${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}"></td>        
+                                    <td th:text="${checkupLog.scope}"></td>  
+                                    <td>
+                                        <div class="btn-group">
+                                            <button class="dropdown-toggle close" data-toggle="dropdown"><span class="caret"></span></button>
+                                            <ul class="dropdown-menu">                                                
+                                                <li>
+                                                    <pre class="line-numbers">
+                                                    <code class="language-sql" th:text="${checkupLog.query}"></code>
+                                                    </pre>
+                                                </li>  
+                                            </ul>
+                                        </div>
+                                    </td>  
+                                    <td th:text="${checkupLog.value}"></td> 
+                                    <td th:text="${checkupLog.conditional}"></td>  
+                                    <td th:text="${checkupLog.threshold}"></td>  
+                                    <td th:text="${checkupLog.success ? '' : checkupLog.action}"></td>   
+                                    <td>
+                                        <div th:if="${checkup.command}">
+                                            <table  class="table borderless">
+                                                <tbody>
+                                                    <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}" th:remove="tag"> 
+                                                        <tr>
+                                                            <td style="width:5%"><img class="hanger-img-sm" th:src="@{'/images/' + ${ commandLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="alt=${ commandLog.success }"></img></td>
+                                                            <td>
+                                                                <a th:inline="text" th:href="@{'/checkup/log/' + ${commandLog.id}}">
+                                                                    [[${ (commandLogStat.index + 1) + '. ' + commandLog.commandType}]]
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>                                
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            Prism.plugins.NormalizeWhitespace.setDefaults({
+                'remove-trailing': true,
+                'remove-indent': true,
+                'left-trim': true,
+                'right-trim': true,
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" >
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+        <div class="container-fluid main-content">
+            <table>
+                <tr>
+                    <th>
+                        <h3 class="page-title">Log</h3>
+                    </th>
+                </tr>            
+            </table>
+
+            <pre class="line-numbers no-border">
+                 <code th:class="${log.commandType} == 'SQL' ? language-sql : language-bash" th:text="${log.command}"></code>
+            </pre>            
+
+            <hr/>
+
+            <pre class="line-numbers">
+                 <code class="language-none" th:text="${log.log}"></code>
+            </pre>
+        </div>
+        <script>
+            Prism.plugins.NormalizeWhitespace.setDefaults({
+                'remove-trailing': true,
+                'remove-indent': true,
+                'left-trim': true,
+                'right-trim': true,
+            });
+        </script>
+    </body>
+</html>

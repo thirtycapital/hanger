@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+
+        <script type="text/javascript" th:inline="javascript">
+            /**
+             * Show a modal delete. 
+             * 
+             * @param {type} id
+             * @param {type} name
+             * @returns {undefined}
+             */
+            function modalDelete(id, name) {
+                document.getElementById("modalJobName").innerText = name;
+                document.getElementById("modalConfirmDel").href = 'delete/' + id;
+                $("#modalDelete").modal();
+            }
+
+            /**
+             * Build a job and show the result as a toast message.
+             * 
+             * @param {type} id
+             * @param {type} name
+             * @returns {undefined}
+             */
+            function buildJob(id, name) {
+                var url = /*[[@{/job/build/silently/}]]*/ "/job/build/silently/";
+
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "timeOut": "2500",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+
+                $.ajax({
+                    type: "GET",
+                    url: url + "/" + id,
+                    timeout: 30000,
+                    success: function (result) {
+                        if (result) {
+                            toastr.success('Successfully built job ' + name);
+                        } else {
+                            toastr.error('Error building job ' + name);
+                        }
+                    },
+                    error: function (e) {
+                        toastr.error('Error on building request of ' + name);
+                    }
+                });
+            }
+        </script>
+
+        <div class="container-fluid main-content">
+            <table>
+                <tr>
+                    <th>
+                        <h3 class="page-title">Job</h3>
+                    </th>
+                    <th class="btn-action">
+                        <a th:href="@{'/job/add/'}" title="Add Job">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                    </th>
+
+                    <th class="btn-action">
+                        <a th:href="@{/build/heatmap}" title="Heatmap">
+                            <span class="glyphicon glyphicon-th"></span>
+                        </a>
+                    </th>
+
+                    <th class="btn-action">
+                        <a th:href="@{/build/gantt}" title="Gantt">
+                            <span class="glyphicon glyphicon-object-align-left"></span>
+                        </a>
+                    </th>
+
+                    <th class="btn-action">
+                        <a th:href="@{'/job/refresh/'}" title="Refresh job list">
+                            <span class="glyphicon glyphicon-refresh"></span>
+                        </a>
+                    </th>
+                </tr>            
+            </table>
+
+            <div th:if="${ errorMessage != null }" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span th:text="${errorMessage}"></span>
+                </div>  
+            </div>
+
+            <div th:if="${ errorClass != null }" class="form-group">
+                <div class="col-sm-10">
+                    <div class="alert alert-danger" role="alert">
+                        <span th:text="${errorClass}"></span>
+                    </div>  
+                </div> 
+            </div> 
+
+            <div>
+                <table id="table_paginated" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th style="width:10%">Server</th>
+                            <th style="width:50%">Name</th>
+                            <th style="width:35%">Alias</th>
+                            <th><span class="glyphicon glyphicon-bell" title="NOTIFICATION"></span></th>
+                            <th><span class="glyphicon glyphicon-heart-empty" title="CHECKUP"></span></th>
+                            <th class="no-sort no-search"><span class="glyphicon glyphicon-link" title="LINK"></span></th> 
+                            <th class="no-sort no-search"></th> 
+                            <th class="no-sort no-search"></th>
+                            <th class="no-sort no-search"></th>
+                            <th class="no-sort no-search"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="job : ${jobs}" th:style="${!job.enabled} ? 'color: #767778' : ''">
+                            <td th:text="${job.id}">Id</td>
+                            <td th:text="${job.server.name}">Server</td>
+                            <td>
+                                <div th:if="${#lists.isEmpty(job.parent)}">
+                                    <span th:text="${job.name}" aria-hidden="true"></span>
+                                </div>
+                                <div th:if="${not #lists.isEmpty(job.parent)}">
+                                    <a th:href="@{'/flow/job/'  + ${job.id}}">
+                                        <span th:text="${job.name}" aria="Job tree"></span>
+                                    </a>
+                                </div>
+                            </td>
+                            <td th:text="${job.alias}">Alias</td> 
+                            <td>
+                                <div th:if="${job.notify}">
+                                    <span 
+                                        th:attr="title=${ not #lists.isEmpty(job.channel) ?  'Channels: ' + job.channel : 'Default channel' }" 
+                                        class="glyphicon glyphicon-bell"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div th:if="${ not #lists.isEmpty(job.checkup) }">
+                                    <a th:href="@{'/checkup/job/' + ${job.id} + '/list'}">
+                                        +
+                                    </a>
+                                </div>                                
+                            </td>
+                            <td>
+                                <a class="link" th:href="@{ ${job.server.url} + 'job/' + ${job.name}}" target="_blank"> 
+                                    +
+                                </a>
+                            </td>
+                            <td>
+                                <div sec:authorize="isAuthenticated()">                            
+                                    <button class="btn btn-generic btn-xs pull-right" 
+                                            th:if="${job.enabled}"
+                                            th:attr="onclick='buildJob('+${job.id} + ', \'' + ${job.name} + '\');'">
+
+                                        <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Build
+                                    </button>
+                                </div>
+                            </td>
+                            <td>
+                                <a th:href="@{'/job/view/' + ${job.id}}" class="btn btn-generic btn-xs">
+                                    <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> See
+                                </a>
+                            </td>
+                            <td>
+                                <a th:href="@{'/job/edit/' + ${job.id}}" class="btn btn-generic btn-xs">
+                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                                </a>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <button class="btn btn-xs btn-delete" th:attr="onclick='modalDelete(' + ${job.id} + ',\'' + ${job.name} + '\');'" ><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!--Begin delete modal-->
+            <div class="modal fade" id="modalDelete" tabindex="-1" role="dialog" aria-labelledby="modalDelete">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modalParentLabel"> Delete job: <span style="font-weight:bold" id="modalJobName"></span></h4>
+                        </div>
+                        <div class="modal-body">
+                            <span>Are you sure?</span>
+                        </div>
+                        <div class="modal-footer"> 
+                            <a id="modalConfirmDel" class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
+                                Yes
+                            </a>
+                            <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">
+                                No
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--End delete modal-->
+        </div>
+    </body>
+</html>

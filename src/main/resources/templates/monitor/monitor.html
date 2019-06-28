@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+
+        <div class="container-fluid main-content">
+            <br/>
+            <ul class="nav nav-tabs" th:if="${not #lists.isEmpty(subjects)}">
+                <li role="presentation" th:classappend="${#httpServletRequest.getRequestURI().contains('/home') or #httpServletRequest.getRequestURI().endsWith('/') ? 'active home':''}">
+                    <a class="link" title="HOME" th:href="@{'/'}">
+                        HOME
+                    </a>
+                </li>
+                <li role="presentation" th:each="subject : ${subjects}" th:classappend="${#httpServletRequest.getRequestURI().endsWith('/' + subject.id) ? 'active home':''}">
+                    <a th:href="@{'/detail/' + ${subject.id}}" th:inline="text" class="link">
+                        [[${subject.name}]]
+                    </a>
+                </li>
+                <li role="presentation" th:classappend="${#httpServletRequest.getRequestURI().endsWith('all') ? 'active home':''}">
+                    <a th:href="@{'/detail/' + all}" title="ALL" class="link">
+                        ALL
+                    </a>
+                </li>
+            </ul>
+
+            <div class="tab-content">
+                <script th:inline="javascript">
+                    /**
+                     * Define ajax start behavior. 
+                     * @returns {undefined}
+                     */
+                    $(document).ajaxStart(function () {
+                        $("#wait").css("display", "block");
+                        $("#add_job").prop("disabled", true);
+                    });
+
+                    /**
+                     * Define ajax complete behavior. 
+                     * @returns {undefined}
+                     */
+                    $(document).ajaxComplete(function () {
+                        $("#wait").css("display", "none");
+                        $("#add_job").prop("disabled", false);
+                    });
+
+                    /**
+                     * Show add subject to job modal. 
+                     * 
+                     * @param {type} e
+                     * @returns {undefined}
+                     */
+                    function addJobModal(SubjectID) {
+                        var url = /*[[@{/detail/modal/}]]*/ "/detail/modal/1"
+
+                        $.ajax({
+                            type: "GET",
+                            url: url + SubjectID,
+                            timeout: 30000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalJobList").modal({backdrop: 'static', keyboard: false});
+                                $('.selectpicker').selectpicker();
+                            },
+                            error: function (e) {
+                                alert("Fail loading jobs from Server " + e);
+                            }
+                        });
+                    }
+
+                    /**
+                     * Show delete job modal.
+                     * 
+                     * @param {type} jobID Job ID
+                     * @param {type} subjectID Subject ID
+                     * @param {type} jobName Job Name
+                     * @param {type} subjectName Subject Name
+                     * @returns {undefined}
+                     */
+                    function deleteJobModal(jobID, subjectID, jobName, subjectName) {
+                        document.getElementById("subjectNameInModal").innerText = subjectName;
+                        document.getElementById("jobNameInModal").innerText = jobName;
+                        document.getElementById("confirmRemoveJob").href = "remove/" + jobID + "/" + subjectID;
+
+                        $("#modalRemoveJobFromSubject").modal();
+                    }
+                </script>
+
+                <div class="space-top" 
+                     th:if="${not #httpServletRequest.getRequestURI().contains('/detail/')}">
+
+                    <!--Home refresh timeout-->
+                    <script type="text/javascript">
+                        setTimeout("location.reload(true);", 120000);
+                    </script>
+
+                    <table id="table_clean" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th></th>                                
+                                <th class="no-sort"></th>  
+                                <th><span class="glyphicon glyphicon-book" alt="JOBS" title="JOBS"></span></th>  
+                                <th><img class="hanger-img-sm" th:src="@{'/images/SUCCESS.png'}" alt="SUCCESS" title="SUCCESS"></img></th>
+                                <th><img class="hanger-img-sm" th:src="@{'/images/WAITING.png'}" alt="WAITING" title="WAITING"></img></th>
+                                <th><img class="hanger-img-sm" th:src="@{'/images/REBUILD.png'}" alt="BUILDING" title="BUILDING"></img></th> 
+                                <th><img class="hanger-img-sm" th:src="@{'/images/RUNNING.png'}" alt="RUNNING" title="RUNNING"></img></th>                                
+                                <th><img class="hanger-img-sm" th:src="@{'/images/WARNING.png'}" alt="WARNING" title="WARNING"></img></th> 
+                                <th><img class="hanger-img-sm" th:src="@{'/images/FAILURE.png'}" alt="FAILURE" title="FAILURE"></img></th> 
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="subjects : ${subjectDetails}">
+                                <td><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.subject.name}" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+
+                                <td width="18.5%">
+                                    <div class="progress">
+                                        <div class="progress-bar progress-bar-success" th:inline="text" th:attr="style='width:' +  ${ subjects.successPercent } + '%'" title="SUCCESS">
+                                            <span class="sr-only"></span> [[${subjects.successPercent}]]%
+                                        </div>
+                                        <div class="progress-bar progress-bar-building" th:inline="text" th:attr="style='width:' +  ${ subjects.buildingPercent } + '%'" title="BUILDING">
+                                            <span class="sr-only"></span> [[${subjects.buildingPercent}]]%
+                                        </div>
+                                        <div class="progress-bar progress-bar-warning" th:inline="text" th:attr="style='width:' + ${ subjects.warningPercent } + '%'" title="WARNING">
+                                            <span class="sr-only"></span> [[${subjects.warningPercent}]]% 
+                                        </div>
+                                        <div class="progress-bar progress-bar-danger" th:inline="text" th:attr="style='width:' + ${ subjects.failurePercent } + '%'" title="FAILURE">
+                                            <span class="sr-only"></span> [[${subjects.failurePercent}]]% 
+                                        </div>
+                                        <div class="progress-bar progress-bar-waiting" th:inline="text" th:attr="style='width:' + ${ subjects.waitingPercent } + '%'" title="WAITING">
+                                            <span class="sr-only"></span> [[${subjects.waitingPercent}]]% 
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.total}" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.success}> 0 ? ${subjects.success} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.waiting} > 0 ? ${subjects.waiting} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.building} > 0 ? ${subjects.building} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.running} > 0 ? ${subjects.running} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.warning} > 0 ? ${subjects.warning} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.failure} > 0 ? ${subjects.failure} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="space-top" th:if="${#httpServletRequest.getRequestURI().contains('/detail/') }">
+                    <div th:if="${currentSubject.description != null and currentSubject.description != ''}">
+                        <pre>
+                            <code class="language-free" th:text="${currentSubject.description}"></code>
+                        </pre>
+                    </div>
+
+                    <!-- Job details list-->
+                    <th:block th:include="monitor/fragmentJobDetails :: jobDetails"></th:block>
+                </div>
+            </div>
+
+            <!--Modal delete subject-->
+            <div class="modal fade" id="modalRemoveJobFromSubject" tabindex="-1" role="dialog" aria-labelledby="modalDelete">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" 
+                                    class="close" 
+                                    data-dismiss="modal" 
+                                    aria-label="Close"><span aria-hidden="true">&times;</span></button>
+
+                            <h4 class="modal-title" id="subjectNameInModal"></h4>
+                        </div>
+                        <div class="modal-body">
+                            <span>Are you sure you want to remove <span id="jobNameInModal"></span> from this subject?</span>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="" 
+                               name="confirmRemoveJob" 
+                               id="confirmRemoveJob" 
+                               class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">Yes</a>
+
+                            <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" 
+                               data-dismiss="modal" 
+                               aria-label="Close">
+
+                                No
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Add job button-->
+            <div class="form-group">
+                <div sec:authorize="isAuthenticated()"> 
+                    <div th:if="${#httpServletRequest.getRequestURI().contains('/detail/') 
+                         and not #httpServletRequest.getRequestURI().contains('/all')}">
+
+                        <hr/>
+
+                        <div class="col-sm-12">
+                            <button id="add_job" 
+                                    class="btn btn-generic btn-sm btn-home" 
+                                    th:attr="onclick='addJobModal(' + ${currentSubject.id} + ');'">
+                                <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Add Job
+                            </button>
+
+                            <button id="wait" 
+                                    type="button" 
+                                    class="btn btn-generic btn-sm pull-right btn-space" 
+                                    style="display:none;">
+
+                                <img th:src="@{'/images/ajax-loader.gif'}"></img>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

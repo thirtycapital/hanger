@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+        <div class="container-fluid main-content">
+            <table>
+                <tr>
+                    <th>
+                        <h3 class="page-title">Job</h3>
+                    </th>
+
+                    <th class="btn-action">
+                        <a th:href="@{'/job/add/'}" title="Add Job">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                    </th>
+                </tr>            
+            </table>
+
+            <div>    
+                <form class="form-horizontal" th:object="${job}">
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <!--Job ID-->
+                            <input type="hidden" class="form-control" th:field="*{id}"/>
+                            <!--Job Status-->
+                            <input type="hidden" class="form-control" th:field="*{status}"/>
+                        </div>
+                    </div>
+
+                    <div th:if="${ error != null }" class="form-group">
+                        <!--Error-->
+                        <div class="col-sm-10">
+                            <div class="alert alert-danger" role="alert">
+                                <span th:text="${error}"></span>
+                            </div>  
+                        </div> 
+                    </div> 
+
+                    <div th:if="${ success != null }" class="form-group">
+                        <!--Success-->
+                        <div class="col-sm-10">
+                            <div class="alert alert-success" role="alert">
+                                <span th:text="${success}"></span>
+                            </div>  
+                        </div> 
+                    </div> 
+
+                    <!--Jenkins server-->
+                    <label>Server</label> 
+                    <div class="form-group">
+                        <div class="col-sm-10">                           
+                            <input type="text" class="form-control" th:value="${job.server.name}" readonly="true"/>
+                        </div>
+                    </div>
+
+                    <div th:if="${ job.server != null }">
+                        <!--Name-->                        
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <label>Name</label>                                
+                                <input type="text" class="form-control" th:value="*{name}" readonly="true"/>
+                            </div>
+                        </div>
+
+                        <label>Alias</label>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" th:value="*{alias}" readonly="true"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <label>Description</label>
+                                <pre class="line-numbers">
+                                    <code class="language-text" th:text="*{description}"></code>
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <!-- Can be rebuilt along the day once every (minutes)-->
+                                <label class="checkbox">Can be rebuilt along the day
+                                    <input type="checkbox" name="rebuild" th:field="*{rebuild}" th:checked="*{rebuild}" disabled="true"/>
+                                    <span class="checkmark"></span>
+                                </label>           
+                            </div>
+                        </div>                        
+
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <label>Waiting time (minutes)</label>
+                                <input type="number" min="0" max="59" class="form-control" maxlength="1" th:field="*{wait}" disabled="true"/>
+                                <span th:if="${#fields.hasErrors('wait')}" class="help-block" th:errors="*{wait}"></span>
+                            </div>
+                        </div>
+
+                        <label data-toggle="tooltip" title="Identifies that previous day executions, terminated within the tolerance period of hours, should be considered in the current day's data stream.">Eagerness</label>               
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <input type="number" min="0" max="12" class="form-control" maxlength="1" th:field="*{tolerance}" disabled="true"/>
+                                <span th:if="${#fields.hasErrors('tolerance')}" class="help-block" th:errors="*{tolerance}"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${not #lists.isEmpty(job.subject)}">  
+                        <!--Subject list-->   
+                        <label>Subject</label>
+                        <table class="table">
+                            <tr>
+                                <th style="width:5%">#</th>
+                                <th style="width:75%">Subject</th>
+                            </tr>
+                            <tr th:each="subject, stat : ${job.subject}">
+                                <td> 
+                                    <span th:text="*{subject[__${stat.index}__].id}"></span>
+                                </td>
+                                <td>
+                                    <span th:text="*{subject[__${stat.index}__].name}"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div> 
+
+                    <div th:if="${not #lists.isEmpty(job.parent)}">    
+                        <!--Parent list-->
+                        <label>Parent</label>
+                        <table class="table">
+                            <tr>
+                                <th style="width:5%">#</th>
+                                <th style="width:10%">Server</th>
+                                <th style="width:50.5%">Name</th>
+                                <th style="width:12%">Scope</th>
+                            </tr>
+                            <tr th:each="parent, stat : ${job.parent}">
+                                <td> 
+                                    <span th:text="*{parent[__${stat.index}__].parent.id}"></span>
+                                </td>
+                                <td th:text="*{parent[__${stat.index}__].parent.server.name}"></td>
+                                <td><a class="link" th:text="*{parent[__${stat.index}__].parent.name}" th:href="@{'/job/view/' + *{parent[__${stat.index}__].parent.id}}" target="_blank"></a></td>
+                                <td>
+                                    <span th:text="*{parent[__${stat.index}__].scope}"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>  
+
+                    <div th:if="${not #lists.isEmpty(job.checkup)}"> 
+                        <fieldset>
+                            <legend>
+                                Checkup
+                            </legend>
+                        </fieldset>
+                    </div>
+
+                    <div class="card" th:each="checkup, stat : ${job.checkup}">
+                        <!--Checkup-->
+                        <div class="form-group"> 
+                            <div class="col-sm-2">
+                                <label th:inline="text">ID</label> 
+                                <input type="text" class="form-control" maxlength="255" th:field="*{checkup[__${stat.index}__].id}" required="true" disabled="true"/>
+                            </div>
+
+                            <div class="col-sm-8">
+                                <label th:inline="text">Description</label> 
+                                <input type="text" class="form-control" maxlength="255" th:field="*{checkup[__${stat.index}__].description}" disabled="true"/>
+                            </div>
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-8">
+                                <label>Connection</label> 
+                                <input type="text" class="form-control" maxlength="255" th:field="*{checkup[__${stat.index}__].connection.name}" disabled="true"/>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <label>Scope</label>
+                                <input type="text" class="form-control" maxlength="255" th:field="*{checkup[__${stat.index}__].scope}" disabled="true"/>    
+                            </div>
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <label>SQL Select Statement</label>
+                                <pre class="line-numbers">
+                                    <code class="language-sql" th:text="*{checkup[__${stat.index}__].query}"></code>
+                                </pre>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <label>Test</label>
+                                <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].conditional}" disabled="true"/>      
+                            </div>
+
+                            <div class="col-sm-4">    
+                                <label>Threshold</label>
+                                <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].threshold}" disabled="true"/>
+                            </div>
+
+                            <div class="col-sm-4">    
+                                <label>On fail</label> 
+                                <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].action}" disabled="true"/>          
+                            </div>
+                        </div> 
+
+                        <div class="form-group">
+                            <div class="col-sm-8">
+                                <div th:if="${not #lists.isEmpty(job.parent)}">  
+                                    <input                                     
+                                        type="checkbox" 
+                                        data-toggle="toggle" 
+                                        data-on="Pre-validation" 
+                                        data-off="Post-validation" 
+                                        data-size="small"
+                                        data-onstyle="default" 
+                                        th:field="*{checkup[__${stat.index}__].prevalidation}" 
+                                        th:checked="*{checkup[__${stat.index}__].prevalidation}"
+                                        th:disabled="true"/>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2">
+                                <div class="form-check pull-right">
+                                    <input                                     
+                                        type="checkbox" 
+                                        data-toggle="toggle" 
+                                        data-on="Enabled" 
+                                        data-off="Disabled" 
+                                        data-size="small"
+                                        data-onstyle="default" 
+                                        th:field="*{checkup[__${stat.index}__].enabled}" 
+                                        th:checked="*{checkup[__${stat.index}__].enabled}"
+                                        th:disabled="true"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr/>
+
+                        <div th:if="*{not #lists.isEmpty(checkup[__${stat.index}__].trigger)}">    
+                            <!--Checkup trigger-->
+                            <label>Trigger</label>
+                            <table class="table">
+                                <tr>
+                                    <th style="width:5%">#</th>
+                                    <th style="width:10%">Server</th>
+                                    <th style="width:62.5%">Name</th>
+                                </tr>
+                                <tr th:each="trigger, stat : *{checkup[__${stat.index}__].trigger}">
+                                    <td>
+                                        <span th:text="${trigger.id}"></span>
+                                    </td>
+                                    <td th:text="${trigger.server.name}"></td>
+                                    <td th:text="${trigger.name}"></td>
+                                </tr>
+                            </table>
+                        </div>  
+
+                        <!--Checkup command-->
+                        <div th:if="*{not #lists.isEmpty(checkup[__${stat.index}__].command)}"> 
+                            <div th:each="command, commandStat : *{checkup[__${stat.index}__].command}">
+                                <div class="form-group">  
+                                    <div class="col-sm-10">    
+                                        <label>Failure command type</label> 
+                                        <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].command[__${commandStat.index}__].commandType}" disabled="true"/>  
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-sm-10">
+                                        <label>Failure command</label>
+                                        <pre class="line-numbers">
+                                            <code th:class="*{checkup[__${stat.index}__].command[__${commandStat.index}__].commandType} == 'SQL' ? language-sql : language-bash" th:text="*{checkup[__${stat.index}__].command[__${commandStat.index}__].command}"></code>
+                                        </pre>
+                                    </div>
+                                </div>
+                                <hr/>
+                            </div>
+                        </div> 
+                    </div> 
+
+                    <div th:if="${not #lists.isEmpty(job.checkup)}">   
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <label>Retries</label> 
+                                <input type="number"  min="0" max="9" class="form-control" maxlength="1" th:field="*{retry}" disabled="true"/>
+                            </div>
+                        </div>
+                        <label>Approver</label>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" maxlength="10" th:field="*{approver.fullName}" disabled="true"/> 
+                            </div>
+                        </div>
+                    </div> 
+
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <div class="form-check pull-right">
+                                <input  
+                                    id="jobEnabled" 
+                                    name="jobEnabled"
+                                    type="checkbox" 
+                                    data-toggle="toggle" 
+                                    data-on="Enabled" 
+                                    data-off="Disabled" 
+                                    data-size="small"
+                                    data-onstyle="default" 
+                                    th:field="*{enabled}" 
+                                    th:checked="*{enabled}"
+                                    disabled="true"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <div class="pull-right">
+                                <label class="checkbox" th:inline="text">
+                                    Slack notification on
+                                    <b>
+                                        [[*{ #lists.isEmpty(channel) ? 'default channel' : #strings.arrayJoin(channel, ', ') }]]
+                                    </b>
+                                    <input type="checkbox" id="slack" name="slack" th:field="*{notify}" th:checked="*{notify}" disabled="true"/>
+                                    <span class="checkmark"></span>                                    
+                                </label>
+                            </div>
+                        </div>
+                    </div>                    
+
+                    <!--Buttons-->
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <a th:href="@{'/job/edit/' + ${job.id}}" class="btn btn-generic btn-sm">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                            </a>
+
+                            <a href="" data-toggle="modal" data-target="#delete" class="btn btn-delete btn-sm btn-space">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                            </a>
+
+                            <a th:if="*{enabled}" href="" data-toggle="modal" data-target="#mesh" class="btn btn-generic btn-sm pull-right btn-space">
+                                <span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span> Build mesh
+                            </a>
+
+                            <a th:if="*{enabled}" th:href="@{'/job/build/' + ${job.id}}" class="btn btn-generic btn-sm pull-right btn-space">
+                                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Build 
+                            </a>
+
+
+                            <a th:href="@{'/flow/job/'  + ${job.id}}" class="btn btn-generic btn-sm pull-right btn-space">
+                                <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Flow
+                            </a>  
+
+                            <a th:href="@{'/propagation/job/'  + ${job.id}}" class="btn btn-generic btn-sm pull-right btn-space">
+                                <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> Propagation
+                            </a> 
+                        </div>
+                    </div>
+
+                    <!--Modal delete-->
+                    <div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="modalDelete">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 th:inline="text" class="modal-title" id="modalParentLabel">[[${ 'Delete ' + job.name}]] </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <span>Are you sure?</span>
+                                </div>
+                                <div class="modal-footer"> 
+                                    <a th:href="@{'/job/delete/' + ${job.id}}" class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
+                                        Yes
+                                    </a>
+                                    <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">
+                                        No
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Modal Build Mesh-->
+                    <div class="modal fade" id="mesh" tabindex="-1" role="dialog" aria-labelledby="modalBuildMesh">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="modalParentLabel">Attention!</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <span>This action forces all mesh to be rebuilt. Are you sure?</span>
+                                </div>
+                                <div class="modal-footer">
+                                    <a th:href="@{'/job/rebuild/' + ${job.id}}" class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
+                                        Yes
+                                    </a>
+                                    <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">
+                                        No
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="*{ updatedAt != null }">
+                        <hr/>
+
+                        <!--Tracker-->
+                        <div class="form-group">                        
+                            <div class="col-sm-10">
+                                <label class="pull-right label-edit-information" th:inline="text">Updated by [[*{modifiedBy}]] at [[*{#dates.format(updatedAt, 'yyyy-MM-dd HH:mm:ss')}]]</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script>
+            Prism.plugins.NormalizeWhitespace.setDefaults({
+                'remove-trailing': true,
+                'remove-indent': true,
+                'left-trim': true,
+                'right-trim': true,
+            });
+        </script>
+    </body>
+</html>

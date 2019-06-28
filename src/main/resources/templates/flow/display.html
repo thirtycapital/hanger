@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+        <div class="container-fluid main-content">
+            <center>           
+                <div class="tree-subject">
+                    <div  th:if="${not #lists.isEmpty(job.subject)}">
+                        <span class="label label-hanger" th:each="subject : ${job.subject}" th:inline="text">
+                            <a th:href="@{'/detail/' + ${subject.id}}" th:inline="text" class="link"> [[${subject.name}]]</a>
+                        </span>
+
+                        <hr/>
+                    </div> 
+
+                    <div th:if="${not #lists.isEmpty(warnings)}">
+                        <img class="status hanger-img-sm" th:src="@{'/images/WARNING.png'}" th:title="WARNING"></img>
+                        <button th:inline="text" class="btn btn-link hanger-font-sm hanger-no-border" th:id="'modal_warning_' + ${job.id}" th:value="${job.id}">[[${#lists.size(warnings)}]] warning in this flow</button>
+                    </div>
+                </div>
+
+                <div th:if="${errorMessage != null}">
+                    <!--Error-->
+                    <div>
+                        <div class="alert alert-danger" role="alert">
+                            <span th:text="${errorMessage}"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${successMessage != null}">
+                    <!--Success-->
+                    <div>
+                        <div class="alert alert-success" role="alert">
+                            <span th:text="${successMessage}"></span>
+                        </div>
+                    </div>
+                </div>
+            </center>
+
+            <div class="chart dragscroll" id="flow"></div>
+
+            <div id="zoom_control" class="btn-group-vertical" >
+                <button title="Zoom Out" role="button" id="zoom_in" class="btn btn-group-md"><span class="glyphicon glyphicon-zoom-in"></span></button>
+                <button title="Zoom In" role="button" id="zoom_out" class="btn btn-group-md"><span class="glyphicon glyphicon-zoom-out"></span></button>
+
+                <div th:if="${ not #httpServletRequest.getRequestURI().contains('/propagation/') }">
+                    <a title="Expand All" role="button" id="zoom_out" class="btn btn-group-md" th:href="@{?expanded=true}"><span class="glyphicon glyphicon-resize-full"></span></a>
+                    <a title="Collapse All" role="button" id="zoom_out" class="btn btn-group-md" th:href="@{?expanded=false}"><span class="glyphicon glyphicon-resize-small"></span></a>
+                </div>
+
+                <div th:if="${approval}">
+                    <a title="Approval" role="button" id="zoom_out" class="btn btn-group-md" th:href="@{'/approval/approval/' + ${job.id}}"><span class="glyphicon glyphicon-check"></span></a>
+                </div>
+
+                <button title="Glossary" role="button" id="question" class="btn btn-group-md" data-toggle="modal" th:attr="data-target='#modalGlossary'"><span class="glyphicon glyphicon-question-sign"></span></button>
+            </div>
+
+            <script th:utext="${chart}"></script>           
+        </div>
+
+        <!-- modal glossary begin-->
+        <div class="modal fade" id="modalGlossary" tabindex="-1" role="dialog" aria-labelledby="modalGlossaryLabel">
+            <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalJobListLabel">Glossary</h4>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Icon</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/WAITING.png'}"></img></td>
+                                    <td><p>WAITING</p></td>
+                                    <td>Job was not built today yet</td>
+                                </tr>
+                                <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/REBUILD.png'}"></img></td>
+                                    <td><p>REBUILD</p></td>
+                                    <td>Job is being prepared</td>
+                                </tr>
+                                <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/RUNNING.png'}"></img></td>
+                                    <td><p>RUNNING</p></td>
+                                    <td>Job is running</td>
+                                </tr>
+                                <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/SUCCESS.png'}"></img></td>
+                                    <td><p>SUCCESS</p></td>
+                                    <td>Job build finished successfully</td>
+                                </tr>
+                                <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/UNHEALTHY.png'}"></img></td>
+                                    <td><p>UNHEALTHY</p></td>
+                                    <td>Post-validation job checkup failed</td>
+                                </tr>
+                                <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/BLOCKED.png'}"></img></td>
+                                    <td><p>BLOCKED</p></td>
+                                    <td>Pre-validation job checkup failed</td>
+                                </tr>
+                                <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/FAILURE.png'}"></img></td>
+                                    <td><p>FAILURE</p></td>
+                                    <td>Build failure</td>
+                                </tr>
+                                <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/ABORTED.png'}"></img></td>
+                                    <td><p>ABORTED</p></td>
+                                    <td>Build aborted</td>
+                                </tr>
+                                <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/APPROVED.png'}"></img></td>
+                                    <td><p>APPROVED</p></td>
+                                    <td>Unhealthy job approved to continue</td>
+                                </tr>
+                                <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/DISAPPROVED.png'}"></img></td>
+                                    <td><p>DISAPPROVED</p></td>
+                                    <td>Unhealthy job not approved to continue</td>
+                                </tr>
+                                <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/ERROR.png'}"></img></td>
+                                    <td><p>ERROR</p></td>
+                                    <td>Something really weird happened :O</td>
+                                </tr>
+                                <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/DISABLED.png'}"></img></td>
+                                    <td><p>DISABLED</p></td>
+                                    <td>Job is disabled</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">                                
+                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                            <span aria-hidden="true"></span> Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- modal glossary end-->
+
+        <!--Modal Build Mesh-->
+        <div class="modal fade" id="mesh" tabindex="-1" role="dialog" aria-labelledby="modalBuildMesh">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalParentLabel">Attention!</h4>
+                    </div>
+                    <div class="modal-body">
+                        <span>This action forces all mesh to be rebuilt. Are you sure?</span>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" id="build_mesh" class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
+                            Yes
+                        </a>
+                        <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">
+                            No
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--AJAX Parent modal --> 
+        <div id="modalHolder"/>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+
+            var scale = 90;
+            var timeout = 2500;
+            var isAuthenticated = /*[[${#authorization.expression('isAuthenticated()')}]]*/ false;
+            var job;
+
+            /**
+             * Chart actions.                 
+             */
+            $('.chart').css('zoom', scale + '%');
+
+            $(".chart").mousedown(function () {
+                $('.chart').css('cursor', 'grab');
+            });
+
+            $(".chart").mouseup(function () {
+                $('.chart').css('cursor', '');
+            });
+
+            $("#zoom_in").click(function () {
+                scale = scale = (scale === 90 ? scale : scale + 5);
+                $('.chart').css('zoom', scale + '%');
+            });
+
+            $("#zoom_out").click(function () {
+                scale = (scale === 50 ? scale : scale - 5);
+                $('.chart').css('zoom', scale + '%');
+            });
+
+            /**
+             * Modal warning action.                 
+             */
+            $("[id^=modal_warning_]").click(function () {
+                var url = /*[[@{/flow/warning/}]]*/ "/flow/warning/";
+                var job = $(this).val();
+
+                $.ajax({
+                    type: "GET",
+                    url: url + job,
+                    timeout: 30000,
+                    success: function (result) {
+                        $("#modalHolder").html(result);
+                        $("#modalWarning").modal({backdrop: 'static', keyboard: false});
+                    },
+                    error: function (e) {
+                        alert("Fail loading job warning " + e);
+                    }
+                });
+            });
+
+
+            /**
+             * Right click menu of jobs.                 
+             */
+            $('.flow-job-clickable').on("contextmenu", function (e) {
+                e.preventDefault();
+                job = this.id;
+
+                // Build a Job.
+                var build = function () {
+                    var url = /*[[@{/job/build/silently/}]]*/ "/job/build/silently/";
+                    buildJob(job, url);
+                }
+
+                // Build Mesh confirm dialog.
+                var mesh = function () {
+                    $("#mesh").modal({backdrop: 'static', keyboard: false});
+                }
+
+                var flow = function () {
+                    var flowUrl = /*[[@{/flow/job/}]]*/ "/flow/job/";
+                    window.open(flowUrl + job, '_blank');
+                }
+
+                var propagation = function () {
+                    var propagationUrl = /*[[@{/propagation/job/}]]*/ "/propagation/job/";
+                    window.open(propagationUrl + job, '_blank');
+                }
+
+                // Available actions.
+                var items = [
+                    {title: 'Flow', icon: 'glyphicon glyphicon-random', fn: flow},
+                    {title: 'Propagation', icon: 'glyphicon glyphicon-transfer', fn: propagation},
+                    {},
+                    {title: 'Build', icon: 'glyphicon glyphicon-play', fn: build, disabled: !isAuthenticated},
+                    {title: 'Build Mesh', icon: 'glyphicon glyphicon-fast-backward', fn: mesh, disabled: !isAuthenticated},
+                ]
+
+                basicContext.show(items, e)
+            });
+
+            /**
+             * Start a hanger build or build mesh process.
+             * 
+             * @param {type} id job id.
+             * @param {type} url hanger url;
+             * @returns {undefined}
+             */
+            function buildJob(id, url) {
+
+                if (url) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "timeOut": timeout,
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + "/" + id,
+                        timeout: 30000,
+                        success: function (result) {
+                            if (result) {
+                                toastr.success('Started successfully.');
+
+                                setTimeout(function () {
+                                    window.location.reload(1);
+                                }, timeout);
+
+                            } else {
+                                toastr.error('An error occurred while building.');
+                            }
+                        },
+                        error: function (e) {
+                            toastr.error('Error on building request.');
+                        }
+                    });
+                }
+            }
+
+            /**
+             * Build mesh job chain.
+             */
+            $("#build_mesh").click(function () {
+                // Close confirm modal.
+                $('#mesh').modal('toggle');
+
+                var url = /*[[@{/job/rebuild/}]]*/ "/job/rebuild/";
+                buildJob(job, url);
+            });
+
+            /*]]>*/
+        </script>
+    </body>
+</html>

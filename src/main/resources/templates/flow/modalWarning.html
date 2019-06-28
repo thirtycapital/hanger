@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+        <div class="container">
+            <!-- modal warning begin-->
+            <div class="modal fade" id="modalWarning" tabindex="-1" role="dialog" aria-labelledby="modalWarningLabel" th:fragment="warning">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modalTestConnectionLabel">Warnings</h4>
+                        </div>
+                        <div class="modal-body">
+                            <table id="table" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th class="img-sort" style="width:1%">Status</th>
+                                        <th style="width:2%">Server</th>
+                                        <th style="width:50%">Job</th>   
+                                        <th class="no-sort"><span class="glyphicon glyphicon-link" title="LINK"></span></th>
+                                        <th>Update</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="jobs : ${warnings}">
+                                        <td><img class="status" th:src="@{'/images/' + ${jobs.status} + '.png'}" th:attr="alt=${ jobs.status }" th:title="${jobs.status}"></img></td>
+                                        <td th:text="${jobs.job.server.name}">Server</td>
+                                        <td><a class="link" th:href="@{'/flow/job/'  + ${jobs.job.id}}" th:text="${jobs.job.name}"></a></td>
+                                        <td><a class="link" th:href="@{ ${jobs.job.server.url} + 'job/' + ${jobs.job.name}}" target="_blank"> +</a></td>
+                                        <td th:text="${jobs.buildTime}">Build time</td>
+                                        <td>
+                                            <div sec:authorize="isAuthenticated()">                            
+                                                <button class="btn btn-generic btn-xs pull-right" 
+                                                        th:if="${jobs.job.enabled}"
+                                                        th:attr="onclick='buildJob('+${jobs.job.id} + ', \'' + ${jobs.job.name} + '\');'">
+
+                                                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Build
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="modal-footer">                                
+                                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                                    <span aria-hidden="true"></span> Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- modal warning end-->
+        </div>
+    </body>
+</html>

@@ -317,6 +317,7 @@ public class JenkinsService {
 
                         //Build Jenkins job description. 
                         description = description == null ? "" : description;
+                        description = description.replaceAll("(?s)NICK\\.BEGIN(.*)NICK\\.END", "");
                         description = description.replaceAll("(?s)HANGER\\.BEGIN(.*)HANGER\\.END", "");
                         description = description + "\n" + "HANGER.BEGIN" + job.toString() + "HANGER.END";
 

@@ -67,6 +67,15 @@ public class SubjectService {
     }
 
     /**
+     * Return subject list order by name.
+     *
+     * @return Subject list.
+     */
+    public List<Subject> findAllByOrderByName() {
+        return subjectRepository.findAllByOrderByName();
+    }
+
+    /**
      * Return subject list according to signature rule.
      *
      * @return Subject list.

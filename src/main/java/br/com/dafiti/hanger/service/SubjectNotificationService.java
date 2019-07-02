@@ -63,7 +63,7 @@ public class SubjectNotificationService {
     @Scheduled(cron = "0 0 0-23 * * ?")
     public void notifySubjectList() {
         List<SubjectDetails> subjectDetails
-                = subjectDetailsService.getDetailsOf(subjectService.findBySubscription());
+                = subjectDetailsService.getDetailsOf(subjectService.findAllByOrderByName());
 
         for (SubjectDetails detail : subjectDetails) {
             //Identify if should notify this subject. 

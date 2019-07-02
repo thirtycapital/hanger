@@ -41,6 +41,7 @@
                         <th class="no-sort"></th>
                         <th class="no-sort"></th>
                         <th class="no-sort"></th>
+                        <th class="no-sort"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,19 +51,60 @@
                         <td th:text="${server.url}">Url</td>
                         <td th:text="${server.username}">Username</td>
                         <td>
+                            <div class="form-group">
+                                <a th:if="${#authorization.expression('hasRole(''HERO'')')}" 
+                                   class="btn btn-xs btn-generic" 
+                                   data-toggle="modal" 
+                                   th:attr="data-target='#'+${server.id}" 
+                                   href="">
+                                    <span class="glyphicon glyphicon-import" aria-hidden="true"></span> Import
+                                </a>
+                            </div>
+                            <!-- INÍCIO MODAL IMPORT -->
+                            <div class="modal fade" th:id="${server.id}" tabindex="-1" role="dialog" aria-labelledby="modalImport">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <h4 class="modal-title" id="modalParentLabel">Import jobs</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <span th:inline="text">Are you sure you want to import <strong>ALL JOBS</strong> from [[${server.name}]]?</span>
+                                        </div>
+                                        <div class="modal-footer"> 
+                                            <a th:href="@{'/server/import/' + ${server.id}}" class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
+                                                Yes
+                                            </a>
+                                            <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">
+                                                No
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- FIM MODAL IMPORT -->
+                        </td>
+                        <td>
                             <a th:href="@{'/server/test/' + ${server.id}}" class="btn btn-generic btn-xs">
                                 <span class="glyphicon glyphicon-link" aria-hidden="true"></span> Connect
                             </a>
                         </td>
                         <td>
-                            <a th:href="@{'/server/edit/' + ${server.id}}" class="btn btn-generic btn-xs">
+                            <a th:href="@{'/server/edit/' + ${server.id}}" 
+                               class="btn btn-generic btn-xs">                                
                                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
                             </a>
                         </td>
                         <td>
                             <div class="form-group">
-                                <a class="btn btn-xs btn-delete" data-toggle="modal" th:attr="data-target='#'+${server.id}" href=""><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</a>
+                                <a class="btn btn-xs btn-delete" data-toggle="modal" 
+                                   th:attr="data-target='#'+${server.id}" 
+                                   href="">
+
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                                </a>
                             </div>
+
                             <!-- INÍCIO MODAL DELETE -->
                             <div class="modal fade" th:id="${server.id}" tabindex="-1" role="dialog" aria-labelledby="modalDelete">
                                 <div class="modal-dialog" role="document">

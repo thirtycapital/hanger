@@ -51,12 +51,22 @@
                         </div>
                     </fieldset>
 
-                    <legend>Customization</legend>                    
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-generic btn-sm" th:id="modal_change_logo">                                         
-                            <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Update logo
-                        </button>
-                    </div>
+                    <fieldset>
+                        <legend>Maintenance</legend>                    
+                        <div class="btn-group">
+                            <a class="btn btn-generic btn-sm" th:id="modal_change_logo" title="Update application logo">                                         
+                                <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Update logo
+                            </a>
+
+                            <a class="btn btn-generic btn-space btn-sm" th:href="@{/job/maintenance/plugin}" title="Update notification plugin">
+                                <span class="glyphicon glyphicon-plane"></span> Update plugin
+                            </a>
+
+                            <a class="btn btn-generic btn-space btn-sm" th:href="@{/job/refresh/}" title="Update application cache">
+                                <span class="glyphicon glyphicon-refresh"></span> Update cache 
+                            </a>
+                        </div>
+                    </fieldset>
                 </form>
 
                 <!--Modal--> 

@@ -248,8 +248,8 @@ public class JenkinsService {
     }
 
     /**
-     * Add the Hanger endpoint to the notificion plugin configuration of a Jenkins
-     * job.
+     * Add the Hanger endpoint to the notificion plugin configuration of a
+     * Jenkins job.
      *
      * @param job Job
      */

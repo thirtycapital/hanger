@@ -24,9 +24,14 @@
 package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.exception.Message;
+import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.Server;
 import br.com.dafiti.hanger.service.JenkinsService;
+import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.ServerService;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -49,20 +54,26 @@ public class ServerController {
 
     private final ServerService serverService;
     private final JenkinsService jenkinsService;
+    private final JobService jobService;
 
     @Autowired
-    public ServerController(ServerService serverService, JenkinsService jenkinsService) {
+    public ServerController(
+            ServerService serverService,
+            JenkinsService jenkinsService,
+            JobService jobService) {
+
         this.serverService = serverService;
         this.jenkinsService = jenkinsService;
+        this.jobService = jobService;
     }
 
     /**
      * Save a server.
      *
-     * @param server
-     * @param bindingResult
-     * @param model
-     * @return
+     * @param server Server
+     * @param bindingResult BindingResult
+     * @param model Model
+     * @return Server edit template.
      */
     @PostMapping(path = "/save")
     public String saveServer(@Valid @ModelAttribute Server server, BindingResult bindingResult, Model model) {
@@ -85,8 +96,8 @@ public class ServerController {
     /**
      * Add a server.
      *
-     * @param model
-     * @return
+     * @param model Model
+     * @return Server edit template.
      */
     @GetMapping(path = "/add")
     public String addServer(Model model) {
@@ -97,8 +108,8 @@ public class ServerController {
     /**
      * List servers.
      *
-     * @param model
-     * @return
+     * @param model Model
+     * @return Server list template.
      */
     @GetMapping(path = "/list")
     public String listServer(Model model) {
@@ -109,9 +120,9 @@ public class ServerController {
     /**
      * Edit a server.
      *
-     * @param model
-     * @param id
-     * @return
+     * @param model Model
+     * @param id ID
+     * @return Server edit template.
      */
     @GetMapping(path = "/edit/{id}")
     public String editServer(Model model, @PathVariable(value = "id") Long id) {
@@ -122,9 +133,9 @@ public class ServerController {
     /**
      * Delete a server.
      *
-     * @param id
-     * @param model
-     * @return
+     * @param id ID
+     * @param model Model
+     * @return Server list template
      */
     @GetMapping(path = "/delete/{id}")
     public String deleteServer(@PathVariable(name = "id") Long id, Model model) {
@@ -144,11 +155,11 @@ public class ServerController {
     }
 
     /**
-     * Test a server.
+     * Test server connection.
      *
-     * @param server
-     * @param model
-     * @return
+     * @param server Server
+     * @param model Model
+     * @return Identify if connected sucessfully.
      */
     @GetMapping(path = "/test/{id}")
     public String serverIsRunning(@PathVariable(name = "id") Server server, Model model) {
@@ -167,4 +178,43 @@ public class ServerController {
         return "server/list";
     }
 
+    /**
+     * Sync job list.
+     *
+     * @param server Server
+     * @param model Model
+     * @return Job list
+     */
+    @GetMapping(path = "/import/{serverID}")
+    public String sync(
+            @PathVariable(value = "serverID") Server server,
+            Model model) {
+
+        model.addAttribute("servers", serverService.list());
+
+        if (server != null) {
+            if (jenkinsService.isRunning(server)) {
+                try {
+                    List<String> jobs = jenkinsService.listJob(server);
+
+                    for (String job : jobs) {
+                        if (jobService.findByName(job) == null) {
+                            Job jobSynced = new Job(job, server);
+                            jobService.save(jobSynced);
+                            jenkinsService.updateJob(jobSynced);
+                        }
+                    }
+
+                    jobService.refresh();
+                    model.addAttribute("successMessage", server.getName() + " is synced!");
+                } catch (URISyntaxException | IOException ex) {
+                    model.addAttribute("errorMessage", "Fail listing jobs from Jenkins: " + ex.getMessage());
+                }
+            } else {
+                model.addAttribute("errorMessage", server.getName() + " is not connected!");
+            }
+        }
+
+        return "server/list";
+    }
 }

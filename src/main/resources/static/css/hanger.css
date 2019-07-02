@@ -104,7 +104,7 @@ code[class*="language-free"] {
 }
 
 .btn-space {
-    margin-left: 8px;
+    margin-left: 8px !important;
 }
 
 .main-content {
@@ -140,7 +140,7 @@ code[class*="language-free"] {
 }
 
 .progress-bar-danger {
-    background-color: #cd5c5c;
+    background-color: #dd424a;
 }
 
 .label-hanger {

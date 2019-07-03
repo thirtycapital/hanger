@@ -562,26 +562,9 @@ public class JobCheckupService {
         String threshold = checkup.getThreshold();
 
         //Remove white spaces. 
-        value = value.trim();
-        threshold = threshold.trim();
-
-        //Identify if the threshold is a macro.
-        if (threshold.startsWith("${") && threshold.endsWith("}")) {
-            //Remove all non numeric characters.
-            String id = threshold.replaceAll("[^\\d.]", "");
-
-            if (!id.isEmpty()) {
-                //Load a checkup by id.
-                JobCheckup checkupRelation = this.load(Long.valueOf(id));
-
-                if (checkupRelation != null) {
-                    //Find the checkup threshold value.
-                    if (!checkupRelation.getLog().isEmpty()) {
-                        threshold = checkupRelation.getLog().get(checkupRelation.getLog().size() - 1).getValue();
-                    }
-                }
-            }
-        }
+        value = (value == null) ? "" : value.trim();
+        threshold = (threshold == null) ? "" : threshold.trim();
+        threshold = this.getMacro(threshold);        
 
         //Try to convert the value to float. 
         try {
@@ -625,5 +608,33 @@ public class JobCheckupService {
         }
 
         return checked;
+    }
+    
+    /**
+     * Identify if threshold is a macro.
+     *
+     * @param threshold String
+     * @return String macro value or threshold itself value.
+     */
+    private String getMacro(String threshold) {
+
+        if (threshold.startsWith("${") && threshold.endsWith("}")) {
+            //Remove all non numeric characters.
+            String id = threshold.replaceAll("[^\\d.]", "");
+
+            if (!id.isEmpty()) {
+                //Load a checkup by id.
+                JobCheckup checkupRelation = this.load(Long.valueOf(id));
+
+                if (checkupRelation != null) {
+                    //Find the checkup threshold value.
+                    if (!checkupRelation.getLog().isEmpty()) {
+                        threshold = checkupRelation.getLog().get(checkupRelation.getLog().size() - 1).getValue();
+                    }
+                }
+            }
+        }
+
+        return threshold;
     }
 }

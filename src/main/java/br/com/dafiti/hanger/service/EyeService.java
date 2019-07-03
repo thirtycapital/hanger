@@ -33,6 +33,8 @@ import br.com.dafiti.hanger.option.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,6 +89,9 @@ public class EyeService {
             boolean checkup = false;
             boolean updateStatus = true;
             String buildStatus = buildNotification.optString("status");
+            
+            // Display notificationPayload on console.
+            Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "{0}: {1}", new Object[]{job.getName(), notificationPayload});
 
             //Define the job build.
             JobBuild jobBuild = new JobBuild();

@@ -83,7 +83,7 @@ public class CustomizationController {
         File convFile = new File(System.getProperty("user.home") + "/.hanger/logo");
 
         try {
-            // If no file is selected, retore default logo.
+            // If no file is selected, restore default logo.
             if (file.isEmpty()) {
                 convFile.delete();
             } else {

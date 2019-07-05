@@ -78,7 +78,7 @@ public class JobApprovalController {
     }
 
     /**
-     * Show a list getDetails jobs that contains an approver and should be
+     * Show a list with jobs detail that contains an approver and should be
      * approved if it is UNHEALTHY
      *
      * @param model Model

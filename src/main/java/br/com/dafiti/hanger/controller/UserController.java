@@ -29,7 +29,6 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -95,7 +94,7 @@ public class UserController {
     }
 
     /**
-     * Add a user.
+     * Add an user.
      *
      * @param model Model
      * @return User edit
@@ -109,7 +108,7 @@ public class UserController {
     }
 
     /**
-     * Edit a user.
+     * Edit an user.
      *
      * @param model Model
      * @param user User
@@ -126,7 +125,7 @@ public class UserController {
     }
 
     /**
-     * Save a user.
+     * Save an user.
      *
      * @param redirectAttributes
      * @param user User
@@ -177,7 +176,7 @@ public class UserController {
     }
 
     /**
-     * Delete a user.
+     * Delete an user.
      *
      * @param redirectAttributes
      * @param model
@@ -216,7 +215,7 @@ public class UserController {
     }
 
     /**
-     * Delete a user.
+     * Delete an user.
      *
      * @param redirectAttributes
      * @param nextApprover
@@ -311,7 +310,8 @@ public class UserController {
     }
 
     /**
-     *
+     * Indentify confirmation code sent by e-mail and redirect to change password.
+     * 
      * @param userConfirmation
      * @param bindingResult
      * @param model
@@ -384,7 +384,7 @@ public class UserController {
 
     /**
      * change the approver of jobs that have as approver an user that is
-     * supposed to be disbled and then disable the user
+     * supposed to be disbled and then disable the user.
      *
      * @param redirectAttributes
      * @param nextApprover
@@ -408,7 +408,7 @@ public class UserController {
 
         oldApprover.setEnabled(false);
         userService.save(oldApprover);
-        redirectAttributes.addFlashAttribute("successMessage", "User successful disabled!");
+        redirectAttributes.addFlashAttribute("successMessage", "User successfully disabled!");
 
         return "redirect:/user/list";
     }

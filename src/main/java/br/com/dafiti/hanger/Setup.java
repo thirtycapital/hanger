@@ -99,7 +99,7 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
                 user.setUsername("hanger.manager");
                 user.setPassword("hmanager");
                 user.addRole(roleService.findByName("HERO"));
-                
+
                 userService.save(user);
             }
 
@@ -111,7 +111,7 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
             jobNotificationService.notify(job, false);
         });
 
-        //Run log cleanep on context refresh.
+        //Run log cleanup on context refresh.
         jobCheckupLogService.cleaneup(expiration(logRetention));
         jobApprovalService.cleaneup(expiration(logRetention));
     }

@@ -180,8 +180,7 @@
 
                         <div class="form-group">
                             <div class="col-sm-10">
-                                <!-- Can be rebuilt along the day once every (minutes)-->
-                                <label class="checkbox">Can be rebuilt along the day
+                                <label class="checkbox">Rebuild along the day
                                     <input type="checkbox" id="rebuild" name="rebuild" th:field="*{rebuild}" th:checked="*{rebuild}" />
                                     <span class="checkmark"></span>
                                 </label>           
@@ -190,7 +189,16 @@
 
                         <div class="form-group">
                             <div class="col-sm-10">
-                                <label>Waiting time (minutes)</label>
+                                <label class="checkbox">Rebuild only if all <strong>blocker</strong> parents are done
+                                    <input type="checkbox" id="rebuildBlocked" name="rebuildBlocked" th:field="*{rebuildBlocked}" th:checked="*{rebuildBlocked}" />
+                                    <span class="checkmark"></span>
+                                </label>           
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <label>Rebuild interval in minutes</label>
                                 <input type="number" min="0" max="720" class="form-control" maxlength="1" th:field="*{wait}" required="false" placeholder="Waiting time"/>
                                 <span th:if="${#fields.hasErrors('wait')}" class="help-block" th:errors="*{wait}"></span>
                             </div>
@@ -305,8 +313,9 @@
                             <tr>
                                 <th style="width:5%">#</th>
                                 <th style="width:10%">Server</th>
-                                <th style="width:50.5%">Name</th>
+                                <th style="width:45.5%">Name</th>
                                 <th style="width:12%">Scope</th>
+                                <th style="width:5%">Blocker</th>
                                 <th>Delete</th>
                             </tr>
                             <tr th:each="parent, parentStat : ${job.parent}">
@@ -326,6 +335,12 @@
                                                 th:text="${scope}">
                                         </option>
                                     </select>
+                                </td>
+                                <td>
+                                    <label class="checkbox">
+                                        <input type="checkbox" name="blocker" th:field="*{parent[__${parentStat.index}__].blocker}" th:checked="*{parent[__${parentStat.index}__].blocker}"/>
+                                        <span class="checkmark"></span>
+                                    </label>  
                                 </td>
                                 <td>
                                     <button type="submit" name="partial_remove_parent" th:value="${parentStat.index}" class="btn btn-delete btn-xs">

@@ -216,7 +216,7 @@ public class JobDetailsService {
             //Identifi if the job scope. 
             scope
                     .append(jobStatus.getScope().toString())
-                    .append((job.isRebuild() ? ", Rebuildable" + (job.getWait() != 0 ? " once every " + job.getWait() + " min" : "") : ""));
+                    .append((job.isRebuild() ? ", Rebuild" + (job.isRebuildBlocked() ? " if all blocker parent are done" : "") + (job.getWait() != 0 ? " once every " + job.getWait() + " min" : "") : ""));
 
             //Identify the number of build retries. 
             if (retryService.exists(job)

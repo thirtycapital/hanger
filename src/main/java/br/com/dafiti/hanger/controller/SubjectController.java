@@ -255,7 +255,8 @@ public class SubjectController {
     }
 
     /**
-     *
+     * Subscribe logged user in a subject.
+     * 
      * @param response
      * @param request
      * @param model
@@ -282,7 +283,8 @@ public class SubjectController {
     }
 
     /**
-     *
+     * Unsubscribe logged user in a subject.
+     * 
      * @param response
      * @param request
      * @param model

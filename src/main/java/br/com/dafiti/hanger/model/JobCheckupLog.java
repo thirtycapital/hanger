@@ -122,7 +122,11 @@ public class JobCheckupLog implements Serializable {
     }
 
     public String getValue() {
-        return value.length() > 255 ? value.substring(0, 250) : value;
+        if (value == null) {
+            return "";
+        } else {
+            return value.length() > 255 ? value.substring(0, 250) : value;
+        }
     }
 
     public void setValue(String value) {

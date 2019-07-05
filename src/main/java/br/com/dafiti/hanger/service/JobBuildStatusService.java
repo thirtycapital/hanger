@@ -25,11 +25,14 @@ package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobBuild;
+import br.com.dafiti.hanger.model.JobParent;
 import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.option.Status;
+import java.util.Date;
+import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -44,12 +47,23 @@ import org.springframework.stereotype.Service;
 public class JobBuildStatusService {
 
     /**
-     * Identify if a parent is built.
+     * Identifies if a job is built.
      *
      * @param job Job job
      * @return Identify if a job parent is built
      */
     public boolean isBuilt(Job job) {
+        return isBuilt(job, null);
+    }
+
+    /**
+     * Identifies if a job is built.
+     *
+     * @param job Job job
+     * @param basedate Date base
+     * @return Identify if a job parent is built
+     */
+    public boolean isBuilt(Job job, Date basedate) {
         boolean built;
 
         //Get the status of each parent.
@@ -65,16 +79,25 @@ public class JobBuildStatusService {
             built = (jobBuild != null);
 
             if (built) {
+                //Get the job build date. 
+                Date jobBuildDate = jobBuild.getDate();
+
                 //Identify if the job was built today.
-                built = Days.daysBetween(new LocalDate(jobBuild.getDate()), new LocalDate()).getDays() == 0;
+                built = Days.daysBetween(new LocalDate(jobBuildDate), new LocalDate()).getDays() == 0;
 
                 if (!built) {
                     //Identify if it has antecipation tolerance.
                     if (job.getTolerance() != 0) {
                         //Identify if the job was built in the antecipation tolerance interval today.
                         built = Days.daysBetween(new LocalDate(
-                                new DateTime(jobBuild.getDate()).plusHours(job.getTolerance())),
+                                new DateTime(jobBuildDate).plusHours(job.getTolerance())),
                                 new LocalDate()).getDays() == 0;
+                    }
+                } else {
+                    //Idenitify if has a base date.
+                    if (basedate != null) {
+                        //Identify if job build date is greater than the base date. 
+                        built = (jobBuild.getDate().compareTo(basedate) > 0);
                     }
                 }
 
@@ -92,7 +115,7 @@ public class JobBuildStatusService {
     }
 
     /**
-     * Identify if can build a job.
+     * Identifies if a job can be built.
      *
      * @param job Job
      * @return Identify if can build a job
@@ -114,14 +137,17 @@ public class JobBuildStatusService {
                 buildable = (jobBuild == null);
 
                 if (!buildable) {
+                    //Get the job build date. 
+                    Date jobBuildDate = jobBuild.getDate();
+
                     //Identify if the job was not built today.
-                    buildable = Days.daysBetween(new LocalDate(jobBuild.getDate()), new LocalDate()).getDays() != 0;
+                    buildable = Days.daysBetween(new LocalDate(jobBuildDate), new LocalDate()).getDays() != 0;
 
                     if (!buildable) {
                         //Identify if the job was not built in the antecipation tolerance interval today.
                         if (job.getTolerance() != 0) {
                             buildable = Days.daysBetween(
-                                    new LocalDate(new DateTime(jobBuild.getDate()).plusHours(job.getTolerance())),
+                                    new LocalDate(new DateTime(jobBuildDate).plusHours(job.getTolerance())),
                                     new LocalDate()).getDays() != 0;
                         }
                     }
@@ -136,11 +162,31 @@ public class JobBuildStatusService {
                         buildable = job.isRebuild();
 
                         if (buildable) {
-                            //Identify if it is in waiting time.
-                            if (job.getWait() != 0) {
-                                buildable = Minutes.minutesBetween(new DateTime(
-                                        jobBuild.getDate()),
-                                        new DateTime()).getMinutes() >= job.getWait();
+                            //Identify if should wait all parents be built before rebuild. 
+                            if (job.isRebuildBlocked()) {
+                                boolean blocked;
+                                List<JobParent> parents = job.getParent();
+
+                                for (JobParent parent : parents) {
+                                    //Identify if a parent is a rebuild blocker. 
+                                    if (parent.isBlocker()) {
+                                        blocked = this.isBuilt(parent.getParent(), jobBuild.getDate());
+
+                                        if (!blocked) {
+                                            buildable = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (buildable) {
+                                //Identify if it is in waiting time.
+                                if (job.getWait() != 0) {
+                                    buildable = Minutes.minutesBetween(new DateTime(
+                                            jobBuild.getDate()),
+                                            new DateTime()).getMinutes() >= job.getWait();
+                                }
                             }
                         }
                     }

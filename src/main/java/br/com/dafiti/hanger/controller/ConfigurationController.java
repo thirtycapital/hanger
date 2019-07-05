@@ -56,23 +56,23 @@ public class ConfigurationController {
         this.configurationService = configurationService;
         this.configurationGroupService = configurationGroupService;
     }
-   
-    /**
-	 * Save the configuration came by ajax.
-	 * 
-	 * @param value value
-	 * @param request request
-	 * @param parameter Parameter
-	 * @return
-	 */
-	@PostMapping("/save/{parameter}")
-	@ResponseBody
-	public boolean save(
-			@RequestBody String value, 
-			HttpServletRequest request,
-			@PathVariable(value = "parameter") String parameter) {
 
-		Configuration configuration = this.configurationService.findByParameter(parameter);
+    /**
+     * Save the configuration came by ajax.
+     *
+     * @param value value
+     * @param request request
+     * @param parameter Parameter
+     * @return
+     */
+    @PostMapping("/save/{parameter}")
+    @ResponseBody
+    public boolean save(
+            @RequestBody String value,
+            HttpServletRequest request,
+            @PathVariable(value = "parameter") String parameter) {
+
+        Configuration configuration = this.configurationService.findByParameter(parameter);
         boolean result = true;
 
         if (configuration != null && !value.isEmpty()) {
@@ -87,7 +87,7 @@ public class ConfigurationController {
         }
 
         return result;
-	}
+    }
 
     /**
      * Edit configurations.

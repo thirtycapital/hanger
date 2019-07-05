@@ -77,9 +77,10 @@ public class Job extends Tracker implements Serializable {
     private List<JobCheckup> checkup = new ArrayList();
     private List<JobApproval> approval = new ArrayList();
     private Set<String> channel = new HashSet();
-    private boolean rebuild;
-    private boolean notify;
     private boolean enabled = true;
+    private boolean notify;
+    private boolean rebuild;
+    private boolean rebuildBlocked;
 
     public Job() {
     }
@@ -294,6 +295,14 @@ public class Job extends Tracker implements Serializable {
         this.enabled = enabled;
     }
 
+    public boolean isRebuildBlocked() {
+        return rebuildBlocked;
+    }
+
+    public void setRebuildBlocked(boolean rebuildBlocked) {
+        this.rebuildBlocked = rebuildBlocked;
+    }
+ 
     @Override
     public String toString() {
         StringBuilder job = new StringBuilder();

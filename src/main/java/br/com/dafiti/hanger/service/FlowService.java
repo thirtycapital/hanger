@@ -141,7 +141,7 @@ public class FlowService {
 
         flow = new TreeMap();
 
-        return getFlowStructure(job, null, 0, reverse, expanded, jobLineage, parentLineage, parentScope);
+        return getFlowStructure(job, null, false, 0, reverse, expanded, jobLineage, parentLineage, parentScope);
     }
 
     /**
@@ -154,6 +154,7 @@ public class FlowService {
     private Map<String, Step> getFlowStructure(
             Job job,
             Job parent,
+            boolean isBlocker,
             int level,
             boolean reverse,
             boolean expanded,
@@ -181,12 +182,12 @@ public class FlowService {
 
             if (!childs.isEmpty()) {
                 for (JobParent child : childs) {
-                    getFlowStructure(child.getJob(), child.getParent(), level, reverse, expanded, jobLineage, parentLineage, parentScope);
+                    getFlowStructure(child.getJob(), child.getParent(), child.isBlocker(), level, reverse, expanded, jobLineage, parentLineage, parentScope);
                 }
             }
         } else if (!job.getParent().isEmpty()) {
             for (JobParent jobParent : job.getParent()) {
-                getFlowStructure(jobParent.getParent(), jobParent.getJob(), level, reverse, expanded, jobLineage, parentLineage, jobParent.getScope());
+                getFlowStructure(jobParent.getParent(), jobParent.getJob(), jobParent.isBlocker(), level, reverse, expanded, jobLineage, parentLineage, jobParent.getScope());
             }
         }
 
@@ -283,7 +284,10 @@ public class FlowService {
                             + checkup
                             + "         server: \"" + job.getServer().getName() + "\", "
                             + "         time: \"" + jobDetails.getBuildTime() + "\", "
-                            + "         scope: \"" + (scope == null ? (jobDetails.getScope() == null ? "" : jobDetails.getScope()) : (scope + (job.isRebuild() ? ", REBUILD" + (job.getWait() != 0 ? " ONCE EVERY " + job.getWait() + " MIN" : "") : ""))) + "\", "
+                            + "         scope: \""
+                            + (scope == null
+                                    ? (jobDetails.getScope() == null ? "" : jobDetails.getScope())
+                                    : (scope + (job.isRebuild() ? ", rebuild" + (job.getWait() != 0 ? " interval: " + job.getWait() + " min" : "") : ""))) + (parent.isRebuildBlocked() && isBlocker ? ", blocker" : "") + "\", "
                             + "     }, "
                             + "     image: \"../../images/" + jobDetails.getStatus() + ".png\","
                             + "collapsed: " + (job.getParent().isEmpty() || reverse || expanded ? "false" : "true") + ","

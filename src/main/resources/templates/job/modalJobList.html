@@ -36,10 +36,16 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-sm-12">
-                                    <label class="checkbox">Import upstream project?
-                                        <input type="checkbox" name="parentUpstream" id="parentUpstream"/>
-                                        <span class="checkmark"></span>
-                                    </label>                                     
+                                    <label>
+                                        <input  
+                                            id="parentUpstream" 
+                                            name="parentUpstream"
+                                            type="checkbox"  
+                                            data-size="mini"
+                                            data-onstyle="default" 
+                                            th:checked="true"
+                                            disabled="true"/> Import upstream project
+                                    </label>                                    
                                 </div>
                             </div>
                         </div>

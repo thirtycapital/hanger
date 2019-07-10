@@ -55,13 +55,13 @@
                                 <a th:if="${#authorization.expression('hasRole(''HERO'')')}" 
                                    class="btn btn-xs btn-generic" 
                                    data-toggle="modal" 
-                                   th:attr="data-target='#'+${server.id}" 
+                                   th:attr="data-target='#' + 'import_' + ${server.id}" 
                                    href="">
                                     <span class="glyphicon glyphicon-import" aria-hidden="true"></span> Import
                                 </a>
                             </div>
                             <!-- INÍCIO MODAL IMPORT -->
-                            <div class="modal fade" th:id="${server.id}" tabindex="-1" role="dialog" aria-labelledby="modalImport">
+                            <div class="modal fade" th:id="${'import_' + server.id}" tabindex="-1" role="dialog" aria-labelledby="modalImport">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -98,7 +98,7 @@
                         <td>
                             <div class="form-group">
                                 <a class="btn btn-xs btn-delete" data-toggle="modal" 
-                                   th:attr="data-target='#'+${server.id}" 
+                                   th:attr="data-target='#' + 'delete_' + ${server.id}" 
                                    href="">
 
                                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
@@ -106,7 +106,7 @@
                             </div>
 
                             <!-- INÍCIO MODAL DELETE -->
-                            <div class="modal fade" th:id="${server.id}" tabindex="-1" role="dialog" aria-labelledby="modalDelete">
+                            <div class="modal fade" th:id="${'delete_' + server.id}" tabindex="-1" role="dialog" aria-labelledby="modalDelete">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">

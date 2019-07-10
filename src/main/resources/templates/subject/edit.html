@@ -98,15 +98,18 @@
                         <!--Mandatory-->                                            
                         <div class="form-group">
                             <div class="col-sm-10">
-                                <label class="checkbox">Mandatory
-                                    <input type="checkbox" 
-                                           id="slack" 
-                                           name="mandatory" 
-                                           th:field="*{mandatory}" 
-                                           th:checked="*{mandatory}"
-                                           th:disabled="${#authorization.expression('hasRole(''USER'')')}"/>
-                                    <span class="checkmark"></span>
-                                </label>           
+                                <label>
+                                    <input  
+                                        id="mandatory" 
+                                        name="mandatory"
+                                        type="checkbox" 
+                                        data-toggle="toggle" 
+                                        data-size="mini"
+                                        data-onstyle="default" 
+                                        th:field="*{mandatory}" 
+                                        th:checked="*{mandatory}"
+                                        th:disabled="${#authorization.expression('hasRole(''USER'')')}"/> Mandatory
+                                </label>         
                             </div>
                         </div>    
 
@@ -131,10 +134,17 @@
                         <!--Notification-->                                            
                         <div class="form-group">
                             <div class="col-sm-10">
-                                <label class="checkbox">Slack notification 
-                                    <input type="checkbox" id="slack" name="slack" th:field="*{notified}" th:checked="*{notified}" />
-                                    <span class="checkmark"></span>
-                                </label>           
+                               <label>
+                                    <input  
+                                        id="slack" 
+                                        name="slack"
+                                        type="checkbox" 
+                                        data-toggle="toggle" 
+                                        data-size="mini"
+                                        data-onstyle="default" 
+                                        th:field="*{notified}" 
+                                        th:checked="*{notified}"/> Slack notification 
+                                </label>        
                             </div>
                         </div>    
 

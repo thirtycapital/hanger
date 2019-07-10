@@ -84,19 +84,33 @@
 
                         <div class="form-group">
                             <div class="col-sm-10">
-                                <label class="checkbox">Rebuild along the day
-                                    <input type="checkbox" name="rebuild" th:field="*{rebuild}" th:checked="*{rebuild}" disabled="true"/>
-                                    <span class="checkmark"></span>
-                                </label>           
+                                <label>
+                                    <input  
+                                        id="rebuild" 
+                                        name="rebuild"
+                                        type="checkbox" 
+                                        data-toggle="toggle" 
+                                        data-size="mini"
+                                        data-onstyle="default" 
+                                        th:checked="*{rebuild}"
+                                        disabled="true"/> Rebuild along the day
+                                </label>          
                             </div>
                         </div>       
 
                         <div class="form-group">
                             <div class="col-sm-10">
-                                <label class="checkbox">Rebuild only if all <strong>blocker</strong> parents are done
-                                    <input type="checkbox" name="rebuildBlocked" th:field="*{rebuildBlocked}" th:checked="*{rebuildBlocked}" disabled="true"/>
-                                    <span class="checkmark"></span>
-                                </label>           
+                                <label>
+                                    <input  
+                                        id="rebuildBlocked" 
+                                        name="rebuildBlocked"
+                                        type="checkbox" 
+                                        data-toggle="toggle" 
+                                        data-size="mini"
+                                        data-onstyle="default" 
+                                        th:checked="*{rebuildBlocked}"
+                                        disabled="true"/> Rebuild only if all <strong>blocker</strong> parents are done      
+                                </label>       
                             </div>
                         </div>
 
@@ -145,7 +159,7 @@
                                 <th style="width:10%">Server</th>
                                 <th style="width:30%">Name</th>
                                 <th style="width:5%">Scope</th>
-                                <th style="width:12%">Blocker</th>
+                                <th style="width:12%">Rebuild</th>
                             </tr>
                             <tr th:each="parent, stat : ${job.parent}">
                                 <td> 
@@ -157,10 +171,16 @@
                                     <span th:text="*{parent[__${stat.index}__].scope}"></span>
                                 </td>
                                 <td>
-                                    <label class="checkbox">
-                                        <input type="checkbox" name="blocker" th:checked="*{parent[__${stat.index}__].blocker}" disabled="true"/>
-                                        <span class="checkmark"></span>
-                                    </label>  
+                                    <input  
+                                        id="blocker" 
+                                        name="blocker"
+                                        type="checkbox" 
+                                        data-on="Blocker" 
+                                        data-toggle="toggle" 
+                                        data-size="mini"
+                                        data-onstyle="default" 
+                                        th:checked="*{parent[__${stat.index}__].blocker}"
+                                        disabled="true"/>  
                                 </td>
                             </tr>
                         </table>
@@ -341,13 +361,20 @@
                     <div class="form-group">
                         <div class="col-sm-10">
                             <div class="pull-right">
-                                <label class="checkbox" th:inline="text">
+                                <label th:inline="text">
+                                    <input  
+                                        id="slack" 
+                                        name="slack"
+                                        type="checkbox" 
+                                        data-toggle="toggle" 
+                                        data-size="mini"
+                                        data-onstyle="default" 
+                                        th:checked="*{notify}"
+                                        disabled="true"/>  
                                     Slack notification on
                                     <b>
                                         [[*{ #lists.isEmpty(channel) ? 'default channel' : #strings.arrayJoin(channel, ', ') }]]
-                                    </b>
-                                    <input type="checkbox" id="slack" name="slack" th:field="*{notify}" th:checked="*{notify}" disabled="true"/>
-                                    <span class="checkmark"></span>                                    
+                                    </b> 
                                 </label>
                             </div>
                         </div>
@@ -412,7 +439,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title" id="modalParentLabel">Attention!</h4>
+                                    <h4 class="modal-title" id="modalParentLabel">Attention</h4>
                                 </div>
                                 <div class="modal-body">
                                     <span>This action forces all mesh to be rebuilt. Are you sure?</span>

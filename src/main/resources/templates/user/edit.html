@@ -266,10 +266,10 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modalParentLabel"> Change password for user: <span style="font-weight:bold" id="modal_username" ></span></h4>
+                        <h4 class="modal-title" id="modalParentLabel">Attention</span></h4>
                     </div>
                     <div class="modal-body">
-                        <span>Do you really want the reset user password ?</span>
+                        <span>Are you sure you want to reset user password?</span>
                     </div>
                     <div class="modal-footer">
                         <button href="" id="btn_change_password_" name="btn_change_password_" class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
@@ -284,7 +284,7 @@
         </div>
         <!-- FIM MODAL CHANGE PASSWORD -->
 
-        <script type="text/javascript">
+        <script th:inline="javascript" type="text/javascript">
             // This function call modal password.
             function modalResetPassword(id, username) {
                 document.getElementsByName("btn_change_password_")[0].value = id;
@@ -300,6 +300,17 @@
                     var url = /*[[@{/user/resetpassword/}]]*/ "/user/resetpassword/";
                     var user = $(this).val();
 
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "timeOut": 2500,
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
                     $.ajax({
                         type: "GET",
                         url: url + user,
@@ -307,15 +318,15 @@
                         success: function (result) {
                             // Identify the operation status. 
                             if (result != "") {
-                                alert("Password successfully changed, an email was sent to the user with the new password!");
+                                toastr.success('Password successfully changed, an e-mail was sent to the user with the new password!');
 
                             } else {
-                                alert("Error trying to reset password.");
+                                toastr.error('Error trying to reset password.');
 
                             }
                         },
                         error: function (e) {
-                            alert("Error trying to reset password.");
+                            toastr.error('Error trying to reset password.');
                         }
                     });
                 });

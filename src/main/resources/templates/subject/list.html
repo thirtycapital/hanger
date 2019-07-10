@@ -47,7 +47,7 @@
                      * Subject subscription and unsubscription.
                      * @returns {undefined}
                      */
-                    $("[id^=subscribe_]").click(function () {
+                    $("[id^=subscribe_]").change(function () {
                         var url;
                         var subject = $(this).val();
                         var subscription = $(this).prop("checked");
@@ -136,8 +136,8 @@
                     <tr>
                         <th style="width:5%">#</th>
                         <th style="width:80%">Subject</th>
-                        <th style="width:1%"><span class="glyphicon glyphicon-bell" title="NOTIFICATION"></span></th>
-                        <th style="width:1%"><span class="glyphicon glyphicon-pushpin" title="SUBSCRIPTION"></span></th>
+                        <th style="width:1%"><span class="glyphicon glyphicon-bell" title="Notification"></span></th>
+                        <th style="width:1%"><span class="glyphicon glyphicon-paperclip" title="Subscription"></span></th>
                         <th style="width:1%" class="no-sort"></th>
                         <th style="width:1%" class="no-sort"></th>
                     </tr>
@@ -164,25 +164,28 @@
                         <td>
                             <th:block th:switch="${subject.mandatory}">
                                 <div th:case="true">
-                                    <label class="checkbox">
-                                        <input 
-                                            type="checkbox" 
-                                            name="mandatory"  
-                                            checked="true"
-                                            disabled="true"/>
-                                        <span class="checkmark" title="Everyone"></span>
-                                    </label>
+                                    <input  
+                                        id="rebuild" 
+                                        name="mandatory"
+                                        type="checkbox" 
+                                        data-toggle="toggle" 
+                                        data-size="mini"
+                                        data-onstyle="default" 
+                                        th:checked="true"
+                                        disabled="true"/>
                                 </div>
                                 <div th:case="false">
-                                    <label class="checkbox">
-                                        <input 
+                                    <label th:attr="title=${#lists.size(subject.user) + ' subscriptions'}">
+                                        <input  
+                                            name="subscribe"
                                             type="checkbox" 
+                                            data-toggle="toggle" 
+                                            data-size="mini"
+                                            data-onstyle="default" 
                                             th:id="${'subscribe_' + subject.id}" 
-                                            name="subscribe" 
                                             th:value="${subject.id}" 
                                             th:checked="${#lists.contains(subject.user, loggedIn)}"
                                             th:disabled="${!#authorization.expression('isAuthenticated()')}"/>
-                                        <span class="checkmark" th:attr="title=${#lists.size(subject.user) + ' subscriptions'}" ></span>
                                     </label>
                                 </div>
                             </th:block>

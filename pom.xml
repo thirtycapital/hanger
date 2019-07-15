@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>1.5.9.RELEASE</version>
+        <version>1.5.21.RELEASE</version>
     </parent>
 
     <dependencies>
@@ -92,6 +92,20 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.tomcat</groupId>
+                    <artifactId>tomcat-jdbc</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <!-- JDBC Connection Pool -->
+        
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.3.1</version>
         </dependency>
       
         <!-- MySQL -->
@@ -123,7 +137,7 @@
             <artifactId>simba-athena-jdbc-driver</artifactId>
             <version>2.0.2</version>
         </dependency>
-
+        
         <!-- Jenkins -->
         
         <dependency>
@@ -137,7 +151,7 @@
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.10.1</version>
+            <version>2.10.3</version>
         </dependency>
         
         <!-- Mail -->
@@ -186,7 +200,7 @@
         <dependency>
             <groupId>org.thymeleaf.extras</groupId>
             <artifactId>thymeleaf-extras-springsecurity3</artifactId>
-            <version>3.0.2.RELEASE</version>
+            <version>3.0.4.RELEASE</version>
         </dependency> 
         
         <!-- jasypt -->
@@ -194,7 +208,7 @@
         <dependency>
             <groupId>org.jasypt</groupId>
             <artifactId>jasypt</artifactId>
-            <version>1.9.2</version>
+            <version>1.9.3</version>
         </dependency>
         
         <!-- SHELL -->

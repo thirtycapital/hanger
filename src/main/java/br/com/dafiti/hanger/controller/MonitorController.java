@@ -31,6 +31,7 @@ import br.com.dafiti.hanger.model.SubjectDetails;
 import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.SubjectDetailsService;
 import br.com.dafiti.hanger.service.SubjectService;
+import br.com.dafiti.hanger.service.UserService;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,18 +60,21 @@ public class MonitorController {
     private final SubjectService subjectService;
     private final JobDetailsService jobDetailsService;
     private final SubjectDetailsService subjectDetailsService;
+    private final UserService userService;
 
     @Autowired
     public MonitorController(
             JobService jobService,
             SubjectService subjectService,
             JobDetailsService jobDetails,
-            SubjectDetailsService subjectDetailsService) {
+            SubjectDetailsService subjectDetailsService,
+            UserService userService) {
 
         this.jobService = jobService;
         this.subjectService = subjectService;
         this.jobDetailsService = jobDetails;
         this.subjectDetailsService = subjectDetailsService;
+        this.userService = userService;
     }
 
     /**
@@ -208,6 +212,7 @@ public class MonitorController {
      * @param model Model
      */
     private void modelDefault(Model model) {
+        model.addAttribute("loggedIn", userService.getLoggedIn());
         model.addAttribute("subjects", subjectService.findBySubscription());
     }
 

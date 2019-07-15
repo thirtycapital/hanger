@@ -15,8 +15,9 @@
                     </a>
                 </li>
                 <li role="presentation" th:each="subject : ${subjects}" th:classappend="${#httpServletRequest.getRequestURI().endsWith('/' + subject.id) ? 'active home':''}">
-                    <a th:href="@{'/detail/' + ${subject.id}}" th:inline="text" class="link">
-                        [[${subject.name}]]
+                    <a th:href="@{'/detail/' + ${subject.id}}" th:inline="text" class="link">                                                                     
+                        <span th:if="${#lists.contains(subject.user, loggedIn)}" class="glyphicon glyphicon-pushpin" th:title="Subscribed"> </span>
+                        [[${subject.name}]]   
                     </a>
                 </li>
                 <li role="presentation" th:classappend="${#httpServletRequest.getRequestURI().endsWith('all') ? 'active home':''}">

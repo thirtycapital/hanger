@@ -7,13 +7,11 @@
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
             <center>           
-                <div class="tree-subject">
+                <div class="flow-subject">
                     <div  th:if="${not #lists.isEmpty(job.subject)}">
-                        <span class="label label-hanger" th:each="subject : ${job.subject}" th:inline="text">
-                            <a th:href="@{'/detail/' + ${subject.id}}" th:inline="text" class="link"> [[${subject.name}]]</a>
-                        </span>
-
-                        <hr/>
+                        <a class="flow-subject-link" th:each="subject : ${job.subject}" th:href="@{'/detail/' + ${subject.id}}" th:inline="text" >                            
+                            [[${subject.name}]]
+                        </a>
                     </div> 
 
                     <div th:if="${not #lists.isEmpty(warnings)}">

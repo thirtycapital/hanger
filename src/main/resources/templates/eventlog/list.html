@@ -16,16 +16,18 @@
             <div>
                 <table id="table_paginated" class="table table-hover">
                     <thead>
-                        <tr>                              
+                        <tr>    
+                            <th style="width:2.5%">#</th>
                             <th style="width:10%">Date</th>
                             <th style="width:5%">Entity</th>
-                            <th style="width:40%">Name</th>
+                            <th style="width:60%">Name</th>
                             <th style="width:10%">User</th>   
                             <th style="width:10%">Event</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="event : ${events}">                            
+                        <tr th:each="event : ${events}">  
+                            <td th:text="${event.id}">ID</td> 
                             <td th:text="${#dates.format(event.date, 'yyyy-MM-dd HH:mm:ss')}">Date</td>  
                             <td th:text="${event.type}">Entity</td> 
                             <td th:text="${event.typeName}">Name</td>   

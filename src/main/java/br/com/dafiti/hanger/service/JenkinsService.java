@@ -225,24 +225,26 @@ public class JenkinsService {
      * Rename a job.
      *
      * @param job Job
-     * @param oldName Name
+     * @param name Name
      */
-    public void renameJob(Job job, String oldName) {
+    public void renameJob(Job job, String name) {
         JenkinsServer jenkins;
 
         if (job != null) {
-            try {
-                jenkins = this.getJenkinsServer(job.getServer());
+            if (!name.isEmpty() && !job.getName().equals(name)) {
+                try {
+                    jenkins = this.getJenkinsServer(job.getServer());
 
-                if (jenkins != null) {
-                    if (jenkins.isRunning()) {
-                        jenkins.renameJob(oldName, job.getName(), true);
+                    if (jenkins != null) {
+                        if (jenkins.isRunning()) {
+                            jenkins.renameJob(name, job.getName(), true);
+                        }
+
+                        jenkins.close();
                     }
-
-                    jenkins.close();
+                } catch (URISyntaxException | IOException ex) {
+                    Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail renaming a job!", ex);
                 }
-            } catch (URISyntaxException | IOException ex) {
-                Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail renaming a job!", ex);
             }
         }
     }

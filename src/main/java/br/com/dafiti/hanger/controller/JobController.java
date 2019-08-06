@@ -29,7 +29,6 @@ import br.com.dafiti.hanger.model.JobCheckup;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.Server;
 import br.com.dafiti.hanger.model.Subject;
-import br.com.dafiti.hanger.option.Action;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.JenkinsService;
@@ -43,7 +42,6 @@ import br.com.dafiti.hanger.service.SubjectService;
 import br.com.dafiti.hanger.service.UserService;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,7 +69,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping(path = "/job")
 public class JobController {
-    
+
     private final JobService jobService;
     private final ServerService serverService;
     private final SubjectService subjectService;
@@ -82,7 +80,7 @@ public class JobController {
     private final JobStatusService jobStatusService;
     private final JobNotificationService jobNotificationService;
     private final SlackService slackService;
-    
+
     @Autowired
     public JobController(JobService jobService,
             ServerService serverService,
@@ -94,7 +92,7 @@ public class JobController {
             JobStatusService jobStatusService,
             JobNotificationService jobNotificationService,
             SlackService slackService) {
-        
+
         this.jobService = jobService;
         this.serverService = serverService;
         this.subjectService = subjectService;
@@ -155,7 +153,7 @@ public class JobController {
     public String delete(
             RedirectAttributes redirectAttributes,
             @PathVariable(name = "id") Job job) {
-        
+
         try {
             jobService.delete(job.getId());
         } catch (Exception ex) {
@@ -165,7 +163,7 @@ public class JobController {
                 redirectAttributes.addFlashAttribute("errorMessage", "Fail deleting the job: " + ex.getMessage());
             }
         }
-        
+
         return "redirect:/job/list";
     }
 
@@ -180,9 +178,9 @@ public class JobController {
     public String view(
             Model model,
             @PathVariable(value = "id") Job job) {
-        
+
         this.modelDefault(model, job, false);
-        
+
         return "job/view";
     }
 
@@ -197,13 +195,13 @@ public class JobController {
     public String build(
             RedirectAttributes redirectAttributes,
             @PathVariable(value = "id") Job job) {
-        
+
         if (jobBuild(job)) {
             redirectAttributes.addFlashAttribute("successMessage", "Job built successfully, refresh this page to see the build progress!");
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "Fail building job!");
         }
-        
+
         return "redirect:/flow/job/" + job.getId();
     }
 
@@ -227,12 +225,12 @@ public class JobController {
      */
     private boolean jobBuild(Job job) {
         boolean built = false;
-        
+
         retryService.remove(job);
-        
+
         try {
             built = jenkinsService.build(job);
-            
+
             if (!built) {
                 jobStatusService.updateFlow(job.getStatus(), Flow.ERROR);
                 jobNotificationService.notify(job, true);
@@ -242,7 +240,7 @@ public class JobController {
         } catch (URISyntaxException | IOException ex) {
             Logger.getLogger(JobController.class.getName()).log(Level.SEVERE, "Fail building job " + job.getName() + " manually", ex);
         }
-        
+
         return built;
     }
 
@@ -257,15 +255,15 @@ public class JobController {
     public String buildMesh(
             RedirectAttributes redirectAttributes,
             @PathVariable(value = "id") Job job) {
-        
+
         try {
             HashSet<Job> parent = jobService.getMeshParent(job);
             retryService.remove(job);
             jobService.rebuildMesh(job);
-            
+
             for (Job meshParent : parent) {
                 retryService.remove(meshParent);
-                
+
                 if (!jenkinsService.build(meshParent)) {
                     jobStatusService.updateFlow(job.getStatus(), Flow.ERROR);
                     jobNotificationService.notify(job, true);
@@ -273,12 +271,12 @@ public class JobController {
                     jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
                 }
             }
-            
+
             redirectAttributes.addFlashAttribute("successMessage", "Mesh built successfully, refresh this page to see the build progress!");
         } catch (URISyntaxException | IOException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", "Fail building mesh, " + ex.getMessage() + "!");
         }
-        
+
         return "redirect:/flow/job/" + job.getId();
     }
 
@@ -295,64 +293,32 @@ public class JobController {
             @Valid @ModelAttribute Job job,
             BindingResult bindingResult,
             Model model) {
-        
-        String oldName = "";
-        Long blockers;
-        Long oldID = job.getId();
-        
+
+        String name = "";
+        Long id = job.getId();
+
         try {
-            //Identify if is an update. 
-            if (oldID != null) {
-                Job oldJob = jobService.load(oldID);
-                
-                if (oldJob != null) {
-                    //Define the relation between the job and its approvals. 
-                    job.setApproval(oldJob.getApproval());
+            //Identify current job name. 
+            if (id != null) {
+                Job currentJob = jobService.load(id);
 
-                    //Identify job name changes. 
-                    oldName = oldJob.getName();
+                if (currentJob != null) {
+                    name = currentJob.getName();
                 }
             }
 
-            //Define the relation between the job and its parents.
-            job.getParent().stream().forEach((parent) -> {
-                if (parent.getJob() == null) {
-                    parent.setJob(job);
-                }
-            });
-
-            //Define if the job checkup can have a trigger.
-            if (!job.getCheckup().isEmpty()) {
-                job.getCheckup().stream().forEach((checkup) -> {
-                    if (!checkup.getAction().equals(Action.REBUILD_TRIGGER)) {
-                        checkup.setTrigger(new ArrayList());
-                    }
-                });
-            }
-
-            //Define if rebuilt blocker can be checked. 
-            blockers = job.getParent().stream().filter(parent -> parent.isBlocker()).count();
-            
-            if (blockers == 0) {
-                job.setRebuildBlocked(false);
-            }
-
-            //Save the job. 
+            //Save a job. 
             jobService.saveAndRefreshCache(job);
 
-            //Identify if should rename the job. 
-            if (!oldName.isEmpty() && !job.getName().equals(oldName)) {
-                jenkinsService.renameJob(job, oldName);
-            }
-
-            //Insert notification plugin and documentation in Jenkins job. 
+            //Update job properties on Jenkins.  
+            jenkinsService.renameJob(job, name);
             jenkinsService.updateJob(job);
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
             this.modelDefault(model, job);
             return "job/edit";
         }
-        
+
         return "redirect:/job/view/" + job.getId();
     }
 
@@ -369,7 +335,7 @@ public class JobController {
             @Valid @ModelAttribute Job job,
             BindingResult bindingResult,
             Model model) {
-        
+
         try {
             model.addAttribute("jobs", jenkinsService.listJob(job.getServer()));
         } catch (URISyntaxException | IOException ex) {
@@ -377,7 +343,7 @@ public class JobController {
         } finally {
             this.modelDefault(model, job);
         }
-        
+
         return "job/edit";
     }
 
@@ -396,11 +362,11 @@ public class JobController {
             @RequestParam(value = "subjects", required = false) String subjectsID,
             BindingResult bindingResult,
             Model model) {
-        
+
         if (subjectsID != null) {
             for (String subjectID : subjectsID.split(",")) {
                 Subject subject = subjectService.load(Long.parseLong(subjectID));
-                
+
                 if (subject != null) {
                     if (!job.getSubject().contains(subject)) {
                         job.addSubject(subject);
@@ -408,9 +374,9 @@ public class JobController {
                 }
             }
         }
-        
+
         this.modelDefault(model, job);
-        
+
         return "job/edit";
     }
 
@@ -429,10 +395,10 @@ public class JobController {
             @RequestParam(value = "partial_remove_subject", required = false) int index,
             BindingResult bindingResult,
             Model model) {
-        
+
         job.getSubject().remove(index);
         this.modelDefault(model, job);
-        
+
         return "job/edit";
     }
 
@@ -454,7 +420,7 @@ public class JobController {
             @RequestParam(value = "parentJobList", required = false) List<String> parentJobList,
             @RequestParam(value = "parentUpstream", required = false) boolean parentUpstream,
             BindingResult bindingResult, Model model) {
-        
+
         try {
             jobService.addParent(job, parentServer, parentJobList, parentUpstream);
         } catch (Exception ex) {
@@ -462,7 +428,7 @@ public class JobController {
         } finally {
             this.modelDefault(model, job);
         }
-        
+
         return "job/edit";
     }
 
@@ -481,10 +447,10 @@ public class JobController {
             @RequestParam("partial_remove_parent") int index,
             BindingResult bindingResult,
             Model model) {
-        
+
         job.getParent().remove(index);
         this.modelDefault(model, job);
-        
+
         return "job/edit";
     }
 
@@ -502,7 +468,7 @@ public class JobController {
             @Valid @ModelAttribute Job job,
             @RequestParam(value = "slackChannelList", required = false) Set<String> slackChannelList,
             BindingResult bindingResult, Model model) {
-        
+
         try {
             job.getChannel().addAll(slackChannelList);
         } catch (Exception ex) {
@@ -510,7 +476,7 @@ public class JobController {
         } finally {
             this.modelDefault(model, job);
         }
-        
+
         return "job/edit";
     }
 
@@ -529,10 +495,10 @@ public class JobController {
             @RequestParam(value = "partial_remove_slack_channel", required = false) String slackChannel,
             BindingResult bindingResult,
             Model model) {
-        
+
         job.getChannel().remove(slackChannel);
         this.modelDefault(model, job);
-        
+
         return "job/edit";
     }
 
@@ -549,11 +515,11 @@ public class JobController {
             @Valid @ModelAttribute Job job,
             BindingResult bindingResult,
             Model model) {
-        
+
         job.addCheckup(new JobCheckup());
         model.addAttribute("triggers", jobService.getMesh(job, false));
         this.modelDefault(model, job);
-        
+
         return "job/edit";
     }
 
@@ -572,10 +538,10 @@ public class JobController {
             @RequestParam("partial_remove_job_checkup") int index,
             BindingResult bindingResult,
             Model model) {
-        
+
         job.getCheckup().remove(index);
         this.modelDefault(model, job);
-        
+
         return "job/edit";
     }
 
@@ -596,7 +562,7 @@ public class JobController {
             @RequestParam(value = "triggers", required = false) List<String> triggers,
             BindingResult bindingResult,
             Model model) {
-        
+
         try {
             jobService.addTrigger(job, checkupIndex, triggers);
         } catch (Exception ex) {
@@ -604,7 +570,7 @@ public class JobController {
         } finally {
             this.modelDefault(model, job);
         }
-        
+
         return "job/edit";
     }
 
@@ -623,15 +589,15 @@ public class JobController {
             @RequestParam("partial_remove_job_checkup_trigger") List<Integer> checkupTriggerIndex,
             BindingResult bindingResult,
             Model model) {
-        
+
         if (checkupTriggerIndex.size() == 2) {
             int checkupIndex = checkupTriggerIndex.get(0);
             int triggerIndex = checkupTriggerIndex.get(1);
             job.getCheckup().get(checkupIndex).getTrigger().remove(triggerIndex);
         }
-        
+
         this.modelDefault(model, job);
-        
+
         return "job/edit";
     }
 
@@ -650,7 +616,7 @@ public class JobController {
             @RequestParam("partial_add_job_checkup_command") int checkupIndex,
             BindingResult bindingResult,
             Model model) {
-        
+
         job.getCheckup().get(checkupIndex).addCommand(new Command());
         this.modelDefault(model, job);
         return "job/edit";
@@ -671,15 +637,15 @@ public class JobController {
             @RequestParam("partial_remove_job_checkup_command") List<Integer> checkupCommandIndex,
             BindingResult bindingResult,
             Model model) {
-        
+
         if (checkupCommandIndex.size() == 2) {
             int checkupIndex = checkupCommandIndex.get(0);
             int commandIndex = checkupCommandIndex.get(1);
             job.getCheckup().get(checkupIndex).getCommand().remove(commandIndex);
         }
-        
+
         this.modelDefault(model, job);
-        
+
         return "job/edit";
     }
 
@@ -694,7 +660,7 @@ public class JobController {
     public String jobListModal(
             @PathVariable(value = "serverID") Server server,
             Model model) {
-        
+
         if (server != null) {
             try {
                 model.addAttribute("server", server);
@@ -703,7 +669,7 @@ public class JobController {
                 model.addAttribute("errorMessage", "Fail listing jobs from Jenkins: " + ex.getMessage());
             }
         }
-        
+
         return "job/modalJobList::job";
     }
 
@@ -729,7 +695,7 @@ public class JobController {
     public String refreshCache(Model model) {
         jobService.refresh();
         jenkinsService.refreshCache();
-        
+
         model.addAttribute("jobs", jobService.listFromCache());
         return "job/list";
     }
@@ -740,9 +706,18 @@ public class JobController {
      * @return Job list
      */
     @GetMapping(path = "/maintenance/plugin")
-    public String pluginMaintenance() {
-        jobService.list().forEach(job -> jenkinsService.updateJob(job));
-        return "redirect:/job/list";
+    @ResponseBody
+    public boolean pluginMaintenance() {
+        List<Job> jobs = (List) jobService.list();
+
+        for (Job job : jobs) {
+            Logger.getLogger(
+                    JobController.class.getName())
+                    .log(Level.INFO, "Updating plugin for: {0}", job.getName());
+            jenkinsService.updateJob(job);
+        }
+
+        return true;
     }
 
     /**
@@ -767,7 +742,7 @@ public class JobController {
         model.addAttribute("subjects", subjectService.list());
         model.addAttribute("connections", connectionService.list());
         model.addAttribute("users", userService.list(true));
-        
+
         if (jobList) {
             if (!job.getCheckup().isEmpty()) {
                 model.addAttribute("triggers", jobService.getMesh(job, false));

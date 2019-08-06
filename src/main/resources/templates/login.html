@@ -71,7 +71,11 @@
                         <div class="row space-top" th:if="${not #lists.isEmpty(logged)}">
                             <legend>Join us</legend>
                             <div class="column" th:each="principal : ${logged}">
-                                <p th:attr="data-letters=${principal.firstName.substring(0, 1) + principal.lastName.substring(0, 1)}" th:title="${principal.firstName + ' ' + principal.lastName}" class="text-center profile-icon profile-icon-sm"></p>
+                                <p th:attr="data-letters=${principal.firstName.substring(0, 1) + principal.lastName.substring(0, 1)}" 
+                                   th:title="${principal.firstName + ' ' + principal.lastName}" 
+                                   class="text-center profile-icon profile-icon-sm" 
+                                   th:classappend="'profile-icon-color-' + ${ T(Math).abs( principal.id % 5 ) }">
+                                </p>
                             </div>
                         </div>
                     </center>

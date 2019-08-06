@@ -99,23 +99,6 @@ $(document).ready(function () {
 
     $("#date-filter").datepicker({
         format: "yyyy-mm-dd",
-         todayHighlight: true
-    });
-
-    $('#date-range-filter').dateRangePicker({
-        separator: ' to ',
-        getValue: function ()
-        {
-            if ($('#date-from').val() && $('#date-to').val())
-                return $('#date-from').val() + ' to ' + $('#date-to').val();
-            else
-                return '';
-        },
-        setValue: function (s, s1, s2)
-        {
-            $('#date-from').val(s1);
-            $('#date-to').val(s2);
-        }
+        todayHighlight: true
     });
 });
-

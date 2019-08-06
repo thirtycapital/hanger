@@ -28,6 +28,7 @@ import br.com.dafiti.hanger.model.JobParent;
 import br.com.dafiti.hanger.model.Server;
 import br.com.dafiti.hanger.model.Subject;
 import br.com.dafiti.hanger.model.User;
+import br.com.dafiti.hanger.option.Action;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.repository.JobRepository;
@@ -92,10 +93,34 @@ public class JobService {
     }
 
     public List<Job> findByNameContainingOrAliasContaining(String search) {
-        return jobRepository.findByNameContainingOrAliasContaining(search,search);
+        return jobRepository.findByNameContainingOrAliasContaining(search, search);
     }
 
     public Job save(Job job) {
+        //Define the relation between the job and its parents.
+        job.getParent().stream().forEach((parent) -> {
+            if (parent.getJob() == null) {
+                parent.setJob(job);
+            }
+        });
+
+        //Define if the job checkup can have a trigger.
+        if (!job.getCheckup().isEmpty()) {
+            job.getCheckup().stream().forEach((checkup) -> {
+                if (!checkup.getAction().equals(Action.REBUILD_TRIGGER)) {
+                    checkup.setTrigger(new ArrayList());
+                }
+            });
+        }
+
+        //Define if rebuilt blocker can be checked. 
+        job.setRebuildBlocked(
+                job.
+                        getParent().
+                        stream().
+                        filter(parent -> parent.isBlocker()).count() != 0
+        );
+
         return jobRepository.save(job);
     }
 

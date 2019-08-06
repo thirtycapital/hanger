@@ -28,6 +28,7 @@
         <link rel="stylesheet" th:href="@{/css/toastr.min.css}"/>
         <link rel="stylesheet" th:href="@{/css/basicContext.min.css}"/>
         <link rel="stylesheet" th:href="@{/css/default.min.css}"/>
+        <link rel="stylesheet" th:href="@{/css/dhtmlxgantt.css}"/>        
 
         <!--JS-->
         <script th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"/>  
@@ -42,13 +43,14 @@
         <script th:src="@{/js/jquery.cookie.js}"/>    
         <script th:src="@{/js/bootstrap-toggle.min.js}"/>  
         <script th:src="@{/js/moment.min.js}"/> 
-        <script th:src="@{/js/jquery.daterangepicker.min.js}"/> 
+        <script th:src="@{/js/daterangepicker.js}"/>                 
         <script th:src="@{/js/dragscroll.js}"/>  
         <script th:src="@{/js/bootstrap-slider.js}"/>
         <script th:src="@{/js/bootstrap-datepicker.min.js}"/>
         <script th:src="@{/js/hanger.js}"/>
         <script th:src="@{/js/toastr.js}"></script>
         <script th:src="@{/js/basicContext.min.js}"></script>
+        <script th:src="@{/js/dhtmlxgantt.js}"></script>        
 
         <!--HEAD FRAGMENT END-->
     </head>
@@ -83,8 +85,15 @@
                         <span sec:authorize="isAuthenticated()">
                             <div>
                                 <div>
-                                    <p th:attr="data-letters=${#authentication.getPrincipal().getFirstName().substring(0, 1) + #authentication.getPrincipal().getLastName().substring(0, 1)}" class="text-center profile-icon"></p>
-                                    <p th:inline="text" class="text-center">[[${#authentication.getPrincipal().getFirstName() + ' ' + #authentication.getPrincipal().getLastName()}]]</p>
+                                    <p th:attr="data-letters=${#authentication.getPrincipal().getFirstName().substring(0, 1) + #authentication.getPrincipal().getLastName().substring(0, 1)}" 
+                                       class="text-center profile-icon" 
+                                       th:classappend="'profile-icon-color-' + ${T(Math).abs(#authentication.getPrincipal().getId() % 5)}">
+                                    </p>
+
+                                    <p th:inline="text" 
+                                       class="text-center">
+                                        [[${#authentication.getPrincipal().getFirstName() + ' ' + #authentication.getPrincipal().getLastName()}]]
+                                    </p>
                                 </div>                                
                                 <a href="#" onclick="javascript:logoutForm.submit();" th:inline="text" title="Login">
                                     <div class="text-center">Logout<span class="glyphicon glyphicon-off" style="margin-left:5px"></span></div>

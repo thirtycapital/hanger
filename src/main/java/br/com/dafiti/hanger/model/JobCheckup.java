@@ -42,6 +42,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -151,7 +152,7 @@ public class JobCheckup implements Serializable {
         this.connection = connection;
     }
 
-    @OneToMany
+    @ManyToMany
     @JoinTable(name = "job_checkup_trigger",
             joinColumns = {
                 @JoinColumn(name = "job_checkup_id", referencedColumnName = "id")},

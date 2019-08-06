@@ -674,8 +674,12 @@ input[type=radio]:checked + img {
     margin-bottom: 10px;
 }
 
-#table_paginated_wrapper .col-sm-12, #table_wrapper .col-sm-12, #table_wrapper .col-sm-6, #table_clean_wrapper .col-sm-12, #table_clean1_wrapper .col-sm-12, #table_clean_0_wrapper .col-sm-12, #table_paginated_wrapper .col-sm-6 {
+#table_paginated_wrapper .col-sm-12, #table_wrapper .col-sm-12, #table_wrapper .col-sm-6, #table_paginated_wrapper .col-sm-6 {
     padding: 0 !important;
+}
+
+[id^="table_clean"][id$="wrapper"] .col-sm-12 {
+  padding: 0 !important;
 }
 
 h3.page-title {
@@ -746,7 +750,6 @@ h3.page-title {
     line-height:2.5em;
     text-align:center;
     border-radius:50%;
-    background:#BDBDBD;
     vertical-align:middle;
     color:white;
     font-weight:bold;
@@ -755,6 +758,26 @@ h3.page-title {
 
 .profile-icon-sm.profile-icon:before {
     font-size:12.5px !important;
+}
+
+.profile-icon-color-0:before{
+    background:#cd5c5c;
+}
+
+.profile-icon-color-1:before{
+    background:#2e8b57;  
+}
+
+.profile-icon-color-2:before{
+    background:#4682b4;
+}
+
+.profile-icon-color-3:before{
+    background:#f0e68c;
+}
+
+.profile-icon-color-4:before{
+    background:#7559AF;
 }
 
 .modal-title{
@@ -777,4 +800,21 @@ h3.page-title {
 
 input[type='file'] {
     display: none
+}
+
+.nowrap-pre{
+    white-space: pre-line;
+}
+
+.deselect .bs-select-all{
+    display:none
+}
+
+.select .bs-deselect-all{
+    display:none
+}
+
+.row-gantt-parent {
+    font-weight: bold !important;
+    background-color: #F8F9F9 !important;
 }

@@ -122,7 +122,7 @@ public class JobBuild implements Serializable {
         this.date = build;
     }
 
-    public void setDate(Long timestamp) {
+    public void setDateFromTimestamp(Long timestamp) {
         this.date = new Date(timestamp);
     }
 

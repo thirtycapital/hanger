@@ -98,7 +98,7 @@ public class EyeService {
 
             jobBuild.setNumber(buildNotification.getInt("number"));
             jobBuild.setPhase(Phase.valueOf(buildNotification.optString("phase")));
-            jobBuild.setDate(buildNotification.getLong("timestamp"));
+            jobBuild.setDateFromTimestamp(buildNotification.getLong("timestamp"));
             jobBuild.setStatus(buildStatus.isEmpty() ? Status.SUCCESS : Status.valueOf(buildNotification.optString("status")));
             jobBuild.setJob(job);
 

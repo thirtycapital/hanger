@@ -62,8 +62,9 @@
                                 <span class="glyphicon glyphicon-refresh"></span> Update cache 
                             </a>
 
-                            <a class="btn btn-delete btn-space btn-sm" th:href="@{/job/maintenance/plugin}" title="Update notification plugin">
-                                <span class="glyphicon glyphicon-plane"></span> Update plugin
+                            <a class="btn btn-delete btn-space btn-sm" th:attr="onclick='modalUpdate();'"  title="Update notification plugin" >
+                                <span class="glyphicon glyphicon-plane" aria-hidden="true"></span> 
+                                Update plugin
                             </a>
                         </div>
                     </fieldset>
@@ -71,6 +72,39 @@
 
                 <!--Modal--> 
                 <div id="modalHolder"/>
+
+                <!--Begin update modal-->
+                <div class="modal fade" id="modalUpdate" tabindex="-1" role="dialog" aria-labelledby="modalUpate">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h4 class="modal-title" id="modalParentLabel"> 
+                                    <span>Notification plugin</span>
+                                </h4>
+                            </div>
+                            <div class="modal-body">
+                                <span>Are you sure you want to update the Notification Plugin for all jobs?</span>
+                            </div>
+                            <div class="modal-footer" id="buttons"> 
+                                <a id="modalConfirmUpdate" class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
+                                    Yes
+                                </a>
+                                <a id="modalDontConfirmUpdate" class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">
+                                    No
+                                </a>
+                                <center>
+                                    <button id="modal_wait" type="button" class="btn btn-default btn-sm" style="display:none;">
+                                        <img th:src="@{'/images/ajax-loader.gif'}"></img>
+                                    </button>
+                                </center>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+                <!--End update modal-->
             </div>
         </div>
         <script th:inline="javascript">
@@ -150,6 +184,36 @@
                     }
                 });
             });
+
+            /**
+             * Show the update notification plugin modal.
+             * 
+             * @returns {undefined}
+             */
+            function modalUpdate() {
+                $("#modalUpdate").modal({backdrop: 'static', keyboard: false});
+            }
+
+            $("#modalConfirmUpdate").click(function () {
+                var url = /*[[@{/job/maintenance/plugin/}]]*/ "/job/maintenance/plugin/";
+
+                // Hide control buttons and appears loading bar.
+                $("#modalConfirmUpdate").hide();
+                $("#modalDontConfirmUpdate").hide();
+                $("#modal_wait").show();
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    timeout: 30000,
+                    success: function (result) {
+                        location.reload();
+                    },
+                    error: function (e) {
+                        alert("Error updating plugin. " + e);
+                    }
+                });
+            });
         </script>
     </body>
-</html>f
+</html>

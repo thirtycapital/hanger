@@ -85,6 +85,10 @@ public class Job extends Tracker implements Serializable {
     public Job() {
     }
 
+    public Job(Long id) {
+        this.id = id;
+    }
+
     public Job(String name, Server server) {
         this.name = name;
         this.server = server;
@@ -302,7 +306,7 @@ public class Job extends Tracker implements Serializable {
     public void setRebuildBlocked(boolean rebuildBlocked) {
         this.rebuildBlocked = rebuildBlocked;
     }
- 
+
     @Override
     public String toString() {
         StringBuilder job = new StringBuilder();

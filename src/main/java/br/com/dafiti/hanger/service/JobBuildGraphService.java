@@ -27,14 +27,14 @@ import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobBuildMetric;
 import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.repository.JobBuildRepository;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
+import java.util.Objects;
 import org.joda.time.DateTime;
-import org.joda.time.Period;
+import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -83,46 +83,6 @@ public class JobBuildGraphService {
     }
 
     /**
-     * Find job time by phase and nunber
-     *
-     * @param job Job
-     * @param startDate Start Date
-     * @param endDate End Date
-     * @param hourFrom Hour from
-     * @param hourTo Hour To
-     * @return job time by phase and nunber
-     */
-    public List<JobBuildMetric> findJobBuildByNumber(
-            List<Job> job,
-            Date startDate,
-            Date endDate,
-            int hourFrom,
-            int hourTo) {
-
-        Date initialDate = new DateTime(startDate)
-                .withTimeAtStartOfDay()
-                .plusHours(hourFrom)
-                .toDate();
-
-        Date finalDate = new DateTime(endDate)
-                .withTimeAtStartOfDay()
-                .plusHours(hourTo)
-                .plusMinutes(59)
-                .plusSeconds(59)
-                .toDate();
-
-        List<JobBuildMetric> metrics;
-
-        if (job == null || job.isEmpty()) {
-            metrics = jobBuildRepository.findJobBuildByNumber(initialDate, finalDate);
-        } else {
-            metrics = jobBuildRepository.findJobBuildByNumber(job, initialDate, finalDate);
-        }
-
-        return metrics;
-    }
-
-    /**
      * Get the job build summary by job and hour in a 24 hours window.
      *
      * @param phase Phase
@@ -136,11 +96,8 @@ public class JobBuildGraphService {
             Date dateTo) {
 
         Map<Job, Long[]> summary = new HashMap();
-
-        //List all build by hour. 
         List<JobBuildMetric> builds = this.findJobBuildCountByHour(phase, dateFrom, dateTo);
 
-        //List the build information in a 24 hours.
         builds.stream().forEach((data) -> {
             Job key = data.getJob();
             Long[] value = summary.containsKey(key) ? summary.get(key) : new Long[24];
@@ -166,11 +123,8 @@ public class JobBuildGraphService {
             Date dateTo) {
 
         Long[] value = new Long[24];
-
-        //List all build by hour.
         List<JobBuildMetric> builds = this.findJobBuildCountByHour(phase, dateFrom, dateTo);
 
-        //Aggregate the build information in a 24 hours.
         builds.stream().forEach((data) -> {
             Long build = value[data.getHour()];
 
@@ -191,17 +145,26 @@ public class JobBuildGraphService {
     }
 
     /**
-     * Get elapsed time between two dates.
+     * Find job time by phase and nunber
      *
-     * @param dateFrom Date from
-     * @param dateTo Date To
-     * @return Elapsed time
+     * @param job Job
+     * @param startDate Start Date
+     * @param endDate End Date
+     * @return job time by phase and nunber
      */
-    private String getElapsetTime(Date dateFrom, Date dateTo) {
-        Period period = new Period(new DateTime(dateFrom), new DateTime(dateTo));
-        return StringUtils.leftPad(String.valueOf(period.getHours()), 2, "0")
-                + ":" + StringUtils.leftPad(String.valueOf(period.getMinutes()), 2, "0")
-                + ":" + StringUtils.leftPad(String.valueOf(period.getSeconds()), 2, "0");
+    public List<JobBuildMetric> findJobBuildByNumber(
+            List<Job> job,
+            Date startDate,
+            Date endDate) {
+
+        List<JobBuildMetric> metrics;
+
+        if (job == null || job.isEmpty()) {
+            metrics = jobBuildRepository.findJobBuildByNumber(startDate, endDate);
+        } else {
+            metrics = jobBuildRepository.findJobBuildByNumber(job, startDate, endDate);
+        }
+        return metrics;
     }
 
     /**
@@ -210,49 +173,188 @@ public class JobBuildGraphService {
      * @param job Job
      * @param dateFrom Date from
      * @param dateTo Date to
-     * @param hourFrom Hour from
-     * @param hourTo Hour to
      * @return Gantt
      */
-    public String getGanttData(List<Job> job, Date dateFrom, Date dateTo, int hourFrom, int hourTo) {
-        StringBuilder js = new StringBuilder();
-        js.append("[");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<JobBuildMetric> metrics = this.findJobBuildByNumber(job, dateFrom, dateTo, hourFrom, hourTo);
-        int metricsSize = metrics.size();
-        int index = 1;
+    public List getDHTMLXGanttData(
+            List<Job> job,
+            Date dateFrom,
+            Date dateTo) {
 
-        for (JobBuildMetric jobBuildMetrics : metrics) {
-            String tooltip = "<pre style='background:white;border:none;width:300px;'>"
-                    + "<br/>Start: " + sdf.format(jobBuildMetrics.getQueueDate())
-                    + "<br/>Finish: " + sdf.format(jobBuildMetrics.getFinishDate())
-                    + "<br/>Queue Time: " + getElapsetTime(jobBuildMetrics.getQueueDate(), jobBuildMetrics.getStartDate())
-                    + "<br/>Execution Time: " + getElapsetTime(jobBuildMetrics.getStartDate(), jobBuildMetrics.getFinishDate())
-                    + "<br/>Duration: " + getElapsetTime(jobBuildMetrics.getQueueDate(), jobBuildMetrics.getFinishDate())
-                    + "</pre>";
+        Long surrogateID = 0L;
+        Long currentJobBuildMetricDuration = 0L;
+        JobBuildMetric currentJobBuildMetric = null;
+        List<DHTMLXGantt> data = new ArrayList();
+        List<JobBuildMetric> metrics = this.findJobBuildByNumber(job, dateFrom, dateTo);
 
-            js.append("[\"")
-                    .append(jobBuildMetrics.getJob().getName()).append("\",")
-                    .append("\"Queue\",\"")
-                    .append(tooltip).append("\",\"")
-                    .append(sdf.format(jobBuildMetrics.getQueueDate())).append("\",\"")
-                    .append(sdf.format(jobBuildMetrics.getStartDate())).append("\"")
-                    .append("],");
+        for (JobBuildMetric metric : metrics) {
+            surrogateID++;
 
-            js.append("[\"")
-                    .append(jobBuildMetrics.getJob().getName()).append("\",")
-                    .append("\"Proccess\",\"")
-                    .append(tooltip).append("\",\"")
-                    .append(sdf.format(jobBuildMetrics.getStartDate())).append("\",\"")
-                    .append(sdf.format(jobBuildMetrics.getFinishDate())).append("\"")
-                    .append("]");
-            if (index != metricsSize) {
-                js.append(",");
+            Long queue = new Duration(
+                    new DateTime(metric.getQueueDate()),
+                    new DateTime(metric.getStartDate())).getStandardMinutes();
+            Long duration = new Duration(
+                    new DateTime(metric.getQueueDate()),
+                    new DateTime(metric.getFinishDate())).getStandardMinutes();
+
+            //Calculate job progress.
+            Double progress;
+
+            if (queue == 0) {
+                progress = 0.0;
+            } else {
+                progress = (double) queue / (double) duration;
             }
-            index++;
-        }
-        js.append("]");
 
-        return js.toString();
+            //Add all build to the gantt. 
+            data.add(new DHTMLXGantt(
+                    surrogateID + "_",
+                    metric.getQueueDate().toString().substring(0, 16) + " - " + metric.getFinishDate().toString().substring(0, 16),
+                    metric.getStartDate().toString(),
+                    duration,
+                    progress,
+                    true,
+                    metric.getJob().getId().toString(),
+                    "",
+                    "#ff5c5c"
+            ));
+
+            //Identify if is the last build of a specific job. 
+            if (currentJobBuildMetric == null) {
+                currentJobBuildMetric = metric;
+            }
+
+            //Add a folder to organize all job builds with a summarized job duration. 
+            if (!Objects.equals(currentJobBuildMetric.getJob().getId(), metric.getJob().getId()) || surrogateID == metrics.size()) {
+                data.add(new DHTMLXGantt(
+                        currentJobBuildMetric.getJob().getId().toString(),
+                        currentJobBuildMetric.getJob().getDisplayName(),
+                        currentJobBuildMetric.getStartDate().toString(),
+                        currentJobBuildMetricDuration,
+                        1.0,
+                        true,
+                        "",
+                        "#23bbad",
+                        ""
+                ));
+
+                currentJobBuildMetric = metric;
+                currentJobBuildMetricDuration = duration;
+            } else {
+                currentJobBuildMetricDuration += duration;
+            }
+        }
+
+        return data;
+    }
+
+    /**
+     * DHTMLXGantt data format.
+     */
+    class DHTMLXGantt {
+
+        private String id;
+        private String text;
+        private String start_date;
+        private Long duration;
+        private Double progress;
+        private boolean open;
+        private String parent;
+        private String color;
+        private String progressColor;
+
+        public DHTMLXGantt(
+                String id,
+                String text,
+                String start_date,
+                Long duration,
+                Double progress,
+                boolean open,
+                String parent,
+                String color,
+                String progressColor) {
+
+            this.id = id;
+            this.text = text;
+            this.start_date = start_date;
+            this.duration = duration;
+            this.progress = progress;
+            this.open = open;
+            this.parent = parent;
+            this.color = color;
+            this.progressColor = progressColor;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+
+        public String getStart_date() {
+            return start_date;
+        }
+
+        public void setStart_date(String start_date) {
+            this.start_date = start_date;
+        }
+
+        public Long getDuration() {
+            return duration;
+        }
+
+        public void setDuration(Long duration) {
+            this.duration = duration;
+        }
+
+        public Double getProgress() {
+            return progress;
+        }
+
+        public void setProgress(Double progress) {
+            this.progress = progress;
+        }
+
+        public boolean isOpen() {
+            return open;
+        }
+
+        public void setOpen(boolean open) {
+            this.open = open;
+        }
+
+        public String getParent() {
+            return parent;
+        }
+
+        public void setParent(String parent) {
+            this.parent = parent;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
+        public String getProgressColor() {
+            return progressColor;
+        }
+
+        public void setProgressColor(String progressColor) {
+            this.progressColor = progressColor;
+        }
+
     }
 }

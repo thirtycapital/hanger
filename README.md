@@ -1,4 +1,4 @@
-# Hanger [![GitHub license](https://img.shields.io/github/license/dafiti/causalimpact.svg)](https://bitbucket.org/dafiti/bi_dafiti_group_hanger/src/master/license)
+# Hanger [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ### A graphical tool for ETL process orchestration and data quality
 
 ## How it works

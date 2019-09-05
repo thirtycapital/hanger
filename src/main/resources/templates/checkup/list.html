@@ -67,9 +67,9 @@
 
             <div th:if="${not #lists.isEmpty(job.checkup)}" th:each="checkup, checkupStat : ${job.checkup}">  
                 <fieldset th:if="${not #lists.isEmpty(checkup.log)}" >
-                    <legend class="space-top" th:inline="text">[[${ checkup.description }]]</legend>
+                    <legend class="space-top" th:inline="text">[[${ checkup.description + '  >  ' + checkup.action }]]</legend>
 
-                    <table th:id="'table_clean' + ${checkup.id}" class="table table-hover">
+                    <table th:id="'table_paginated_clean' + ${checkup.id}" class="table table-hover">
                         <thead>
                             <tr>
                                 <th style="width:5%" class="img-sort">Status</th> 
@@ -85,7 +85,7 @@
                         </thead>
 
                         <tbody>
-                            <tr th:each="checkupLog, checkupLogStat : ${checkup.log}" th:unless="${checkupLogStat.index > 9}">
+                            <tr th:each="checkupLog, checkupLogStat : ${checkup.log}">
                                 <td><img class="status" th:src="@{'/images/' + ${ checkupLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="title=${ checkupLog.success ? 'SUCCESS' : 'FAILURE' }"></img></td>                                 
                                 <td th:text="${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}"></td>        
                                 <td th:text="${checkupLog.scope}"></td>  

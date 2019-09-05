@@ -13,6 +13,25 @@
                     </th>
                 </tr>            
             </table>
+            
+            <form th:action="@{/log/list/filter}" method="POST">
+                <div style="margin-top:10px">
+                    <div class="form-group">
+                        <label>Period</label>
+                        <input type="text" name="dateRange" id="dateRange" class="form-control" readonly="readonly" style="cursor:pointer" />
+                        <input type="hidden" name="dateFrom" id="dateFrom" th:value="${dateFrom}" />
+                        <input type="hidden" name="dateTo" id="dateTo" th:value="${dateTo}" />
+                    </div>
+                    <button type="submit" 
+                            class="btn btn-generic space-left space-right" 
+                            id="filter">
+                        <span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Filter
+                    </button>                         
+                </div>
+            </form>
+
+            <hr/>            
+
             <div>
                 <table id="table_paginated" class="table table-hover">
                     <thead>
@@ -38,5 +57,29 @@
                 </table>
             </div>
         </div>
+
+        <script>
+            $(function () {
+                // Date range
+                $('#dateRange').daterangepicker({
+                    timePicker: true,
+                    startDate: $('#dateFrom').val(),
+                    endDate: $('#dateTo').val(),
+                    maxDate: moment().startOf('day').hour(23).minute(59),
+                    timePicker24Hour: true,
+                    opens: 'right',
+                    locale: {
+                        format: 'YYYY-MM-DD HH:mm',
+                        separator: " to "
+                    },
+                });
+
+                // Save date in a hidden
+                $('#dateRange').on('apply.daterangepicker', function (ev, picker) {
+                    $('#dateFrom').val(picker.startDate.format('YYYY-MM-DD HH:mm:ss'));
+                    $('#dateTo').val(picker.endDate.format('YYYY-MM-DD HH:mm:ss'));
+                });
+            });
+        </script>
     </body>
 </html>

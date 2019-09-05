@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.dafiti.hanger.repository.EventLogRepository;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -66,4 +67,8 @@ public class EventLogService {
     public void cleaneup(Date expiration) {
         eventLogRepository.deleteByDateBefore(expiration);
     }
+    
+    public List<EventLog> listDateBetween(Date dateFrom, Date dateTo) {
+        return eventLogRepository.findByDateBetweenOrderByDateDesc(dateFrom, dateTo);
+    }    
 }

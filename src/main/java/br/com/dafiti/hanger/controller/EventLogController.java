@@ -24,11 +24,17 @@
 package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.service.EventLogService;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -50,10 +56,63 @@ public class EventLogController {
      *
      * @param model
      * @return
+     * @throws java.text.ParseException
      */
-    @GetMapping(path = "/list")
-    public String listServer(Model model) {
-        model.addAttribute("events", eventLogService.listOrderByDateDesc());
+    @GetMapping(path = {"/list", "/list/filter"})
+    public String listServer(Model model) throws ParseException {
+        this.modelDefault(model);
+        
         return "eventlog/list";
     }
+    
+    /**
+     * List log with date filter.
+     *
+     * @param dateFrom
+     * @param dateTo
+     * @param model
+     * @return
+     */
+    @PostMapping(path = "/list/filter")
+    public String filter(
+            @RequestParam("dateFrom") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date dateFrom,
+            @RequestParam("dateTo") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date dateTo,
+            Model model) {
+
+        this.modelDefault(model, dateFrom, dateTo);
+        return "eventlog/list";
+    }    
+    
+    /**
+     * Model default attribute.
+     *
+     * @param model Model
+     */
+    private void modelDefault(Model model) throws ParseException {
+        
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
+        String from = sdfDate.format(new Date()) + " 00:00:00";
+        String to = sdfDate.format(new Date()) + " 23:59:59";
+        
+        SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date dateFrom = sdfDateTime.parse(from);
+        Date dateTo = sdfDateTime.parse(to);
+
+        this.modelDefault(model, dateFrom, dateTo);
+    }
+
+    /**
+     * Model default attribute.
+     *
+     * @param model Model
+     * @param dateFrom start Date
+     * @param dateTo end date
+     */
+    private void modelDefault(Model model, Date dateFrom, Date dateTo) {
+        model.addAttribute("events", eventLogService.listDateBetween(dateFrom, dateTo));
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        model.addAttribute("dateFrom", simpleDateFormat.format(dateFrom));
+        model.addAttribute("dateTo", simpleDateFormat.format(dateTo));
+    }    
 }

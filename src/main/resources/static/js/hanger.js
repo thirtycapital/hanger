@@ -41,9 +41,29 @@ $(document).ready(function () {
         ]
     });
 
-
     $('[id^=table_clean]').DataTable({
         "paging": false,
+        "info": false,
+        "searching": false,
+        "order": [],
+        "columnDefs": [{
+                "targets": 'no-sort',
+                "orderable": false
+            },
+            {
+                targets: 'img-sort',
+                "type": "alt-string"
+            },
+            {
+                targets: 'no-search',
+                "searchable": false
+            }
+        ]
+    });
+
+    $('[id^=table_paginated_clean]').DataTable({
+        "pageLength": 10,
+        "bLengthChange": false,
         "info": false,
         "searching": false,
         "order": [],

@@ -33,6 +33,8 @@ import org.springframework.data.repository.CrudRepository;
 public interface EventLogRepository extends CrudRepository<EventLog, Long> {
 
     public List<EventLog> findAllByOrderByDateDesc();
+    
+    public List<EventLog> findByDateBetweenOrderByDateDesc(Date dateFrom, Date dateTo);
 
     @Modifying
     @Transactional(Transactional.TxType.REQUIRES_NEW)

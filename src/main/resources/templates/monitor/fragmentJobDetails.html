@@ -76,13 +76,14 @@
                             <th style="width:5%" class="img-sort">Status</th>
                             <th style="width:10%">Server</th>
                             <th style="width:43%">Job</th>  
-                            <th style="width:1.5%"><img class="hanger-img-sm" th:src="@{'/images/WARNING.png'}" alt="WARNING" title="WARNING"></img></th>
-                            <th style="width:1.5%" class="no-sort"><span class="glyphicon glyphicon-link" title="LINK"></span></th>
+                            <th style="width:1.5%"><span class="glyphicon glyphicon-exclamation-sign" title="Warning"></span></th>
+                            <th style="width:1.5%" class="no-sort"><span class="glyphicon glyphicon-link" title="Link"></span></th>
+                            <th style="width:1.5%"><span class="glyphicon glyphicon-heart-empty" title="Check-Up"></span></th>
                             <th style="width:18%">Scope</th>
                             <th style="width:16%">Update</th>
                             <th style="width:1%" class="no-sort"></th>
                             <th style="width:1%" class="no-sort"></th>
-                            <th style="width:1%"></th>
+                            <th style="width:1%" class="no-sort"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -96,19 +97,30 @@
                             </td>
                             <div th:switch="${#lists.isEmpty(jobDetail.warning)}">
                                 <div th:case="true">
-                                    <div th:if="${#lists.isEmpty(jobDetail.warning)}"><td></td></div>
+                                    <div th:if="${#lists.isEmpty(jobDetail.warning)}">
+                                        <td></td>
+                                    </div>
                                 </div>
 
                                 <div th:case="false">                                       
-                                    <td><button class="btn btn-link hanger-no-border" 
+                                    <td>
+                                        <button class="btn btn-link hanger-no-border" 
                                                 th:inline="text" 
                                                 th:id="'modal_warning_' + ${jobDetail.job.id}" 
                                                 th:attr="onclick='showJobWarning(' + ${jobDetail.job.id} + ');'"
-                                                th:value="${jobDetail.job.id}">[[${#lists.size(jobDetail.warning)}]]</button></td>
+                                                th:value="${jobDetail.job.id}">[[${#lists.size(jobDetail.warning)}]]</button>
+                                    </td>
                                 </div>
                             </div>
                             <td>
                                 <a class="link" th:href="@{ ${jobDetail.job.server.url} + 'job/' + ${jobDetail.job.name}}" target="_blank"> +</a>
+                            </td>
+                            <td>
+                                <div th:if="${ not #lists.isEmpty(jobDetail.job.checkup) }">
+                                    <a th:href="@{'/checkup/job/' + ${jobDetail.job.id} + '/list'}" target="_blank">
+                                        +
+                                    </a>
+                                </div>                                
                             </td>
                             <td th:text="${jobDetail.scope}">Scope</td>
                             <td th:text="${jobDetail.buildTime}">Build time</td>

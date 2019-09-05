@@ -164,15 +164,6 @@
                         <td>
                             <th:block th:switch="${subject.mandatory}">
                                 <div th:case="true">
-                                    <input  
-                                        id="rebuild" 
-                                        name="mandatory"
-                                        type="checkbox" 
-                                        data-toggle="toggle" 
-                                        data-size="mini"
-                                        data-onstyle="default" 
-                                        th:checked="true"
-                                        disabled="true"/>
                                 </div>
                                 <div th:case="false">
                                     <label th:attr="title=${#lists.size(subject.user) + ' subscriptions'}">

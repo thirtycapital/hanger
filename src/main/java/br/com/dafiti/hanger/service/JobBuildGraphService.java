@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -189,21 +188,8 @@ public class JobBuildGraphService {
         for (JobBuildMetric metric : metrics) {
             surrogateID++;
 
-            Long queue = new Duration(
-                    new DateTime(metric.getQueueDate()),
-                    new DateTime(metric.getStartDate())).getStandardMinutes();
-            Long duration = new Duration(
-                    new DateTime(metric.getQueueDate()),
-                    new DateTime(metric.getFinishDate())).getStandardMinutes();
-
-            //Calculate job progress.
-            Double progress;
-
-            if (queue == 0) {
-                progress = 0.0;
-            } else {
-                progress = (double) queue / (double) duration;
-            }
+            Long duration = metric.getDurationTimeInMinutes();
+            Double queuePercentage = metric.getQueuePercentage();
 
             //Add all build to the gantt. 
             data.add(new DHTMLXGantt(
@@ -211,11 +197,11 @@ public class JobBuildGraphService {
                     metric.getQueueDate().toString().substring(0, 16) + " - " + metric.getFinishDate().toString().substring(0, 16),
                     metric.getStartDate().toString(),
                     duration,
-                    progress,
+                    queuePercentage,
                     true,
                     metric.getJob().getId().toString(),
                     "",
-                    "#ff5c5c"
+                    "#dd424a"
             ));
 
             //Identify if is the last build of a specific job. 
@@ -233,7 +219,7 @@ public class JobBuildGraphService {
                         1.0,
                         true,
                         "",
-                        "#23bbad",
+                        "#DCDCDC",
                         ""
                 ));
 

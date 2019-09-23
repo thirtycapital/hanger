@@ -258,6 +258,25 @@
                     window.open(propagationUrl + job, '_blank');
                 }
 
+                // Build history modal.
+                var buildHistory = function () {
+                    var url = /*[[@{/build/history/}]]*/ "/build/history/";
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + job,
+                        timeout: 30000,
+                        success: function (result) {
+                            $("#modalHolder").html(result);
+                            $("#modalHistory").modal({backdrop: 'static', keyboard: false});
+                        },
+                        error: function (e) {
+                            alert("Fail loading job build history " + e);
+                        }
+                    });
+                }
+
+
                 // Available actions.
                 var items = [
                     {title: 'Flow', icon: 'glyphicon glyphicon-random', fn: flow},
@@ -265,6 +284,8 @@
                     {},
                     {title: 'Build', icon: 'glyphicon glyphicon-play', fn: build, disabled: !isAuthenticated},
                     {title: 'Build Mesh', icon: 'glyphicon glyphicon-fast-backward', fn: mesh, disabled: !isAuthenticated},
+                    {},
+                    {title: 'Build history', icon: 'glyphicon glyphicon-time', fn: buildHistory},
                 ]
 
                 basicContext.show(items, e)

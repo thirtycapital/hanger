@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+        <div class="container">
+            <!-- modal history begin-->
+            <div class="modal fade" id="modalHistory" tabindex="-1" role="dialog" aria-labelledby="modalHistoryLabel" th:fragment="history">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modalTestConnectionLabel" th:text="${job.name + ' build history'}"></h4>
+                        </div>
+                        <div class="modal-body">
+                            <table id="table" class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width:6%">Status</th>
+                                        <th style="width:20%">Start</th>
+                                        <th style="width:20%">Finish</th>
+                                        <th>Duration in minutes</th>
+                                        <th style="width:40%">Efficiency</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="history : ${history}">
+                                        <td><img class="status" th:src="@{'/images/' + ${history.status} + '.png'}" th:attr="alt=${ history.status }" th:title="${history.status}"></img></td>
+                                        <td th:text="${#dates.format(history.queueDate, 'dd-MM-yyyy HH:mm:ss')}">Start</td>
+                                        <td th:text="${#dates.format(history.finishDate, 'dd-MM-yyyy HH:mm:ss')}">Finish</td>
+                                        <td th:text="${history.getDurationTimeInMinutes()}">Finish</td>
+                                        <td>
+                                            <div class="progress">
+                                                <div class="progress-bar progress-bar-danger" th:inline="text" th:attr="style='width:' +  ${ history.getQueuePercentage() * 100 } + '%'" title="WAITING">
+                                                    <span class="sr-only"></span> [[${#numbers.formatDecimal((history.getQueuePercentage() * 100), 0, 0)}]]%
+                                                </div>
+                                                <div class="progress-bar progress-bar-effectiveness" th:inline="text" th:attr="style='width:' + ${ 100 - ((history.getQueuePercentage() * 100)) } + '%'" title="BUILDING">
+                                                    <span class="sr-only"></span> [[${#numbers.formatDecimal(100 - ((history.getQueuePercentage() * 100)), 0, 0)}]]% 
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="modal-footer">                                
+                                <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                                    <span aria-hidden="true"></span> Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- modal warning end-->
+        </div>
+    </body>
+</html>

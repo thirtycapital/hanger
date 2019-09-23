@@ -67,7 +67,7 @@
 
             <div th:if="${not #lists.isEmpty(job.checkup)}" th:each="checkup, checkupStat : ${job.checkup}">  
                 <fieldset th:if="${not #lists.isEmpty(checkup.log)}" >
-                    <legend class="space-top" th:inline="text">[[${ checkup.description + '  >  ' + checkup.action }]]</legend>
+                    <legend class="space-top" th:inline="text">[[${ checkup.description + '  >  ' + ( checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION' ) + '  >  ' + checkup.action}]]</legend>
 
                     <table th:id="'table_paginated_clean' + ${checkup.id}" class="table table-hover">
                         <thead>

@@ -55,9 +55,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-    
+
     @Autowired
-    private @Value("${hanger.anonymous.access:true}") boolean anonymousEnabled;
+    private @Value("${hanger.anonymous.access:true}")
+    boolean anonymousEnabled;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -90,7 +91,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                             "/**/user/confirmation/**",
                             "/**/alter/",
                             "/error/**",
-                            "/user/edit/**").permitAll();
+                            "/user/edit/**",
+                            "/build/history/**").permitAll();
         }
 
         http

@@ -185,7 +185,7 @@ public class JobCheckupService {
         //Filter checkup by scope.
         List<JobCheckup> checkups = job.getCheckup()
                 .stream()
-                .filter(x -> (x.getScope().equals(scope)))
+                .filter(x -> (x.getScope().equals(scope) || x.getScope().equals(Scope.ANYONE)))
                 .filter(x -> (x.isPrevalidation() == prevalidation))
                 .collect(Collectors.toList());
 

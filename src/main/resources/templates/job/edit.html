@@ -347,10 +347,11 @@
                                             data-live-search="true" 
                                             th:field="*{parent[__${parentStat.index}__].scope}" 
                                             required="true">
-                                        
+
                                         <option th:each="scope : ${T(br.com.dafiti.hanger.option.Scope).values()}" 
                                                 th:value="${scope}" 
-                                                th:text="${scope}">
+                                                th:text="${scope}"
+                                                th:if="${scope != T(br.com.dafiti.hanger.option.Scope).ANYONE}">
                                         </option>
                                     </select>
                                 </td>
@@ -406,7 +407,7 @@
                                                         id="triggers" 
                                                         multiple="true" 
                                                         data-selected-text-format="count > 3">
-                                                    
+
                                                     <option th:each="trigger : ${triggers}" 
                                                             th:value="${trigger.name}" 
                                                             th:text="${trigger.name}">
@@ -458,7 +459,8 @@
                                 <select class="selectpicker form-control" data-live-search="true" th:field="*{checkup[__${checkupStat.index}__].scope}" required="true" placeholder="Scope">
                                     <option th:each="scope : ${T(br.com.dafiti.hanger.option.Scope).values()}" 
                                             th:value="${scope}" 
-                                            th:text="${scope}">
+                                            th:text="${scope}"
+                                            th:if="${scope != T(br.com.dafiti.hanger.option.Scope).OPTIONAL}">
                                     </option>
                                 </select>
                             </div>

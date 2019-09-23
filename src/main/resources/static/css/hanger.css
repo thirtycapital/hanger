@@ -19,7 +19,7 @@ div.dataTables_filter input{
 }
 
 body{
-    font-size: 11.5px;
+    font-size: 12px;
     font-weight: normal;
 }
 
@@ -124,7 +124,6 @@ code[class*="language-free"] {
     font-size: 10px;
 }
 
-
 .progress-bar-building{
     background-color: #f6f558;
     color: #373e46;   
@@ -147,9 +146,19 @@ code[class*="language-free"] {
     background-color: #dd424a;
 }
 
+.progress-bar-effectiveness {
+    background-color: #3db9d3;
+}
+
 .label-hanger {
     background-color: #FFF;
     color: #373e46;
+}
+
+.gantt_task_line,
+.gantt_task_inline_color, 
+.gantt_task_progress {
+    border: none !important;
 }
 
 .row {
@@ -679,7 +688,7 @@ input[type=radio]:checked + img {
 }
 
 [id^="table_clean"][id$="wrapper"] .col-sm-12 {
-  padding: 0 !important;
+    padding: 0 !important;
 }
 
 h3.page-title {

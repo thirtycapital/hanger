@@ -23,21 +23,29 @@
  */
 package br.com.dafiti.hanger.controller;
 
+import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobBuildGanttFilter;
+import br.com.dafiti.hanger.model.JobBuildMetric;
 import br.com.dafiti.hanger.model.JobBuildMetricFilter;
 import br.com.dafiti.hanger.option.Phase;
+import br.com.dafiti.hanger.service.ConfigurationService;
 import br.com.dafiti.hanger.service.JobBuildGraphService;
 import br.com.dafiti.hanger.service.JobService;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,16 +60,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/build")
 public class JobBuildController {
 
-    private final JobBuildGraphService jobBuildGraphService;
     private final JobService jobService;
+    private final JobBuildGraphService jobBuildGraphService;
+    private final ConfigurationService configurationService;
 
     @Autowired
     public JobBuildController(
             JobBuildGraphService jobBuildGraphService,
-            JobService jobService) {
+            JobService jobService,
+            ConfigurationService configurationService) {
 
         this.jobBuildGraphService = jobBuildGraphService;
         this.jobService = jobService;
+        this.configurationService = configurationService;
     }
 
     /**
@@ -184,5 +195,38 @@ public class JobBuildController {
         );
 
         return data;
+    }
+
+    /**
+     * Build history modal.
+     *
+     * @param job Job
+     * @param model Model
+     * @return Build history modal
+     */
+    @GetMapping({"/history/{id}"})
+    public String history(
+            @PathVariable(value = "id") Job job,
+            Model model) {
+
+        model.addAttribute("job", job);
+        model.addAttribute("history",
+                jobBuildGraphService.findJobBuildByNumber(
+                        Arrays.asList(job),
+                        LocalDate
+                                .now()
+                                .minusDays(Integer.valueOf(
+                                        configurationService
+                                                .findByParameter("LOG_RETENTION_PERIOD")
+                                                .getValue()
+                                ))
+                                .toDate(),
+                        new Date()
+                ).stream()
+                        .sorted(Comparator.comparing(JobBuildMetric::getStartDate).reversed())
+                        .collect(Collectors.toList())
+        );
+
+        return "build/modalBuildHistory::history";
     }
 }

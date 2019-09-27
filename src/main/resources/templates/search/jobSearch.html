@@ -118,9 +118,14 @@
                     <div class="form-group">
                         <input type="text" class="form-control" id="search"/>
                     </div>
+
                     <button id="search-button" class="btn btn-generic" type="button">
                         <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Search
-                    </button>                    
+                    </button>     
+
+                    <button id="wait" type="button" class="btn btn-default btn-sm pull-right" style="display:none;">
+                        <img th:src="@{'/images/ajax-loader.gif'}"></img>
+                    </button>
                 </div>
 
                 <hr/>
@@ -139,13 +144,6 @@
 
                 <!--Fragment--> 
                 <div id="fragmentJobDetailsHolder"/>
-
-                <!--Loader-->
-                <center>
-                    <button id="wait" type="button" class="btn btn-default btn-sm" style="display:none;">
-                        <img th:src="@{'/images/ajax-loader.gif'}"></img>
-                    </button>
-                </center>
             </div>
         </div>
     </body>

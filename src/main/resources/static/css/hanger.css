@@ -46,7 +46,7 @@ h3{
 }
 
 pre{
-    border: 1px dashed #D8D8D8;
+    border: 1px dotted #D8D8D8;
 }
 
 pre[class*="language-sql"] {
@@ -472,7 +472,7 @@ code[class*="language-free"] {
 
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
     color: #999999;
-    border: 1px dashed #D8D8D8;
+    border: 1px dotted #D8D8D8;
     background : none;
     background-color: #FFFFFF;
     opacity: 1;

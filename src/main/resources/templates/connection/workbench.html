@@ -46,11 +46,13 @@
                         /**
                          * Trigger job details search on Enter click. 
                          */
+                        /*<![CDATA[*/
                         $('#query').keyup(function (e) {
-                            if (e.ctrlKey && e.keyCode == 13) {
+                            if (e.ctrlKey && e.keyCode === 13) {
                                 query();
                             }
                         });
+                        /*]]>*/
 
                         /**
                          * Trigger job details search on search button click. 

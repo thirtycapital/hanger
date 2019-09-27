@@ -30,6 +30,7 @@
                         $(document).ajaxStart(function () {
                             $("#wait").css("display", "block");
                             $("#query").prop("disabled", true);
+                            $("#query-button").prop("disabled", true);
                         });
 
                         /**
@@ -39,13 +40,14 @@
                         $(document).ajaxComplete(function () {
                             $("#wait").css("display", "none");
                             $("#query").prop("disabled", false);
+                            $("#query-button").prop("disabled", false);
                         });
 
                         /**
                          * Trigger job details search on Enter click. 
                          */
                         $('#query').keyup(function (e) {
-                            if (e.keyCode === 13) {
+                            if (e.ctrlKey && e.keyCode == 13) {
                                 query();
                             }
                         });
@@ -117,7 +119,7 @@
 
                 <div style="margin-top:10px">
                     <div class="form-group">
-                        <textarea class="form-control" id="query" required="true" rows="10" minlength="1" maxlength="5000" placeholder="Free SQL, but result set limited to 100 rows"></textarea>
+                        <textarea class="form-control" id="query" required="true" rows="10" minlength="1" maxlength="5000" placeholder="Free SQL, but result set limited to 100 rows!"></textarea>
                     </div>
 
                     <button id="query-button" class="btn btn-generic" type="button">

@@ -30,6 +30,7 @@
                         $(document).ajaxStart(function () {
                             $("#wait").css("display", "block");
                             $("#search").prop("disabled", true);
+                            $("#search-button").prop("disabled", true);
                         });
 
                         /**
@@ -39,6 +40,7 @@
                         $(document).ajaxComplete(function () {
                             $("#wait").css("display", "none");
                             $("#search").prop("disabled", false);
+                            $("#search-button").prop("disabled", false);
                         });
 
                         /**

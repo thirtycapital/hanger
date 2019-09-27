@@ -89,7 +89,7 @@
                                                 {
                                                     "paging": false,
                                                     "info": false,
-                                                    "searching": false,
+                                                    "searching": true,
                                                     "order": [],
                                                     "columnDefs": [{
                                                             "targets": 'no-sort',
@@ -117,7 +117,7 @@
 
                 <div style="margin-top:10px">
                     <div class="form-group">
-                        <textarea class="form-control" id="query" required="true" rows="10" minlength="1" maxlength="5000"></textarea>
+                        <textarea class="form-control" id="query" required="true" rows="10" minlength="1" maxlength="5000" placeholder="Free SQL, but result set limited to 100 rows"></textarea>
                     </div>
 
                     <button id="query-button" class="btn btn-generic" type="button">

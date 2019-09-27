@@ -26,6 +26,7 @@ package br.com.dafiti.hanger.controller;
 import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.service.ConnectionService;
+import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  *
@@ -238,5 +240,46 @@ public class ConnectionController {
         }
 
         return "connection/list";
+    }
+
+    /**
+     * Show SQL workbench
+     *
+     * @param connection Connection
+     * @param model Model
+     * @return SQL workbench template.
+     */
+    @GetMapping(path = "/workbench/{id}")
+    public String workbench(
+            @PathVariable(name = "id") Connection connection,
+            Model model) {
+
+        model.addAttribute("connection", connection);
+        return "connection/workbench";
+    }
+
+    /**
+     * Workbench query resultset.
+     *
+     * @param connection Connection
+     * @param query SQL Expression
+     * @param model Model
+     * @return Query result set fragment.
+     */
+    @PostMapping(path = "/query/{id}")
+    public String query(
+            @PathVariable(name = "id") Connection connection,
+            @RequestBody String query,
+            Model model) {
+
+        QueryResultSet queryResultSet = connectionService.getQueryResultSet(connection, query);
+
+        if (queryResultSet.hasError()) {
+            model.addAttribute("errorMessage", queryResultSet.getError());
+        } else {
+            model.addAttribute("resultset", queryResultSet);
+        }
+
+        return "connection/fragmentQueryResultSet::resultSet";
     }
 }

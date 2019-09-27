@@ -101,7 +101,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/user/add/",
                         "/user/role/**",
                         "/user/active/**",
-                        "/configuration/**").access("hasRole('HERO')")
+                        "/configuration/**",
+                        "/connection/workbench/**",
+                        "/connection/query/**").access("hasRole('HERO')")
                 .antMatchers(
                         "/**/delete/**",
                         "/**/rebuild/**").access("hasRole('ADMIN') || hasRole('HERO')")

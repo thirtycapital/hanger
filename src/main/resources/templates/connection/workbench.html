@@ -19,9 +19,9 @@
                         });
 
                         /**
-                         * Set the focus on search input.
+                         * Set the focus on query textarea.
                          */
-                        $("#search").focus();
+                        $("#query").focus();
 
                         /**
                          * Define ajax start behavior. 
@@ -29,7 +29,7 @@
                          */
                         $(document).ajaxStart(function () {
                             $("#wait").css("display", "block");
-                            $("#search").prop("disabled", true);
+                            $("#query").prop("disabled", true);
                         });
 
                         /**
@@ -38,23 +38,23 @@
                          */
                         $(document).ajaxComplete(function () {
                             $("#wait").css("display", "none");
-                            $("#search").prop("disabled", false);
+                            $("#query").prop("disabled", false);
                         });
 
                         /**
                          * Trigger job details search on Enter click. 
                          */
-                        $('#search').keyup(function (e) {
+                        $('#query').keyup(function (e) {
                             if (e.keyCode === 13) {
-                                search();
+                                query();
                             }
                         });
 
                         /**
                          * Trigger job details search on search button click. 
                          */
-                        $("#search-button").click(function () {
-                            search();
+                        $("#query-button").click(function () {
+                            query();
                         });
 
 
@@ -62,27 +62,28 @@
                          * Trigger job details search on history click.
                          * @returns {undefined}
                          */
-                        $("[id^=search_]").click(function () {
-                            search();
+                        $("[id^=query_]").click(function () {
+                            query();
                         });
 
                         /**
                          * Search for job that match the search input value. 
                          * @returns {undefined}
                          */
-                        function search() {
-                            var search = $('#search').val();
-                            var url = /*[[@{/search/details/}]]*/ "/search/details/";
+                        function query() {
+                            var connection = /*[[${connection.id}]]*/ 0;
+                            var query = $('#query').val();
+                            var url = /*[[@{/connection/query/}]]*/ "/connection/query/";
 
-                            if (search !== "") {
+                            if (query !== "") {
                                 $.ajax({
                                     type: "POST",
-                                    url: url,
-                                    data: search,
+                                    url: url + connection,
+                                    data: query,
                                     contentType: "text/html",
-                                    timeout: 30000,
+                                    timeout: 65000,
                                     success: function (result) {
-                                        $("#fragmentJobDetailsHolder").html(result);
+                                        $("#fragmentQueryResultSetHolder").html(result);
 
                                         $('.table').DataTable(
                                                 {
@@ -98,7 +99,7 @@
                                                 });
                                     },
                                     error: function (e) {
-                                        alert("Fail loading job details " + e);
+                                        alert("Fail loading query resultset " + e);
                                     }
                                 });
                             }
@@ -109,36 +110,25 @@
                 <table>
                     <tr>
                         <th>
-                            <h3 class="page-title" title="Type job name or alias">Search</h3>
+                            <h3 class="page-title" th:inline="text">[[${'Workbench > ' + connection.name}]]</h3>
                         </th>
                     </tr>            
                 </table>
 
                 <div style="margin-top:10px">
                     <div class="form-group">
-                        <input type="text" class="form-control" id="search"/>
+                        <textarea class="form-control" id="query" required="true" rows="10" minlength="1" maxlength="5000"></textarea>
                     </div>
-                    <button id="search-button" class="btn btn-generic" type="button">
-                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Search
+
+                    <button id="query-button" class="btn btn-generic" type="button">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Query
                     </button>                    
                 </div>
 
                 <hr/>
 
-                <!--Search history-->
-                <nav th:if="${not #lists.isEmpty(searches)}">
-                    <ul class="pager">
-                        <li th:each="search, searchStat : ${searches}">
-                            <button class="btn btn btn-default btn-xs search-history-button" 
-                                    th:id="'search_' + ${searchStat.index}" 
-                                    th:inline="text" 
-                                    th:value="${search}">[[${search}]]</button>
-                        </li>
-                    </ul>
-                </nav>   
-
                 <!--Fragment--> 
-                <div id="fragmentJobDetailsHolder"/>
+                <div id="fragmentQueryResultSetHolder"/>
 
                 <!--Loader-->
                 <center>

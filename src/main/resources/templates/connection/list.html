@@ -91,6 +91,7 @@
                         <th style="width:3%" class="no-sort"></th>
                         <th style="width:3%" class="no-sort"></th>
                         <th style="width:3%" class="no-sort"></th>
+                        <th style="width:3%" class="no-sort"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -107,6 +108,11 @@
                         <td>
                             <a th:if="${connection.target != T(br.com.dafiti.hanger.option.Database).ATHENA}" th:href="@{'/connection/' + ${connection.id} + '/table'}" class="btn btn-generic btn-xs">
                                 <span class="glyphicon glyphicon-list" aria-hidden="true"></span> Table
+                            </a>
+                        </td>
+                        <td>
+                            <a th:href="@{'/connection/workbench/' + ${connection.id}}" class="btn btn-generic btn-xs">
+                                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Workbench
                             </a>
                         </td>
                         <td>

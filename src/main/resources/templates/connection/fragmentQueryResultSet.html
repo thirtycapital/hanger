@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>        
+        <div class="container">
+            <!--Fragment-->
+            <div th:fragment="resultSet">
+                <div th:if="${ errorMessage != null }">
+                    <div class="alert alert-danger" role="alert">
+                        <span th:text="${errorMessage}"></span>
+                    </div>  
+                </div> 
+
+                <div th:if="${ errorMessage == null }">
+                    <table id="table" class="table table-hover space-top">
+                        <thead> 
+                            <tr>
+                                <th th:each="header: ${resultset.header}" class="column-title" th:text="${header}" />
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="row: ${resultset.row}">
+                                <td th:each="column: ${row.column}" th:text="${column}" />
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>       	
+    </body>
+</html>

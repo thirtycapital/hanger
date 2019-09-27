@@ -31,7 +31,10 @@ import java.sql.Driver;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +43,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 
 /**
@@ -52,12 +58,16 @@ public class ConnectionService {
 
     private final ConnectionRepository connectionRepository;
     private final PasswordCryptor passwordCryptor;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public ConnectionService(ConnectionRepository connectionRepository,
-            PasswordCryptor passwordCryptor) {
+            PasswordCryptor passwordCryptor,
+            JdbcTemplate jdbcTemplate) {
+
         this.connectionRepository = connectionRepository;
         this.passwordCryptor = passwordCryptor;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Cacheable(value = "connections")
@@ -197,6 +207,8 @@ public class ConnectionService {
         List table = new ArrayList();
         DataSource datasource = this.getDataSource(connection);
 
+        this.getQueryResultSet(connection, "select * from job");
+
         try {
             ResultSet tables = datasource.getConnection()
                     .getMetaData()
@@ -297,6 +309,63 @@ public class ConnectionService {
         }
 
         return columns;
+    }
+
+    /**
+     * Get query resultset.
+     *
+     * @param connection Connection.
+     * @param query Query.
+     * @return Query resultset.
+     */
+    public QueryResultSet getQueryResultSet(Connection connection, String query) {
+        QueryResultSet queryResultSet = new QueryResultSet();
+        DataSource datasource = this.getDataSource(connection);
+
+        try {
+            //Set a connection to database.
+            jdbcTemplate.setDataSource(datasource);
+            jdbcTemplate.setMaxRows(100);
+
+            //Execute a query. 
+            SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(query);
+            String[] columnNames = sqlRowSet.getMetaData().getColumnNames();
+
+            //Get query header.
+            queryResultSet.setHeader(
+                    Arrays.asList(
+                            sqlRowSet
+                                    .getMetaData()
+                                    .getColumnNames())
+            );
+
+            //Get query data.
+            while (sqlRowSet.next()) {
+                QueryResultSetRow queryResultSetRow = new QueryResultSetRow();
+
+                for (String columnName : columnNames) {
+                    queryResultSetRow
+                            .getColumn()
+                            .add(
+                                    sqlRowSet
+                                            .getObject(columnName)
+                            );
+                }
+
+                queryResultSet.getRow().add(queryResultSetRow);
+            }
+        } catch (DataAccessException ex) {
+            queryResultSet.setError(ex.getMessage());
+        } finally {
+            try {
+                //Close the connection. 
+                jdbcTemplate.getDataSource().getConnection().close();
+            } catch (SQLException ex) {
+                Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, "Fail closing connection ", ex);
+            }
+        }
+
+        return queryResultSet;
     }
 
     /**
@@ -418,9 +487,61 @@ public class ConnectionService {
     }
 
     /**
+     * Represents a query resultset.
+     */
+    public class QueryResultSet {
+
+        String error = new String();
+        List<String> header = new ArrayList();
+        List<QueryResultSetRow> row = new ArrayList();
+
+        public List<String> getHeader() {
+            return header;
+        }
+
+        public void setHeader(List<String> header) {
+            this.header = header;
+        }
+
+        public List<QueryResultSetRow> getRow() {
+            return row;
+        }
+
+        public void setRow(List<QueryResultSetRow> row) {
+            this.row = row;
+        }
+
+        public boolean hasError() {
+            return !error.isEmpty();
+        }
+
+        public String getError() {
+            return error;
+        }
+
+        public void setError(String error) {
+            this.error = error;
+        }
+    }
+
+    /**
+     * Represents a query resultset row.
+     */
+    public class QueryResultSetRow {
+
+        List<Object> column = new ArrayList();
+
+        public List<Object> getColumn() {
+            return column;
+        }
+
+        public void setColumn(List<Object> column) {
+            this.column = column;
+        }
+    }
+
+    /**
      * Represents status of a database connection.
-     *
-     * @author Helio Leal
      */
     public class ConnectionStatus {
 

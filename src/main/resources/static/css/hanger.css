@@ -46,34 +46,34 @@ h3{
 }
 
 pre{
-    border: 1px solid #D8D8D8;
+    border: 1px dashed #D8D8D8;
 }
 
 pre[class*="language-sql"] {
     padding: 10px;
     margin: 0px;
-    background-color: #F8F8FF !important;
+    background-color: #FFFFFF !important;
     min-height: 30px;
 }
 
 pre[class*="language-bash"] {
     padding: 10px;
     margin: 0px;
-    background-color: #F8F8FF !important;
+    background-color: #FFFFFF !important;
     min-height: 30px;
 }
 
 pre[class*="language-text"] {
     padding: 10px;
     margin: 0px;
-    background-color: #F8F8FF !important;
+    background-color: #FFFFFF !important;
     min-height: 30px;
 }
 
 pre[class*="language-none"] {
     padding: 10px;
     margin: 0px;
-    background-color: #ffffff !important;
+    background-color: #FFFFFF !important;
     border: none;
     min-height: 30px;
 }
@@ -471,8 +471,10 @@ code[class*="language-free"] {
 }
 
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+    color: #999999;
+    border: 1px dashed #D8D8D8;
     background : none;
-    background-color: #F8F8FF;
+    background-color: #FFFFFF;
     opacity: 1;
 }
 

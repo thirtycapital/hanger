@@ -3,114 +3,11 @@
     <head lang="en" th:replace="base/header :: head">
         <title>Hanger</title>
     </head>
+
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
-
         <div class="container-fluid main-content">
             <div class="tab-content">
-                <script th:inline="javascript">
-                    $(document).ready(function () {
-                        /**
-                         * Set header CSRF Token.
-                         * @returns {undefined}
-                         */
-                        $.ajaxSetup({
-                            headers: {'X-CSRF-Token': $('#_csrf').attr('content')}
-                        });
-
-                        /**
-                         * Set the focus on query textarea.
-                         */
-                        $("#query").focus();
-
-                        /**
-                         * Define ajax start behavior. 
-                         * @returns {undefined}
-                         */
-                        $(document).ajaxStart(function () {
-                            $("#wait").css("display", "block");
-                            $("#query").prop("disabled", true);
-                            $("#query-button").prop("disabled", true);
-                        });
-
-                        /**
-                         * Define ajax complete behavior. 
-                         * @returns {undefined}
-                         */
-                        $(document).ajaxComplete(function () {
-                            $("#wait").css("display", "none");
-                            $("#query").prop("disabled", false);
-                            $("#query-button").prop("disabled", false);
-                        });
-
-                        /**
-                         * Trigger job details search on Enter click. 
-                         */
-                        /*<![CDATA[*/
-                        $('#query').keyup(function (e) {
-                            if (e.ctrlKey && e.keyCode === 13) {
-                                query();
-                            }
-                        });
-                        /*]]>*/
-
-                        /**
-                         * Trigger job details search on search button click. 
-                         */
-                        $("#query-button").click(function () {
-                            query();
-                        });
-
-
-                        /**
-                         * Trigger job details search on history click.
-                         * @returns {undefined}
-                         */
-                        $("[id^=query_]").click(function () {
-                            query();
-                        });
-
-                        /**
-                         * Search for job that match the search input value. 
-                         * @returns {undefined}
-                         */
-                        function query() {
-                            var connection = /*[[${connection.id}]]*/ 0;
-                            var query = $('#query').val();
-                            var url = /*[[@{/connection/query/}]]*/ "/connection/query/";
-
-                            if (query !== "") {
-                                $.ajax({
-                                    type: "POST",
-                                    url: url + connection,
-                                    data: query,
-                                    contentType: "text/html",
-                                    timeout: 65000,
-                                    success: function (result) {
-                                        $("#fragmentQueryResultSetHolder").html(result);
-
-                                        $('.table').DataTable(
-                                                {
-                                                    "paging": false,
-                                                    "info": false,
-                                                    "searching": true,
-                                                    "order": [],
-                                                    "columnDefs": [{
-                                                            "targets": 'no-sort',
-                                                            "orderable": false
-                                                        }
-                                                    ]
-                                                });
-                                    },
-                                    error: function (e) {
-                                        alert("Fail loading query resultset " + e);
-                                    }
-                                });
-                            }
-                        }
-                    });
-                </script>
-
                 <table>
                     <tr>
                         <th>
@@ -121,14 +18,29 @@
 
                 <div style="margin-top:10px">
                     <div class="form-group">
-                        <textarea class="form-control" id="query" required="true" rows="10" minlength="1" maxlength="5000" placeholder="Free SQL, but result set limited to 100 rows!"></textarea>
+                        <textarea 
+                            class="form-control" 
+                            id="query" 
+                            required="true" 
+                            rows="10" 
+                            minlength="1" 
+                            maxlength="5000"></textarea>
                     </div>
 
-                    <button id="query-button" class="btn btn-generic" type="button">
+                    <button 
+                        id="query-button" 
+                        class="btn btn-generic" 
+                        type="button">
+
                         <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Query
                     </button>  
 
-                    <button id="wait" type="button" class="btn btn-default btn-sm pull-right" style="display:none;">
+                    <button 
+                        id="wait" 
+                        type="button"
+                        class="btn btn-default btn-sm pull-right" 
+                        style="display:none;">
+
                         <img th:src="@{'/images/ajax-loader.gif'}"></img>
                     </button>
                 </div>
@@ -139,5 +51,104 @@
                 <div id="fragmentQueryResultSetHolder"/>
             </div>
         </div>
+
+        <script th:inline="javascript">
+            $(document).ready(function () {
+                window.editor = CodeMirror.fromTextArea(document.getElementById('query'), {
+                    mode: 'text/x-sql',
+                    indentWithTabs: true,
+                    smartIndent: true,
+                    lineNumbers: true,
+                    matchBrackets: true,
+                    autofocus: true,
+                    extraKeys: {"Ctrl-Enter": function () {
+                            query();
+                        }}
+                });
+
+                /**
+                 * Set header CSRF Token.
+                 * @returns {undefined}
+                 */
+                $.ajaxSetup({
+                    headers: {'X-CSRF-Token': $('#_csrf').attr('content')}
+                });
+
+                /**
+                 * Define ajax start behavior. 
+                 * @returns {undefined}
+                 */
+                $(document).ajaxStart(function () {
+                    $("#wait").css("display", "block");
+                    $("#query").prop("disabled", true);
+                    $("#query-button").prop("disabled", true);
+                });
+
+                /**
+                 * Define ajax complete behavior. 
+                 * @returns {undefined}
+                 */
+                $(document).ajaxComplete(function () {
+                    $("#wait").css("display", "none");
+                    $("#query").prop("disabled", false);
+                    $("#query-button").prop("disabled", false);
+                });
+
+                /**
+                 * Trigger job details search on search button click. 
+                 */
+                $("#query-button").click(function () {
+                    query();
+                });
+
+
+                /**
+                 * Trigger job details search on history click.
+                 * @returns {undefined}
+                 */
+                $("[id^=query_]").click(function () {
+                    query();
+                });
+
+                /**
+                 * Search for job that match the search input value. 
+                 * @returns {undefined}
+                 */
+                function query() {
+                    var connection = /*[[${connection.id}]]*/ 0;
+                    var query = window.editor.getValue();
+                    var url = /*[[@{/connection/query/}]]*/ "/connection/query/";
+
+                    if (query !== "") {
+                        $.ajax({
+                            type: "POST",
+                            url: url + connection,
+                            data: query,
+                            contentType: "text/html",
+                            timeout: 65000,
+                            success: function (result) {
+                                $("#fragmentQueryResultSetHolder").html(result);
+
+                                $('.table').DataTable(
+                                        {
+                                            "paging": false,
+                                            "info": false,
+                                            "searching": true,
+                                            "order": [],
+                                            "columnDefs": [{
+                                                    "targets": 'no-sort',
+                                                    "orderable": false
+                                                }
+                                            ]
+                                        });
+                            },
+                            error: function (e) {
+                                alert("Fail loading query resultset " + e);
+                            }
+                        });
+                    }
+                }
+            });
+        </script>    
     </body>
 </html>

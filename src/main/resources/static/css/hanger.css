@@ -563,9 +563,8 @@ img.media-object{
     padding-top: 22px;
 }
 
-.card:hover {
-    padding-left: 10px;
-    border-left: 2.0px solid#23bbad;
+.checkup-gray-background{
+    background-color: #F4F5F7;
 }
 
 .compact-sort{

@@ -170,9 +170,6 @@
                                         <input  
                                             name="subscribe"
                                             type="checkbox" 
-                                            data-toggle="toggle" 
-                                            data-size="mini"
-                                            data-onstyle="default" 
                                             th:id="${'subscribe_' + subject.id}" 
                                             th:value="${subject.id}" 
                                             th:checked="${#lists.contains(subject.user, loggedIn)}"

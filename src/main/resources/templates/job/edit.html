@@ -187,9 +187,6 @@
                                         id="rebuild" 
                                         name="rebuild"
                                         type="checkbox" 
-                                        data-toggle="toggle" 
-                                        data-size="mini"
-                                        data-onstyle="default" 
                                         th:field="*{rebuild}" 
                                         th:checked="*{rebuild}"/> Rebuild along the day
                                 </label>
@@ -220,9 +217,6 @@
                                         id="slack" 
                                         name="slack"
                                         type="checkbox" 
-                                        data-toggle="toggle" 
-                                        data-size="mini"
-                                        data-onstyle="default" 
                                         th:field="*{notify}" 
                                         th:checked="*{notify}"/> Slack notification  
                                 </label>
@@ -328,7 +322,7 @@
                                 <th style="width:10%">Server</th>
                                 <th style="width:45.5%">Name</th>
                                 <th style="width:12%">Scope</th>
-                                <th style="width:5%">Rebuild</th>
+                                <th style="width:5%">Build blocker</th>
                                 <th>Delete</th>
                             </tr>
                             <tr th:each="parent, parentStat : ${job.parent}">
@@ -360,10 +354,6 @@
                                         id="blocker" 
                                         name="blocker"
                                         type="checkbox" 
-                                        data-on="Blocker" 
-                                        data-toggle="toggle" 
-                                        data-size="mini"
-                                        data-onstyle="default" 
                                         th:field="*{parent[__${parentStat.index}__].blocker}" 
                                         th:checked="*{parent[__${parentStat.index}__].blocker}"/>
                                 </td>
@@ -501,6 +491,22 @@
                                 </div>
                             </div> 
 
+                            <div class="form-group">  
+                                <div class="col-sm-10">
+                                    <div th:if="${not #lists.isEmpty(job.parent)}">  
+                                        <label>
+                                            <input     
+                                                id="prevalidation" 
+                                                name="prevalidationEnabled"
+                                                type="checkbox" 
+                                                data-onstyle="default" 
+                                                th:field="*{checkup[__${checkupStat.index}__].prevalidation}" 
+                                                th:checked="*{checkup[__${checkupStat.index}__].prevalidation}"/> Pre-validation
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group">                     
                                 <div class="col-sm-1">
                                     <input  
@@ -516,23 +522,7 @@
                                         th:checked="*{checkup[__${checkupStat.index}__].enabled}"/>
                                 </div>
 
-                                <div class="col-sm-1">
-                                    <div th:if="${not #lists.isEmpty(job.parent)}">  
-                                        <input     
-                                            id="prevalidation" 
-                                            name="prevalidationEnabled"
-                                            type="checkbox" 
-                                            data-toggle="toggle" 
-                                            data-on="Pre-validation" 
-                                            data-off="Post-validation" 
-                                            data-size="small"
-                                            data-onstyle="default" 
-                                            th:field="*{checkup[__${checkupStat.index}__].prevalidation}" 
-                                            th:checked="*{checkup[__${checkupStat.index}__].prevalidation}"/>
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-8">   
+                                <div class="col-sm-9">   
                                     <button type="submit" class="btn btn-delete btn-sm pull-right btn-space" name="partial_remove_job_checkup" th:value="${checkupStat.index}">
                                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove
                                     </button>

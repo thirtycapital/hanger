@@ -469,6 +469,10 @@ code[class*="language-free"] {
     height: 19px;
 }
 
+.btn{
+    background-color: transparent;
+}
+
 .form-control{
     border: 1px solid #D8D8D8;
     box-shadow: inset 0px 0px 0px 0px;

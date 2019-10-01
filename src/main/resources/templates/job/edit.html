@@ -537,12 +537,11 @@
                                         </button>
                                     </div>
                                 </div>
-                            </div>
-
-                            <hr/>
+                            </div>                            
 
                             <!--Checkup trigger-->
                             <div th:if="*{not #lists.isEmpty(checkup[__${checkupStat.index}__].trigger)}">   
+                                <hr/>
                                 <label>Trigger</label>
                                 <table class="table">
                                     <tr>

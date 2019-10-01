@@ -101,12 +101,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/user/add/",
                         "/user/role/**",
                         "/user/active/**",
-                        "/configuration/**",
-                        "/connection/workbench/**",
-                        "/connection/query/**").access("hasRole('HERO')")
+                        "/configuration/**").access("hasRole('HERO')")
                 .antMatchers(
                         "/**/delete/**",
-                        "/**/rebuild/**").access("hasRole('ADMIN') || hasRole('HERO')")
+                        "/**/rebuild/**",
+                        "/connection/workbench/**",
+                        "/connection/query/**").access("hasRole('ADMIN') || hasRole('HERO')")
                 .antMatchers(
                         "/**/edit/**",
                         "/**/add/**").access("hasRole('USER') || hasRole('ADMIN') || hasRole('HERO')")

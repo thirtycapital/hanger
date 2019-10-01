@@ -6,101 +6,6 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <script th:inline="javascript">
-                $(document).ready(function () {
-                    toastr.options = {
-                        "closeButton": true,
-                        "progressBar": true,
-                        "positionClass": "toast-top-right",
-                        "timeOut": "2500",
-                        "showEasing": "swing",
-                        "hideEasing": "linear",
-                        "showMethod": "fadeIn",
-                        "hideMethod": "fadeOut"
-                    };
-
-                    /**
-                     * Show wait panel.
-                     * @returns {undefined}
-                     */
-                    $(document).ajaxStart(function () {
-                        $("#modal_wait").css("display", "block");
-                    });
-
-                    /**
-                     * Hide wait panel.
-                     * @returns {undefined}
-                     */
-                    $(document).ajaxComplete(function () {
-                        $("#modal_wait").css("display", "none");
-                    });
-
-                    /**
-                     * Set header CSRF Token.
-                     * @returns {undefined}
-                     */
-                    $.ajaxSetup({
-                        headers: {'X-CSRF-Token': $('#_csrf').attr('content')}
-                    });
-
-                    /**
-                     * Subject subscription and unsubscription.
-                     * @returns {undefined}
-                     */
-                    $("[id^=subscribe_]").change(function () {
-                        var url;
-                        var subject = $(this).val();
-                        var subscription = $(this).prop("checked");
-
-                        if (subscription) {
-                            url = /*[[@{/subject/subscribe/}]]*/ "/subject/subscribe/";
-                        } else {
-                            url = /*[[@{/subject/unsubscribe/}]]*/ "/subject/unsubscribe/";
-                        }
-
-                        $.ajax({
-                            type: "POST",
-                            url: url,
-                            data: subject,
-                            contentType: "text/html",
-                            timeout: 30000,
-                            success: function (result) {
-                                if (subscription) {
-                                    toastr.success('Subscribed');
-                                } else {
-                                    toastr.success('Unsubscribed');
-                                }
-                            },
-                            error: function (xhr, status, error) {
-                                toastr.error('Subscription failure');
-                                alert("Subscription error " + xhr.responseText);
-                            }
-                        });
-                    });
-
-                    /**
-                     * Show subject details modal. 
-                     * @returns {undefined}
-                     */
-                    $("[id^=modal_subject_detail_]").click(function () {
-                        var url = /*[[@{/subject/modal/detail/}]]*/ "/subject/modal/detail/";
-                        var subject = $(this).val();
-
-                        $.ajax({
-                            type: "GET",
-                            url: url + subject,
-                            success: function (result) {
-                                $("#modalHolder").html(result);
-                                $("#modalJobDetails").modal({backdrop: 'static', keyboard: false});
-                            },
-                            error: function (e) {
-                                alert("Error loading subject details: " + e);
-                            }
-                        });
-                    });
-                });
-            </script>
-
             <table>
                 <tr>
                     <th>
@@ -224,5 +129,99 @@
                 </button>
             </center>
         </div>
+        <script th:inline="javascript">
+            $(document).ready(function () {
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "timeOut": "2500",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+
+                /**
+                 * Show wait panel.
+                 * @returns {undefined}
+                 */
+                $(document).ajaxStart(function () {
+                    $("#modal_wait").css("display", "block");
+                });
+
+                /**
+                 * Hide wait panel.
+                 * @returns {undefined}
+                 */
+                $(document).ajaxComplete(function () {
+                    $("#modal_wait").css("display", "none");
+                });
+
+                /**
+                 * Set header CSRF Token.
+                 * @returns {undefined}
+                 */
+                $.ajaxSetup({
+                    headers: {'X-CSRF-Token': $('#_csrf').attr('content')}
+                });
+
+                /**
+                 * Subject subscription and unsubscription.
+                 * @returns {undefined}
+                 */
+                $("[id^=subscribe_]").change(function () {
+                    var url;
+                    var subject = $(this).val();
+                    var subscription = $(this).prop("checked");
+
+                    if (subscription) {
+                        url = /*[[@{/subject/subscribe/}]]*/ "/subject/subscribe/";
+                    } else {
+                        url = /*[[@{/subject/unsubscribe/}]]*/ "/subject/unsubscribe/";
+                    }
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: subject,
+                        contentType: "text/html",
+                        timeout: 30000,
+                        success: function (result) {
+                            if (subscription) {
+                                toastr.success('Subscribed');
+                            } else {
+                                toastr.success('Unsubscribed');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            toastr.error('Subscription failure');
+                            alert("Subscription error " + xhr.responseText);
+                        }
+                    });
+                });
+
+                /**
+                 * Show subject details modal. 
+                 * @returns {undefined}
+                 */
+                $("[id^=modal_subject_detail_]").click(function () {
+                    var url = /*[[@{/subject/modal/detail/}]]*/ "/subject/modal/detail/";
+                    var subject = $(this).val();
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + subject,
+                        success: function (result) {
+                            $("#modalHolder").html(result);
+                            $("#modalJobDetails").modal({backdrop: 'static', keyboard: false});
+                        },
+                        error: function (e) {
+                            alert("Error loading subject details: " + e);
+                        }
+                    });
+                });
+            });
+        </script>
     </body>
 </html> 

@@ -56,28 +56,28 @@ pre{
 pre[class*="language-sql"] {
     padding: 10px;
     margin: 0px;
-    background-color: #FFFFFF !important;
+    background-color: transparent !important;
     min-height: 30px;
 }
 
 pre[class*="language-bash"] {
     padding: 10px;
     margin: 0px;
-    background-color: #FFFFFF !important;
+    background-color: transparent !important;
     min-height: 30px;
 }
 
 pre[class*="language-text"] {
     padding: 10px;
     margin: 0px;
-    background-color: #FFFFFF !important;
+    background-color: transparent !important;
     min-height: 30px;
 }
 
 pre[class*="language-none"] {
     padding: 10px;
     margin: 0px;
-    background-color: #FFFFFF !important;
+    background-color: transparent !important;
     border: none;
     min-height: 30px;
 }
@@ -85,7 +85,7 @@ pre[class*="language-none"] {
 pre[class*="language-free"] {
     padding: 10px;
     padding-left: 20px;
-    background-color: #ffffff !important;
+    background-color: transparent !important;
     border: none;
     min-height: 30px;
     border-left: 1px solid #D8D8D8;
@@ -472,13 +472,13 @@ code[class*="language-free"] {
 .form-control{
     border: 1px solid #D8D8D8;
     box-shadow: inset 0px 0px 0px 0px;
+    background-color: transparent;
 }
 
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
     color: #999999;
     border: 1px dotted #D8D8D8;
     background : none;
-    background-color: #FFFFFF;
     opacity: 1;
 }
 
@@ -564,7 +564,7 @@ img.media-object{
 }
 
 .checkup-gray-background{
-    background-color: #F4F5F7;
+    background-color: #F9F9F9;
 }
 
 .compact-sort{

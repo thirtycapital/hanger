@@ -141,6 +141,7 @@
                                 <th style="width:30%">Name</th>
                                 <th style="width:5%">Scope</th>
                                 <th style="width:12%">Build blocker</th>
+                                <th>Build history</th>
                             </tr>
                             <tr th:each="parent, stat : ${job.parent}">
                                 <td> 
@@ -158,6 +159,11 @@
                                         type="checkbox" 
                                         th:checked="*{parent[__${stat.index}__].blocker}"
                                         disabled="true"/>  
+                                </td>
+                                <td>
+                                    <a href="javascript:;" class="build-history" th:id="*{parent[__${stat.index}__].parent.id}">
+                                        <span class="glyphicon glyphicon-time"></span>
+                                    </a>                          
                                 </td>
                             </tr>
                         </table>
@@ -441,13 +447,26 @@
                 </form>
             </div>
         </div>
+
+        <!--AJAX Parent modal --> 
+        <div id="modalHolder"/>
+
         <script>
             Prism.plugins.NormalizeWhitespace.setDefaults({
-                'remove-trailing': true,
-                'remove-indent': true,
-                'left-trim': true,
-                'right-trim': true,
+            'remove-trailing': true,
+            'remove-indent': true,
+            'left-trim': true,
+            'right-trim': true,
             });
+            
+            $(function() {
+                $('.build-history').click(function() {
+                    var job = $(this)[0].id;
+                    
+                    displayBuildHistory(job);
+                });
+            });
+            
         </script>
     </body>
 </html>

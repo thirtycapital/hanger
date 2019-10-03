@@ -39,7 +39,7 @@
                 </div>
             </center>
 
-            <div class="chart dragscroll" id="flow"></div>
+            <div class="chart dragscroll" id="flow" style="overflow-y: auto; margin-left: 225px; left: 0px"></div>
 
             <div id="zoom_control" class="btn-group-vertical" >
                 <button title="Zoom Out" role="button" id="zoom_in" class="btn btn-group-md"><span class="glyphicon glyphicon-zoom-in"></span></button>
@@ -260,20 +260,7 @@
 
                 // Build history modal.
                 var buildHistory = function () {
-                    var url = /*[[@{/build/history/}]]*/ "/build/history/";
-
-                    $.ajax({
-                        type: "GET",
-                        url: url + job,
-                        timeout: 30000,
-                        success: function (result) {
-                            $("#modalHolder").html(result);
-                            $("#modalHistory").modal({backdrop: 'static', keyboard: false});
-                        },
-                        error: function (e) {
-                            alert("Fail loading job build history " + e);
-                        }
-                    });
+                    displayBuildHistory(job);
                 }
 
 

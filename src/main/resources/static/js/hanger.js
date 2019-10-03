@@ -122,3 +122,22 @@ $(document).ready(function () {
         todayHighlight: true
     });
 });
+
+var displayBuildHistory = function(job) {
+
+    var url = /*[[@{/build/history/}]]*/ "/build/history/";
+
+    $.ajax({
+        type: "GET",
+        url: url + job,
+        timeout: 30000,
+        success: function (result) {
+            $("#modalHolder").html(result);
+            $("#modalHistory").modal({backdrop: 'static', keyboard: true});
+        },
+        error: function (e) {
+            alert("Fail loading job build history " + e);
+        }
+    });                
+
+}

@@ -29,20 +29,20 @@
             <fieldset>
                 <legend class="space-top">Primary key</legend>
 
-                    <table id="table_clean" class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th style="width:5%">Position</th>
-                                <th>Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="pk : ${pk}">
-                                <td th:text="${pk.position}">Position</td>
-                                <td th:text="${pk.name}">Name</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <table id="table_clean" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width:5%">Position</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="pk : ${pk}">
+                            <td th:text="${pk.position}">Position</td>
+                            <td th:text="${pk.name}">Name</td>
+                        </tr>
+                    </tbody>
+                </table>
             </fieldset>
 
             <fieldset>

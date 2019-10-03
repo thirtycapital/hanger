@@ -5,51 +5,6 @@
     </head>
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
-
-        <script th:inline="javascript">
-            $(document).ready(function () {
-                /**
-                 * Show wait panel.
-                 * @returns {undefined}
-                 */
-                $(document).ajaxStart(function () {
-                    $("#modal_wait").css("display", "block");
-                    $("[id^=modal_add_parent_]").prop("disabled", true);
-                });
-
-                /**
-                 * Hide wait panel.
-                 * @returns {undefined}
-                 */
-                $(document).ajaxComplete(function () {
-                    $("#modal_wait").css("display", "none");
-                    $("[id^=modal_add_parent_]").prop("disabled", false);
-                });
-
-                /**
-                 * Show slack channel modal. 
-                 * @returns {undefined}
-                 */
-                $("#modal_add_slack_channel").click(function () {
-                    var url = /*[[@{/subject/modal/channel/}]]*/ "/subject/modal/channel/";
-
-                    $.ajax({
-                        type: "GET",
-                        url: url,
-                        timeout: 30000,
-                        success: function (result) {
-                            $("#modalHolder").html(result);
-                            $("#modalSlackChannel").modal({backdrop: 'static', keyboard: false});
-                            $('.selectpicker').selectpicker();
-                        },
-                        error: function (e) {
-                            alert("Error loading channels from Slack " + e);
-                        }
-                    });
-                });
-            });
-        </script>
-
         <div class="container-fluid main-content">
             <h3 class="page-title">Subject</h3>
             <div>           
@@ -103,9 +58,6 @@
                                         id="mandatory" 
                                         name="mandatory"
                                         type="checkbox" 
-                                        data-toggle="toggle" 
-                                        data-size="mini"
-                                        data-onstyle="default" 
                                         th:field="*{mandatory}" 
                                         th:checked="*{mandatory}"
                                         th:disabled="${#authorization.expression('hasRole(''USER'')')}"/> Mandatory
@@ -134,14 +86,11 @@
                         <!--Notification-->                                            
                         <div class="form-group">
                             <div class="col-sm-10">
-                               <label>
+                                <label>
                                     <input  
                                         id="slack" 
                                         name="slack"
                                         type="checkbox" 
-                                        data-toggle="toggle" 
-                                        data-size="mini"
-                                        data-onstyle="default" 
                                         th:field="*{notified}" 
                                         th:checked="*{notified}"/> Slack notification 
                                 </label>        
@@ -203,5 +152,48 @@
                 </form>
             </div>
         </div>
+        <script th:inline="javascript">
+            $(document).ready(function () {
+                /**
+                 * Show wait panel.
+                 * @returns {undefined}
+                 */
+                $(document).ajaxStart(function () {
+                    $("#modal_wait").css("display", "block");
+                    $("[id^=modal_add_parent_]").prop("disabled", true);
+                });
+
+                /**
+                 * Hide wait panel.
+                 * @returns {undefined}
+                 */
+                $(document).ajaxComplete(function () {
+                    $("#modal_wait").css("display", "none");
+                    $("[id^=modal_add_parent_]").prop("disabled", false);
+                });
+
+                /**
+                 * Show slack channel modal. 
+                 * @returns {undefined}
+                 */
+                $("#modal_add_slack_channel").click(function () {
+                    var url = /*[[@{/subject/modal/channel/}]]*/ "/subject/modal/channel/";
+
+                    $.ajax({
+                        type: "GET",
+                        url: url,
+                        timeout: 30000,
+                        success: function (result) {
+                            $("#modalHolder").html(result);
+                            $("#modalSlackChannel").modal({backdrop: 'static', keyboard: false});
+                            $('.selectpicker').selectpicker();
+                        },
+                        error: function (e) {
+                            alert("Error loading channels from Slack " + e);
+                        }
+                    });
+                });
+            });
+        </script>
     </body>
 </html> 

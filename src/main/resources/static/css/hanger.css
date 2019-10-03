@@ -569,6 +569,8 @@ img.media-object{
 
 .checkup-gray-background{
     background-color: #F9F9F9;
+    padding: 15px;
+    margin-bottom: 15px;
 }
 
 .compact-sort{
@@ -836,4 +838,8 @@ input[type='file'] {
 .row-gantt-parent {
     font-weight: bold !important;
     background-color: #F8F9F9 !important;
+}
+
+.glyphicon-bell {
+    color: #999999;
 }

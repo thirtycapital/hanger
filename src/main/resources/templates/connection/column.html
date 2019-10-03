@@ -26,45 +26,49 @@
                 </div>  
             </div>
 
-            <label class="space-top">Primary key</label>
+            <fieldset>
+                <legend class="space-top">Primary key</legend>
 
-            <table id="table_clean" class="table table-hover">
-                <thead>
-                    <tr>
-                        <th style="width:5%">Position</th>
-                        <th>Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="pk : ${pk}">
-                        <td th:text="${pk.position}">Position</td>
-                        <td th:text="${pk.name}">Name</td>
-                    </tr>
-                </tbody>
-            </table>
+                    <table id="table_clean" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width:5%">Position</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="pk : ${pk}">
+                                <td th:text="${pk.position}">Position</td>
+                                <td th:text="${pk.name}">Name</td>
+                            </tr>
+                        </tbody>
+                    </table>
+            </fieldset>
 
-            <label>Columns</label>
+            <fieldset>
+                <legend>Columns</legend>
 
-            <table id="table" class="table table-hover">
-                <thead>
-                    <tr>
-                        <th style="width:5%">Position</th>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Size</th>
-                        <th>Decimal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="column, stat : ${column}">
-                        <td th:text="${column.position}">Position</td>
-                        <td th:text="${column.name}">Name</td>
-                        <td th:text="${column.type}">Type</td>
-                        <td th:text="${column.size}">Size</td>
-                        <td th:text="${column.decimal}">Decimal</td>
-                    </tr>
-                </tbody>
-            </table>
+                <table id="table" class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width:5%">Position</th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Size</th>
+                            <th>Decimal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="column, stat : ${column}">
+                            <td th:text="${column.position}">Position</td>
+                            <td th:text="${column.name}">Name</td>
+                            <td th:text="${column.type}">Type</td>
+                            <td th:text="${column.size}">Size</td>
+                            <td th:text="${column.decimal}">Decimal</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
         </div>
     </body>
 </html>

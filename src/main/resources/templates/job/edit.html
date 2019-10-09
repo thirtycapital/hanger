@@ -53,97 +53,6 @@
                     </div>
 
                     <div th:if="${ job.server != null }">
-                        <!--AJAX Parent model-->
-                        <script th:inline="javascript">
-                            $(document).ready(function () {
-                                /**
-                                 * Show wait panel.
-                                 * @returns {undefined}
-                                 */
-                                $(document).ajaxStart(function () {
-                                    $("#modal_wait").css("display", "block");
-                                    $("[id^=modal_add_parent_]").prop("disabled", true);
-                                });
-
-                                /**
-                                 * Hide wait panel.
-                                 * @returns {undefined}
-                                 */
-                                $(document).ajaxComplete(function () {
-                                    $("#modal_wait").css("display", "none");
-                                    $("[id^=modal_add_parent_]").prop("disabled", false);
-                                });
-
-                                /**
-                                 * Show job list modal. 
-                                 * @returns {undefined}
-                                 */
-                                $("[id^=modal_add_parent_]").click(function () {
-                                    var url = /*[[@{/job/modal/list/}]]*/ "/job/modal/list";
-                                    var server = $(this).val();
-
-                                    $.ajax({
-                                        type: "GET",
-                                        url: url + server,
-                                        timeout: 30000,
-                                        success: function (result) {
-                                            $("#modalHolder").html(result);
-                                            $("#modalJobList").modal({backdrop: 'static', keyboard: false});
-                                            $('.selectpicker').selectpicker();
-                                        },
-                                        error: function (e) {
-                                            alert("Error loading jobs from Jenkins " + e);
-                                        }
-                                    });
-                                });
-
-
-                                /**
-                                 * Show slack channel modal. 
-                                 * @returns {undefined}
-                                 */
-                                $("#modal_add_slack_channel").click(function () {
-                                    var url = /*[[@{/job/modal/channel/}]]*/ "/job/modal/channel/";
-
-                                    $.ajax({
-                                        type: "GET",
-                                        url: url,
-                                        timeout: 30000,
-                                        success: function (result) {
-                                            $("#modalHolder").html(result);
-                                            $("#modalSlackChannel").modal({backdrop: 'static', keyboard: false});
-                                            $('.selectpicker').selectpicker();
-                                        },
-                                        error: function (e) {
-                                            alert("Error loading channels from Slack " + e);
-                                        }
-                                    });
-                                });
-
-                                /**
-                                 * Disable rebuild on fail when prevalidation is checked. 
-                                 */
-                                if ($("#prevalidation").is(":checked")) {
-                                    $("#on-fail").find('[value=REBUILD]').attr('disabled', true);
-                                    $("#on-fail").selectpicker('refresh');
-                                }
-
-                                /**
-                                 * Disable or enable rebuild on fail based on prevalidation state. 
-                                 */
-                                $("#prevalidation").change(function () {
-                                    if ($("#prevalidation").is(":checked")) {
-                                        $("#on-fail").find('[value=REBUILD]').attr('disabled', true);
-                                        $("#on-fail").val('NOTHING');
-                                    } else {
-                                        $("#on-fail").find('[value=REBUILD]').attr('disabled', false);
-                                    }
-
-                                    $("#on-fail").selectpicker('refresh');
-                                });
-                            });
-                        </script> 
-
                         <!--Name-->
                         <label>Name</label> 
                         <div class="form-group">
@@ -320,9 +229,10 @@
                             <tr>
                                 <th style="width:5%">#</th>
                                 <th style="width:10%">Server</th>
-                                <th style="width:45.5%">Name</th>
-                                <th style="width:12%">Scope</th>
-                                <th style="width:5%">Build blocker</th>
+                                <th style="width:47.5%">Name</th>
+                                <th style="width:5%"><span class="glyphicon glyphicon-time" title="Build history"></span></th>
+                                <th style="width:5%"><span class="glyphicon glyphicon-lock" title="Rebuild blocker"></span></th>
+                                <th style="width:5%">Scope</th>
                                 <th>Delete</th>
                             </tr>
                             <tr th:each="parent, parentStat : ${job.parent}">
@@ -336,6 +246,19 @@
                                 <td th:text="*{parent[__${parentStat.index}__].parent.server.name}"></td>
                                 <td><a class="link" th:text="*{parent[__${parentStat.index}__].parent.name}" th:href="@{'/job/view/' + *{parent[__${parentStat.index}__].parent.id}}" target="_blank"></a></td>
                                 <td>
+                                    <a href="javascript:;" class="build-history" th:id="*{parent[__${parentStat.index}__].parent.id}">
+                                        +
+                                    </a>                          
+                                </td>
+                                <td>
+                                    <input  
+                                        id="blocker" 
+                                        name="blocker"
+                                        type="checkbox" 
+                                        th:field="*{parent[__${parentStat.index}__].blocker}" 
+                                        th:checked="*{parent[__${parentStat.index}__].blocker}"/>
+                                </td>
+                                <td>
                                     <select class="selectpicker form-control low" 
                                             data-style="btn btn-generic btn-xs" 
                                             data-live-search="true" 
@@ -348,14 +271,6 @@
                                                 th:if="${scope != T(br.com.dafiti.hanger.option.Scope).ANYONE}">
                                         </option>
                                     </select>
-                                </td>
-                                <td>
-                                    <input  
-                                        id="blocker" 
-                                        name="blocker"
-                                        type="checkbox" 
-                                        th:field="*{parent[__${parentStat.index}__].blocker}" 
-                                        th:checked="*{parent[__${parentStat.index}__].blocker}"/>
                                 </td>
                                 <td>
                                     <button type="submit" name="partial_remove_parent" th:value="${parentStat.index}" class="btn btn-delete btn-xs">
@@ -724,11 +639,98 @@
 
             <!--Scroll position-->
             <script th:inline="javascript">
-                /**
-                 * Record the scroll position on the page.
-                 * @returns {undefined}
-                 */
-                $(function () {
+                $(document).ready(function () {
+                    /**
+                     * Show wait panel.
+                     * @returns {undefined}
+                     */
+                    $(document).ajaxStart(function () {
+                        $("#modal_wait").css("display", "block");
+                        $("[id^=modal_add_parent_]").prop("disabled", true);
+                    });
+
+                    /**
+                     * Hide wait panel.
+                     * @returns {undefined}
+                     */
+                    $(document).ajaxComplete(function () {
+                        $("#modal_wait").css("display", "none");
+                        $("[id^=modal_add_parent_]").prop("disabled", false);
+                    });
+
+                    /**
+                     * Show job list modal. 
+                     * @returns {undefined}
+                     */
+                    $("[id^=modal_add_parent_]").click(function () {
+                        var url = /*[[@{/job/modal/list/}]]*/ "/job/modal/list";
+                        var server = $(this).val();
+
+                        $.ajax({
+                            type: "GET",
+                            url: url + server,
+                            timeout: 30000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalJobList").modal({backdrop: 'static', keyboard: false});
+                                $('.selectpicker').selectpicker();
+                            },
+                            error: function (e) {
+                                alert("Error loading jobs from Jenkins " + e);
+                            }
+                        });
+                    });
+
+
+                    /**
+                     * Show slack channel modal. 
+                     * @returns {undefined}
+                     */
+                    $("#modal_add_slack_channel").click(function () {
+                        var url = /*[[@{/job/modal/channel/}]]*/ "/job/modal/channel/";
+
+                        $.ajax({
+                            type: "GET",
+                            url: url,
+                            timeout: 30000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalSlackChannel").modal({backdrop: 'static', keyboard: false});
+                                $('.selectpicker').selectpicker();
+                            },
+                            error: function (e) {
+                                alert("Error loading channels from Slack " + e);
+                            }
+                        });
+                    });
+
+                    /**
+                     * Disable rebuild on fail when prevalidation is checked. 
+                     */
+                    if ($("#prevalidation").is(":checked")) {
+                        $("#on-fail").find('[value=REBUILD]').attr('disabled', true);
+                        $("#on-fail").selectpicker('refresh');
+                    }
+
+                    /**
+                     * Disable or enable rebuild on fail based on prevalidation state. 
+                     */
+                    $("#prevalidation").change(function () {
+                        if ($("#prevalidation").is(":checked")) {
+                            $("#on-fail").find('[value=REBUILD]').attr('disabled', true);
+                            $("#on-fail").val('NOTHING');
+                        } else {
+                            $("#on-fail").find('[value=REBUILD]').attr('disabled', false);
+                        }
+
+                        $("#on-fail").selectpicker('refresh');
+                    });
+
+
+                    /**
+                     * Record the scroll position on the page.
+                     * @returns {undefined}
+                     */
                     var top = parseInt($.cookie(/*[[${'job_' + job.id}]]*/ "job"));
 
                     if (top)
@@ -737,6 +739,27 @@
                         var top = $(document).scrollTop();
                         $.cookie(/*[[${'job_' + job.id}]]*/ "job", top, {path: '/job', expires: 1});
                     })
+
+                    /**
+                     * Build history modal.
+                     */
+                    $('.build-history').click(function () {
+                        var job = $(this)[0].id;
+                        var url = /*[[@{/build/history/}]]*/ "/build/history/";
+
+                        $.ajax({
+                            type: "GET",
+                            url: url + job,
+                            timeout: 30000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalHistory").modal({backdrop: 'static', keyboard: true});
+                            },
+                            error: function (e) {
+                                alert("Fail loading job build history " + e);
+                            }
+                        });
+                    });
                 });
             </script>
         </div>

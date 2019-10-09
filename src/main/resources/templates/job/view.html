@@ -138,10 +138,11 @@
                             <tr>
                                 <th style="width:5%">#</th>
                                 <th style="width:10%">Server</th>
-                                <th style="width:30%">Name</th>
+                                <th style="width:52.5%">Name</th>                               
+                                <th style="width:5%"><span class="glyphicon glyphicon-time" title="Build history"></span></th>
+                                <th style="width:5%"><span class="glyphicon glyphicon-lock" title="Rebuild blocker"></span></th>
                                 <th style="width:5%">Scope</th>
-                                <th style="width:12%">Build blocker</th>
-                                <th>Build history</th>
+                                <th></th>
                             </tr>
                             <tr th:each="parent, stat : ${job.parent}">
                                 <td> 
@@ -150,7 +151,9 @@
                                 <td th:text="*{parent[__${stat.index}__].parent.server.name}"></td>
                                 <td><a class="link" th:text="*{parent[__${stat.index}__].parent.name}" th:href="@{'/job/view/' + *{parent[__${stat.index}__].parent.id}}" target="_blank"></a></td>
                                 <td>
-                                    <span th:text="*{parent[__${stat.index}__].scope}"></span>
+                                    <a href="javascript:;" class="build-history" th:id="*{parent[__${stat.index}__].parent.id}">
+                                        +
+                                    </a>                          
                                 </td>
                                 <td>
                                     <input  
@@ -161,10 +164,9 @@
                                         disabled="true"/>  
                                 </td>
                                 <td>
-                                    <a href="javascript:;" class="build-history" th:id="*{parent[__${stat.index}__].parent.id}">
-                                        <span class="glyphicon glyphicon-time"></span>
-                                    </a>                          
+                                    <span th:text="*{parent[__${stat.index}__].scope}"></span>
                                 </td>
+                                <td></td>
                             </tr>
                         </table>
                     </div>  
@@ -451,22 +453,33 @@
         <!--AJAX Parent modal --> 
         <div id="modalHolder"/>
 
-        <script>
+        <script th:inline="javascript">
             Prism.plugins.NormalizeWhitespace.setDefaults({
-            'remove-trailing': true,
-            'remove-indent': true,
-            'left-trim': true,
-            'right-trim': true,
+                'remove-trailing': true,
+                'remove-indent': true,
+                'left-trim': true,
+                'right-trim': true,
             });
-            
-            $(function() {
-                $('.build-history').click(function() {
+
+            $(function () {
+                $('.build-history').click(function () {
                     var job = $(this)[0].id;
-                    
-                    displayBuildHistory(job);
+                    var url = /*[[@{/build/history/}]]*/ "/build/history/";
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + job,
+                        timeout: 30000,
+                        success: function (result) {
+                            $("#modalHolder").html(result);
+                            $("#modalHistory").modal({backdrop: 'static', keyboard: true});
+                        },
+                        error: function (e) {
+                            alert("Fail loading job build history " + e);
+                        }
+                    });
                 });
             });
-            
         </script>
     </body>
 </html>

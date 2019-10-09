@@ -116,8 +116,12 @@
                  */
                 function query() {
                     var connection = /*[[${connection.id}]]*/ 0;
-                    var query = window.editor.getValue();
                     var url = /*[[@{/connection/query/}]]*/ "/connection/query/";
+                    var query = window.editor.getSelection();
+
+                    if (query === "") {
+                        query = window.editor.getValue();
+                    }
 
                     if (query !== "") {
                         $.ajax({

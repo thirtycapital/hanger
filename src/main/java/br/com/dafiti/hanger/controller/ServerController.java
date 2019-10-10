@@ -198,10 +198,13 @@ public class ServerController {
                     List<String> jobs = jenkinsService.listJob(server);
 
                     for (String job : jobs) {
-                        if (jobService.findByName(job) == null) {
-                            Job jobSynced = new Job(job, server);
-                            jobService.save(jobSynced);
-                            jenkinsService.updateJob(jobSynced);
+                        //Templates should be ignored during importing.
+                        if (!job.startsWith("TEMPLATE_")) {
+                            if (jobService.findByName(job) == null) {
+                                Job jobSynced = new Job(job, server);
+                                jobService.save(jobSynced);
+                                jenkinsService.updateJob(jobSynced);
+                            }
                         }
                     }
 

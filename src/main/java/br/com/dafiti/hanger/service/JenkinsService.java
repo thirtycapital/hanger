@@ -125,6 +125,45 @@ public class JenkinsService {
     }
 
     /**
+     * Identify if a job is buildable.
+     *
+     * @param job Job
+     * @return Identify if job was built.
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    public boolean isBuildable(Job job) throws URISyntaxException, IOException {
+        return this.isBuildable(job.getName(), job.getServer());
+    }
+
+    /**
+     * Identify if a job is buildable.
+     *
+     * @param name Job name
+     * @param server Server
+     * @return Identify if job was built.
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    public boolean isBuildable(String name, Server server) throws URISyntaxException, IOException {
+        JenkinsServer jenkins;
+        boolean isBuildable = false;
+
+        if (name != null && server != null) {
+            jenkins = this.getJenkinsServer(server);
+
+            if (jenkins != null) {
+                if (jenkins.isRunning()) {
+                    isBuildable = (jenkins.getJob(name).isBuildable());
+                    jenkins.close();
+                }
+            }
+        }
+
+        return isBuildable;
+    }
+
+    /**
      * Build a Jenkins job.
      *
      * @param job Job

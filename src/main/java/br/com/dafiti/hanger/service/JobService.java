@@ -189,7 +189,7 @@ public class JobService {
             Job parentJob = this.findByName(name);
 
             //Identify if the parent is valid.
-            if (!job.getName().equals(name) && !name.toUpperCase().contains("_TRIGGER_")) {
+            if (!job.getName().equals(name) && jenkinsService.isBuildable(job)) {
                 //Identify if the parent job should be imported. 
                 if (parentJob == null) {
                     Job transientJob = new Job(name, server);

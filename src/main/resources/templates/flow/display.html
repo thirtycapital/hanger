@@ -229,7 +229,6 @@
                 });
             });
 
-
             /**
              * Right click menu of jobs.                 
              */
@@ -241,22 +240,22 @@
                 var build = function () {
                     var url = /*[[@{/job/build/silently/}]]*/ "/job/build/silently/";
                     buildJob(job, url);
-                }
+                };
 
                 // Build Mesh confirm dialog.
                 var mesh = function () {
                     $("#mesh").modal({backdrop: 'static', keyboard: false});
-                }
+                };
 
                 var flow = function () {
                     var flowUrl = /*[[@{/flow/job/}]]*/ "/flow/job/";
                     window.open(flowUrl + job, '_blank');
-                }
+                };
 
                 var propagation = function () {
                     var propagationUrl = /*[[@{/propagation/job/}]]*/ "/propagation/job/";
                     window.open(propagationUrl + job, '_blank');
-                }
+                };
 
                 // Build history modal.
                 var buildHistory = function () {
@@ -274,21 +273,115 @@
                             alert("Fail loading job build history " + e);
                         }
                     });
-                }
+                };
 
+                // Disable a job.
+                var disable = function () {
+                    var url = /*[[@{/job/disable/}]]*/ "/job/disable/";
+
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "timeOut": timeout,
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + job,
+                        timeout: 30000,
+                        success: function (result) {
+                            toastr.success('Job successfully disabled.');
+
+                            setTimeout(function () {
+                                window.location.reload(1);
+                            }, timeout);
+                        },
+                        error: function (e) {
+                            toastr.error('Fail on job disable ' + e);
+                        }
+                    });
+                };
+
+                /**
+                 * Job chain update modal.
+                 * 
+                 * @param {type} server Server
+                 * @param {type} flow identify flow or propagation.
+                 * @returns {undefined}
+                 */
+                var updateJobChain = function (server, reverse) {
+                    var url = /*[[@{/job/modal/update/chain/}]]*/ "/job/modal/update/chain/";
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + job + "/" + server + "/" + reverse,
+                        timeout: 30000,
+                        success: function (result) {
+                            $("#modalHolder").html(result);
+                            $("#modalUpdateJobChain").modal({backdrop: 'static', keyboard: false});
+                            $('.selectpicker').selectpicker();
+                        },
+                        error: function (e) {
+                            alert("Error loading jobs from Jenkins " + e);
+                        }
+                    });
+                };
+
+                var servers = /*[[${servers}]]*/ '';
+                var submenuParents = [];
+                var submenuChildren = [];
+
+                // Build submenu with servers.
+                for (var server in servers) {
+
+                    // Submenu for add parents.
+                    submenuParents.push({
+                        icon: 'glyphicon glyphicon-tasks',
+                        label: servers[server].name,
+                        id: servers[server].id,
+                        action: function (option) {
+                            updateJobChain(option.id, false);
+                        }
+                    });
+
+                    // Submenu for add children.
+                    submenuChildren.push({
+                        icon: 'glyphicon glyphicon-tasks',
+                        label: servers[server].name,
+                        id: servers[server].id,
+                        action: function (option) {
+                            updateJobChain(option.id, true);
+                        }
+                    });
+                }
 
                 // Available actions.
                 var items = [
-                    {title: 'Flow', icon: 'glyphicon glyphicon-random', fn: flow},
-                    {title: 'Propagation', icon: 'glyphicon glyphicon-transfer', fn: propagation},
+                    {icon: 'glyphicon glyphicon-random', label: 'Flow', action: flow},
+                    {icon: 'glyphicon glyphicon-transfer', label: 'Propagation', action: propagation},
                     {},
-                    {title: 'Build', icon: 'glyphicon glyphicon-play', fn: build, disabled: !isAuthenticated},
-                    {title: 'Build Mesh', icon: 'glyphicon glyphicon-fast-backward', fn: mesh, disabled: !isAuthenticated},
+                    {icon: 'glyphicon glyphicon-time', label: 'Build history', action: buildHistory},
                     {},
-                    {title: 'Build history', icon: 'glyphicon glyphicon-time', fn: buildHistory},
-                ]
+                    {
+                        icon: 'glyphicon glyphicon-menu-hamburger',
+                        label: 'Actions',
+                        disabled: !isAuthenticated,
+                        submenu: [
+                            {icon: 'glyphicon glyphicon-play', label: 'Build', action: build, },
+                            {icon: 'glyphicon glyphicon-fast-backward', label: 'Build Mesh', action: mesh},
+                            {icon: 'glyphicon glyphicon-plus', label: 'Parent', submenu: submenuParents},
+                            {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren},
+                            {icon: 'glyphicon glyphicon-off', label: 'Disable', action: disable},
+                        ]
+                    }
+                ];
 
-                basicContext.show(items, e)
+                superCm.createMenu(items, e);
             });
 
             /**

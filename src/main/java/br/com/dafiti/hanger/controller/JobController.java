@@ -31,7 +31,9 @@ import br.com.dafiti.hanger.model.Server;
 import br.com.dafiti.hanger.model.Subject;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.service.ConnectionService;
+import br.com.dafiti.hanger.service.FlowService;
 import br.com.dafiti.hanger.service.JenkinsService;
+import br.com.dafiti.hanger.service.JobApprovalService;
 import br.com.dafiti.hanger.service.JobNotificationService;
 import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.JobStatusService;
@@ -42,6 +44,8 @@ import br.com.dafiti.hanger.service.SubjectService;
 import br.com.dafiti.hanger.service.UserService;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -80,6 +84,8 @@ public class JobController {
     private final JobStatusService jobStatusService;
     private final JobNotificationService jobNotificationService;
     private final SlackService slackService;
+    private final FlowService flowService;
+    private final JobApprovalService jobApprovalService;
 
     @Autowired
     public JobController(JobService jobService,
@@ -91,7 +97,9 @@ public class JobController {
             RetryService retryService,
             JobStatusService jobStatusService,
             JobNotificationService jobNotificationService,
-            SlackService slackService) {
+            SlackService slackService,
+            FlowService flowService,
+            JobApprovalService jobApprovalService) {
 
         this.jobService = jobService;
         this.serverService = serverService;
@@ -103,6 +111,8 @@ public class JobController {
         this.jobStatusService = jobStatusService;
         this.jobNotificationService = jobNotificationService;
         this.slackService = slackService;
+        this.flowService = flowService;
+        this.jobApprovalService = jobApprovalService;
     }
 
     /**
@@ -748,5 +758,103 @@ public class JobController {
                 model.addAttribute("triggers", jobService.getMesh(job, false));
             }
         }
+    }
+
+    /**
+     * Update job chain modal.
+     *
+     * @param job Job
+     * @param server Server
+     * @param reverse Identify propagation or flow.
+     * @param model Model
+     *
+     * @return Job add parent Modal
+     */
+    @GetMapping(path = "/modal/update/chain/{jobID}/{serverID}/{flow}")
+    public String updateJobChainModal(
+            @PathVariable(value = "jobID") Job job,
+            @PathVariable(value = "serverID") Server server,
+            @PathVariable(value = "flow") boolean reverse,
+            Model model) {
+
+        if (server != null) {
+            try {
+                model.addAttribute("server", server);
+                model.addAttribute("reverse", reverse);
+                model.addAttribute("job", jobService.load(job.getId()));
+                model.addAttribute("jobs", jenkinsService.listJob(server));
+            } catch (URISyntaxException | IOException ex) {
+                model.addAttribute("errorMessage", "Fail listing jobs from Jenkins: " + ex.getMessage());
+            }
+        }
+
+        return "flow/modalUpdateJobChain::updateJobChain";
+    }
+
+    /**
+     * Update job chain, parent or children.
+     *
+     * @param job Job
+     * @param server Server
+     * @param jobList Parent or Children Job List
+     * @param reverse Identify if propagation or flow
+     * @param principal Logged User.
+     * @param model model
+     *
+     * @return flow/display or propagation/display
+     */
+    @PostMapping(path = "/update/chain")
+    public String updateJobChain(
+            @Valid @ModelAttribute Job job,
+            @RequestParam(value = "server", required = true) Server server,
+            @RequestParam(value = "jobList", required = false) List<String> jobList,
+            @RequestParam(value = "reverse", required = false) boolean reverse,
+            Principal principal,
+            Model model) {
+
+        try {
+            if (reverse) {
+                for (String child : jobList) {
+                    Job jobChild = jobService.findByName(child);
+
+                    ArrayList parentList = new ArrayList();
+                    parentList.add(job.getName());
+
+                    jobService.addParent(jobChild, server, parentList);
+                }
+            } else {
+                jobService.addParent(job, server, jobList);
+            }
+
+            jobService.save(job);
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+        } finally {
+            model.addAttribute("job", job);
+            model.addAttribute("warnings", flowService.getFlowWarning(job));
+            model.addAttribute("chart", flowService.getJobFlow(job, reverse, true));
+            model.addAttribute("approval", this.jobApprovalService.hasApproval(job, principal));
+            model.addAttribute("servers", this.serverService.list());
+
+            this.modelDefault(model, job);
+        }
+
+        return "flow/display";
+    }
+
+    /**
+     * Disable a job.
+     *
+     * @param job Job
+     * @return Job flow.
+     */
+    @GetMapping(path = "/disable/{job}")
+    public String disable(
+            @PathVariable(value = "job") Job job) {
+
+        job.setEnabled(false);
+        jobService.save(job);
+
+        return "flow/display";
     }
 }

@@ -26,6 +26,7 @@ package br.com.dafiti.hanger.controller;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.service.FlowService;
 import br.com.dafiti.hanger.service.JobApprovalService;
+import br.com.dafiti.hanger.service.ServerService;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,11 +44,16 @@ public class FlowController {
 
     private final FlowService flowService;
     private final JobApprovalService jobApprovalService;
+    private final ServerService serverService;
 
     @Autowired
-    public FlowController(FlowService flowService, JobApprovalService jobApprovalService) {
+    public FlowController(
+            FlowService flowService,
+            JobApprovalService jobApprovalService,
+            ServerService serverService) {
         this.flowService = flowService;
         this.jobApprovalService = jobApprovalService;
+        this.serverService = serverService;
     }
 
     /**
@@ -71,6 +77,7 @@ public class FlowController {
             model.addAttribute("warnings", flowService.getFlowWarning(job));
             model.addAttribute("chart", flowService.getJobFlow(job, false, expanded));
             model.addAttribute("approval", this.jobApprovalService.hasApproval(job, principal));
+            model.addAttribute("servers", this.serverService.list());
         }
 
         return "flow/display";
@@ -94,6 +101,7 @@ public class FlowController {
             model.addAttribute("job", job);
             model.addAttribute("chart", flowService.getJobFlow(job, true, false));
             model.addAttribute("approval", this.jobApprovalService.hasApproval(job, principal));
+            model.addAttribute("servers", this.serverService.list());
         }
 
         return "flow/display";

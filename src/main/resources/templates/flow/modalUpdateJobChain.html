@@ -16,8 +16,8 @@
                         </div>
                         <form id="updateJobChain" class="form-horizontal space-top" th:object="${job}" th:action="@{/job/update/chain}" method="post">
                             <div class="modal-body">
-                                <input type="hidden" name="job" id="job" th:value="${job.id}"/> 
-                                <input type="hidden" name="server" id="server" th:value="${server.id}"/> 
+                                <input type="hidden" name="jobID" id="server" th:value="*{id}"/> 
+                                <input type="hidden" name="serverID" id="server" th:value="${server.id}"/> 
                                 <input type="hidden" name="reverse" id="reverse" th:value="${reverse}"/> 
 
                                 <div class="form-group">

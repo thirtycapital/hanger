@@ -48,54 +48,54 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class JobService {
-    
+
     private final JobRepository jobRepository;
     private final JobParentService jobParentService;
     private final JenkinsService jenkinsService;
     private final JobStatusService jobStatusService;
-    
+
     @Autowired
     public JobService(
             JobRepository jobRepository,
             JobParentService jobParentService,
             JenkinsService jenkinsService,
             JobStatusService jobStatusService) {
-        
+
         this.jobRepository = jobRepository;
         this.jobParentService = jobParentService;
         this.jenkinsService = jenkinsService;
         this.jobStatusService = jobStatusService;
     }
-    
+
     public Iterable<Job> list() {
         return jobRepository.findAll();
     }
-    
+
     @Cacheable(value = "jobs")
     public Iterable<Job> listFromCache() {
         return jobRepository.findAll();
     }
-    
+
     public Job load(Long id) {
         return jobRepository.findOne(id);
     }
-    
+
     public List<Job> findBySubjectOrderByName(Subject subject) {
         return jobRepository.findBySubjectOrderByName(subject);
     }
-    
+
     public HashSet<Job> findByApprover(User user) {
         return this.jobRepository.findByApprover(user);
     }
-    
+
     public Job findByName(String name) {
         return jobRepository.findByName(name);
     }
-    
+
     public List<Job> findByNameContainingOrAliasContaining(String search) {
         return jobRepository.findByNameContainingOrAliasContaining(search, search);
     }
-    
+
     public Job save(Job job) {
         //Define the relation between the job and its parents.
         job.getParent().stream().forEach((parent) -> {
@@ -120,22 +120,22 @@ public class JobService {
                         stream().
                         filter(parent -> parent.isBlocker()).count() != 0
         );
-        
+
         return jobRepository.save(job);
     }
-    
+
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true)})
     public Job saveAndRefreshCache(Job job) {
         return jobRepository.save(job);
     }
-    
+
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true)})
     public void delete(Long id) {
         jobRepository.delete(id);
     }
-    
+
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true)})
     public void refresh() {
@@ -150,7 +150,7 @@ public class JobService {
         job.getParent().stream().forEach((jobParent) -> {
             this.rebuildMesh(jobParent.getParent());
         });
-        
+
         jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
     }
 
@@ -168,7 +168,7 @@ public class JobService {
             Server server,
             List<String> parentJobList,
             boolean parentUpstream) throws Exception {
-        
+
         if (parentJobList == null) {
             parentJobList = new ArrayList();
         }
@@ -176,20 +176,20 @@ public class JobService {
         //Identify if upstream jobs should be imported to Hanger. 
         if (parentUpstream) {
             List<String> upstreamJobs = jenkinsService.getUpstreamProjects(job);
-            
+
             if (upstreamJobs.size() > 0) {
                 for (String upstreamName : upstreamJobs) {
                     parentJobList.add(upstreamName);
                 }
             }
         }
-        
+
         for (String name : parentJobList) {
             StringBuilder lineage = new StringBuilder();
             Job parentJob = this.findByName(name);
 
             //Identify if the parent is valid.
-            if (!job.getName().equals(name) && jenkinsService.isBuildable(job)) {
+            if (!job.getName().equals(name) && jenkinsService.isBuildable(name, server)) {
                 //Identify if the parent job should be imported. 
                 if (parentJob == null) {
                     Job transientJob = new Job(name, server);
@@ -207,10 +207,10 @@ public class JobService {
                 //Identify if there are ciclic reference in the flow. 
                 if (!this.hasCyclicReference(job, parentJob, lineage)) {
                     boolean addParent = true;
-                    
+
                     for (JobParent parent : job.getParent()) {
                         addParent = !parent.getParent().equals(parentJob);
-                        
+
                         if (!addParent) {
                             break;
                         }
@@ -223,6 +223,8 @@ public class JobService {
                 } else {
                     throw new Exception("Cyclic Reference: " + lineage.toString().concat(parentJob.getName()));
                 }
+            } else {
+                throw new Exception("Parent " + name + " is not valid or is disabled on jenkins server.");
             }
         }
     }
@@ -239,14 +241,14 @@ public class JobService {
             Job job,
             int checkupIndex,
             List<String> triggers) throws Exception {
-        
+
         if (triggers == null) {
             triggers = new ArrayList();
         }
-        
+
         for (String name : triggers) {
             Job triggeredJob = this.findByName(name);
-            
+
             if (triggeredJob != null) {
                 //Identify if the job has checkup.  
                 if (job.getCheckup().size() >= checkupIndex) {
@@ -272,7 +274,7 @@ public class JobService {
             Job job,
             Job parent,
             StringBuilder lineage) {
-        
+
         return hasCyclicReference(job, parent, false, lineage);
     }
 
@@ -290,16 +292,16 @@ public class JobService {
             Job parent,
             boolean stop,
             StringBuilder lineage) {
-        
+
         if (!stop) {
             stop = parent.equals(job);
             lineage.append(parent.getName()).append(" < ");
-            
+
             for (JobParent jobParent : parent.getParent()) {
                 stop = this.hasCyclicReference(job, jobParent.getParent(), stop, lineage);
             }
         }
-        
+
         return stop;
     }
 
@@ -313,7 +315,7 @@ public class JobService {
     public HashSet<Job> getRelationPath(
             Job jobTo,
             Job jobFrom) {
-        
+
         return this.getRelationPath(jobTo, jobFrom, new HashSet(), "");
     }
 
@@ -332,13 +334,13 @@ public class JobService {
             Job jobFrom,
             HashSet<Job> path,
             String lineage) {
-        
+
         if (lineage.isEmpty()) {
             lineage += jobTo.getId();
         } else {
             lineage += "," + jobTo.getId();
         }
-        
+
         for (JobParent jobParent : jobTo.getParent()) {
             getRelationPath(jobParent.getParent(), jobFrom, path, lineage);
         }
@@ -346,16 +348,16 @@ public class JobService {
         //Identify if the job target was found. 
         if (jobTo.equals(jobFrom)) {
             List<String> jobPath = Arrays.asList(lineage.split(","));
-            
+
             for (String jobId : jobPath) {
                 Job jobFound = this.load(Long.valueOf(jobId));
-                
+
                 if (jobFound != null) {
                     path.add(jobFound);
                 }
             }
         }
-        
+
         return path;
     }
 
@@ -369,13 +371,13 @@ public class JobService {
     public HashSet<Job> getMesh(
             Job job,
             boolean self) {
-        
+
         HashSet<Job> mesh = this.getMesh(job, new HashSet());
-        
+
         if (!self) {
             mesh.remove(job);
         }
-        
+
         return mesh;
     }
 
@@ -389,13 +391,13 @@ public class JobService {
     private HashSet<Job> getMesh(
             Job job,
             HashSet<Job> mesh) {
-        
+
         job.getParent().stream().forEach((jobParent) -> {
             this.getMesh(jobParent.getParent(), mesh);
         });
-        
+
         mesh.add(job);
-        
+
         return mesh;
     }
 
@@ -419,15 +421,15 @@ public class JobService {
     private HashSet<Job> getMeshParent(
             Job job,
             HashSet<Job> meshParent) {
-        
+
         job.getParent().stream().forEach((jobParent) -> {
             this.getMeshParent(jobParent.getParent(), meshParent);
         });
-        
+
         if (job.getParent().isEmpty()) {
             meshParent.add(job);
         }
-        
+
         return meshParent;
     }
 
@@ -441,13 +443,13 @@ public class JobService {
     public HashSet<Job> getPropagation(
             Job job,
             boolean self) {
-        
+
         HashSet<Job> propagation = this.getPropagation(job, new HashSet());
-        
+
         if (!self) {
             propagation.remove(job);
         }
-        
+
         return propagation;
     }
 
@@ -462,32 +464,53 @@ public class JobService {
     private HashSet<Job> getPropagation(
             Job job,
             HashSet<Job> propagation) {
-        
+
         HashSet<JobParent> childs = jobParentService.findByParent(job);
-        
+
         if (!childs.isEmpty()) {
             childs.stream().forEach((child) -> {
                 this.getPropagation(child.getJob(), propagation);
             });
         }
-        
+
         propagation.add(job);
         return propagation;
     }
 
     /**
-     * Add a job parent.
+     * Add job child (children).
      *
      * @param job Job
      * @param server Server
-     * @param parentJobList ParentJobList
+     * @param childrenJobList
+     * @param parentUpstream ParentUpstream
      * @throws Exception
      */
-    public void addParent(
+    public void addChildren(
             Job job,
             Server server,
-            List<String> parentJobList)
-            throws Exception {
-        this.addParent(job, server, parentJobList, false);
+            List<String> childrenJobList,
+            boolean parentUpstream) throws Exception {
+
+        for (String child : childrenJobList) {
+            Job jobChild = this.findByName(child);
+
+            //Identify if child exists.
+            if (jobChild == null) {
+                jobChild = new Job(child, server);
+                jenkinsService.updateJob(jobChild);
+            }
+
+            //Identify if child is valid.
+            if (jenkinsService.isBuildable(jobChild)) {
+                ArrayList parentList = new ArrayList();
+                parentList.add(job.getName());
+
+                this.addParent(jobChild, job.getServer(), parentList, false);
+                this.save(jobChild);
+            } else {
+                throw new Exception("Child " + child + " is not valid or is disabled on jenkins server.");
+            }
+        }
     }
 }

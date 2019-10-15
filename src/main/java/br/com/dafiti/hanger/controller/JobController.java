@@ -781,7 +781,7 @@ public class JobController {
             try {
                 model.addAttribute("server", server);
                 model.addAttribute("reverse", reverse);
-                model.addAttribute("job", jobService.load(job.getId()));
+                model.addAttribute("job", job);
                 model.addAttribute("jobs", jenkinsService.listJob(server));
             } catch (URISyntaxException | IOException ex) {
                 model.addAttribute("errorMessage", "Fail listing jobs from Jenkins: " + ex.getMessage());
@@ -805,8 +805,8 @@ public class JobController {
      */
     @PostMapping(path = "/update/chain")
     public String updateJobChain(
-            @Valid @ModelAttribute Job job,
-            @RequestParam(value = "server", required = true) Server server,
+            @RequestParam(value = "jobID", required = true) Job job,
+            @RequestParam(value = "serverID", required = true) Server server,
             @RequestParam(value = "jobList", required = false) List<String> jobList,
             @RequestParam(value = "reverse", required = false) boolean reverse,
             Principal principal,
@@ -814,19 +814,12 @@ public class JobController {
 
         try {
             if (reverse) {
-                for (String child : jobList) {
-                    Job jobChild = jobService.findByName(child);
+                jobService.addChildren(job, server, jobList, false);
 
-                    ArrayList parentList = new ArrayList();
-                    parentList.add(job.getName());
-
-                    jobService.addParent(jobChild, server, parentList);
-                }
             } else {
-                jobService.addParent(job, server, jobList);
+                jobService.addParent(job, server, jobList, false);
+                jobService.save(job);
             }
-
-            jobService.save(job);
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
         } finally {

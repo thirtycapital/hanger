@@ -26,6 +26,7 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.Server;
 import com.offbytwo.jenkins.JenkinsServer;
+import com.offbytwo.jenkins.model.JobWithDetails;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -62,6 +63,7 @@ public class JenkinsService {
      * @return Server connection
      * @throws URISyntaxException
      */
+    @Cacheable(value = "jenkinsserver", key = "#server.id")
     public JenkinsServer getJenkinsServer(Server server) throws URISyntaxException {
         JenkinsServer jenkins = null;
 
@@ -154,7 +156,12 @@ public class JenkinsService {
 
             if (jenkins != null) {
                 if (jenkins.isRunning()) {
-                    isBuildable = (jenkins.getJob(name).isBuildable());
+                    JobWithDetails jobWithDetails = jenkins.getJob(name);
+
+                    if (jobWithDetails != null) {
+                        isBuildable = (jobWithDetails.isBuildable());
+                    }
+
                     jenkins.close();
                 }
             }

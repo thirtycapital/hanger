@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -757,6 +758,7 @@ public class JobController {
         model.addAttribute("subjects", subjectService.list());
         model.addAttribute("connections", connectionService.list());
         model.addAttribute("users", userService.list(true));
+        model.addAttribute("children", jobService.getChildrenlist(job));
 
         if (jobList) {
             if (!job.getCheckup().isEmpty()) {
@@ -805,6 +807,8 @@ public class JobController {
      * @param reverse Identify if propagation or flow
      * @param principal Logged User.
      * @param model model
+     * @param request
+     * @param redirectAttributes
      *
      * @return flow/display or propagation/display
      */
@@ -815,18 +819,19 @@ public class JobController {
             @RequestParam(value = "jobList", required = false) List<String> jobList,
             @RequestParam(value = "reverse", required = false) boolean reverse,
             Principal principal,
-            Model model) {
+            Model model,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
 
         try {
             if (reverse) {
                 jobService.addChildren(job, server, jobList, false);
-
             } else {
                 jobService.addParent(job, server, jobList, false);
                 jobService.save(job);
             }
         } catch (Exception ex) {
-            model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+            redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(ex));
         } finally {
             model.addAttribute("job", job);
             model.addAttribute("warnings", flowService.getFlowWarning(job));
@@ -837,7 +842,7 @@ public class JobController {
             this.modelDefault(model, job);
         }
 
-        return "flow/display";
+        return "redirect:" + request.getHeader("referer");
     }
 
     /**

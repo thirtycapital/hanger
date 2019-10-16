@@ -513,4 +513,14 @@ public class JobService {
             }
         }
     }
+
+    /**
+     * Get children by parent.
+     * 
+     * @param job Job
+     * @return 
+     */
+    public HashSet<JobParent> getChildrenlist(Job job) {
+        return jobParentService.findByParent(job);
+    }
 }

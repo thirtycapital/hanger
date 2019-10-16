@@ -27,13 +27,16 @@ import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Command;
 import br.com.dafiti.hanger.model.JobCheckup;
 import br.com.dafiti.hanger.model.Job;
+import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.Server;
 import br.com.dafiti.hanger.model.Subject;
 import br.com.dafiti.hanger.option.Flow;
+import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.FlowService;
 import br.com.dafiti.hanger.service.JenkinsService;
 import br.com.dafiti.hanger.service.JobApprovalService;
+import br.com.dafiti.hanger.service.JobDetailsService;
 import br.com.dafiti.hanger.service.JobNotificationService;
 import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.JobStatusService;
@@ -45,7 +48,6 @@ import br.com.dafiti.hanger.service.UserService;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -86,6 +88,7 @@ public class JobController {
     private final SlackService slackService;
     private final FlowService flowService;
     private final JobApprovalService jobApprovalService;
+    private final JobDetailsService jobDetailsService;
 
     @Autowired
     public JobController(JobService jobService,
@@ -99,7 +102,8 @@ public class JobController {
             JobNotificationService jobNotificationService,
             SlackService slackService,
             FlowService flowService,
-            JobApprovalService jobApprovalService) {
+            JobApprovalService jobApprovalService,
+            JobDetailsService jobDetailsService) {
 
         this.jobService = jobService;
         this.serverService = serverService;
@@ -113,6 +117,7 @@ public class JobController {
         this.slackService = slackService;
         this.flowService = flowService;
         this.jobApprovalService = jobApprovalService;
+        this.jobDetailsService = jobDetailsService;
     }
 
     /**
@@ -836,18 +841,44 @@ public class JobController {
     }
 
     /**
-     * Disable a job.
+     * Enable or disable a job.
      *
      * @param job Job
+     * @param enabled Job is enabled or not.
      * @return Job flow.
      */
-    @GetMapping(path = "/disable/{job}")
-    public String disable(
-            @PathVariable(value = "job") Job job) {
+    @GetMapping(path = "/enable/{job}/{enable}")
+    public String enable(
+            @PathVariable(value = "job") Job job,
+            @PathVariable(value = "enable") boolean enabled) {
 
-        job.setEnabled(false);
+        // If enabled, disable job, if disabled, enable it.
+        job.setEnabled(!enabled);
         jobService.save(job);
 
         return "flow/display";
+    }
+
+    /**
+     * Identify if job is enabled.
+     *
+     * @param job Job
+     * @return boolean
+     */
+    @GetMapping(path = "/is/enabled/{job}")
+    @ResponseBody
+    public boolean isEnabled(
+            @PathVariable(value = "job") Job job) {
+
+        boolean isEnabled = true;
+
+        if (job != null) {
+            //Get the details getDetails each job. 
+            JobDetails jobDetails = jobDetailsService.getDetailsOf(job);
+
+            isEnabled = jobDetails.getStatus() != Status.DISABLED;
+        }
+
+        return isEnabled;
     }
 }

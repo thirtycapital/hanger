@@ -235,6 +235,7 @@
             $('.flow-job-clickable').on("contextmenu", function (e) {
                 e.preventDefault();
                 job = this.id;
+                var enabled = isEnabled(job);
 
                 // Build a Job.
                 var build = function () {
@@ -275,9 +276,9 @@
                     });
                 };
 
-                // Disable a job.
-                var disable = function () {
-                    var url = /*[[@{/job/disable/}]]*/ "/job/disable/";
+                // Enable or disable a job.
+                var enable = function () {
+                    var url = /*[[@{/job/enable/}]]*/ "/job/enable/";
 
                     toastr.options = {
                         "closeButton": true,
@@ -292,17 +293,18 @@
 
                     $.ajax({
                         type: "GET",
-                        url: url + job,
+                        url: url + job + "/" + enabled,
+                        async: false,
                         timeout: 30000,
                         success: function (result) {
-                            toastr.success('Job successfully disabled.');
+                            toastr.success('Job successfully updated');
 
                             setTimeout(function () {
                                 window.location.reload(1);
                             }, timeout);
                         },
                         error: function (e) {
-                            toastr.error('Fail on job disable ' + e);
+                            toastr.error('Fail on job update ' + e);
                         }
                     });
                 };
@@ -378,7 +380,7 @@
                             {icon: 'glyphicon glyphicon-plus', label: 'Parent', submenu: submenuParents},
                             {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren},
                             {},
-                            {icon: 'glyphicon glyphicon-off', label: 'Disable', action: disable}
+                            {icon: enabled ? 'glyphicon glyphicon-eye-close' : 'glyphicon glyphicon-eye-open', label: enabled ? 'Disable' : 'Enable', action: enable}
                         ]
                     }
                 ];
@@ -440,6 +442,32 @@
                 var url = /*[[@{/job/rebuild/}]]*/ "/job/rebuild/";
                 buildJob(job, url);
             });
+
+            /**
+             * Identify if job is enabled.
+             * 
+             * @param {type} job Job id
+             * @returns boolean
+             */
+            function isEnabled(job) {
+                var isEnabledURL = /*[[@{/job/is/enabled/}]]*/ "/job/is/enabled/";
+                var isEnabled = true;
+
+                $.ajax({
+                    type: "GET",
+                    async: false,
+                    url: isEnabledURL + job,
+                    timeout: 30000,
+                    success: function (result) {
+                        isEnabled = result;
+                    },
+                    error: function (e) {
+                        isEnabled = true;
+                    }
+                });
+
+                return isEnabled;
+            }
 
             /*]]>*/
         </script>

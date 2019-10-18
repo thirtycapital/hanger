@@ -115,20 +115,20 @@ O *Search* é o caminho mais rápido para encontrar e ter acesso as informaçõe
 
 O *flow* é a representação gráfica da cadeia de dependências de um *job*. 
 
-Cada *job* representado no flow apresenta uma imagem representando o status e as seguintes informações:
+Cada *job* representado no *flow* apresenta uma imagem representando o status e as seguintes informações:
 
 - Nome do *job*.
 - Link para o *job* no Jenkins.
 - Link para o console do Jenkins.
 - Link para a página de resultados da validação do *job*. 
-	- Clique no link **CHECKUP** e será exibida a página com o resultado dos últimos dez checkups do *job*.
-	- Clique no botão **View** para visualizar a configuração do *job*.
-	- Clique no botão **Flow** para ser redirecionado novamente para a cadeia de dependência do *job*.
+	- Clique no link ***CHECKUP*** e será exibida a página com o resultado dos últimos dez checkups do *job*.
+	- Clique no botão ***View*** para visualizar a configuração do *job*.
+	- Clique no botão ***Flow*** para ser redirecionado novamente para a cadeia de dependência do *job*.
 - Instância do Jenkins na qual o job é executado.  
 - Data de execução do *job*
 - Escopo do *job*
 Clique com o botão direito sobre o status do *job* e será exibida uma lista suspensa com as seguintes opções:
-- **Flow:** Atalho para o flow do *job* selecionado. 
+- **Flow:** Atalho para o *flow* do *job* selecionado. 
 - **Propagation:** Atalho para o propagation do *job* selecionado. 
 - **Build:** Permite executar o *job* selecionado. 
 - **Build Mesh:** Permite executar toda a cadeia do *job* selecionado. 
@@ -185,7 +185,7 @@ Permite importar todos os jobs cadastrados no Jenkins.
 Permite adicionar uma nova instância do Jenkins.
 
 No menu lateral, acesse a opção ***Server***.
-- Clique no botão ***Add Server***, representado pelo ícone +.
+- Clique no botão ***Add Server***, representado pelo ícone **+**.
 - Defina o nome da conexão no campo ***Name***.
 - Informe a URL completa do servidor, com porta e host no campo **URL**.
 - Informe o usuário administrador do servidor no campo ***Username***.
@@ -205,7 +205,7 @@ Permite exluir um servidor.
 Permite adicionar uma nova conexão.
 
 - No menu lateral, acesse a opção ***Connection***.
-- Clique no botão ***Add Connection***, representado pelo ícone +.
+- Clique no botão ***Add Connection***, representado pelo ícone **+**.
 - Defina o nome da conexão no campo ***Name***.
 - Selecione qual o banco de dados desejado no campo ***Database***.
 - Informe a URL para conexão com o JDBC, deve conter host e banco de dados.
@@ -246,7 +246,7 @@ Subjects são agrupadores utilizados para a organização e o acompanhamento sum
 Permite adicionar um novo assunto.
 
 - No menu lateral, acesse a opção ***Subjects***.
-- Clique no botão ***Add Subject***, representado pelo ícone +.
+- Clique no botão ***Add Subject***, representado pelo ícone **+**.
 - Defina o nome do assunto no campo ***Subject***.
 - Defina a descrição do assunto no campo ***Description***.
 - Caso deseje receber notificações dos jobs pertencentes deste subject no slack, marque a opção ***Slack notification***.

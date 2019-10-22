@@ -76,20 +76,20 @@
                         <div class="form-group">
                             <div class="col-sm-10">
                                 <label>Description</label>
-                                <pre class="line-numbers">
-                                    <code class="language-text" th:text="*{description}"></code>
-                                </pre>
+                                <textarea class="form-control" th:value="*{description}" readonly="true"  rows="3"></textarea>
                             </div>
                         </div>
 
-                        <fieldset>
-                            <legend>
-                                Rebuild
-                            </legend>
-                        </fieldset>
-
                         <div class="form-group">
                             <div class="col-sm-10">
+                                <label data-toggle="tooltip" title="Identifies that previous day executions, terminated within the tolerance period of hours, should be considered in the current day's data stream.">Eagerness</label>               
+                                <input type="number" min="0" max="12" class="form-control" maxlength="1" th:field="*{tolerance}" disabled="true"/>
+                                <span th:if="${#fields.hasErrors('tolerance')}" class="help-block" th:errors="*{tolerance}"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-1">
                                 <label>
                                     <input  
                                         id="rebuild" 
@@ -99,34 +99,17 @@
                                         disabled="true"/> Rebuildable
                                 </label>          
                             </div>
-                        </div>       
 
-                        <div class="form-group">
-                            <div class="col-sm-10">
+                            <div class="col-sm-9">
                                 <label title="Minutes beetwen rebuild">Interval</label>
                                 <input type="number" min="0" max="59" class="form-control" maxlength="1" th:field="*{wait}" disabled="true"/>
                                 <span th:if="${#fields.hasErrors('wait')}" class="help-block" th:errors="*{wait}"></span>
                             </div>
-                        </div>
-
-                        <label data-toggle="tooltip" title="Identifies that previous day executions, terminated within the tolerance period of hours, should be considered in the current day's data stream.">Eagerness</label>               
-                        <div class="form-group">
-                            <div class="col-sm-10">
-                                <input type="number" min="0" max="12" class="form-control" maxlength="1" th:field="*{tolerance}" disabled="true"/>
-                                <span th:if="${#fields.hasErrors('tolerance')}" class="help-block" th:errors="*{tolerance}"></span>
-                            </div>
-                        </div>
+                        </div>       
                     </div>
 
                     <div th:if="${not #lists.isEmpty(job.subject)}">  
-                        <fieldset>
-                            <legend>
-                                Subject
-                            </legend>
-                        </fieldset>
-
-                        <p>This job is classified in the following subjects</p>
-
+                        <label>Subject</label>
                         <table class="table">
                             <tr>
                                 <th style="width:5%">#</th>
@@ -158,8 +141,6 @@
 
                     <div class="tab-content">
                         <div id="parent" class="tab-pane fade in active">                            
-
-                            <p class="space-top">This job builds after the following jobs</p>
 
                             <table class="table">
                                 <tr>
@@ -199,8 +180,6 @@
                         </div> 
 
                         <div id="child" class="tab-pane fade space-top">
-
-                            <p>The following jobs build after this job</p>
 
                             <table class="table">
                                 <tr>

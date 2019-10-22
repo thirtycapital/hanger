@@ -76,7 +76,7 @@
                         <div class="form-group">
                             <div class="col-sm-10">
                                 <label>Description</label>
-                                <textarea class="form-control" th:value="*{description}" readonly="true"  rows="3"></textarea>
+                                <textarea class="form-control" th:field="*{description}" readonly="true"  rows="3"></textarea>
                             </div>
                         </div>
 
@@ -140,7 +140,7 @@
                     </ul>
 
                     <div class="tab-content">
-                        <div id="parent" class="tab-pane fade in active">                            
+                        <div id="parent" class="tab-pane fade in active space-top">                            
 
                             <table class="table">
                                 <tr>
@@ -148,7 +148,7 @@
                                     <th style="width:10%">Server</th>
                                     <th style="width:52.5%">Name</th>                               
                                     <th style="width:5%"><span class="glyphicon glyphicon-time" title="Build history"></span></th>
-                                    <th style="width:5%"><span class="glyphicon glyphicon-lock" title="Rebuild blocker"></span></th>
+                                    <th style="width:5%"><span class="glyphicon glyphicon-pushpin" title="Rebuild blocker"></span></th>
                                     <th style="width:5%">Scope</th>
                                     <th></th>
                                 </tr>

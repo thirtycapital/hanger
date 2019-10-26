@@ -97,6 +97,8 @@ public class JobService {
     }
 
     public Job save(Job job) {
+        Long id = job.getId();
+
         //Define the relation between the job and its parents.
         job.getParent().stream().forEach((parent) -> {
             if (parent.getJob() == null) {
@@ -121,13 +123,25 @@ public class JobService {
                         filter(parent -> parent.isBlocker()).count() != 0
         );
 
+        //Identify if should update Jenkins job properties.  
+        if (id != null) {
+            Job previousVersion = this.load(id);
+
+            if (previousVersion != null) {
+                if (!job.getName().equals(previousVersion.getName())) {
+                    jenkinsService.renameJob(job, previousVersion.getName());
+                }
+            }
+        }
+
+        jenkinsService.updateJob(job);
         return jobRepository.save(job);
     }
 
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true)})
     public Job saveAndRefreshCache(Job job) {
-        return jobRepository.save(job);
+        return this.save(job);
     }
 
     @Caching(evict = {
@@ -516,9 +530,9 @@ public class JobService {
 
     /**
      * Get children by parent.
-     * 
+     *
      * @param job Job
-     * @return 
+     * @return
      */
     public HashSet<JobParent> getChildrenlist(Job job) {
         return jobParentService.findByParent(job);

@@ -154,6 +154,7 @@ public class JobController {
      */
     @GetMapping(path = "/edit/{id}")
     public String edit(Model model, @PathVariable(value = "id") Job job) {
+        model.addAttribute("children", jobService.getChildrenlist(job));
         this.modelDefault(model, job);
         return "job/edit";
     }
@@ -195,8 +196,8 @@ public class JobController {
             Model model,
             @PathVariable(value = "id") Job job) {
 
+        model.addAttribute("children", jobService.getChildrenlist(job));
         this.modelDefault(model, job, false);
-
         return "job/view";
     }
 
@@ -310,25 +311,8 @@ public class JobController {
             BindingResult bindingResult,
             Model model) {
 
-        String name = "";
-        Long id = job.getId();
-
         try {
-            //Identify current job name. 
-            if (id != null) {
-                Job currentJob = jobService.load(id);
-
-                if (currentJob != null) {
-                    name = currentJob.getName();
-                }
-            }
-
-            //Save a job. 
             jobService.saveAndRefreshCache(job);
-
-            //Update job properties on Jenkins.  
-            jenkinsService.renameJob(job, name);
-            jenkinsService.updateJob(job);
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
             this.modelDefault(model, job);
@@ -758,7 +742,6 @@ public class JobController {
         model.addAttribute("subjects", subjectService.list());
         model.addAttribute("connections", connectionService.list());
         model.addAttribute("users", userService.list(true));
-        model.addAttribute("children", jobService.getChildrenlist(job));
 
         if (jobList) {
             if (!job.getCheckup().isEmpty()) {

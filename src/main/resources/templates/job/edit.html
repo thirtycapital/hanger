@@ -223,109 +223,108 @@
                             <legend>
                                 Relationship
                             </legend>
-                        </fieldset>
-                    </div>
+                        </fieldset>                    
 
-                    <ul class="nav nav-tabs">
-                        <li class="active" th:if="${not #lists.isEmpty(job.parent)}"><a data-toggle="tab" href="#parent">PARENT</a></li>
-                        <li th:if="${not #lists.isEmpty(children)}"><a data-toggle="tab" href="#child">CHILDREN</a></li>
-                    </ul>
+                        <ul class="nav nav-tabs">
+                            <li class="active" th:if="${not #lists.isEmpty(job.parent)}"><a data-toggle="tab" href="#parent">PARENT</a></li>
+                            <li th:classappend="${#lists.isEmpty(job.parent)} ? active : ''" th:if="${not #lists.isEmpty(children)}"><a data-toggle="tab" href="#child">CHILDREN</a></li>
+                        </ul>
 
-                    <div class="tab-content">
-                        <div id="parent" class="tab-pane fade in active space-top">
-                            <table class="table">
-                                <tr>
-                                    <th style="width:5%">#</th>
-                                    <th style="width:10%">Server</th>
-                                    <th style="width:47.5%">Name</th>
-                                    <th style="width:5%"><span class="glyphicon glyphicon-time" title="Build history"></span></th>
-                                    <th style="width:5%"><span class="glyphicon glyphicon-pushpin" title="Rebuild blocker"></span></th>
-                                    <th style="width:5%">Scope</th>
-                                    <th>Delete</th>
-                                </tr>
-                                <tr th:each="parent, parentStat : ${job.parent}">
-                                    <input type="hidden" th:field="*{parent[__${parentStat.index}__].id}"/> 
-                                    <input type="hidden" th:field="*{parent[__${parentStat.index}__].job}"/> 
-                                    <input type="hidden" th:field="*{parent[__${parentStat.index}__].parent}"/> 
+                        <div th:if="${not #lists.isEmpty(job.parent) || not #lists.isEmpty(children)}" class="tab-content">
+                            <div th:if="${not #lists.isEmpty(job.parent)}" id="parent" class="tab-pane fade in active space-top">          
+                                <table class="table">
+                                    <tr>
+                                        <th style="width:5%">#</th>
+                                        <th style="width:10%">Server</th>
+                                        <th style="width:47.5%">Name</th>
+                                        <th style="width:5%"><span class="glyphicon glyphicon-time" title="Build history"></span></th>
+                                        <th style="width:5%"><span class="glyphicon glyphicon-pushpin" title="Rebuild blocker"></span></th>
+                                        <th style="width:5%">Scope</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                    <tr th:each="parent, parentStat : ${job.parent}">
+                                        <input type="hidden" th:field="*{parent[__${parentStat.index}__].id}"/> 
+                                        <input type="hidden" th:field="*{parent[__${parentStat.index}__].job}"/> 
+                                        <input type="hidden" th:field="*{parent[__${parentStat.index}__].parent}"/> 
 
-                                    <td> 
-                                        <span th:text="*{parent[__${parentStat.index}__].parent.id}"></span>
-                                    </td>
-                                    <td th:text="*{parent[__${parentStat.index}__].parent.server.name}"></td>
-                                    <td><a class="link" th:text="*{parent[__${parentStat.index}__].parent.name}" th:href="@{'/job/view/' + *{parent[__${parentStat.index}__].parent.id}}" target="_blank"></a></td>
-                                    <td>
-                                        <a href="javascript:;" class="build-history" th:id="*{parent[__${parentStat.index}__].parent.id}">
-                                            +
-                                        </a>                          
-                                    </td>
-                                    <td>
-                                        <input  
-                                            id="blocker" 
-                                            name="blocker"
-                                            type="checkbox" 
-                                            th:field="*{parent[__${parentStat.index}__].blocker}" 
-                                            th:checked="*{parent[__${parentStat.index}__].blocker}"/>
-                                    </td>
-                                    <td>
-                                        <select class="selectpicker form-control low" 
-                                                data-style="btn btn-generic btn-xs" 
-                                                data-live-search="true" 
-                                                th:field="*{parent[__${parentStat.index}__].scope}" 
-                                                required="true">
+                                        <td> 
+                                            <span th:text="*{parent[__${parentStat.index}__].parent.id}"></span>
+                                        </td>
+                                        <td th:text="*{parent[__${parentStat.index}__].parent.server.name}"></td>
+                                        <td><a class="link" th:text="*{parent[__${parentStat.index}__].parent.name}" th:href="@{'/job/view/' + *{parent[__${parentStat.index}__].parent.id}}" target="_blank"></a></td>
+                                        <td>
+                                            <a href="javascript:;" class="build-history" th:id="*{parent[__${parentStat.index}__].parent.id}">
+                                                +
+                                            </a>                          
+                                        </td>
+                                        <td>
+                                            <input  
+                                                id="blocker" 
+                                                name="blocker"
+                                                type="checkbox" 
+                                                th:field="*{parent[__${parentStat.index}__].blocker}" 
+                                                th:checked="*{parent[__${parentStat.index}__].blocker}"/>
+                                        </td>
+                                        <td>
+                                            <select class="selectpicker form-control low" 
+                                                    data-style="btn btn-generic btn-xs" 
+                                                    data-live-search="true" 
+                                                    th:field="*{parent[__${parentStat.index}__].scope}" 
+                                                    required="true">
 
-                                            <option th:each="scope : ${T(br.com.dafiti.hanger.option.Scope).values()}" 
-                                                    th:value="${scope}" 
-                                                    th:text="${scope}"
-                                                    th:if="${scope != T(br.com.dafiti.hanger.option.Scope).ANYONE}">
-                                            </option>
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <button type="submit" name="partial_remove_parent" th:value="${parentStat.index}" class="btn btn-delete btn-xs">
-                                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove
-                                        </button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
+                                                <option th:each="scope : ${T(br.com.dafiti.hanger.option.Scope).values()}" 
+                                                        th:value="${scope}" 
+                                                        th:text="${scope}"
+                                                        th:if="${scope != T(br.com.dafiti.hanger.option.Scope).ANYONE}">
+                                                </option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button type="submit" name="partial_remove_parent" th:value="${parentStat.index}" class="btn btn-delete btn-xs">
+                                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
 
-                        <div id="child" class="tab-pane fade space-top">
-
-                            <table class="table">
-                                <tr>
-                                    <th style="width:5%">#</th>
-                                    <th style="width:10%">Server</th>
-                                    <th style="width:47.5%">Name</th>
-                                    <th style="width:5%"><span class="glyphicon glyphicon-time" title="Build history"></span></th>
-                                    <th style="width:5%"><span class="glyphicon glyphicon-lock" title="Rebuild blocker"></span></th>
-                                    <th style="width:5%">Scope</th>
-                                    <th></th>
-                                </tr>
-                                <tr th:each="child, childStat : ${children}">
-                                    <td> 
-                                        <span th:text="${child.job.id}"></span>
-                                    </td>
-                                    <td th:text="${child.job.server.name}"></td>
-                                    <td><a class="link" th:text="${child.job.name}" th:href="@{'/job/view/' + ${child.job.id}}" target="_blank"></a></td>
-                                    <td>
-                                        <a href="javascript:;" class="build-history" th:id="${child.job.id}">
-                                            +
-                                        </a>                         
-                                    </td>
-                                    <td>
-                                        <input  
-                                            id="blocker" 
-                                            name="blocker"
-                                            type="checkbox" 
-                                            th:checked="${child.blocker}"
-                                            disabled="true"/>
-                                    </td>
-                                    <td>
-                                        <span th:text="${child.scope}"></span>
-                                    </td>
-                                    <td></td>
-                                </tr>
-                            </table>
+                            <div th:if="${not #lists.isEmpty(children)}" id="child" class="tab-pane fade in space-top" th:classappend="${#lists.isEmpty(job.parent)} ? active : ''">
+                                <table class="table">
+                                    <tr>
+                                        <th style="width:5%">#</th>
+                                        <th style="width:10%">Server</th>
+                                        <th style="width:47.5%">Name</th>
+                                        <th style="width:5%"><span class="glyphicon glyphicon-time" title="Build history"></span></th>
+                                        <th style="width:5%"><span class="glyphicon glyphicon-pushpin" title="Rebuild blocker"></span></th>
+                                        <th style="width:5%">Scope</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr th:each="child, childStat : ${children}">
+                                        <td> 
+                                            <span th:text="${child.job.id}"></span>
+                                        </td>
+                                        <td th:text="${child.job.server.name}"></td>
+                                        <td><a class="link" th:text="${child.job.name}" th:href="@{'/job/view/' + ${child.job.id}}" target="_blank"></a></td>
+                                        <td>
+                                            <a href="javascript:;" class="build-history" th:id="${child.job.id}">
+                                                +
+                                            </a>                         
+                                        </td>
+                                        <td>
+                                            <input  
+                                                id="blocker" 
+                                                name="blocker"
+                                                type="checkbox" 
+                                                th:checked="${child.blocker}"
+                                                disabled="true"/>
+                                        </td>
+                                        <td>
+                                            <span th:text="${child.scope}"></span>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </div>
 

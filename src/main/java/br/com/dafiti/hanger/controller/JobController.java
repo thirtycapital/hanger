@@ -48,6 +48,7 @@ import br.com.dafiti.hanger.service.UserService;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -421,11 +422,17 @@ public class JobController {
             @RequestParam(value = "parentUpstream", required = false) boolean parentUpstream,
             BindingResult bindingResult, Model model) {
 
+        List<String> errors = new ArrayList();
+
         try {
-            jobService.addParent(job, parentServer, parentJobList, parentUpstream);
+            jobService.addParent(job, parentServer, parentJobList, parentUpstream, errors);
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
         } finally {
+            if (!errors.isEmpty()) {
+                model.addAttribute("errorMessage", "The following jobs are invalid ou disabled on Jenkins: " + String.join(",", errors));
+            }
+
             this.modelDefault(model, job);
         }
 
@@ -806,16 +813,22 @@ public class JobController {
             HttpServletRequest request,
             RedirectAttributes redirectAttributes) {
 
+        List<String> errors = new ArrayList();
+
         try {
             if (reverse) {
-                jobService.addChildren(job, server, jobList, false);
+                jobService.addChildren(job, server, jobList, false, errors);
             } else {
-                jobService.addParent(job, server, jobList, false);
+                jobService.addParent(job, server, jobList, false, errors);
                 jobService.save(job);
             }
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(ex));
         } finally {
+            if (!errors.isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "The following jobs are invalid ou disabled on Jenkins: " + String.join(",", errors));
+            }
+
             model.addAttribute("job", job);
             model.addAttribute("warnings", flowService.getFlowWarning(job));
             model.addAttribute("chart", flowService.getJobFlow(job, reverse, true));

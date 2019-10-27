@@ -175,13 +175,15 @@ public class JobService {
      * @param server Server
      * @param parentJobList ParentJobList
      * @param parentUpstream ParentUpstream
+     * @param error Errors
      * @throws Exception
      */
     public void addParent(
             Job job,
             Server server,
             List<String> parentJobList,
-            boolean parentUpstream) throws Exception {
+            boolean parentUpstream,
+            List<String> error) throws Exception {
 
         if (parentJobList == null) {
             parentJobList = new ArrayList();
@@ -210,7 +212,7 @@ public class JobService {
 
                     //Identify if should import upstream jobs recursively.
                     if (parentUpstream) {
-                        this.addParent(transientJob, server, null, parentUpstream);
+                        this.addParent(transientJob, server, null, parentUpstream, error);
                     }
 
                     //Import the parent job. 
@@ -238,7 +240,7 @@ public class JobService {
                     throw new Exception("Cyclic Reference: " + lineage.toString().concat(parentJob.getName()));
                 }
             } else {
-                throw new Exception("Parent " + name + " is not valid or is disabled on jenkins server.");
+                error.add(name);
             }
         }
     }
@@ -498,13 +500,15 @@ public class JobService {
      * @param server Server
      * @param childrenJobList
      * @param parentUpstream ParentUpstream
+     * @param error errors
      * @throws Exception
      */
     public void addChildren(
             Job job,
             Server server,
             List<String> childrenJobList,
-            boolean parentUpstream) throws Exception {
+            boolean parentUpstream,
+            List<String> error) throws Exception {
 
         for (String child : childrenJobList) {
             Job jobChild = this.findByName(child);
@@ -512,7 +516,6 @@ public class JobService {
             //Identify if child exists.
             if (jobChild == null) {
                 jobChild = new Job(child, server);
-                jenkinsService.updateJob(jobChild);
             }
 
             //Identify if child is valid.
@@ -520,10 +523,12 @@ public class JobService {
                 ArrayList parentList = new ArrayList();
                 parentList.add(job.getName());
 
-                this.addParent(jobChild, job.getServer(), parentList, false);
+                this.addParent(jobChild, job.getServer(), parentList, false, error);
                 this.save(jobChild);
+
+                jenkinsService.updateJob(jobChild);
             } else {
-                throw new Exception("Child " + child + " is not valid or is disabled on jenkins server.");
+                error.add(child);
             }
         }
     }

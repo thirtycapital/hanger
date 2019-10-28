@@ -23,6 +23,7 @@
  */
 package br.com.dafiti.hanger.service;
 
+import br.com.dafiti.hanger.model.SubjectSummary;
 import br.com.dafiti.hanger.model.Subject;
 import br.com.dafiti.hanger.model.SubjectDetails;
 import br.com.dafiti.hanger.model.JobStatus;
@@ -159,5 +160,22 @@ public class SubjectDetailsService {
         });
 
         return subjectDetails;
+    }
+
+    /**
+     * Get count of jobs related with a subject.
+     *
+     * @param subjects Subject list.
+     * @return SubjectSummary
+     */
+    public List<SubjectSummary> getSummaryOf(List<Subject> subjects) {
+        List<SubjectSummary> subjectSummary = new ArrayList<>();
+
+        subjects.stream().forEach((subject) -> {
+            SubjectSummary summary = new SubjectSummary(subject, jobService.countBySubject(subject));
+            subjectSummary.add(summary);
+        });
+
+        return subjectSummary;
     }
 }

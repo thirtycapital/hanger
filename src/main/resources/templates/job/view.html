@@ -105,8 +105,8 @@
                                 <input type="number" min="0" max="59" class="form-control" maxlength="1" th:field="*{wait}" disabled="true"/>
                                 <span th:if="${#fields.hasErrors('wait')}" class="help-block" th:errors="*{wait}"></span>
                             </div>
-                        </div>       
-                    </div>
+                        </div>
+                    </div>       
 
                     <div th:if="${not #lists.isEmpty(job.subject)}">  
                         <label>Subject</label>
@@ -133,9 +133,17 @@
                             </legend>
                         </fieldset>
 
-                        <ul class="nav nav-tabs">
-                            <li class="active" th:if="${not #lists.isEmpty(job.parent)}"><a data-toggle="tab" href="#parent">PARENT</a></li>
-                            <li th:classappend="${#lists.isEmpty(job.parent)} ? active : ''" th:if="${not #lists.isEmpty(children)}"><a data-toggle="tab" href="#child">CHILDREN</a></li>
+                        <ul class="nav nav-pills">
+                            <li class="active" th:if="${not #lists.isEmpty(job.parent)}">
+                                <a data-toggle="tab" href="#parent">PARENT 
+                                    <span class="badge" th:text="${#lists.size(job.parent)}"></span>
+                                </a>                                
+                            </li>
+                            <li th:classappend="${#lists.isEmpty(job.parent)} ? active : ''" th:if="${not #lists.isEmpty(children)}">
+                                <a data-toggle="tab" href="#child">CHILDREN 
+                                    <span class="badge" th:text="${#lists.size(children)}"></span>
+                                </a>  
+                            </li>
                         </ul>
 
                         <div class="tab-content">
@@ -145,8 +153,8 @@
                                         <th style="width:5%">#</th>
                                         <th style="width:10%">Server</th>
                                         <th style="width:52.5%">Name</th>                               
-                                        <th style="width:5%"><span class="glyphicon glyphicon-time" title="Build history"></span></th>
-                                        <th style="width:5%"><span class="glyphicon glyphicon-pushpin" title="Rebuild blocker"></span></th>
+                                        <th style="width:5%">History</th>
+                                        <th style="width:5%">Blocker</th>
                                         <th style="width:5%">Scope</th>
                                         <th></th>
                                     </tr>
@@ -183,8 +191,8 @@
                                         <th style="width:5%">#</th>
                                         <th style="width:10%">Server</th>
                                         <th style="width:52.5%">Name</th>
-                                        <th style="width:5%"><span class="glyphicon glyphicon-time" title="Build history"></span></th>
-                                        <th style="width:5%"><span class="glyphicon glyphicon-pushpin" title="Rebuild blocker"></span></th>
+                                        <th style="width:5%">History</th>
+                                        <th style="width:5%">Blocker</th>
                                         <th style="width:5%">Scope</th>
                                         <th></th>
                                     </tr>

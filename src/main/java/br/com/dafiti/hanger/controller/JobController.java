@@ -874,9 +874,7 @@ public class JobController {
         boolean isEnabled = true;
 
         if (job != null) {
-            //Get the details getDetails each job. 
             JobDetails jobDetails = jobDetailsService.getDetailsOf(job);
-
             isEnabled = jobDetails.getStatus() != Status.DISABLED;
         }
 

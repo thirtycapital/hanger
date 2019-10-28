@@ -84,6 +84,10 @@ public class JobService {
         return jobRepository.findBySubjectOrderByName(subject);
     }
 
+    public int countBySubject(Subject subject) {
+        return jobRepository.countBySubject(subject);
+    }
+
     public HashSet<Job> findByApprover(User user) {
         return this.jobRepository.findByApprover(user);
     }

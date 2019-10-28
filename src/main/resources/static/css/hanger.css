@@ -303,7 +303,7 @@ code[class*="language-free"] {
 
 
 .sidebar-nav li.active a {
-    color:#23bbad;
+    color:#337ab7;
     background:  #F4F5F7;
     text-decoration: none;
 }
@@ -638,15 +638,15 @@ img.media-object{
 }
 
 .logged {
-    border-left: 2.5px solid#23bbad;
+    border-left: 2.5px solid#337ab7;
 }
 
 .nav-tabs>li.active>a{
-    color:#23bbad;
+    color:#337ab7;
 }
 
 .nav-tabs>li.active>a:hover{
-    color:#23bbad;
+    color:#337ab7;
 }
 
 .radio-inline,
@@ -670,7 +670,7 @@ input[type=radio] + img {
 }
 
 input[type=radio]:checked + img {
-    outline: 2.5px solid#23bbad;
+    outline: 2.5px solid#337ab7;
     margin-left: 0px;
 }
 
@@ -703,8 +703,8 @@ input[type=radio]:checked + img {
 }
 
 h3.page-title {
-    color:#23bbad;
-    font-size: 24px;
+    color:#373e46;
+    font-size: 25px;
 }
 
 .btn-delete {
@@ -802,7 +802,7 @@ h3.page-title {
 }
 
 .modal-title{
-    color:#23bbad;
+    color:#373e46;
 }
 
 .modal-header{
@@ -814,7 +814,7 @@ h3.page-title {
 }
 
 .user-online{
-    color: #23bbad;
+    color: #337ab7;
     font-style: italic;
     font-weight: bold
 }
@@ -838,4 +838,8 @@ input[type='file'] {
 .row-gantt-parent {
     font-weight: bold !important;
     background-color: #F8F9F9 !important;
+}
+
+.badge {
+    background-color: #D8D8D8;
 }

@@ -85,11 +85,9 @@ public class MonitorController {
      */
     @GetMapping(path = {"/", "/home"})
     public String subjectDetail(Model model) {
-        List<Subject> subjects = subjectService.findBySubscription();
-        List<SubjectDetails> subjectDetails = subjectDetailsService.getDetailsOf(subjects);
-
+        List<SubjectDetails> subjectDetails = subjectDetailsService.getDetailsOf(subjectService.findBySubscription());
         model.addAttribute("subjectDetails", subjectDetails);
-        model.addAttribute("currentSubject", new Subject());
+
         modelDefault(model);
 
         return "monitor/monitor";
@@ -124,8 +122,8 @@ public class MonitorController {
             }
         }
 
-        modelDetails(principal, model, subject, jobs);
         modelDefault(model);
+        modelDetails(model, subject, principal, jobs);
 
         return "monitor/monitor";
     }
@@ -139,7 +137,7 @@ public class MonitorController {
      * @return Redirect to subject template
      */
     @PostMapping(path = "/detail/add/{id}", params = {"addJobs"})
-    public String setSubject(
+    public String addSubject(
             @RequestParam(value = "jobList", required = false, defaultValue = "") String jobsID,
             @PathVariable(value = "id") Subject subject,
             Model model) {
@@ -212,6 +210,7 @@ public class MonitorController {
      * @param model Model
      */
     private void modelDefault(Model model) {
+        model.addAttribute("subjectSummary", subjectDetailsService.getSummaryOf(subjectService.findBySubscription()));
         model.addAttribute("loggedIn", userService.getLoggedIn());
         model.addAttribute("subjects", subjectService.findBySubscription());
     }
@@ -224,15 +223,19 @@ public class MonitorController {
      * @param jobs Jobs
      */
     private void modelDetails(
-            Principal principal,
             Model model,
             Subject subject,
+            Principal principal,
             List<Job> jobs) {
-        List<JobDetails> jobDetails = jobDetailsService.getDetailsOf(jobs, principal);
-        model.addAttribute("jobDetails", jobDetails
-                .stream()
-                .sorted((a, b) -> (a.getJob().getName().compareTo(b.getJob().getName())))
-                .sorted((a, b) -> a.getStatus().toString().compareTo(b.getStatus().toString())).collect(Collectors.toList()));
+
         model.addAttribute("currentSubject", subject);
+
+        if (principal != null || jobs != null) {
+            List<JobDetails> jobDetails = jobDetailsService.getDetailsOf(jobs, principal);
+            model.addAttribute("jobDetails", jobDetails
+                    .stream()
+                    .sorted((a, b) -> (a.getJob().getName().compareTo(b.getJob().getName())))
+                    .sorted((a, b) -> a.getStatus().toString().compareTo(b.getStatus().toString())).collect(Collectors.toList()));
+        }
     }
 }

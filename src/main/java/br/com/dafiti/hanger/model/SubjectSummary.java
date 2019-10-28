@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Dafiti Group
+ * Copyright (c) 2019 Dafiti Group
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -21,26 +21,37 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
-package br.com.dafiti.hanger.repository;
+package br.com.dafiti.hanger.model;
 
-import br.com.dafiti.hanger.model.Job;
-import br.com.dafiti.hanger.model.Subject;
-import br.com.dafiti.hanger.model.User;
-import java.util.HashSet;
-import java.util.List;
-import org.springframework.data.repository.CrudRepository;
+/**
+ * This class has the subject and summary of its jobs.
+ *
+ * @author Helio Leal
+ * @author Valdiney Gomes
+ */
+public class SubjectSummary {
 
-public interface JobRepository extends CrudRepository<Job, Long> {
+    private Subject subject;
+    private int jobCount;
 
-    Job findByName(String name);
+    public SubjectSummary(Subject subject, int jobCount) {
+        this.subject = subject;
+        this.jobCount = jobCount;
+    }
 
-    public List<Job> findBySubjectOrderByName(Subject subject);
+    public Subject getSubject() {
+        return subject;
+    }
 
-    public HashSet<Job> findBySubject(Subject subject);
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
 
-    public HashSet<Job> findByApprover(User user);
+    public int getJobCount() {
+        return jobCount;
+    }
 
-    public List<Job> findByNameContainingOrAliasContaining(String name, String alias);
-
-    public int countBySubject(Subject subject);
+    public void setJobCount(int jobCount) {
+        this.jobCount = jobCount;
+    }
 }

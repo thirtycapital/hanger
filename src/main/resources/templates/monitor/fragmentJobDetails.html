@@ -7,70 +7,7 @@
         <div class="container">
             <!--Fragment-->
             <div th:fragment="jobDetails">
-                <script type="text/javascript" th:inline="javascript">
-                    /**
-                     * Show the job warning list. 
-                     * 
-                     * @param {type} id
-                     * @returns {undefined}
-                     */
-                    function showJobWarning(id) {
-                        var url = /*[[@{/flow/warning/}]]*/ "/flow/warning/";
-
-                        $.ajax({
-                            type: "GET",
-                            url: url + id,
-                            timeout: 30000,
-                            success: function (result) {
-                                $("#modalHolder").html(result);
-                                $("#modalWarning").modal({backdrop: 'static', keyboard: false});
-                            },
-                            error: function (e) {
-                                alert("Fail loading job warning " + e);
-                            }
-                        });
-                    }
-
-                    /**
-                     * Build a job and show the result as a toast message.
-                     * 
-                     * @param {type} id ID
-                     * @param {type} name
-                     * @returns {undefined}
-                     */
-                    function buildJob(id, name) {
-                        var url = /*[[@{/job/build/silently/}]]*/ "/job/build/silently/";
-
-                        toastr.options = {
-                            "closeButton": true,
-                            "progressBar": true,
-                            "positionClass": "toast-top-right",
-                            "timeOut": "2500",
-                            "showEasing": "swing",
-                            "hideEasing": "linear",
-                            "showMethod": "fadeIn",
-                            "hideMethod": "fadeOut"
-                        }
-
-                        $.ajax({
-                            type: "GET",
-                            url: url + id,
-                            timeout: 30000,
-                            success: function (result) {
-                                if (result) {
-                                    toastr.success('Successfully built job ' + name);
-                                } else {
-                                    toastr.error('Error building job ' + name);
-                                }
-                            },
-                            error: function (e) {
-                                toastr.error('Error on building request of ' + name);
-                            }
-                        });
-                    }
-                </script>
-
-                <table id="table" class="table table-hover space-top">
+                <table id="table" class="table table-striped dataTable no-footer">
                     <thead> 
                         <tr>
                             <th style="width:5%" class="img-sort">Status</th>
@@ -157,6 +94,69 @@
                 </table>
 
                 <div id="modalHolder"/>
+
+                <script th:inline="javascript">
+                    /**
+                     * Show the job warning list. 
+                     * 
+                     * @param {type} id
+                     * @returns {undefined}
+                     */
+                    function showJobWarning(id) {
+                        var url = /*[[@{/flow/warning/}]]*/ "/flow/warning/";
+
+                        $.ajax({
+                            type: "GET",
+                            url: url + id,
+                            timeout: 30000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalWarning").modal({backdrop: 'static', keyboard: false});
+                            },
+                            error: function (e) {
+                                alert("Fail loading job warning " + e);
+                            }
+                        });
+                    }
+
+                    /**
+                     * Build a job and show the result as a toast message.
+                     * 
+                     * @param {type} id ID
+                     * @param {type} name
+                     * @returns {undefined}
+                     */
+                    function buildJob(id, name) {
+                        var url = /*[[@{/job/build/silently/}]]*/ "/job/build/silently/";
+
+                        toastr.options = {
+                            "closeButton": true,
+                            "progressBar": true,
+                            "positionClass": "toast-top-right",
+                            "timeOut": "2500",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        }
+
+                        $.ajax({
+                            type: "GET",
+                            url: url + id,
+                            timeout: 30000,
+                            success: function (result) {
+                                if (result) {
+                                    toastr.success('Successfully built job ' + name);
+                                } else {
+                                    toastr.error('Error building job ' + name);
+                                }
+                            },
+                            error: function (e) {
+                                toastr.error('Error on building request of ' + name);
+                            }
+                        });
+                    }
+                </script>
             </div>
         </div>       	
     </body>

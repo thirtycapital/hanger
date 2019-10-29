@@ -172,7 +172,7 @@ public class SubjectDetailsService {
         List<SubjectSummary> subjectSummary = new ArrayList<>();
 
         subjects.stream().forEach((subject) -> {
-            SubjectSummary summary = new SubjectSummary(subject, jobService.countBySubject(subject));
+            SubjectSummary summary = new SubjectSummary(subject, jobService.countByEnabledTrueAndSubject(subject));
             subjectSummary.add(summary);
         });
 

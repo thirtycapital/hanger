@@ -13,11 +13,10 @@
                     </th>
                 </tr>            
             </table>
-            
+
             <form th:action="@{/log/list/filter}" method="POST">
                 <div style="margin-top:10px">
                     <div class="form-group">
-                        <label>Period</label>
                         <input type="text" name="dateRange" id="dateRange" class="form-control" readonly="readonly" style="cursor:pointer" />
                         <input type="hidden" name="dateFrom" id="dateFrom" th:value="${dateFrom}" />
                         <input type="hidden" name="dateTo" id="dateTo" th:value="${dateTo}" />
@@ -29,8 +28,6 @@
                     </button>                         
                 </div>
             </form>
-
-            <hr/>            
 
             <div>
                 <table id="table_paginated" class="table table-hover">

@@ -129,7 +129,7 @@ public class MonitorController {
     }
 
     /**
-     * Add a subject to a job.
+     * Add a job into a subject.
      *
      * @param jobsID Job list ID
      * @param subject Subject
@@ -210,6 +210,7 @@ public class MonitorController {
      * @param model Model
      */
     private void modelDefault(Model model) {
+        model.addAttribute("all", jobService.count());
         model.addAttribute("subjectSummary", subjectDetailsService.getSummaryOf(subjectService.findBySubscription()));
         model.addAttribute("loggedIn", userService.getLoggedIn());
         model.addAttribute("subjects", subjectService.findBySubscription());

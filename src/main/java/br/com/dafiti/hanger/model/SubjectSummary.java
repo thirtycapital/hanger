@@ -32,9 +32,9 @@ package br.com.dafiti.hanger.model;
 public class SubjectSummary {
 
     private Subject subject;
-    private int jobCount;
+    private long jobCount;
 
-    public SubjectSummary(Subject subject, int jobCount) {
+    public SubjectSummary(Subject subject, long jobCount) {
         this.subject = subject;
         this.jobCount = jobCount;
     }
@@ -47,11 +47,11 @@ public class SubjectSummary {
         this.subject = subject;
     }
 
-    public int getJobCount() {
+    public long getJobCount() {
         return jobCount;
     }
 
-    public void setJobCount(int jobCount) {
+    public void setJobCount(long jobCount) {
         this.jobCount = jobCount;
     }
 }

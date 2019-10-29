@@ -84,10 +84,6 @@ public class JobService {
         return jobRepository.findBySubjectOrderByName(subject);
     }
 
-    public int countBySubject(Subject subject) {
-        return jobRepository.countBySubject(subject);
-    }
-
     public HashSet<Job> findByApprover(User user) {
         return this.jobRepository.findByApprover(user);
     }
@@ -100,6 +96,19 @@ public class JobService {
         return jobRepository.findByNameContainingOrAliasContaining(search, search);
     }
 
+    @Cacheable(value = "job_count")
+    public long count() {
+        return jobRepository.count();
+    }
+
+    @Cacheable(value = "job_count_by_subject")
+    public long countByEnabledTrueAndSubject(Subject subject) {
+        return jobRepository.countByEnabledTrueAndSubject(subject);
+    }
+
+    @Caching(evict = {
+        @CacheEvict(value = "job_count", allEntries = true),
+        @CacheEvict(value = "job_count_by_subject", allEntries = true)})
     public Job save(Job job) {
         Long id = job.getId();
 
@@ -143,19 +152,25 @@ public class JobService {
     }
 
     @Caching(evict = {
-        @CacheEvict(value = "jobs", allEntries = true)})
+        @CacheEvict(value = "jobs", allEntries = true),
+        @CacheEvict(value = "job_count", allEntries = true),
+        @CacheEvict(value = "job_count_by_subject", allEntries = true)})
     public Job saveAndRefreshCache(Job job) {
         return this.save(job);
     }
 
     @Caching(evict = {
-        @CacheEvict(value = "jobs", allEntries = true)})
+        @CacheEvict(value = "jobs", allEntries = true),
+        @CacheEvict(value = "job_count", allEntries = true),
+        @CacheEvict(value = "job_count_by_subject", allEntries = true)})
     public void delete(Long id) {
         jobRepository.delete(id);
     }
 
     @Caching(evict = {
-        @CacheEvict(value = "jobs", allEntries = true)})
+        @CacheEvict(value = "jobs", allEntries = true),
+        @CacheEvict(value = "job_count", allEntries = true),
+        @CacheEvict(value = "job_count_by_subject", allEntries = true)})
     public void refresh() {
     }
 

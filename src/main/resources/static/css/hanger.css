@@ -843,3 +843,7 @@ input[type='file'] {
 .badge {
     background-color: #D8D8D8;
 }
+
+.badge-warning{
+    background-color: #FFD700;
+}

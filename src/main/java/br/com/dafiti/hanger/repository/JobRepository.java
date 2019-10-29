@@ -42,5 +42,5 @@ public interface JobRepository extends CrudRepository<Job, Long> {
 
     public List<Job> findByNameContainingOrAliasContaining(String name, String alias);
 
-    public int countBySubject(Subject subject);
+    public long countByEnabledTrueAndSubject(Subject subject);
 }

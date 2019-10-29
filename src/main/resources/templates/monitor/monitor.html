@@ -18,16 +18,19 @@
                     <a th:href="@{'/detail/' + ${subjects.subject.id}}" th:inline="text" class="link">                                                                     
                         <span th:if="${#lists.contains(subjects.subject.user, loggedIn)}" class="glyphicon glyphicon-thumbs-up" th:title="Subscribed"> </span>
                         [[${subjects.subject.name}]] 
-                        <span class="badge badge-warning" th:text="${subjects.jobCount}"></span>
+                        <span class="badge" th:text="${subjects.jobCount}"></span>
                     </a>
                 </li>
                 <li role="presentation" th:classappend="${#httpServletRequest.getRequestURI().endsWith('all') ? 'active home':''}">
                     <a th:href="@{'/detail/' + all}" title="ALL" class="link">
-                        ALL
+                        ALL 
+                        <span class="badge badge-warning" th:text="${all}"></span>
                     </a>
                 </li>
             </ul>
 
+            <hr/>
+            
             <div class="tab-content">
                 <div th:if="${not #httpServletRequest.getRequestURI().contains('/detail/')}">
                     <!--Home refresh timeout-->

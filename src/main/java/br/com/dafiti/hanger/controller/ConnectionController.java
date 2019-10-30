@@ -245,16 +245,12 @@ public class ConnectionController {
     /**
      * Show SQL workbench
      *
-     * @param connection Connection
      * @param model Model
      * @return SQL workbench template.
      */
-    @GetMapping(path = "/workbench/{id}")
-    public String workbench(
-            @PathVariable(name = "id") Connection connection,
-            Model model) {
-
-        model.addAttribute("connection", connection);
+    @GetMapping(path = "/workbench/")
+    public String workbench(Model model) {
+        model.addAttribute("connections", connectionService.list());
         return "connection/workbench";
     }
 

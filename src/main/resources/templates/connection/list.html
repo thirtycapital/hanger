@@ -18,7 +18,13 @@
                     </th>
                     <div sec:authorize="isAuthenticated()">
                         <th class="btn-action">
-                            <a href="#" title="Test connections" th:id="modal_test_connections">
+                            <a th:href="@{'/connection/workbench/'}" title="Workbench">
+                                <span class="glyphicon glyphicon-play"></span>
+                            </a>
+                        </th>
+
+                        <th class="btn-action">
+                            <a href="#" title="Test" th:id="modal_test_connections">
                                 <span class="glyphicon glyphicon-flash"></span>
                             </a>
                         </th>
@@ -51,7 +57,6 @@
                         <th style="width:3%" class="no-sort"></th>
                         <th style="width:3%" class="no-sort"></th>
                         <th style="width:3%" class="no-sort"></th>
-                        <th style="width:3%" class="no-sort"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -67,11 +72,6 @@
                         <td>
                             <a th:if="${connection.target != T(br.com.dafiti.hanger.option.Database).ATHENA}" th:href="@{'/connection/' + ${connection.id} + '/table'}" class="btn btn-generic btn-xs">
                                 <span class="glyphicon glyphicon-list" aria-hidden="true"></span> Table
-                            </a>
-                        </td>
-                        <td>
-                            <a th:href="@{'/connection/workbench/' + ${connection.id}}" class="btn btn-generic btn-xs">
-                                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Workbench
                             </a>
                         </td>
                         <td>

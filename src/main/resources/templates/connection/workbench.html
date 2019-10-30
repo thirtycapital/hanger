@@ -11,12 +11,22 @@
                 <table>
                     <tr>
                         <th>
-                            <h3 class="page-title" th:inline="text">[[${'Workbench > ' + connection.name}]]</h3>
+                            <h3 class="page-title">Workbench</h3>
                         </th>
                     </tr>            
                 </table>
 
                 <div style="margin-top:10px">
+                    <div class="form-group">
+                        <label>Connection</label>
+                        <select id="connection" class="selectpicker form-control" data-live-search="true" required="true" placeholder="Connection">
+                            <option th:each="connection : ${connections}" 
+                                    th:value="${connection.id}" 
+                                    th:text="${connection.name}">
+                            </option>
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <textarea 
                             class="form-control" 
@@ -115,7 +125,7 @@
                  * @returns {undefined}
                  */
                 function query() {
-                    var connection = /*[[${connection.id}]]*/ 0;
+                    var connection = $('#connection').val();
                     var url = /*[[@{/connection/query/}]]*/ "/connection/query/";
                     var query = window.editor.getSelection();
 

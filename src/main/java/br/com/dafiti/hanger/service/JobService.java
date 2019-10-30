@@ -110,8 +110,6 @@ public class JobService {
         @CacheEvict(value = "job_count", allEntries = true),
         @CacheEvict(value = "job_count_by_subject", allEntries = true)})
     public Job save(Job job) {
-        Long id = job.getId();
-
         //Define the relation between the job and its parents.
         job.getParent().stream().forEach((parent) -> {
             if (parent.getJob() == null) {
@@ -136,6 +134,16 @@ public class JobService {
                         filter(parent -> parent.isBlocker()).count() != 0
         );
 
+        return jobRepository.save(job);
+    }
+
+    @Caching(evict = {
+        @CacheEvict(value = "jobs", allEntries = true),
+        @CacheEvict(value = "job_count", allEntries = true),
+        @CacheEvict(value = "job_count_by_subject", allEntries = true)})
+    public Job saveAndRefreshCache(Job job) {
+        Long id = job.getId();
+
         //Identify if should update Jenkins job properties.  
         if (id != null) {
             Job previousVersion = this.load(id);
@@ -148,14 +156,6 @@ public class JobService {
         }
 
         jenkinsService.updateJob(job);
-        return jobRepository.save(job);
-    }
-
-    @Caching(evict = {
-        @CacheEvict(value = "jobs", allEntries = true),
-        @CacheEvict(value = "job_count", allEntries = true),
-        @CacheEvict(value = "job_count_by_subject", allEntries = true)})
-    public Job saveAndRefreshCache(Job job) {
         return this.save(job);
     }
 

@@ -19,7 +19,7 @@ div.dataTables_filter input{
 }
 
 body{
-    font-size: 12px;
+    font-size: 12.5px;
     font-weight: normal;
 }
 
@@ -841,9 +841,9 @@ input[type='file'] {
 }
 
 .badge {
-    background-color: #D8D8D8;
+    background-color: #D8D8D8 !important;
 }
 
 .badge-warning{
-    background-color: #FFD700;
+    /*background-color: #FFD700;*/
 }

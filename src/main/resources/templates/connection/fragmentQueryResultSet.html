@@ -13,7 +13,7 @@
                     </div>  
                 </div> 
 
-                <div th:if="${ errorMessage == null }">
+                <div th:if="${ errorMessage == null }">                                      
                     <table id="table" class="table table-hover space-top">
                         <thead> 
                             <tr>
@@ -26,6 +26,8 @@
                             </tr>
                         </tbody>
                     </table>
+
+                    <span class="pull-right" th:inline="text">Query time: [[${resultset.elapsedTime}]] ms</span>
 
                     <div th:if="${#lists.size(resultset.row) >= 100}">
                         <div class="alert alert-info" role="alert">

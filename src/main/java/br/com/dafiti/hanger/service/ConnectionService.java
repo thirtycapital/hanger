@@ -48,6 +48,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 /**
  *
@@ -328,10 +329,17 @@ public class ConnectionService {
             jdbcTemplate.setMaxRows(100);
 
             //Execute a query. 
+            StopWatch watch = new StopWatch();
+            watch.start();
             SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(query);
-            String[] columnNames = sqlRowSet.getMetaData().getColumnNames();
+            watch.stop();
+
+            //Get query elapsed time.
+            queryResultSet.setElapsedTime(watch.getTotalTimeMillis());
 
             //Get query header.
+            String[] columnNames = sqlRowSet.getMetaData().getColumnNames();
+
             queryResultSet.setHeader(
                     Arrays.asList(
                             sqlRowSet
@@ -494,6 +502,7 @@ public class ConnectionService {
         String error = new String();
         List<String> header = new ArrayList();
         List<QueryResultSetRow> row = new ArrayList();
+        long elapsedTime = 0;
 
         public List<String> getHeader() {
             return header;
@@ -509,6 +518,14 @@ public class ConnectionService {
 
         public void setRow(List<QueryResultSetRow> row) {
             this.row = row;
+        }
+
+        public long getElapsedTime() {
+            return elapsedTime;
+        }
+
+        public void setElapsedTime(long elapsedTime) {
+            this.elapsedTime = elapsedTime;
         }
 
         public boolean hasError() {

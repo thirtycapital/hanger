@@ -843,3 +843,13 @@ input[type='file'] {
 .badge {
     background-color: #D8D8D8;
 }
+
+.table-workbench-result {
+    display: block;
+    overflow: scroll;
+    height:550px;
+}
+
+.CodeMirror-scroll {
+    height: 250px !important;
+}

@@ -14,7 +14,7 @@
                 </div> 
 
                 <div th:if="${ errorMessage == null }">                                      
-                    <table id="table" class="table table-hover space-top">
+                    <table id="table" class="table table-hover space-top table-workbench-result">
                         <thead> 
                             <tr>
                                 <th th:each="header: ${resultset.header}" class="column-title" th:text="${header}" />

@@ -24,6 +24,7 @@
 package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.Connection;
+import br.com.dafiti.hanger.option.Database;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.repository.ConnectionRepository;
 import br.com.dafiti.hanger.security.PasswordCryptor;
@@ -32,9 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -160,7 +159,9 @@ public class ConnectionService {
 
                 dataSource.setConnectionProperties(properties);
             } catch (SQLException ex) {
-                Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, "Fail getting datasource " + connection.getName(), ex);
+                Logger.getLogger(
+                        ConnectionService.class.getName())
+                        .log(Level.SEVERE, "Fail getting datasource " + connection.getName(), ex);
             }
         }
 
@@ -183,14 +184,18 @@ public class ConnectionService {
                     running = true;
                 }
             } catch (SQLException ex) {
-                Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, "Fail testing connection to " + connection.getName(), ex);
+                Logger.getLogger(
+                        ConnectionService.class.getName())
+                        .log(Level.SEVERE, "Fail testing connection to " + connection.getName(), ex);
             } finally {
                 try {
                     if (datasource.getConnection() != null) {
                         datasource.getConnection().close();
                     }
                 } catch (SQLException ex) {
-                    Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, "Fail closing connection", ex.getMessage());
+                    Logger.getLogger(
+                            ConnectionService.class.getName())
+                            .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
                 }
             }
         }
@@ -223,12 +228,16 @@ public class ConnectionService {
                                 tables.getString("TABLE_NAME")));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, "Fail getting metadata of " + connection.getName(), ex);
+            Logger.getLogger(
+                    ConnectionService.class.getName())
+                    .log(Level.SEVERE, "Fail getting metadata of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, "Fail closing connection", ex.getMessage());
+                Logger.getLogger(
+                        ConnectionService.class.getName())
+                        .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -263,12 +272,16 @@ public class ConnectionService {
                                 columns.getInt("DECIMAL_DIGITS")));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, "Fail getting metadata of " + connection.getName(), ex);
+            Logger.getLogger(
+                    ConnectionService.class.getName())
+                    .log(Level.SEVERE, "Fail getting metadata of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, "Fail closing connection", ex.getMessage());
+                Logger.getLogger(
+                        ConnectionService.class.getName())
+                        .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -300,12 +313,16 @@ public class ConnectionService {
                                 tables.getString("COLUMN_NAME")));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, "Fail getting metadata of " + connection.getName(), ex);
+            Logger.getLogger(
+                    ConnectionService.class.getName())
+                    .log(Level.SEVERE, "Fail getting metadata of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, "Fail closing connection", ex.getMessage());
+                Logger.getLogger(
+                        ConnectionService.class.getName())
+                        .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -327,6 +344,18 @@ public class ConnectionService {
             //Set a connection to database.
             jdbcTemplate.setDataSource(datasource);
             jdbcTemplate.setMaxRows(100);
+
+            if (connection.getTarget().equals(Database.POSTGRES)
+                    || connection.getTarget().equals(Database.ATHENA)) {
+
+                if (!query.toLowerCase().contains(" limit ")) {
+                    if (query.endsWith(";")) {
+                        query = query.toLowerCase().replaceAll(";", " limit 100;");
+                    } else {
+                        query = query.concat(" limit 100;");
+                    }
+                }
+            }
 
             //Execute a query. 
             StopWatch watch = new StopWatch();
@@ -369,7 +398,9 @@ public class ConnectionService {
                 //Close the connection. 
                 jdbcTemplate.getDataSource().getConnection().close();
             } catch (SQLException ex) {
-                Logger.getLogger(ConnectionService.class.getName()).log(Level.SEVERE, "Fail closing connection ", ex);
+                Logger.getLogger(
+                        ConnectionService.class.getName())
+                        .log(Level.SEVERE, "Fail closing connection ", ex);
             }
         }
 

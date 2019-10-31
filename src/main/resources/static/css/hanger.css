@@ -841,9 +841,5 @@ input[type='file'] {
 }
 
 .badge {
-    background-color: #D8D8D8 !important;
-}
-
-.badge-warning{
-    /*background-color: #FFD700;*/
+    background-color: #D8D8D8;
 }

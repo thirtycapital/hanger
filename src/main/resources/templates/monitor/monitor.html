@@ -7,7 +7,6 @@
         <th:block th:include="base/header :: navbar"></th:block>
 
         <div class="container-fluid main-content">
-            <br/>
             <ul class="nav nav-pills" th:if="${not #lists.isEmpty(subjects)}">
                 <li role="presentation" th:classappend="${#httpServletRequest.getRequestURI().contains('/home') or #httpServletRequest.getRequestURI().endsWith('/') ? 'active home':''}">
                     <a class="link" title="HOME" th:href="@{'/'}">

@@ -50,6 +50,7 @@ public class JobStatus implements Serializable {
     private Date date = new Date();
     private Flow flow = Flow.NORMAL;
     private Scope scope = Scope.FULL;
+    private Date failureTimestamp;
 
     @Id
     @GeneratedValue
@@ -86,6 +87,15 @@ public class JobStatus implements Serializable {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getFailureTimestamp() {
+        return failureTimestamp;
+    }
+
+    public void setFailureTimestamp(Date failureTimestamp) {
+        this.failureTimestamp = failureTimestamp;
     }
 
     @OneToOne

@@ -28,8 +28,8 @@
                                 <tbody>
                                     <tr th:each="history : ${history}">
                                         <td><img class="status" th:src="@{'/images/' + ${history.status} + '.png'}" th:attr="alt=${ history.status }" th:title="${history.status}"></img></td>
-                                        <td th:text="${#dates.format(history.queueDate, 'dd-MM-yyyy HH:mm:ss')}">Start</td>
-                                        <td th:text="${#dates.format(history.finishDate, 'dd-MM-yyyy HH:mm:ss')}">Finish</td>
+                                        <td th:text="${#dates.format(history.queueDate, 'yyyy-MM-dd HH:mm:ss')}">Start</td>
+                                        <td th:text="${#dates.format(history.finishDate, 'yyyy-MM-dd HH:mm:ss')}">Finish</td>
                                         <td th:text="${history.getDurationTimeInMinutes()}">Finish</td>
                                         <td>
                                             <div class="progress">

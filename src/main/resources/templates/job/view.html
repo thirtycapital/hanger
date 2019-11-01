@@ -96,7 +96,7 @@
                                         name="rebuild"
                                         type="checkbox" 
                                         th:checked="*{rebuild}"
-                                        disabled="true"/> Rebuildable
+                                        disabled="true"/> Rebuildable                                    
                                 </label>          
                             </div>
 
@@ -234,129 +234,173 @@
                     </div>
 
                     <div th:each="checkup, stat : ${job.checkup}">
-                        <div th:class="${stat.even} ? 'checkup-gray-background' : ''">
-                            <!--Checkup-->
-                            <div class="form-group"> 
-                                <div class="col-sm-2">
-                                    <label th:inline="text">ID</label> 
-                                    <input type="text" class="form-control" maxlength="255" th:field="*{checkup[__${stat.index}__].id}" required="true" disabled="true"/>
+                        <div class="panel-group" id="accordion">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">                                    
+                                    <a 
+                                        data-toggle="collapse" 
+                                        data-parent="#accordion" 
+                                        th:href="'#check' + ${stat.index}"
+                                        class="link">
+
+                                        <span 
+                                            th:text="*{checkup[__${stat.index}__].name == '' ? checkup[__${stat.index}__].description : checkup[__${stat.index}__].name}" 
+                                            th:classappend="*{checkup[__${stat.index}__].enabled ? '':'panel-heading-add-checkup'}"></span>
+                                        <span 
+                                            th:text="*{checkup[__${stat.index}__].enabled ? '':'[Disabled]'}" 
+                                            class="panel-heading-add-checkup"></span>
+                                        <span 
+                                            class="glyphicon glyphicon-triangle-bottom pull-right small" 
+                                            aria-hidden="true"></span> 
+                                    </a>                                    
                                 </div>
-
-                                <div class="col-sm-8">
-                                    <label th:inline="text">Description</label> 
-                                    <input type="text" class="form-control" maxlength="255" th:field="*{checkup[__${stat.index}__].description}" disabled="true"/>
-                                </div>
-                            </div> 
-
-                            <div class="form-group">
-                                <div class="col-sm-8">
-                                    <label>Connection</label> 
-                                    <input type="text" class="form-control" maxlength="255" th:field="*{checkup[__${stat.index}__].connection.name}" disabled="true"/>
-                                </div>
-
-                                <div class="col-sm-2">
-                                    <label>Scope</label>
-                                    <input type="text" class="form-control" maxlength="255" th:field="*{checkup[__${stat.index}__].scope}" disabled="true"/>    
-                                </div>
-                            </div> 
-
-                            <div class="form-group">
-                                <div class="col-sm-10">
-                                    <label>SQL</label>
-                                    <pre class="line-numbers">
-                                    <code class="language-sql" th:text="*{checkup[__${stat.index}__].query}"></code>
-                                    </pre>
-                                </div>
-                            </div>
-
-                            <div class="form-group">
-                                <div class="col-sm-2">
-                                    <label>Test</label>
-                                    <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].conditional}" disabled="true"/>      
-                                </div>
-
-                                <div class="col-sm-4">    
-                                    <label>Threshold</label>
-                                    <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].threshold}" disabled="true"/>
-                                </div>
-
-                                <div class="col-sm-4">    
-                                    <label>On fail</label> 
-                                    <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].action}" disabled="true"/>          
-                                </div>
-                            </div> 
-
-                            <div class="form-group">
-                                <div class="col-sm-8">
-                                    <div th:if="${not #lists.isEmpty(job.parent)}">  
-                                        <label>
-                                            <input                                     
-                                                type="checkbox" 
-                                                th:field="*{checkup[__${stat.index}__].prevalidation}" 
-                                                th:checked="*{checkup[__${stat.index}__].prevalidation}"
-                                                th:disabled="true"/> Pre-validation
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div class="col-sm-2">
-                                    <div class="form-check pull-right">
-                                        <input                                     
-                                            type="checkbox" 
-                                            data-toggle="toggle" 
-                                            data-on="Enabled" 
-                                            data-off="Disabled" 
-                                            data-size="small"
-                                            data-onstyle="default" 
-                                            th:field="*{checkup[__${stat.index}__].enabled}" 
-                                            th:checked="*{checkup[__${stat.index}__].enabled}"
-                                            th:disabled="true"/>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div th:if="*{not #lists.isEmpty(checkup[__${stat.index}__].trigger)}">    
-                                <hr/>
-                                <!--Checkup trigger-->
-                                <label>Trigger</label>
-                                <table class="table">
-                                    <tr>
-                                        <th style="width:5%">#</th>
-                                        <th style="width:10%">Server</th>
-                                        <th style="width:62.5%">Name</th>
-                                    </tr>
-                                    <tr th:each="trigger, stat : *{checkup[__${stat.index}__].trigger}">
-                                        <td>
-                                            <span th:text="${trigger.id}"></span>
-                                        </td>
-                                        <td th:text="${trigger.server.name}"></td>
-                                        <td th:text="${trigger.name}"></td>
-                                    </tr>
-                                </table>
-                            </div>  
-
-                            <!--Checkup command-->
-                            <div th:if="*{not #lists.isEmpty(checkup[__${stat.index}__].command)}"> 
-                                <div th:each="command, commandStat : *{checkup[__${stat.index}__].command}">
-                                    <div class="form-group">  
-                                        <div class="col-sm-10">    
-                                            <label>Failure command type</label> 
-                                            <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].command[__${commandStat.index}__].commandType}" disabled="true"/>  
+                                <div th:id="'check' + ${stat.index}" class="panel-collapse collapse">
+                                    <div class="panel-body">                                        
+                                        <!--Checkup-->
+                                        <div class="form-group"> 
+                                            <div class="col-sm-10">
+                                                <label th:inline="text">ID</label> 
+                                                <input type="text" class="form-control" maxlength="255" th:field="*{checkup[__${stat.index}__].id}" required="true" disabled="true"/>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div class="form-group">
-                                        <div class="col-sm-10">
-                                            <label>Failure command</label>
-                                            <pre class="line-numbers">
-                                            <code th:class="*{checkup[__${stat.index}__].command[__${commandStat.index}__].commandType} == 'SQL' ? language-sql : language-bash" th:text="*{checkup[__${stat.index}__].command[__${commandStat.index}__].command}"></code>
-                                            </pre>
+                                        <div class="form-group"> 
+                                            <div class="col-sm-10">
+                                                <label th:inline="text">Name</label> 
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    maxlength="255" 
+                                                    th:field="*{checkup[__${stat.index}__].name}" 
+                                                    disabled="true"/>
+                                            </div>
+                                        </div> 
+
+                                        <div class="form-group">
+                                            <div class="col-sm-10">
+                                                <label>Description</label> 
+                                                <textarea 
+                                                    class="form-control" 
+                                                    rows="3" th:field="*{checkup[__${stat.index}__].description}" 
+                                                    placeholder="Description" 
+                                                    maxlength="65000"
+                                                    readonly="true"></textarea>
+                                            </div>
                                         </div>
+
+                                        <div class="form-group">
+                                            <div class="col-sm-8">
+                                                <label>Connection</label> 
+                                                <input type="text" class="form-control" maxlength="255" th:field="*{checkup[__${stat.index}__].connection.name}" disabled="true"/>
+                                            </div>
+
+                                            <div class="col-sm-2">
+                                                <label>Scope</label>
+                                                <input type="text" class="form-control" maxlength="255" th:field="*{checkup[__${stat.index}__].scope}" disabled="true"/>    
+                                            </div>
+                                        </div> 
+
+                                        <div class="form-group">
+                                            <div class="col-sm-10">
+                                                <label>SQL</label>
+                                                <pre class="line-numbers">
+                                                    <code class="language-sql" th:text="*{checkup[__${stat.index}__].query}"></code>
+                                                </pre>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-sm-2">
+                                                <label>Test</label>
+                                                <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].conditional}" disabled="true"/>      
+                                            </div>
+
+                                            <div class="col-sm-4">    
+                                                <label>Threshold</label>
+                                                <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].threshold}" disabled="true"/>
+                                            </div>
+
+                                            <div class="col-sm-4">    
+                                                <label>On fail</label> 
+                                                <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].action}" disabled="true"/>          
+                                            </div>
+                                        </div> 
+
+                                        <div class="form-group">
+                                            <div class="col-sm-10">
+                                                <div th:if="${not #lists.isEmpty(job.parent)}">  
+                                                    <label>
+                                                        <input                                     
+                                                            type="checkbox" 
+                                                            th:field="*{checkup[__${stat.index}__].prevalidation}" 
+                                                            th:checked="*{checkup[__${stat.index}__].prevalidation}"
+                                                            th:disabled="true"/> Pre-validation
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>   
+
+                                        <div class="form-group">
+                                            <div class="col-sm-10">                                               
+                                                <input                                     
+                                                    type="checkbox" 
+                                                    data-toggle="toggle" 
+                                                    data-on="Enabled" 
+                                                    data-off="Disabled" 
+                                                    data-size="small"
+                                                    data-onstyle="default" 
+                                                    th:field="*{checkup[__${stat.index}__].enabled}" 
+                                                    th:checked="*{checkup[__${stat.index}__].enabled}"
+                                                    th:disabled="true"
+                                                    />                                                
+                                            </div>
+                                        </div>
+
+                                        <div th:if="*{not #lists.isEmpty(checkup[__${stat.index}__].trigger)}">    
+                                            <hr/>
+                                            <!--Checkup trigger-->
+                                            <label>Trigger</label>
+                                            <table class="table">
+                                                <tr>
+                                                    <th style="width:5%">#</th>
+                                                    <th style="width:10%">Server</th>
+                                                    <th style="width:62.5%">Name</th>
+                                                </tr>
+                                                <tr th:each="trigger, stat : *{checkup[__${stat.index}__].trigger}">
+                                                    <td>
+                                                        <span th:text="${trigger.id}"></span>
+                                                    </td>
+                                                    <td th:text="${trigger.server.name}"></td>
+                                                    <td th:text="${trigger.name}"></td>
+                                                </tr>
+                                            </table>
+                                        </div>  
+
+                                        <!--Checkup command-->
+                                        <div th:if="*{not #lists.isEmpty(checkup[__${stat.index}__].command)}"> 
+                                            <div th:each="command, commandStat : *{checkup[__${stat.index}__].command}">
+                                                <div class="form-group">  
+                                                    <div class="col-sm-10">    
+                                                        <label>Failure command type</label> 
+                                                        <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].command[__${commandStat.index}__].commandType}" disabled="true"/>  
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="col-sm-10">
+                                                        <label>Failure command</label>
+                                                        <pre class="line-numbers">
+                                                                 <code th:class="*{checkup[__${stat.index}__].command[__${commandStat.index}__].commandType} == 'SQL' ? language-sql : language-bash" th:text="*{checkup[__${stat.index}__].command[__${commandStat.index}__].command}"></code>
+                                                        </pre>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>                                         
                                     </div>
                                 </div>
-                            </div> 
-                        </div>
-                    </div> 
+                            </div>                            
+                        </div> 
+                    </div>                    
 
                     <div th:if="${not #lists.isEmpty(job.checkup)}">   
                         <div class="form-group">

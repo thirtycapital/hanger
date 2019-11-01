@@ -47,6 +47,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -57,6 +58,7 @@ public class JobCheckup implements Serializable {
 
     private Long id;
     private Job job;
+    private String name;
     private String description;
     private Connection connection;
     private Scope scope;
@@ -90,6 +92,15 @@ public class JobCheckup implements Serializable {
         this.job = job;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Column(columnDefinition = "text")
     public String getDescription() {
         return description;
     }

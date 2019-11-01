@@ -853,3 +853,19 @@ input[type='file'] {
 .CodeMirror-scroll {
     height: 250px !important;
 }
+
+.panel-heading-height {
+    height: 35px;
+}
+
+.panel-heading-add-checkup {
+    color:#797979
+}
+
+.toggle.btn-sm {
+    min-width: 80px !important;
+}
+
+.panel-body {
+    overflow-y: auto;
+}

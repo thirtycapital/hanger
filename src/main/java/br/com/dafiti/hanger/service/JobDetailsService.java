@@ -134,16 +134,18 @@ public class JobDetailsService {
 
                         default:
                             //Identify if the build is running. 
-                            if (jobBuild.getPhase().equals(Phase.FINALIZED)) {
+                            if (jobBuild.getPhase().equals(Phase.FINALIZED)
+                                    || (jobBuild.getStatus().equals(Status.FAILURE) || jobBuild.getStatus().equals(Status.ABORTED))) {
+
                                 status = jobBuild.getStatus();
 
-                                if (jobStatus.getFailureTimestamp() != null) {
-                                    if (Days.daysBetween(new LocalDate(jobStatus.getFailureTimestamp()), new LocalDate()).getDays() == 0) {
-                                        status = Status.UNSTABLE;
+                                if (jobBuild.getStatus().equals(Status.SUCCESS)) {
+                                    if (jobStatus.getFailureTimestamp() != null) {
+                                        if (Days.daysBetween(new LocalDate(jobStatus.getFailureTimestamp()), new LocalDate()).getDays() == 0) {
+                                            status = Status.UNSTABLE;
+                                        }
                                     }
                                 }
-                            } else if (jobBuild.getStatus().equals(Status.FAILURE) || jobBuild.getStatus().equals(Status.ABORTED)) {
-                                status = jobBuild.getStatus();
                             } else {
                                 status = Status.RUNNING;
                             }

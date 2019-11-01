@@ -99,6 +99,11 @@
                                     <td>Job build finished successfully</td>
                                 </tr>
                                 <tr>
+                                    <td><img class="hanger-image" th:src="@{'/images/UNSTABLE.png'}"></img></td>
+                                    <td><p>UNSTABLE</p></td>
+                                    <td>Job build finished successfully but failed at least one time during the day</td>
+                                </tr>
+                                <tr>
                                     <td><img class="hanger-image" th:src="@{'/images/UNHEALTHY.png'}"></img></td>
                                     <td><p>UNHEALTHY</p></td>
                                     <td>Post-validation job checkup failed</td>

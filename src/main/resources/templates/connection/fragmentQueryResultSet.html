@@ -13,13 +13,13 @@
                     </div>  
                 </div> 
 
-                <div th:if="${#lists.size(resultset.row) >= 100}">
-                    <div class="alert alert-info" role="alert">
-                        <span>Results are limited to 100 rows ;)</span>
-                    </div>  
-                </div>                 
+                <div th:if="${ errorMessage == null }">    
+                    <div th:if="${#lists.size(resultset.row) >= 100}">
+                        <div class="alert alert-info" role="alert">
+                            <span>Results are limited to 100 rows ;)</span>
+                        </div>  
+                    </div>                
 
-                <div th:if="${ errorMessage == null }">                                      
                     <table id="table" class="table table-hover space-top table-workbench-result">
                         <thead> 
                             <tr>

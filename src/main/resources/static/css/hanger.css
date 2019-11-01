@@ -846,8 +846,8 @@ input[type='file'] {
 
 .table-workbench-result {
     display: block;
-    overflow: scroll;
-    height:550px;
+    overflow: auto;
+    max-height: 550px;
 }
 
 .CodeMirror-scroll {

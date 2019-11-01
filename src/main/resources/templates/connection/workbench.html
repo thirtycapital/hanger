@@ -55,7 +55,7 @@
                     </button>
                 </div>
 
-                <hr/>
+                <hr style="margin:10px 0"/>
 
                 <!--Fragment--> 
                 <div id="fragmentQueryResultSetHolder"/>
@@ -139,7 +139,7 @@
                             url: url + connection,
                             data: query,
                             contentType: "text/html",
-                            timeout: 65000,
+                            timeout: 1000000,
                             success: function (result) {
                                 $("#fragmentQueryResultSetHolder").html(result);
 
@@ -157,7 +157,7 @@
                                         });
                             },
                             error: function (e) {
-                                alert("Fail loading query resultset " + e);
+                                alert("Fail loading query resultset: " + e.statusText);
                             }
                         });
                     }

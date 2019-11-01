@@ -243,15 +243,12 @@
                                         th:href="'#check' + ${stat.index}"
                                         class="link">
 
-                                        <span 
-                                            th:text="*{checkup[__${stat.index}__].name == '' ? checkup[__${stat.index}__].description : checkup[__${stat.index}__].name}" 
-                                            th:classappend="*{checkup[__${stat.index}__].enabled ? '':'panel-heading-add-checkup'}"></span>
-                                        <span 
-                                            th:text="*{checkup[__${stat.index}__].enabled ? '':'[Disabled]'}" 
-                                            class="panel-heading-add-checkup"></span>
-                                        <span 
-                                            class="glyphicon glyphicon-triangle-bottom pull-right small" 
-                                            aria-hidden="true"></span> 
+                                        <span th:text="*{checkup[__${stat.index}__].name}" 
+                                              th:classappend="*{checkup[__${stat.index}__].enabled ? '':'panel-heading-add-checkup'}"></span>
+                                        <span th:text="*{checkup[__${stat.index}__].enabled ? '':'[Disabled]'}" 
+                                              class="panel-heading-add-checkup"></span>
+                                        <span class="glyphicon glyphicon-triangle-bottom pull-right small" 
+                                              aria-hidden="true"></span> 
                                     </a>                                    
                                 </div>
                                 <div th:id="'check' + ${stat.index}" class="panel-collapse collapse">
@@ -311,7 +308,7 @@
 
                                         <div class="form-group">
                                             <div class="col-sm-2">
-                                                <label>Test</label>
+                                                <label>Condition</label>
                                                 <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].conditional}" disabled="true"/>      
                                             </div>
 

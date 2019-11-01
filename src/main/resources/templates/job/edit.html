@@ -356,15 +356,12 @@
                                             th:href="'#check' + ${checkupStat.index}"
                                             class="link">
 
-                                            <span 
-                                                th:text="*{checkup[__${checkupStat.index}__].name == '' ? checkup[__${checkupStat.index}__].description : checkup[__${checkupStat.index}__].name}" 
-                                                th:classappend="*{checkup[__${checkupStat.index}__].enabled ? '':'panel-heading-add-checkup'}"></span>
-                                            <span 
-                                                th:text="*{checkup[__${checkupStat.index}__].enabled ? '':'[Disabled]'}" 
-                                                class="panel-heading-add-checkup"></span>
-                                            <span 
-                                                class="glyphicon glyphicon-triangle-bottom pull-right small" 
-                                                aria-hidden="true"></span> 
+                                            <span th:text="*{checkup[__${checkupStat.index}__].name}" 
+                                                  th:classappend="*{checkup[__${checkupStat.index}__].enabled ? '':'panel-heading-add-checkup'}"></span>
+                                            <span th:text="*{checkup[__${checkupStat.index}__].enabled ? '':'[Disabled]'}" 
+                                                  class="panel-heading-add-checkup"></span>
+                                            <span class="glyphicon glyphicon-triangle-bottom pull-right small" 
+                                                  aria-hidden="true"></span> 
                                         </a> 
                                     </div>
                                     <div th:if="*{checkup[__${checkupStat.index}__].id == null}" class="panel-heading-add-checkup">

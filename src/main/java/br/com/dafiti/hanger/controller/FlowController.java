@@ -27,6 +27,7 @@ import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.service.FlowService;
 import br.com.dafiti.hanger.service.JobApprovalService;
 import br.com.dafiti.hanger.service.ServerService;
+import br.com.dafiti.hanger.service.SubjectDetailsService;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -44,15 +45,19 @@ public class FlowController {
 
     private final FlowService flowService;
     private final JobApprovalService jobApprovalService;
+    private final SubjectDetailsService subjectDetailsService;
     private final ServerService serverService;
 
     @Autowired
     public FlowController(
             FlowService flowService,
             JobApprovalService jobApprovalService,
+            SubjectDetailsService subjectDetailsService,
             ServerService serverService) {
+
         this.flowService = flowService;
         this.jobApprovalService = jobApprovalService;
+        this.subjectDetailsService = subjectDetailsService;
         this.serverService = serverService;
     }
 
@@ -74,6 +79,7 @@ public class FlowController {
 
         if (job != null) {
             model.addAttribute("job", job);
+            model.addAttribute("subjectSummary", subjectDetailsService.getSummaryOf(job.getSubject()));
             model.addAttribute("warnings", flowService.getFlowWarning(job));
             model.addAttribute("chart", flowService.getJobFlow(job, false, expanded));
             model.addAttribute("approval", this.jobApprovalService.hasApproval(job, principal));
@@ -99,6 +105,7 @@ public class FlowController {
 
         if (job != null) {
             model.addAttribute("job", job);
+            model.addAttribute("subjectSummary", subjectDetailsService.getSummaryOf(job.getSubject()));
             model.addAttribute("chart", flowService.getJobFlow(job, true, false));
             model.addAttribute("approval", this.jobApprovalService.hasApproval(job, principal));
             model.addAttribute("servers", this.serverService.list());

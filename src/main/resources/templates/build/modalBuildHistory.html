@@ -33,7 +33,7 @@
                                         <td th:text="${history.getDurationTimeInMinutes()}">Finish</td>
                                         <td>
                                             <div class="progress">
-                                                <div class="progress-bar progress-bar-danger" th:inline="text" th:attr="style='width:' +  ${ history.getQueuePercentage() * 100 } + '%'" title="WAITING">
+                                                <div class="progress-bar progress-bar-neutral" th:inline="text" th:attr="style='width:' +  ${ history.getQueuePercentage() * 100 } + '%'" title="WAITING">
                                                     <span class="sr-only"></span> [[${#numbers.formatDecimal((history.getQueuePercentage() * 100), 0, 0)}]]%
                                                 </div>
                                                 <div class="progress-bar progress-bar-effectiveness" th:inline="text" th:attr="style='width:' + ${ 100 - ((history.getQueuePercentage() * 100)) } + '%'" title="BUILDING">

@@ -150,6 +150,11 @@ code[class*="language-free"] {
     background-color: #dd424a;
 }
 
+.progress-bar-neutral {
+    background-color: #e5e8ec;
+}
+
+
 .progress-bar-effectiveness {
     background-color: #3db9d3;
 }
@@ -185,12 +190,12 @@ code[class*="language-free"] {
 }
 
 .space-top {
-    padding-top: 20px;
+    padding-top: 10px;
 }
 
 .space {
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .btn-home{
@@ -842,6 +847,10 @@ input[type='file'] {
 
 .badge {
     background-color: #D8D8D8;
+}
+
+.badge-warning{
+    background-color: #ffa500;
 }
 
 .table-workbench-result {

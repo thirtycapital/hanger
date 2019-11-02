@@ -7,29 +7,29 @@
         <th:block th:include="base/header :: navbar"></th:block>
 
         <div class="container-fluid main-content">
-            <ul class="nav nav-pills" th:if="${not #lists.isEmpty(subjects)}">
+            <ul class="nav nav-pills space-top">
                 <li role="presentation" th:classappend="${#httpServletRequest.getRequestURI().contains('/home') or #httpServletRequest.getRequestURI().endsWith('/') ? 'active home':''}">
-                    <a class="link" title="HOME" th:href="@{'/'}">
+                    <a title="HOME" th:href="@{'/'}">
                         HOME
                     </a>
                 </li>
                 <li role="presentation" th:each="subjects : ${subjectSummary}" th:classappend="${#httpServletRequest.getRequestURI().endsWith('/' + subjects.subject.id) ? 'active home':''}">
-                    <a th:href="@{'/detail/' + ${subjects.subject.id}}" th:inline="text" class="link">                                                                     
+                    <a th:href="@{'/detail/' + ${subjects.subject.id}}" th:inline="text">                                                                     
                         <span th:if="${#lists.contains(subjects.subject.user, loggedIn)}" class="glyphicon glyphicon-thumbs-up" th:title="Subscribed"> </span>
                         [[${subjects.subject.name}]] 
                         <span class="badge" th:text="${subjects.jobCount}"></span>
                     </a>
                 </li>
                 <li role="presentation" th:classappend="${#httpServletRequest.getRequestURI().endsWith('all') ? 'active home':''}">
-                    <a th:href="@{'/detail/' + all}" title="ALL" class="link">
+                    <a th:href="@{'/detail/' + all}" title="ALL">
                         ALL 
-                        <span class="badge badge-warning" th:text="${all}"></span>
+                        <span class="badge" th:text="${all}"></span>
                     </a>
                 </li>
             </ul>
 
             <hr/>
-            
+
             <div class="tab-content">
                 <div th:if="${not #httpServletRequest.getRequestURI().contains('/detail/')}">
                     <!--Home refresh timeout-->
@@ -52,7 +52,7 @@
                         </thead>
                         <tbody>
                             <tr th:each="subjects : ${subjectDetails}">
-                                <td><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.subject.name}" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td><a th:href="@{'/detail/' + ${subjects.subject.id}}" th:text="${subjects.subject.name}" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
 
                                 <td width="18.5%">
                                     <div class="progress">
@@ -74,12 +74,12 @@
                                     </div>
                                 </td>
 
-                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.success}> 0 ? ${subjects.success} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
-                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.waiting} > 0 ? ${subjects.waiting} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
-                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.building} > 0 ? ${subjects.building} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
-                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.running} > 0 ? ${subjects.running} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
-                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.warning} > 0 ? ${subjects.warning} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
-                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}" class="link" th:text="${subjects.failure} > 0 ? ${subjects.failure} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.success}> 0 ? ${subjects.success} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.waiting} > 0 ? ${subjects.waiting} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.building} > 0 ? ${subjects.building} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.running} > 0 ? ${subjects.running} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.warning} > 0 ? ${subjects.warning} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.failure} > 0 ? ${subjects.failure} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
                             </tr>
                         </tbody>
                     </table>

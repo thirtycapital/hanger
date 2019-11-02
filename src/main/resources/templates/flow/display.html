@@ -7,18 +7,20 @@
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
             <center>           
-                <div class="flow-subject">
-                    <div  th:if="${not #lists.isEmpty(job.subject)}">
-                        <a class="flow-subject-link" th:each="subject : ${job.subject}" th:href="@{'/detail/' + ${subject.id}}" th:inline="text" >                            
-                            [[${subject.name}]]
+                <ul class="nav nav-pills space-top">
+                    <li role="presentation" th:each="subjects : ${subjectSummary}">
+                        <a th:href="@{'/detail/' + ${subjects.subject.id}}" th:inline="text">                                                     
+                            [[${subjects.subject.name}]] 
+                            <span class="badge" th:text="${subjects.jobCount}"></span>
                         </a>
-                    </div> 
-
-                    <div th:if="${not #lists.isEmpty(warnings)}">
-                        <img class="status hanger-img-sm" th:src="@{'/images/WARNING.png'}" th:title="WARNING"></img>
-                        <button th:inline="text" class="btn btn-link hanger-font-sm hanger-no-border" th:id="'modal_warning_' + ${job.id}" th:value="${job.id}">[[${#lists.size(warnings)}]] warning in this flow</button>
-                    </div>
-                </div>
+                    </li>
+                    <li role="presentation" th:if="${not #lists.isEmpty(warnings)}">
+                        <a th:id="'modal_warning_' + ${job.id}" th:name="${job.id}" th:inline="text">                                                     
+                            WARNING 
+                            <span class="badge badge-warning" th:text="${#lists.size(warnings)}"></span>
+                        </a>
+                    </li>
+                </ul>
 
                 <div th:if="${errorMessage != null}">
                     <!--Error-->
@@ -218,7 +220,7 @@
              */
             $("[id^=modal_warning_]").click(function () {
                 var url = /*[[@{/flow/warning/}]]*/ "/flow/warning/";
-                var job = $(this).val();
+                var job = $(this).attr("name");
 
                 $.ajax({
                     type: "GET",

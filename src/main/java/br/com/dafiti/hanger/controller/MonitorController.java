@@ -85,8 +85,7 @@ public class MonitorController {
      */
     @GetMapping(path = {"/", "/home"})
     public String subjectDetail(Model model) {
-        List<SubjectDetails> subjectDetails = subjectDetailsService.getDetailsOf(subjectService.findBySubscription());
-        model.addAttribute("subjectDetails", subjectDetails);
+        model.addAttribute("subjectDetails", subjectDetailsService.getDetailsOf(subjectService.findBySubscription()));
 
         modelDefault(model);
 

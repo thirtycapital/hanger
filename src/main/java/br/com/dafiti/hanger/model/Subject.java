@@ -41,7 +41,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
+import org.commonmark.node.*;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
@@ -87,6 +91,15 @@ public class Subject extends Tracker implements Serializable {
         }
 
         return description;
+    }
+
+    @Transient
+    public String getHTMLDescription() {
+        Parser parser = Parser.builder().build();
+        Node document = parser.parse(this.getDescription());
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+
+        return renderer.render(document);
     }
 
     public void setDescription(String description) {

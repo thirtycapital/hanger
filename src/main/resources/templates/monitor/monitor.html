@@ -87,9 +87,7 @@
 
                 <div th:if="${#httpServletRequest.getRequestURI().contains('/detail/') }">
                     <div th:if="${currentSubject.description != null and currentSubject.description != ''}">
-                        <pre>
-                            <code class="language-free" th:text="${currentSubject.description}"></code>
-                        </pre>
+                        <div th:utext="${currentSubject.getHTMLDescription()}"></div>
                     </div>
 
                     <!-- Job details list-->

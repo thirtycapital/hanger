@@ -224,6 +224,14 @@
             <artifactId>simpleslackapi</artifactId>
             <version>1.2.0</version>
         </dependency>
+        
+        <!--  Markup  -->
+        
+        <dependency>
+            <groupId>com.atlassian.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>0.13.0</version>
+        </dependency>
     </dependencies>
 
     <properties>

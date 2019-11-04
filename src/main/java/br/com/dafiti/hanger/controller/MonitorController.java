@@ -27,7 +27,6 @@ import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.service.JobDetailsService;
 import br.com.dafiti.hanger.model.Subject;
-import br.com.dafiti.hanger.model.SubjectDetails;
 import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.SubjectDetailsService;
 import br.com.dafiti.hanger.service.SubjectService;

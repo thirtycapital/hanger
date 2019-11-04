@@ -624,8 +624,8 @@ public class JobController {
             BindingResult bindingResult,
             Model model) {
 
-        job.getCheckup().get(checkupIndex).addCommand(new Command());
-        this.modelDefault(model, job);
+        job.getCheckup().get(checkupIndex).addCommand(new Command());        
+        this.modelDefault(model, job, checkupIndex);
         return "job/edit";
     }
 
@@ -736,12 +736,25 @@ public class JobController {
     private void modelDefault(Model model, Job job) {
         this.modelDefault(model, job, true);
     }
+    
+    /**
+     * Default model.
+     *
+     * @param model Model
+     * @param job Job
+     * @param checkpuIndex int
+     */
+    private void modelDefault(Model model, Job job, int checkupIndex) {
+        model.addAttribute("expanded", checkupIndex);
+        this.modelDefault(model, job, true);
+    }
 
     /**
      * Default model
      *
      * @param model Model
      * @param job Job
+     * @param jobList boolean
      */
     private void modelDefault(Model model, Job job, boolean jobList) {
         model.addAttribute("job", job);

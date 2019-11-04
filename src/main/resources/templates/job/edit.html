@@ -373,7 +373,8 @@
                                 <div 
                                     th:id="'check' + ${checkupStat.index}" 
                                     class="panel-collapse collapse "
-                                    th:classappend="*{checkup[__${checkupStat.index}__].id != null ? '':'in'}">
+                                    th:classappend="*{checkup[__${checkupStat.index}__].id != null ? __${checkupStat.index}__ == __${expanded}__ ? 'in': '' : 'in'}">
+
                                     <div class="panel-body">
                                         <input type="hidden" th:field="*{checkup[__${checkupStat.index}__].id}"/>          
                                         <input type="hidden" th:field="*{checkup[__${checkupStat.index}__].job}"/>  
@@ -422,7 +423,7 @@
                                         <!--Checkup-->
                                         <div class="form-group"> 
                                             <div class="col-sm-10">
-                                                <label>ID</label> 
+                                                <label>ID</label>
                                                 <input type="text" class="form-control" maxlength="255" th:field="*{checkup[__${checkupStat.index}__].id}" required="true" placeholder="ID" disabled="true"/>
                                             </div>
                                         </div>

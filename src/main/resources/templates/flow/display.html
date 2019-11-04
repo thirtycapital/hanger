@@ -15,7 +15,7 @@
                         </a>
                     </li>
                     <li role="presentation" th:if="${not #lists.isEmpty(warnings)}">
-                        <a th:id="'modal_warning_' + ${job.id}" th:name="${job.id}" th:inline="text">                                                     
+                        <a href="#" th:id="'modal_warning_' + ${job.id}" th:name="${job.id}" th:inline="text">                                                     
                             WARNING 
                             <span class="badge badge-warning" th:text="${#lists.size(warnings)}"></span>
                         </a>

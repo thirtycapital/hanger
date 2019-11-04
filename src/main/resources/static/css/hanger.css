@@ -3,8 +3,10 @@
 }
 
 div.dataTables_filter input{
-    border-radius: 25px !important;
-    border: 1px solid #D8D8D8;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    border-bottom: 1px solid #D8D8D8;
 }
 
 .logo{
@@ -235,7 +237,7 @@ code[class*="language-free"] {
     left: 150px;
     width: 200px;
     background: #FFF;
-    border-right: 1px solid #DDD;
+    border-right: 1px solid #eee;
     position: fixed;
     height: 100%;
     z-index: 10000;

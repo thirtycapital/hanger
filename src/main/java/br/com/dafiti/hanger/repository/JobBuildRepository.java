@@ -43,7 +43,14 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
      * @param buildNumber Build number
      * @return Elapsed time
      */
-    @Query("select timediff( max(date), min(date) ) from JobBuild j where j.job = :job and j.number = :buildNumber")
+    @Query("select "
+            + "     timediff( max(date), min(date) ) "
+            + " from "
+            + "     JobBuild j "
+            + " where "
+            + "     j.job = :job "
+            + " and "
+            + "     j.number = :buildNumber")
     Time findJobBuildTime(@Param("job") Job job, @Param("buildNumber") int buildNumber);
 
     /**
@@ -55,15 +62,19 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
      * @return Job build count by hour
      */
     @Query("select "
-            + "    new br.com.dafiti.hanger.model.JobBuildMetric( b.job, hour( b.date ), count(1) ) "
+            + " new br.com.dafiti.hanger.model.JobBuildMetric"
+            + "( "
+            + "     b.job"
+            + "     , hour( b.date ), count(1) "
+            + ") "
             + " from "
-            + "   JobBuild b "
+            + "     JobBuild b "
             + " where "
-            + "   b.phase = :phase"
+            + "     b.phase = :phase"
             + " and "
-            + "    b.date between :startdate and :enddate"
+            + "     b.date between :startdate and :enddate"
             + " group by "
-            + "    b.job, hour( b.date )")
+            + "     b.job, hour( b.date )")
 
     List<JobBuildMetric> findJobBuildCountByHour(
             @Param("phase") Phase phase,
@@ -71,7 +82,7 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
             @Param("enddate") Date endDate);
 
     /**
-     * Get job build information by number.
+     * Get job build history.
      *
      * @param startDate Start Date
      * @param endDate End Date
@@ -80,12 +91,13 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
     @Query("select "
             + "new br.com.dafiti.hanger.model.JobBuildMetric "
             + "( "
-            + "       b.job "
+            + "     b.job "
             + "     , min( b.date ) "
             + "     , case when max(case when b.phase = 'STARTED' then b.date end) is null then now() else max(case when b.phase = 'STARTED' then b.date end) end"
             + "     , case when max(case when b.phase = 'FINALIZED' then b.date end) is null then now() else max(case when b.phase = 'FINALIZED' then b.date end) end"
             + ") "
-            + "from JobBuild b "
+            + "from "
+            + "     JobBuild b "
             + "where b.job in ( "
             + "     select "
             + "         b_.job "
@@ -97,12 +109,12 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
             + "     group by b_.job "
             + ")"
             + "group by b.job,  b.number")
-    List<JobBuildMetric> findJobBuildByNumber(
+    List<JobBuildMetric> findBuildHistory(
             @Param("startdate") Date startDate,
             @Param("enddate") Date endDate);
 
     /**
-     * Get job build information by number.
+     * Get job build history.
      *
      * @param job Job list filter
      * @param startDate Start Date
@@ -112,11 +124,11 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
     @Query("select "
             + "new br.com.dafiti.hanger.model.JobBuildMetric "
             + "( "
-            + "       b.job "
+            + "     b.job "
             + "     , min( b.date ) "
             + "     , case when max(case when b.phase = 'STARTED' then b.date end) is null then now() else max(case when b.phase = 'STARTED' then b.date end) end"
             + "     , case when max(case when b.phase = 'FINALIZED' then b.date end) is null then now() else max(case when b.phase = 'FINALIZED' then b.date end) end"
-            + "     , COALESCE((select max(b__.status) from JobBuild b__ where b.job = b__.job and b.number = b__.number and b__.phase = 'FINALIZED'), 'RUNNING') "
+            + "     , case when max(case when b.phase = 'FINALIZED' then b.status end) is null then null else b.status end"
             + ") "
             + "from JobBuild b "
             + "where b.job in ( "
@@ -132,7 +144,7 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
             + "     group by b_.job "
             + ") "
             + "group by b.job,  b.number")
-    List<JobBuildMetric> findJobBuildByNumber(
+    List<JobBuildMetric> findBuildHistory(
             @Param("job") List<Job> job,
             @Param("startdate") Date startDate,
             @Param("enddate") Date endDate);

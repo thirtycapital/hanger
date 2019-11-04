@@ -144,14 +144,14 @@ public class JobBuildGraphService {
     }
 
     /**
-     * Find job time by phase and nunber
+     * Find job build history
      *
      * @param job Job
      * @param startDate Start Date
      * @param endDate End Date
      * @return job time by phase and nunber
      */
-    public List<JobBuildMetric> findJobBuildByNumber(
+    public List<JobBuildMetric> findBuildHistory(
             List<Job> job,
             Date startDate,
             Date endDate) {
@@ -159,9 +159,9 @@ public class JobBuildGraphService {
         List<JobBuildMetric> metrics;
 
         if (job == null || job.isEmpty()) {
-            metrics = jobBuildRepository.findJobBuildByNumber(startDate, endDate);
+            metrics = jobBuildRepository.findBuildHistory(startDate, endDate);
         } else {
-            metrics = jobBuildRepository.findJobBuildByNumber(job, startDate, endDate);
+            metrics = jobBuildRepository.findBuildHistory(job, startDate, endDate);
         }
         return metrics;
     }
@@ -183,7 +183,7 @@ public class JobBuildGraphService {
         Long currentJobBuildMetricDuration = 0L;
         JobBuildMetric currentJobBuildMetric = null;
         List<DHTMLXGantt> data = new ArrayList();
-        List<JobBuildMetric> metrics = this.findJobBuildByNumber(job, dateFrom, dateTo);
+        List<JobBuildMetric> metrics = this.findBuildHistory(job, dateFrom, dateTo);
 
         for (JobBuildMetric metric : metrics) {
             surrogateID++;
@@ -201,7 +201,7 @@ public class JobBuildGraphService {
                     true,
                     metric.getJob().getId().toString(),
                     "",
-                    "#dd424a"
+                    "#E5E8EC"
             ));
 
             //Identify if is the last build of a specific job. 
@@ -341,6 +341,5 @@ public class JobBuildGraphService {
         public void setProgressColor(String progressColor) {
             this.progressColor = progressColor;
         }
-
     }
 }

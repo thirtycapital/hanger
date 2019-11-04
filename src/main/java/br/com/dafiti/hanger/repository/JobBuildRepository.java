@@ -51,7 +51,9 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
             + "     j.job = :job "
             + " and "
             + "     j.number = :buildNumber")
-    Time findJobBuildTime(@Param("job") Job job, @Param("buildNumber") int buildNumber);
+    Time findJobBuildTime(
+            @Param("job") Job job, 
+            @Param("buildNumber") int buildNumber);
 
     /**
      * Get job build count by hour.

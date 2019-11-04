@@ -219,7 +219,7 @@ public class JobBuildGraphService {
                         1.0,
                         true,
                         "",
-                        "#DCDCDC",
+                        "#D6DBE1",
                         ""
                 ));
 

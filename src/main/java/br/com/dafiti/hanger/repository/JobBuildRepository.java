@@ -52,7 +52,7 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
             + " and "
             + "     j.number = :buildNumber")
     Time findJobBuildTime(
-            @Param("job") Job job, 
+            @Param("job") Job job,
             @Param("buildNumber") int buildNumber);
 
     /**

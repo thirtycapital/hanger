@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.Transient;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -209,6 +210,7 @@ public class ConnectionService {
      * @param connection Connection
      * @return Database metadata
      */
+    @Cacheable(value = "tables", key = "#connection")
     public List<Entity> getTables(Connection connection) {
         List table = new ArrayList();
         DataSource datasource = this.getDataSource(connection);
@@ -415,6 +417,7 @@ public class ConnectionService {
         private String catalog;
         private String schema;
         private String table;
+        private String catalog_schema;
 
         public Entity(
                 String catalog,
@@ -424,6 +427,7 @@ public class ConnectionService {
             this.catalog = catalog;
             this.schema = schema;
             this.table = table;
+            this.catalog_schema = this.getCatalogSchema();
         }
 
         public String getCatalog() {
@@ -448,6 +452,21 @@ public class ConnectionService {
 
         public void setTable(String table) {
             this.table = table;
+        }
+
+        @Transient
+        public String getCatalogSchema() {
+            List<String> catalogSchema = new ArrayList();
+
+            if (catalog != null) {
+                catalogSchema.add(catalog);
+            }
+
+            if (schema != null) {
+                catalogSchema.add(schema);
+            }
+
+            return String.join(".", catalogSchema);
         }
     }
 

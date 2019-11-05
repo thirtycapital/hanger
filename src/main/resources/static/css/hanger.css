@@ -880,3 +880,14 @@ input[type='file'] {
 .panel-body {
     overflow-y: auto;
 }
+
+.div-jstree {
+    position: relative; 
+    overflow: auto; 
+    width: auto; 
+    height: 250px;    
+}
+
+.col-div-jstree {
+    padding-right:3px;
+}

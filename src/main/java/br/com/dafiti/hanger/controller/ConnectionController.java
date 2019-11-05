@@ -27,6 +27,7 @@ import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
+import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -39,6 +40,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -278,4 +280,18 @@ public class ConnectionController {
 
         return "connection/fragmentQueryResultSet::resultSet";
     }
+    
+    /**
+     * Connection tables.
+     *
+     * @param connection Connection
+     * @return arrayList with connection tables
+     */
+    @GetMapping(path = "/{id}/get/tables")
+    @ResponseBody
+    public List<ConnectionService.Entity> getTables(
+            @PathVariable(name = "id") Connection connection) {
+
+        return connectionService.getTables(connection);
+    }    
 }

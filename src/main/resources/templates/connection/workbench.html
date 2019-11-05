@@ -8,33 +8,39 @@
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
             <div class="tab-content">
-                <table>
-                    <tr>
-                        <th>
-                            <h3 class="page-title">Workbench</h3>
-                        </th>
-                    </tr>            
-                </table>
 
-                <div style="margin-top:10px">
-                    <div class="form-group">
-                        <label>Connection</label>
-                        <select id="connection" class="selectpicker form-control" data-live-search="true" required="true" placeholder="Connection">
-                            <option th:each="connection : ${connections}" 
-                                    th:value="${connection.id}" 
-                                    th:text="${connection.name}">
-                            </option>
-                        </select>
+                <h3 class="page-title">Workbench</h3>
+                <div class="form-horizontal">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <label>Connection</label>
+                                <select id="connection" class="selectpicker form-control" data-live-search="true" required="true" placeholder="Connection">
+                                    <option th:each="connection : ${connections}" 
+                                            th:value="${connection.id}" 
+                                            th:text="${connection.name}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <textarea 
-                            class="form-control" 
-                            id="query" 
-                            required="true" 
-                            rows="10" 
-                            minlength="1" 
-                            maxlength="5000"></textarea>
+                    <div class="row">
+                        <div class="col-sm-3 col-div-jstree">
+                            <div class="div-jstree">
+                                <div id="jstree"></div>
+                            </div>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="form-group">
+                                <textarea 
+                                    class="form-control" 
+                                    id="query" 
+                                    required="true" 
+                                    rows="10" 
+                                    minlength="1" 
+                                    maxlength="5000"></textarea>
+                            </div>
+                        </div>
                     </div>
 
                     <button 
@@ -53,17 +59,93 @@
 
                         <img th:src="@{'/images/ajax-loader.gif'}"></img>
                     </button>
+
+                    <hr/>
+
+                    <!--Fragment--> 
+                    <div id="fragmentQueryResultSetHolder"/>
                 </div>
-
-                <hr/>
-
-                <!--Fragment--> 
-                <div id="fragmentQueryResultSetHolder"/>
             </div>
         </div>
 
         <script th:inline="javascript">
             $(document).ready(function () {
+                
+                /**
+                 * Load catalog/schema and tables in the plugin jsTree.
+                 */
+                $("#connection").change(function (e) {
+                    $("#wait").css("display", "block");
+                    var url = /*[[@{/connection/}]]*/ "/connection/";
+                    var connection = $(this).val();
+                    
+                    // Clear jsTree.
+                    $('#jstree').jstree("destroy").empty();
+
+                    $.ajax({
+                        url: url + connection + "/get/tables",
+                        type: 'GET'
+                    }).done(function (result) {
+                        var table = [];
+                        var catalogSchema = [];
+
+                        $.each(result, function (index, val) {
+                            var valCatalogSchema = val.catalogSchema;
+                            var valTable = val.table;
+                            
+                            // Save not to duplicate the catalog/schema.
+                            if ($.inArray(valCatalogSchema, Object.keys(catalogSchema)) === -1) {
+                                catalogSchema[valCatalogSchema] = index;
+                                
+                                // Add catalog/schema in the object.
+                                table.push({
+                                    'id': index,
+                                    "parent": "#",
+                                    "text": valCatalogSchema,
+                                    "icon": "glyphicon glyphicon-th-list"
+                                });
+                            };
+                            
+                            // Add table in the object.
+                            table.push({
+                                'id': 100000 + index,
+                                "parent": catalogSchema[valCatalogSchema],
+                                "text": valTable,
+                                "icon": "glyphicon glyphicon-th-large",
+                                "a_attr": {
+                                    "ondblclick": "fillQuery('" + valCatalogSchema + "', '" + valTable + "')"
+                                }
+                            });
+                        });
+                        
+                        createJSTree(table);
+                        
+                        $("#wait").css("display", "none");
+
+                    }).fail(function () {
+                        alert("Fail loading the tables.");
+                        $("#wait").css("display", "none");
+                    });
+
+                });
+                
+                /**
+                 * Starts firing the selected connection.
+                 */
+                $("#connection").trigger('change');
+                
+                /**
+                 * Construct jsTree
+                 * @param {object} jsondata
+                 */
+                function createJSTree(jsondata) {
+                    $('#jstree').jstree({"core": {
+                            "data": jsondata
+                        },
+                        "plugins": ["sort", "wholerow"]
+                    });
+                };
+
                 window.editor = CodeMirror.fromTextArea(document.getElementById('query'), {
                     mode: 'text/x-sql',
                     indentWithTabs: true,
@@ -163,6 +245,21 @@
                     }
                 }
             });
+            
+            /**
+             * Fill query editor with selected catalog and table.
+             * */
+            var fillQuery = function (catalogSchema, table) {
+                var query = window.editor;
+                var select = "SELECT * FROM " + catalogSchema + "." + table + " LIMIT 10;";
+
+                if (query.getValue().trim() == '') {
+                    query.setValue(select);
+                } else {
+                    query.setValue(query.getValue() + "\n\n" + select);
+                }
+                query.focus();
+            }            
         </script>    
     </body>
 </html>

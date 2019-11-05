@@ -215,8 +215,6 @@ public class ConnectionService {
         List table = new ArrayList();
         DataSource datasource = this.getDataSource(connection);
 
-        this.getQueryResultSet(connection, "select * from job");
-
         try {
             ResultSet tables = datasource.getConnection()
                     .getMetaData()

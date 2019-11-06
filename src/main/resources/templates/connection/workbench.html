@@ -35,7 +35,7 @@
                                 <div id="jstree"></div>
                             </div>
                         </div>
-                        <div class="col-sm-9">
+                        <div class="col-sm-9 col-div-query">
                             <div class="form-group">
                                 <textarea 
                                     class="form-control" 
@@ -223,6 +223,7 @@
                     $('#jstree').jstree("destroy").empty();
 
                     var url = /*[[@{/connection/}]]*/ "/connection/";
+                    var loadTables = true;
 
                     $.ajax({
                         url: url + connection + "/get/tables",
@@ -234,6 +235,13 @@
                         $.each(result, function (index, val) {
                             var valCatalogSchema = val.catalogSchema;
                             var valTable = val.table;
+                            var valConnTarget = val.connection.target;
+                            
+                            // ATHENA does not return metadata
+                            if (valConnTarget == 'ATHENA') {
+                                loadTables = false;
+                                return false;
+                            }                            
 
                             // Save not to duplicate the catalog/schema.
                             if ($.inArray(valCatalogSchema, Object.keys(catalogSchema)) === -1) {
@@ -263,8 +271,18 @@
                                 }
                             });
                         });
-
-                        createJSTree(table);
+                        
+                        // Load and display metadata only if it exists.
+                        if (loadTables) {
+                            $('.col-div-jstree').show();
+                            $('.col-div-query').removeClass('col-sm-12').addClass('col-sm-9');
+                            
+                            createJSTree(table);
+                        }
+                        else {
+                            $('.col-div-jstree').hide();
+                            $('.col-div-query').removeClass('col-sm-9').addClass('col-sm-12');
+                        }                        
 
                         $("#wait").css("display", "none");
 

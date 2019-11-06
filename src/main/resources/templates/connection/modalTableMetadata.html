@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+        <div class="container-fluid main-content">
+            <!--OPTION FRAGMENT BEGIN-->
+            <div class="modal fade" id="modalTableMetadata" tabindex="-1" role="dialog" aria-labelledby="modalTableMetadataLabel" th:fragment="metadata">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modalTableMetadataLabel" th:text="${table + ' metadata'}"></h4>
+                        </div>
+                        <div class="modal-body">
+                            <fieldset>
+                                <legend class="space-top">Primary key</legend>
+
+                                <table id="table_clean" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:5%">Position</th>
+                                            <th>Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="pk : ${pk}">
+                                            <td th:text="${pk.position}">Position</td>
+                                            <td th:text="${pk.name}">Name</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </fieldset>
+
+                            <fieldset>
+                                <legend>Columns</legend>
+
+                                <table id="table" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:5%">Position</th>
+                                            <th>Name</th>
+                                            <th>Type</th>
+                                            <th>Size</th>
+                                            <th>Decimal</th>
+                                            <th>Remark</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="column, stat : ${column}">
+                                            <td th:text="${column.position}">Position</td>
+                                            <td th:text="${column.name}">Name</td>
+                                            <td th:text="${column.type}">Type</td>
+                                            <td th:text="${column.size}">Size</td>
+                                            <td th:text="${column.decimal}">Decimal</td>
+                                            <td th:text="${column.remark}">Remark</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                        </div>
+                        <div class="modal-footer">                                
+                            <button type="button" class="btn btn-generic btn-sm" data-dismiss="modal">
+                                <span aria-hidden="true"></span> Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--OPTION FRAGMENT END-->
+        </div>
+    </body>
+</html>

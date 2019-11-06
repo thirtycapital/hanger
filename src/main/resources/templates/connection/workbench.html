@@ -11,6 +11,11 @@
 
                 <h3 class="page-title">Workbench</h3>
                 <div class="form-horizontal">
+                    <div th:if="${ errorMessage != null }" class="form-group">
+                        <div class="alert alert-danger" role="alert">
+                            <span th:text="${errorMessage}"></span>
+                        </div>  
+                    </div>
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
@@ -43,22 +48,24 @@
                         </div>
                     </div>
 
-                    <button 
-                        id="query-button" 
-                        class="btn btn-generic" 
-                        type="button">
+                    <div class="row">
+                        <button 
+                            id="query-button" 
+                            class="btn btn-generic pull-right" 
+                            type="button">
 
-                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Query
-                    </button>  
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Query
+                        </button>  
 
-                    <button 
-                        id="wait" 
-                        type="button"
-                        class="btn btn-default btn-sm pull-right" 
-                        style="display:none;">
+                        <button 
+                            id="wait" 
+                            type="button"
+                            class="btn btn-default btn-sm pull-left" 
+                            style="display:none;">
 
-                        <img th:src="@{'/images/ajax-loader.gif'}"></img>
-                    </button>
+                            <img th:src="@{'/images/ajax-loader.gif'}"></img>
+                        </button>
+                    </div>
 
                     <hr/>
 
@@ -66,85 +73,32 @@
                     <div id="fragmentQueryResultSetHolder"/>
                 </div>
             </div>
+
+            <!--AJAX Parent modal --> 
+            <div id="modalHolder"/>
         </div>
 
         <script th:inline="javascript">
             $(document).ready(function () {
-                
+                // Connection ID.
+                var connection;
+
                 /**
-                 * Load catalog/schema and tables in the plugin jsTree.
+                 * Change connection event.
                  */
                 $("#connection").change(function (e) {
                     $("#wait").css("display", "block");
-                    var url = /*[[@{/connection/}]]*/ "/connection/";
-                    var connection = $(this).val();
-                    
-                    // Clear jsTree.
-                    $('#jstree').jstree("destroy").empty();
 
-                    $.ajax({
-                        url: url + connection + "/get/tables",
-                        type: 'GET'
-                    }).done(function (result) {
-                        var table = [];
-                        var catalogSchema = [];
+                    connection = $(this).val();
 
-                        $.each(result, function (index, val) {
-                            var valCatalogSchema = val.catalogSchema;
-                            var valTable = val.table;
-                            
-                            // Save not to duplicate the catalog/schema.
-                            if ($.inArray(valCatalogSchema, Object.keys(catalogSchema)) === -1) {
-                                catalogSchema[valCatalogSchema] = index;
-                                
-                                // Add catalog/schema in the object.
-                                table.push({
-                                    'id': index,
-                                    "parent": "#",
-                                    "text": valCatalogSchema,
-                                    "icon": "glyphicon glyphicon-th-list"
-                                });
-                            };
-                            
-                            // Add table in the object.
-                            table.push({
-                                'id': 100000 + index,
-                                "parent": catalogSchema[valCatalogSchema],
-                                "text": valTable,
-                                "icon": "glyphicon glyphicon-th-large",
-                                "a_attr": {
-                                    "ondblclick": "fillQuery('" + valCatalogSchema + "', '" + valTable + "')"
-                                }
-                            });
-                        });
-                        
-                        createJSTree(table);
-                        
-                        $("#wait").css("display", "none");
-
-                    }).fail(function () {
-                        alert("Fail loading the tables.");
-                        $("#wait").css("display", "none");
-                    });
-
+                    // Load connections entities.
+                    getConnectionEntities();
                 });
-                
+
                 /**
                  * Starts firing the selected connection.
                  */
                 $("#connection").trigger('change');
-                
-                /**
-                 * Construct jsTree
-                 * @param {object} jsondata
-                 */
-                function createJSTree(jsondata) {
-                    $('#jstree').jstree({"core": {
-                            "data": jsondata
-                        },
-                        "plugins": ["sort", "wholerow"]
-                    });
-                };
 
                 window.editor = CodeMirror.fromTextArea(document.getElementById('query'), {
                     mode: 'text/x-sql',
@@ -192,7 +146,6 @@
                 $("#query-button").click(function () {
                     query();
                 });
-
 
                 /**
                  * Trigger job details search on history click.
@@ -244,12 +197,168 @@
                         });
                     }
                 }
+
+                /**
+                 * Construct jsTree
+                 * @param {object} jsondata
+                 */
+                function createJSTree(jsondata) {
+                    $('#jstree').jstree({"core": {
+                            "data": jsondata
+                        },
+                        'contextmenu': {
+                            'items': customMenu
+                        },
+                        "plugins": ["sort", "wholerow", "contextmenu"]
+                    });
+                }
+                ;
+
+                /**
+                 * Load catalog/schema and tables in the plugin jsTree.
+                 * @returns {undefined}
+                 */
+                function getConnectionEntities() {
+                    // Clear jsTree.
+                    $('#jstree').jstree("destroy").empty();
+
+                    var url = /*[[@{/connection/}]]*/ "/connection/";
+
+                    $.ajax({
+                        url: url + connection + "/get/tables",
+                        type: 'GET'
+                    }).done(function (result) {
+                        var table = [];
+                        var catalogSchema = [];
+
+                        $.each(result, function (index, val) {
+                            var valCatalogSchema = val.catalogSchema;
+                            var valTable = val.table;
+
+                            // Save not to duplicate the catalog/schema.
+                            if ($.inArray(valCatalogSchema, Object.keys(catalogSchema)) === -1) {
+                                catalogSchema[valCatalogSchema] = index;
+
+                                // Add catalog/schema in the object.
+                                table.push({
+                                    'id': index,
+                                    "parent": "#",
+                                    "text": valCatalogSchema,
+                                    "icon": "glyphicon glyphicon-th-list"
+                                });
+                            }
+                            ;
+
+                            // Add table in the object.
+                            table.push({
+                                'id': 100000 + index,
+                                "parent": catalogSchema[valCatalogSchema],
+                                "text": valTable,
+                                "icon": "glyphicon glyphicon-th-large",
+                                "a_attr": {
+                                    "ondblclick": "fillQuery('" + valCatalogSchema + "', '" + valTable + "')",
+                                    "catalog": val.catalog,
+                                    "schema": val.schema,
+                                    "table": val.table
+                                }
+                            });
+                        });
+
+                        createJSTree(table);
+
+                        $("#wait").css("display", "none");
+
+                    }).fail(function () {
+                        alert("Fail loading the tables.");
+                        $("#wait").css("display", "none");
+                    });
+                }
+
+                /**
+                 * Refresh connection cache.
+                 */
+                function refreshCache() {
+                    var url = /*[[@{/connection/evict/}]]*/ "/connection/evict/";
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + connection,
+                        contentType: "text/html",
+                        timeout: 1000000,
+                        success: function (result) {
+                            getConnectionEntities();
+                        },
+                        error: function (e) {
+                            alert("Fail refreshing connection cache: " + e.statusText);
+                        }
+                    });
+                }
+
+                /**
+                 * Right click menu on table list.
+                 * 
+                 * @param {type} node current element.
+                 * @returns {workbenchL#2.customMenu.items}
+                 */
+                function customMenu(node) {
+                    {
+                        var items = {
+                            'refresh': {
+                                'label': 'Refresh',
+                                'icon': 'glyphicon glyphicon-refresh',
+                                'title': 'Refresh connection. (Shortcut F1)',
+                                'shortcut': 112,
+                                'action': function () {
+                                    refreshCache();
+                                }
+                            },
+                            'metadata': {
+                                'label': 'Metadata',
+                                'icon': 'glyphicon glyphicon-th',
+                                'title': 'Open entity metadata. (Shortcut F2)',
+                                'shortcut': 113,
+                                'action': function () {
+                                    tableMetadataModal(node);
+                                },
+                                // catalog or schema doesn't have metadata.
+                                '_disabled': node.parent === "#"
+                            }
+                        };
+                        return items;
+                    }
+                }
+
+                /**
+                 * Table metadata modal. 
+                 * 
+                 * @param {type} node
+                 * @returns {undefined}
+                 */
+                function tableMetadataModal(node) {
+                    var url = /*[[@{/connection/modal/}]]*/ "/connection/modal/";
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + connection + "/table/column/" + node.a_attr.catalog + "/" + node.a_attr.schema + "/" + node.a_attr.table,
+                        success: function (result) {
+                            $("#modalHolder").html(result);
+                            $("#modalTableMetadata").modal({backdrop: 'static', keyboard: false});
+                        },
+                        error: function (e) {
+                            alert("Error getting table metadata: " + e.statusText);
+                        }
+                    });
+                }
             });
-            
+
             /**
              * Fill query editor with selected catalog and table.
-             * */
-            var fillQuery = function (catalogSchema, table) {
+             * 
+             * @param {type} catalogSchema
+             * @param {type} table
+             * @returns {undefined}
+             */
+            function fillQuery(catalogSchema, table) {
                 var query = window.editor;
                 var select = "SELECT * FROM " + catalogSchema + "." + table + " LIMIT 10;";
 
@@ -259,7 +368,7 @@
                     query.setValue(query.getValue() + "\n\n" + select);
                 }
                 query.focus();
-            }            
+            }
         </script>    
     </body>
 </html>

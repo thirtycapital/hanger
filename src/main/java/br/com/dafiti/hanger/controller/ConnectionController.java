@@ -280,7 +280,7 @@ public class ConnectionController {
 
         return "connection/fragmentQueryResultSet::resultSet";
     }
-    
+
     /**
      * Connection tables.
      *
@@ -293,5 +293,47 @@ public class ConnectionController {
             @PathVariable(name = "id") Connection connection) {
 
         return connectionService.getTables(connection);
-    }    
+    }
+
+    /**
+     * Refresh connection cache.
+     *
+     * @param connection
+     */
+    @GetMapping(path = "/evict/{id}")
+    @ResponseBody
+    public void evictConnection(
+            @PathVariable(name = "id") Connection connection) {
+
+        connectionService.evictConnection(connection);
+    }
+
+    /**
+     * Test connections modal.
+     *
+     * @param connection
+     * @param catalog
+     * @param schema
+     * @param table
+     * @param model Model
+     * @return Test connections modal
+     */
+    @GetMapping(path = "/modal/{id}/table/column/{catalog}/{schema}/{table}")
+    public String gettableMetadataModal(
+            @PathVariable(name = "id") Connection connection,
+            @PathVariable(name = "catalog") String catalog,
+            @PathVariable(name = "schema") String schema,
+            @PathVariable(name = "table") String table,
+            Model model) {
+
+        try {
+            model.addAttribute("table", table);
+            model.addAttribute("pk", connectionService.getPrimaryKey(connection, catalog, schema, table));
+            model.addAttribute("column", connectionService.getColumns(connection, catalog, schema, table));
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", "Fail listing columns " + new Message().getErrorMessage(ex));
+        }
+
+        return "connection/modalTableMetadata::metadata";
+    }
 }

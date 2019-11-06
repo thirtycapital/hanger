@@ -269,7 +269,8 @@ public class ConnectionService {
                                 columns.getString("COLUMN_NAME"),
                                 columns.getString("TYPE_NAME"),
                                 columns.getInt("COLUMN_SIZE"),
-                                columns.getInt("DECIMAL_DIGITS")));
+                                columns.getInt("DECIMAL_DIGITS"),
+                                columns.getString("REMARKS")));
             }
         } catch (SQLException ex) {
             Logger.getLogger(
@@ -408,6 +409,16 @@ public class ConnectionService {
     }
 
     /**
+     * Refresh connection cache.
+     *
+     * @param connection
+     */
+    @Caching(evict = {
+        @CacheEvict(value = "tables", key = "#connection")})
+    public void evictConnection(Connection connection) {
+    }
+
+    /**
      * Represents a database entity.
      */
     public class Entity {
@@ -478,6 +489,7 @@ public class ConnectionService {
         String type;
         int size;
         int decimal;
+        String remark;
 
         public Column(
                 int position,
@@ -492,13 +504,15 @@ public class ConnectionService {
                 String name,
                 String type,
                 int size,
-                int decimal) {
+                int decimal,
+                String remark) {
 
             this.position = position;
             this.name = name;
             this.type = type;
             this.size = size;
             this.decimal = decimal;
+            this.remark = remark;
         }
 
         public int getPosition() {
@@ -540,6 +554,14 @@ public class ConnectionService {
         public void setDecimal(int decimal) {
             this.decimal = decimal;
         }
+
+        public String getRemark() {
+            return remark;
+        }
+
+        public void setRemark(String remark) {
+            this.remark = remark;
+        }         
     }
 
     /**

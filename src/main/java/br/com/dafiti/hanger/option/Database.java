@@ -31,5 +31,6 @@ public enum Database {
     MYSQL,
     MSSQL,
     POSTGRES,
-    ATHENA;
+    ATHENA,
+    HANA;
 }

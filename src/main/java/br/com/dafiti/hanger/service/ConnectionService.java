@@ -145,8 +145,14 @@ public class ConnectionService {
                         break;
                     case ATHENA:
                         driver = new com.simba.athena.jdbc42.Driver();
-                        properties.setProperty("MaxErrorRetry", "500");
+                        properties.setProperty("MaxErrorRetry", "10");
                         properties.setProperty("ConnectionTimeout", "5");
+                        properties.setProperty("MetadataRetrievalMethod", "Query");
+                        break;
+                    case HANA:
+                        driver = new com.sap.db.jdbc.Driver();
+                        properties.setProperty("loginTimeout", "5000");
+                        properties.setProperty("connectTimeout", "5000");
                         break;
                     default:
                         break;
@@ -218,7 +224,7 @@ public class ConnectionService {
         try {
             ResultSet tables = datasource.getConnection()
                     .getMetaData()
-                    .getTables(null, null, "%", new String[]{"TABLE"});
+                    .getTables(null, null, "%", new String[]{"TABLE", "EXTERNAL TABLE"});
 
             while (tables.next()) {
                 table.add(
@@ -464,7 +470,7 @@ public class ConnectionService {
         public void setTable(String table) {
             this.table = table;
         }
-        
+
         public Connection getConnection() {
             return connection;
         }
@@ -571,7 +577,7 @@ public class ConnectionService {
 
         public void setRemark(String remark) {
             this.remark = remark;
-        }         
+        }
     }
 
     /**

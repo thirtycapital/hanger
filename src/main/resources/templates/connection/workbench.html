@@ -234,14 +234,7 @@
 
                         $.each(result, function (index, val) {
                             var valCatalogSchema = val.catalogSchema;
-                            var valTable = val.table;
-                            var valConnTarget = val.connection.target;
-                            
-                            // ATHENA does not return metadata
-                            if (valConnTarget == 'ATHENA') {
-                                loadTables = false;
-                                return false;
-                            }                            
+                            var valTable = val.table;                    
 
                             // Save not to duplicate the catalog/schema.
                             if ($.inArray(valCatalogSchema, Object.keys(catalogSchema)) === -1) {

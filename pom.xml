@@ -225,12 +225,20 @@
             <version>1.2.0</version>
         </dependency>
         
-        <!--  Markup  -->
+        <!--  Markdown  -->
         
         <dependency>
             <groupId>com.atlassian.commonmark</groupId>
             <artifactId>commonmark</artifactId>
             <version>0.13.0</version>
+        </dependency>
+        
+        <!-- Hana --> 
+        
+        <dependency>
+            <groupId>com.sap.cloud.db.jdbc</groupId>
+            <artifactId>ngdbc</artifactId>
+            <version>2.4.64</version>
         </dependency>
     </dependencies>
 

@@ -177,7 +177,6 @@
                             timeout: 1000000,
                             success: function (result) {
                                 $("#fragmentQueryResultSetHolder").html(result);
-
                                 $('.table').DataTable(
                                         {
                                             "paging": false,
@@ -226,7 +225,7 @@
                     var loadTables = true;
 
                     $.ajax({
-                        url: url + connection + "/get/tables",
+                        url: url + connection + "/table/list",
                         type: 'GET'
                     }).done(function (result) {
                         var table = [];
@@ -234,7 +233,8 @@
 
                         $.each(result, function (index, val) {
                             var valCatalogSchema = val.catalogSchema;
-                            var valTable = val.table;                    
+                            var valTable = val.table;
+                            var valTarget = val.target;
 
                             // Save not to duplicate the catalog/schema.
                             if ($.inArray(valCatalogSchema, Object.keys(catalogSchema)) === -1) {
@@ -257,25 +257,24 @@
                                 "text": valTable,
                                 "icon": "glyphicon glyphicon-th-large",
                                 "a_attr": {
-                                    "ondblclick": "fillQuery('" + valCatalogSchema + "', '" + valTable + "')",
+                                    "ondblclick": "fillQuery('" + valCatalogSchema + "', '" + valTable + "', '" + valTarget + "')",
                                     "catalog": val.catalog,
                                     "schema": val.schema,
                                     "table": val.table
                                 }
                             });
                         });
-                        
+
                         // Load and display metadata only if it exists.
                         if (loadTables) {
                             $('.col-div-jstree').show();
                             $('.col-div-query').removeClass('col-sm-12').addClass('col-sm-9');
-                            
+
                             createJSTree(table);
-                        }
-                        else {
+                        } else {
                             $('.col-div-jstree').hide();
                             $('.col-div-query').removeClass('col-sm-9').addClass('col-sm-12');
-                        }                        
+                        }
 
                         $("#wait").css("display", "none");
 
@@ -367,17 +366,20 @@
              * 
              * @param {type} catalogSchema
              * @param {type} table
+             * @param {type} target
              * @returns {undefined}
              */
-            function fillQuery(catalogSchema, table) {
+            function fillQuery(catalogSchema, table, target) {
                 var query = window.editor;
-                var select = "SELECT * FROM " + catalogSchema + "." + table + " LIMIT 10;";
+                var select = "";
 
-                if (query.getValue().trim() == '') {
-                    query.setValue(select);
+                if (target === "MSSQL") {
+                    select = "SELECT TOP 10 * FROM " + catalogSchema + "." + table + ";";
                 } else {
-                    query.setValue(query.getValue() + "\n\n" + select);
+                    select = "SELECT * FROM " + catalogSchema + "." + table + " LIMIT 10;";
                 }
+
+                query.setValue(select);
                 query.focus();
             }
         </script>    

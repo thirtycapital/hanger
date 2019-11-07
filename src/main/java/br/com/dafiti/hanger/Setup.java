@@ -108,7 +108,7 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
 
         //Flow notification.
         jobService.list().forEach((job) -> {
-            jobNotificationService.notify(job, false);
+            jobNotificationService.notify(job, false, true);
         });
 
         //Run log cleanup on context refresh.

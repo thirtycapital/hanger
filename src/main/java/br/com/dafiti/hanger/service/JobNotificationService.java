@@ -89,6 +89,17 @@ public class JobNotificationService {
      * @param slack Identity if send message to slack.
      */
     public void notify(Job job, boolean slack) {
+        this.notify(job, slack, false);
+    }
+
+    /**
+     * Notify.
+     *
+     * @param job Job
+     * @param slack Identity if send message to slack.
+     * @param setup Identify if is a setup.
+     */
+    public void notify(Job job, boolean slack, boolean setup) {
         JobStatus jobStatus = job.getStatus();
         Set<Job> pendencies = new HashSet();
         StringBuilder message = new StringBuilder();
@@ -99,7 +110,8 @@ public class JobNotificationService {
             if (jobBuild != null) {
                 if ((jobStatus.getFlow().equals(Flow.NORMAL) || jobStatus.getFlow().equals(Flow.APPROVED))
                         && jobBuild.getPhase().equals(Phase.FINALIZED)
-                        && jobBuild.getStatus().equals(Status.SUCCESS)) {
+                        && jobBuild.getStatus().equals(Status.SUCCESS)
+                        && !setup) {
 
                     //Remove a warnig in case of success.  
                     if (!warning.isEmpty()

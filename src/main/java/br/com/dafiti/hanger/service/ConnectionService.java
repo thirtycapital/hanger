@@ -232,7 +232,7 @@ public class ConnectionService {
                                 tables.getString("TABLE_CAT"),
                                 tables.getString("TABLE_SCHEM"),
                                 tables.getString("TABLE_NAME"),
-                                connection));
+                                connection.getTarget()));
             }
         } catch (SQLException ex) {
             Logger.getLogger(
@@ -349,7 +349,7 @@ public class ConnectionService {
         DataSource datasource = this.getDataSource(connection);
 
         try {
-            //Set a connection to database.
+            //Set a connection to target.
             jdbcTemplate.setDataSource(datasource);
             jdbcTemplate.setMaxRows(100);
 
@@ -426,25 +426,25 @@ public class ConnectionService {
     }
 
     /**
-     * Represents a database entity.
+     * Represents a target entity.
      */
     public class Entity {
 
         private String catalog;
         private String schema;
         private String table;
-        private Connection connection;
+        private Database target;
 
         public Entity(
                 String catalog,
                 String schema,
                 String table,
-                Connection connection) {
+                Database target) {
 
             this.catalog = catalog;
             this.schema = schema;
             this.table = table;
-            this.connection = connection;
+            this.target = target;
         }
 
         public String getCatalog() {
@@ -471,12 +471,12 @@ public class ConnectionService {
             this.table = table;
         }
 
-        public Connection getConnection() {
-            return connection;
+        public Database getTarget() {
+            return target;
         }
 
-        public void setConnection(Connection connection) {
-            this.connection = connection;
+        public void setTarget(Database target) {
+            this.target = target;
         }
 
         @Transient
@@ -496,7 +496,7 @@ public class ConnectionService {
     }
 
     /**
-     * Represents a database entity column.
+     * Represents a target entity column.
      */
     public class Column {
 
@@ -644,7 +644,7 @@ public class ConnectionService {
     }
 
     /**
-     * Represents status of a database connection.
+     * Represents status of a target connection.
      */
     public class ConnectionStatus {
 

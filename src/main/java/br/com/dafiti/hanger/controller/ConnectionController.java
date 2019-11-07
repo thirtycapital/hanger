@@ -177,6 +177,19 @@ public class ConnectionController {
     }
 
     /**
+     * Connection tables.
+     *
+     * @param connection Connection
+     * @return arrayList with connection tables
+     */
+    @GetMapping(path = "/{id}/table/list")
+    @ResponseBody
+    public List<ConnectionService.Entity> getTables(
+            @PathVariable(name = "id") Connection connection) {
+        return connectionService.getTables(connection);
+    }
+
+    /**
      * Connection table columns.
      *
      * @param connection Connection
@@ -279,20 +292,6 @@ public class ConnectionController {
         }
 
         return "connection/fragmentQueryResultSet::resultSet";
-    }
-
-    /**
-     * Connection tables.
-     *
-     * @param connection Connection
-     * @return arrayList with connection tables
-     */
-    @GetMapping(path = "/{id}/get/tables")
-    @ResponseBody
-    public List<ConnectionService.Entity> getTables(
-            @PathVariable(name = "id") Connection connection) {
-
-        return connectionService.getTables(connection);
     }
 
     /**

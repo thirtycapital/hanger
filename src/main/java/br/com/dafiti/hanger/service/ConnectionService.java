@@ -425,11 +425,13 @@ public class ConnectionService {
             }
 
             //Log. 
+            String content = "[" + connection.getName() + "] " + query;
+
             EventLog eventLog = new EventLog();
             eventLog.setUsername(principal.getName());
             eventLog.setDate(new Date());
             eventLog.setType(EntityType.CONNECTION);
-            eventLog.setTypeName(query.length() > 255 ? query.substring(0, 250) + "..." : query);
+            eventLog.setTypeName(content.length() > 255 ? content.substring(0, 250) + "..." : content);
             eventLog.setEvent(Event.QUERY);
 
             eventLogService.save(eventLog);

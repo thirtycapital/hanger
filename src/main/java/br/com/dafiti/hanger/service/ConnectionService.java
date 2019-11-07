@@ -231,8 +231,7 @@ public class ConnectionService {
                         new Entity(
                                 tables.getString("TABLE_CAT"),
                                 tables.getString("TABLE_SCHEM"),
-                                tables.getString("TABLE_NAME"),
-                                connection));
+                                tables.getString("TABLE_NAME")));
             }
         } catch (SQLException ex) {
             Logger.getLogger(
@@ -433,18 +432,15 @@ public class ConnectionService {
         private String catalog;
         private String schema;
         private String table;
-        private Connection connection;
 
         public Entity(
                 String catalog,
                 String schema,
-                String table,
-                Connection connection) {
+                String table) {
 
             this.catalog = catalog;
             this.schema = schema;
             this.table = table;
-            this.connection = connection;
         }
 
         public String getCatalog() {
@@ -469,14 +465,6 @@ public class ConnectionService {
 
         public void setTable(String table) {
             this.table = table;
-        }
-
-        public Connection getConnection() {
-            return connection;
-        }
-
-        public void setConnection(Connection connection) {
-            this.connection = connection;
         }
 
         @Transient

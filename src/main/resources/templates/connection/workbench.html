@@ -199,11 +199,11 @@
 
                 /**
                  * Construct jsTree
-                 * @param {object} jsondata
+                 * @param {object} data
                  */
-                function createJSTree(jsondata) {
+                function createJSTree(data) {
                     $('#jstree').jstree({"core": {
-                            "data": jsondata
+                            "data": data
                         },
                         'contextmenu': {
                             'items': customMenu
@@ -222,59 +222,51 @@
                     $('#jstree').jstree("destroy").empty();
 
                     var url = /*[[@{/connection/}]]*/ "/connection/";
-                    var loadTables = true;
 
                     $.ajax({
                         url: url + connection + "/table/list",
                         type: 'GET'
                     }).done(function (result) {
-                        var table = [];
-                        var catalogSchema = [];
+                        var arrayTable = [];
+                        var arrayCatalogSchema = [];
 
-                        $.each(result, function (index, val) {
-                            var valCatalogSchema = val.catalogSchema;
-                            var valTable = val.table;
-                            var valTarget = val.target;
+                        $.each(result, function (index, data) {
+                            var catalogSchema = data.catalogSchema;
+                            var catalog = data.catalog;
+                            var schema = data.schema;
+                            var table = data.table;
+                            var target = data.target;
 
                             // Save not to duplicate the catalog/schema.
-                            if ($.inArray(valCatalogSchema, Object.keys(catalogSchema)) === -1) {
-                                catalogSchema[valCatalogSchema] = index;
+                            if ($.inArray(catalogSchema, Object.keys(arrayCatalogSchema)) === -1) {
+                                arrayCatalogSchema[catalogSchema] = index;
 
                                 // Add catalog/schema in the object.
-                                table.push({
+                                arrayTable.push({
                                     'id': index,
                                     "parent": "#",
-                                    "text": valCatalogSchema,
+                                    "text": catalogSchema,
                                     "icon": "glyphicon glyphicon-th-list"
                                 });
                             }
                             ;
 
                             // Add table in the object.
-                            table.push({
+                            arrayTable.push({
                                 'id': 100000 + index,
-                                "parent": catalogSchema[valCatalogSchema],
-                                "text": valTable,
+                                "parent": arrayCatalogSchema[catalogSchema],
+                                "text": table,
                                 "icon": "glyphicon glyphicon-th-large",
                                 "a_attr": {
-                                    "ondblclick": "fillQuery('" + valCatalogSchema + "', '" + valTable + "', '" + valTarget + "')",
-                                    "catalog": val.catalog,
-                                    "schema": val.schema,
-                                    "table": val.table
+                                    "ondblclick": "fillQuery('" + catalogSchema + "', '" + table + "', '" + target + "')",
+                                    "catalog": catalog,
+                                    "schema": schema,
+                                    "table": table
                                 }
                             });
                         });
 
-                        // Load and display metadata only if it exists.
-                        if (loadTables) {
-                            $('.col-div-jstree').show();
-                            $('.col-div-query').removeClass('col-sm-12').addClass('col-sm-9');
-
-                            createJSTree(table);
-                        } else {
-                            $('.col-div-jstree').hide();
-                            $('.col-div-query').removeClass('col-sm-9').addClass('col-sm-12');
-                        }
+                        createJSTree(arrayTable);
 
                         $("#wait").css("display", "none");
 

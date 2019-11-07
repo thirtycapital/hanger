@@ -27,6 +27,7 @@ import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
+import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -274,6 +275,7 @@ public class ConnectionController {
      *
      * @param connection Connection
      * @param query SQL Expression
+     * @param principal
      * @param model Model
      * @return Query result set fragment.
      */
@@ -281,9 +283,10 @@ public class ConnectionController {
     public String query(
             @PathVariable(name = "id") Connection connection,
             @RequestBody String query,
+            Principal principal,
             Model model) {
 
-        QueryResultSet queryResultSet = connectionService.getQueryResultSet(connection, query);
+        QueryResultSet queryResultSet = connectionService.getQueryResultSet(connection, query, principal);
 
         if (queryResultSet.hasError()) {
             model.addAttribute("errorMessage", queryResultSet.getError());

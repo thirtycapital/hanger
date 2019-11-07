@@ -24,15 +24,20 @@
 package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.Connection;
+import br.com.dafiti.hanger.model.EventLog;
 import br.com.dafiti.hanger.option.Database;
+import br.com.dafiti.hanger.option.EntityType;
+import br.com.dafiti.hanger.option.Event;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.repository.ConnectionRepository;
 import br.com.dafiti.hanger.security.PasswordCryptor;
+import java.security.Principal;
 import java.sql.Driver;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -60,15 +65,19 @@ public class ConnectionService {
     private final ConnectionRepository connectionRepository;
     private final PasswordCryptor passwordCryptor;
     private final JdbcTemplate jdbcTemplate;
+    private final EventLogService eventLogService;
 
     @Autowired
-    public ConnectionService(ConnectionRepository connectionRepository,
+    public ConnectionService(
+            ConnectionRepository connectionRepository,
             PasswordCryptor passwordCryptor,
-            JdbcTemplate jdbcTemplate) {
+            JdbcTemplate jdbcTemplate,
+            EventLogService eventLogService) {
 
         this.connectionRepository = connectionRepository;
         this.passwordCryptor = passwordCryptor;
         this.jdbcTemplate = jdbcTemplate;
+        this.eventLogService = eventLogService;
     }
 
     @Cacheable(value = "connections")
@@ -260,7 +269,12 @@ public class ConnectionService {
      * @param table Table
      * @return Table columns
      */
-    public List<Column> getColumns(Connection connection, String catalog, String schema, String table) {
+    public List<Column> getColumns(
+            Connection connection,
+            String catalog,
+            String schema,
+            String table) {
+
         List column = new ArrayList();
         DataSource datasource = this.getDataSource(connection);
 
@@ -305,7 +319,12 @@ public class ConnectionService {
      * @param table Table
      * @return Table primary key
      */
-    public List<Column> getPrimaryKey(Connection connection, String catalog, String schema, String table) {
+    public List<Column> getPrimaryKey(
+            Connection connection,
+            String catalog,
+            String schema,
+            String table) {
+
         List columns = new ArrayList();
         DataSource datasource = this.getDataSource(connection);
 
@@ -342,9 +361,14 @@ public class ConnectionService {
      *
      * @param connection Connection.
      * @param query Query.
+     * @param principal
      * @return Query resultset.
      */
-    public QueryResultSet getQueryResultSet(Connection connection, String query) {
+    public QueryResultSet getQueryResultSet(
+            Connection connection,
+            String query,
+            Principal principal) {
+
         QueryResultSet queryResultSet = new QueryResultSet();
         DataSource datasource = this.getDataSource(connection);
 
@@ -399,6 +423,16 @@ public class ConnectionService {
 
                 queryResultSet.getRow().add(queryResultSetRow);
             }
+
+            //Log. 
+            EventLog eventLog = new EventLog();
+            eventLog.setUsername(principal.getName());
+            eventLog.setDate(new Date());
+            eventLog.setType(EntityType.CONNECTION);
+            eventLog.setTypeName(query.length() > 255 ? query.substring(0, 250) + "..." : query);
+            eventLog.setEvent(Event.QUERY);
+
+            eventLogService.save(eventLog);
         } catch (DataAccessException ex) {
             queryResultSet.setError(ex.getMessage());
         } finally {

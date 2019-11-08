@@ -50,6 +50,7 @@ public class Connection extends Tracker implements Serializable {
     private String url;
     private String username;
     private String password;
+    private String className;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -110,6 +111,14 @@ public class Connection extends Tracker implements Serializable {
 
     public void setTarget(Database target) {
         this.target = target;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     @Override

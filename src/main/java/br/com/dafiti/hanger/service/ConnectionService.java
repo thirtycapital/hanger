@@ -31,6 +31,9 @@ import br.com.dafiti.hanger.option.Event;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.repository.ConnectionRepository;
 import br.com.dafiti.hanger.security.PasswordCryptor;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.Principal;
 import java.sql.Driver;
 import java.sql.ResultSet;
@@ -163,6 +166,11 @@ public class ConnectionService {
                         properties.setProperty("loginTimeout", "5000");
                         properties.setProperty("connectTimeout", "5000");
                         break;
+                    case GENERIC:
+                        URL url = new URL("file:${user.home}/.hanger/drivers/");
+                        URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
+                        driver = (Driver) Class.forName(connection.getClassName(), true, urlClassLoader).newInstance();
+                        break;
                     default:
                         break;
                 }
@@ -174,7 +182,12 @@ public class ConnectionService {
                         passwordCryptor.decrypt(connection.getPassword()));
 
                 dataSource.setConnectionProperties(properties);
-            } catch (SQLException ex) {
+            } catch (SQLException
+                    | MalformedURLException
+                    | ClassNotFoundException
+                    | InstantiationException
+                    | IllegalAccessException ex) {
+
                 Logger.getLogger(
                         ConnectionService.class.getName())
                         .log(Level.SEVERE, "Fail getting datasource " + connection.getName(), ex);

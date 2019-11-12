@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:th="http://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
     <head lang="en" th:replace="base/header :: head">
         <title>Hanger</title>
     </head>
@@ -8,22 +10,44 @@
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
             <div class="tab-content">
+                <table>
+                    <tr>
+                        <th>
+                            <h3 class="page-title">Workbench</h3>
+                        </th>
+                        <th class="btn-action">
+                            <a th:href="@{'/query/list/'}" title="Stored queries">
+                                <span class="glyphicon glyphicon-bookmark"></span>
+                            </a>
+                        </th>
+                    </tr>            
+                </table>
 
-                <h3 class="page-title">Workbench</h3>
                 <div class="form-horizontal">
                     <div th:if="${ errorMessage != null }" class="form-group">
                         <div class="alert alert-danger" role="alert">
                             <span th:text="${errorMessage}"></span>
                         </div>  
                     </div>
+                    <div th:if="${ successMessage != null }" class="form-group">
+                        <div class="alert alert-info" role="alert">
+                            <span th:text="${successMessage}"></span>
+                        </div>  
+                    </div>
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-group">
                                 <label>Connection</label>
-                                <select id="connection" class="selectpicker form-control" data-live-search="true" required="true" placeholder="Connection">
+                                <select 
+                                    id="connection" 
+                                    class="selectpicker form-control" 
+                                    data-live-search="true" 
+                                    required="true" 
+                                    placeholder="Connection">
                                     <option th:each="connection : ${connections}" 
                                             th:value="${connection.id}" 
-                                            th:text="${connection.name}">
+                                            th:text="${connection.name}"
+                                            th:selected="${connectionQueryStore != null ? connection == connectionQueryStore.connection : 0}">
                                     </option>
                                 </select>
                             </div>
@@ -43,19 +67,30 @@
                                     required="true" 
                                     rows="10" 
                                     minlength="1" 
-                                    maxlength="5000"></textarea>
+                                    maxlength="5000"
+                                    th:text="${connectionQueryStore != null ? connectionQueryStore.query : ''}"></textarea>
                             </div>
                         </div>
-                    </div>
+                    </div>                    
 
                     <div class="row">
                         <button 
-                            id="query-button" 
-                            class="btn btn-generic pull-right" 
+                            id="store-query-button" 
+                            class="btn btn-generic pull-right btn-space" 
                             type="button">
 
-                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Query
-                        </button>  
+                            <span class="glyphicon glyphicon-download-alt" 
+                                  aria-hidden="true"></span> Store
+                        </button>
+
+                        <button 
+                            id="query-button" 
+                            class="btn btn-generic pull-right btn-space" 
+                            type="button">
+
+                            <span class="glyphicon glyphicon-search" 
+                                  aria-hidden="true"></span> Query
+                        </button>                        
 
                         <button 
                             id="wait" 
@@ -156,12 +191,19 @@
                 });
 
                 /**
+                 * Opens modal to store a query.
+                 */
+                $("#store-query-button").click(function () {
+                    queryStoreModal();
+                });
+
+                /**
                  * Search for job that match the search input value. 
                  * @returns {undefined}
                  */
                 function query() {
                     var connection = $('#connection').val();
-                    var url = /*[[@{/connection/query/}]]*/ "/connection/query/";
+                    var url = /*[[@{/workbench/query/}]]*/ "/workbench/query/";
                     var query = window.editor.getSelection();
 
                     if (query === "") {
@@ -192,7 +234,8 @@
                                         });
                             },
                             error: function (e) {
-                                alert("Fail loading query resultset: " + e.statusText);
+                                alert("Fail loading query resultset: "
+                                        + e.statusText);
                             }
                         });
                     }
@@ -349,6 +392,31 @@
                         },
                         error: function (e) {
                             alert("Error getting table metadata: " + e.statusText);
+                        }
+                    });
+                }
+
+                /**
+                 * Calls modal with form to store the query. 
+                 * @returns {undefined}
+                 */
+                function queryStoreModal() {
+                    var connection = $('#connection').val();
+                    var url = /*[[@{/query/store/modal/}]]*/ "/query/store/modal/";
+                    var query = window.editor.getValue();
+
+                    $.ajax({
+                        type: "POST",
+                        url: url + connection,
+                        data: query,
+                        contentType: "text/html",
+                        timeout: 1000000,
+                        success: function (result) {
+                            $("#modalHolder").html(result);
+                            $("#modalQueryStore").modal({backdrop: 'static'});
+                        },
+                        error: function (e) {
+                            alert("Fail loading query resultset: " + e.statusText);
                         }
                     });
                 }

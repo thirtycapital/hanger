@@ -18,11 +18,11 @@
                     </th>
                     <div sec:authorize="isAuthenticated()">
                         <th class="btn-action">
-                            <a th:href="@{'/connection/workbench/'}" title="Workbench">
-                                <span class="glyphicon glyphicon-play"></span>
+                            <a th:href="@{'/workbench/workbench/'}" title="Workbench">
+                                <span class="glyphicon glyphicon-chevron-right"></span>
                             </a>
-                        </th>
-
+                        </th>                        
+                        
                         <th class="btn-action">
                             <a href="#" title="Test" th:id="modal_test_connections">
                                 <span class="glyphicon glyphicon-flash"></span>

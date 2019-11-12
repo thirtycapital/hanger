@@ -121,4 +121,24 @@ $(document).ready(function () {
         format: "yyyy-mm-dd",
         todayHighlight: true
     });
+    
+    $('[id^=query_stored_]').DataTable({        
+        "pageLength": 10,
+        "bLengthChange": false,
+        "info": false,
+        "order": [],        
+        "columnDefs": [{
+                "targets": 'no-sort',
+                "orderable": false
+            },
+            {
+                targets: 'img-sort',
+                "type": "alt-string"
+            },
+            {
+                targets: 'no-search',
+                "searchable": false
+            }
+        ]
+    });
 });

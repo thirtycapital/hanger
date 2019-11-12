@@ -35,7 +35,10 @@
                             <th style="width:10%">Name</th>
                             <th style="width:30%">Query</th>
                             <th style="width:29%">Connection</th>
-                            <th style="width:5%" class="no-sort">Shared</th>
+                            <th style="width:5%">
+                                <span class="glyphicon glyphicon-share-alt"
+                                      title="Shared"></span>
+                            </th>
                             <th style="width:1%" class="no-sort"></th>
                             <th style="width:1%" class="no-sort"></th>
                             <th style="width:1%" class="no-sort"></th>
@@ -52,17 +55,17 @@
                                     <ul class="dropdown-menu">                                                
                                         <li>
                                             <pre class="line-numbers">
-                                                    <code class="language-sql" th:text="${connectionQueryStore.query}"></code>
+                                                <code class="language-sql" th:text="${connectionQueryStore.query}"></code>
                                             </pre>
                                         </li>  
-                                    </ul>
+                                    </ul>                                    
                                 </div>
                             </td>
                             <td th:text="${connectionQueryStore.connection.name}">#</td>
-                            <td>
-                                <input type="checkbox" 
-                                       th:checked="${connectionQueryStore.shared}"
-                                       disabled="true"/>
+                            <td>                               
+                                <div th:if="${connectionQueryStore.shared}">
+                                    <span class="glyphicon glyphicon-share-alt"></span>
+                                </div>
                             </td> 
                             <td>
                                 <a 
@@ -215,7 +218,7 @@
                                     + e.statusText);
                         }
                     });
-                });
+                });              
             });
         </script>
     </body>

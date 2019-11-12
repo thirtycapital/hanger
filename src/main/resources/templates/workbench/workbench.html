@@ -26,15 +26,23 @@
                 </table>
 
                 <div class="form-horizontal">
-                    <div th:if="${ errorMessage != null }" class="form-group">
-                        <div class="alert alert-danger" role="alert">
-                            <span th:text="${errorMessage}"></span>
-                        </div>  
+                    <div th:if="${ errorMessage != null }" class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="alert alert-danger" role="alert">
+                                    <span th:text="${errorMessage}"></span>
+                                </div>  
+                            </div>
+                        </div>
                     </div>
-                    <div th:if="${ successMessage != null }" class="form-group">
-                        <div class="alert alert-info" role="alert">
-                            <span th:text="${successMessage}"></span>
-                        </div>  
+                    <div th:if="${ successMessage != null }" class="row">
+                        <div class="col-sm-12">
+                            <div class="form-group">
+                                <div class="alert alert-info" role="alert">
+                                    <span th:text="${successMessage}"></span>
+                                </div>  
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-12">

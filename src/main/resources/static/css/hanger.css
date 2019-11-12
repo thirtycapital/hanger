@@ -885,9 +885,19 @@ input[type='file'] {
     position: relative; 
     overflow: auto; 
     width: auto; 
-    height: 250px;    
+    height: 216px;    
 }
 
 .col-div-jstree {
     padding-right:3px;
+}
+
+.form-control-search {
+    border: 1px solid #f7f7f7;
+    box-shadow: inset 0px 0px 0px 0px;
+    background-color: transparent;
+}
+
+.form-control-search::placeholder {
+  color: #929292;
 }

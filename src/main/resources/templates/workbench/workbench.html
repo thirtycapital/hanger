@@ -16,8 +16,10 @@
                             <h3 class="page-title">Workbench</h3>
                         </th>
                         <th class="btn-action">
-                            <a th:href="@{'/query/list/'}" title="Stored queries">
-                                <span class="glyphicon glyphicon-bookmark"></span>
+                            <a th:href="@{'/query/list/'}" 
+                               title="Stored queries">
+                                <span 
+                                    class="glyphicon glyphicon-bookmark"></span>
                             </a>
                         </th>
                     </tr>            
@@ -54,9 +56,17 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-sm-3 col-div-jstree">
-                            <div class="div-jstree">
-                                <div id="jstree"></div>
+                        <div class="col-sm-3">
+                            <div class="form-group col-div-jstree">
+                                <input type="text"
+                                       id="jstree-search"
+                                       class="form-control form-control-search" 
+                                       maxlength="50" 
+                                       placeholder="Search: "/>
+
+                                <div class="div-jstree">
+                                    <div id="jstree"></div>
+                                </div>                                
                             </div>
                         </div>
                         <div class="col-sm-9 col-div-query">
@@ -198,6 +208,21 @@
                 });
 
                 /**
+                 * Jstree Search
+                 * @returns {undefined}
+                 */
+                var timeOut = false;
+                $('#jstree-search').keyup(function () {
+                    if (timeOut) {
+                        clearTimeout(timeOut);
+                    }
+                    timeOut = setTimeout(function () {
+                        var v = $('#jstree-search').val();
+                        $('#jstree').jstree(true).search(v);
+                    }, 250);
+                });
+
+                /**
                  * Search for job that match the search input value. 
                  * @returns {undefined}
                  */
@@ -252,7 +277,10 @@
                         'contextmenu': {
                             'items': customMenu
                         },
-                        "plugins": ["sort", "wholerow", "contextmenu"]
+                        "plugins": ["sort", "wholerow", "contextmenu", "search"],
+                        "search": {
+                            "show_only_matches": true
+                        }
                     });
                 }
                 ;

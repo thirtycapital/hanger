@@ -74,12 +74,12 @@
                             <tr>
                                 <th style="width:5%" class="img-sort">Status</th> 
                                 <th style="width:10%">Date</th> 
-                                <th style="width:10%">Scope</th> 
-                                <th style="width:20%">SQL</th>
-                                <th style="width:10%">Result</th>
-                                <th style="width:10%" class="no-sort" ></th>    
-                                <th style="width:10%" >Threshold</th>     
-                                <th style="width:10%" >Action</th> 
+                                <th style="width:5%">Scope</th> 
+                                <th style="width:25%">SQL</th>
+                                <th style="width:15%">Result</th>
+                                <th style="width:10%" class="no-sort"></th>    
+                                <th style="width:10%">Threshold</th>     
+                                <th style="width:10%">Action</th> 
                                 <th class="no-sort"></th>
                             </tr>
                         </thead>
@@ -90,8 +90,11 @@
                                 <td th:text="${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}"></td>        
                                 <td th:text="${checkupLog.scope}"></td>  
                                 <td>
-                                    <div class="btn-group">
-                                        <button class="dropdown-toggle close" data-toggle="dropdown"><span class="caret"></span></button>
+                                    <span th:text="${#strings.length(checkupLog.query) > 65 ? #strings.substring(checkupLog.query,0,65) : checkupLog.query}"></span>                                
+                                    <div class="btn-group" 
+                                         th:if="${#strings.length(checkupLog.query) > 65}">                                    
+                                        <button class="dropdown-toggle close" 
+                                                data-toggle="dropdown">...</button>
                                         <ul class="dropdown-menu">                                                
                                             <li>
                                                 <pre class="line-numbers">
@@ -101,7 +104,20 @@
                                         </ul>
                                     </div>
                                 </td>  
-                                <td th:text="${checkupLog.value}"></td> 
+                                <td>
+                                    <span th:text="${#strings.length(checkupLog.value) > 35 ? #strings.substring(checkupLog.value,0,35) : checkupLog.value}"></span>                                
+                                    <div class="btn-group" th:if="${#strings.length(checkupLog.value) > 35}">                                    
+                                        <button class="dropdown-toggle close" 
+                                                data-toggle="dropdown">...</button>
+                                        <ul class="dropdown-menu">                                                
+                                            <li>
+                                                <pre class="line-numbers">
+                                                    <code class="language-sql" th:text="${checkupLog.value}"></code>
+                                                </pre>
+                                            </li>  
+                                        </ul>
+                                    </div>
+                                </td> 
                                 <td th:text="${checkupLog.conditional}"></td>  
                                 <td th:text="${checkupLog.threshold}"></td>  
                                 <td th:text="${checkupLog.success ? '' : checkupLog.action}"></td>   

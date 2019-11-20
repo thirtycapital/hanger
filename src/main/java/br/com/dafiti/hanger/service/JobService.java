@@ -36,6 +36,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -479,7 +482,7 @@ public class JobService {
             Job job,
             boolean self) {
 
-        HashSet<Job> propagation = this.getPropagation(job, new HashSet());
+        HashSet<Job> propagation = this.getPropagation(job, new HashSet(),0);
 
         if (!self) {
             propagation.remove(job);
@@ -498,14 +501,23 @@ public class JobService {
      */
     private HashSet<Job> getPropagation(
             Job job,
-            HashSet<Job> propagation) {
+            HashSet<Job> propagation,
+            int level) {
+
+        level++;
 
         HashSet<JobParent> childs = jobParentService.findByParent(job);
 
         if (!childs.isEmpty()) {
-            childs.stream().forEach((child) -> {
-                this.getPropagation(child.getJob(), propagation);
-            });
+            for (JobParent child : childs) {
+                if (!propagation.contains(job)) {
+                    Logger.getLogger(
+                            JobService.class.getName())
+                            .log(Level.INFO, "{0} {1}", new Object[]{StringUtils.repeat(".", level), child.getJob().getName()});
+
+                    this.getPropagation(child.getJob(), propagation, level);
+                }
+            }
         }
 
         propagation.add(job);

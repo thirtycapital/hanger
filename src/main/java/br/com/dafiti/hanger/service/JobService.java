@@ -143,7 +143,8 @@ public class JobService {
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true),
         @CacheEvict(value = "job_count", allEntries = true),
-        @CacheEvict(value = "job_count_by_subject", allEntries = true)})
+        @CacheEvict(value = "job_count_by_subject", allEntries = true),
+        @CacheEvict(value = "propagation", allEntries = true)})
     public Job saveAndRefreshCache(Job job) {
         Long id = job.getId();
 
@@ -165,7 +166,8 @@ public class JobService {
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true),
         @CacheEvict(value = "job_count", allEntries = true),
-        @CacheEvict(value = "job_count_by_subject", allEntries = true)})
+        @CacheEvict(value = "job_count_by_subject", allEntries = true),
+        @CacheEvict(value = "propagation", allEntries = true)})
     public void delete(Long id) {
         jobRepository.delete(id);
     }
@@ -173,7 +175,8 @@ public class JobService {
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true),
         @CacheEvict(value = "job_count", allEntries = true),
-        @CacheEvict(value = "job_count_by_subject", allEntries = true)})
+        @CacheEvict(value = "job_count_by_subject", allEntries = true),
+        @CacheEvict(value = "propagation", allEntries = true)})
     public void refresh() {
     }
 
@@ -482,7 +485,7 @@ public class JobService {
             Job job,
             boolean self) {
 
-        HashSet<Job> propagation = this.getPropagation(job, new HashSet(),0);
+        HashSet<Job> propagation = this.getPropagation(job, new HashSet(), 0);
 
         if (!self) {
             propagation.remove(job);
@@ -499,6 +502,7 @@ public class JobService {
      * @param propagation Propagation list
      * @return Mesh list.
      */
+    @Cacheable(value = "propagation", key = "{#job.id}")
     private HashSet<Job> getPropagation(
             Job job,
             HashSet<Job> propagation,

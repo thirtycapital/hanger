@@ -117,13 +117,13 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
             jobNotificationService.notify(job, false, true);
         });
 
-        //Run log cleanup on context refresh.
+        //Run log cleanup on the context refresh.
         jobCheckupLogService.cleaneup(expiration(logRetention));
         jobApprovalService.cleaneup(expiration(logRetention));
     }
 
     /**
-     * Calculate the expiration date.
+     * Calculate the expiration date. 
      *
      * @param days Days gone.
      * @return Date

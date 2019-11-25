@@ -74,7 +74,7 @@ public class Application extends SpringBootServletInitializer {
 
     /**
      * Define the password encoder.
-     *
+     * 
      * @return bCryptPasswordEncoder
      */
     @Bean

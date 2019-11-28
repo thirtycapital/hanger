@@ -6,6 +6,25 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
+            <ol class="breadcrumb breadcrumb-connection">
+                <li th:inline="text">
+                    <a th:href="@{'/connection/' + ${connection.id} + '/catalog/schema'}">
+                        [[${connection.name}]]
+                    </a>
+                </li>
+                <li th:inline="text" th:if="${catalog != 'null'}">
+                    <a th:href="@{'/connection/' + ${connection.id} + '/table/' + ${catalog} + '/' + ${schema}}">
+                        [[${catalog}]]
+                    </a>
+                </li>
+                <li th:inline="text" th:if="${schema != 'null'}">
+                    <a th:href="@{'/connection/' + ${connection.id} + '/table/' + ${catalog} + '/' + ${schema}}">
+                        [[${schema}]]
+                    </a>
+                </li>
+                <li th:inline="text">[[${table}]]</li>
+            </ol>
+            
             <table>
                 <tr>
                     <th>

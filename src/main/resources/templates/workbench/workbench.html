@@ -108,7 +108,7 @@
 
                             <span class="glyphicon glyphicon-search" 
                                   aria-hidden="true"></span> Query
-                        </button>                        
+                        </button>
 
                         <button 
                             id="wait" 
@@ -134,24 +134,20 @@
         <script th:inline="javascript">
             $(document).ready(function () {
                 // Connection ID.
-                var connection;
+                var connection = $("#connection").val();
+                
+                // Tree initial construction.
+                createJSTree(connection);
 
                 /**
                  * Change connection event.
                  */
-                $("#connection").change(function (e) {
-                    $("#wait").css("display", "block");
-
+                $("#connection").change(function () {
                     connection = $(this).val();
 
-                    // Load connections entities.
-                    getConnectionEntities();
-                });
+                    createJSTree(connection);
 
-                /**
-                 * Starts firing the selected connection.
-                 */
-                $("#connection").trigger('change');
+                });
 
                 window.editor = CodeMirror.fromTextArea(document.getElementById('query'), {
                     mode: 'text/x-sql',
@@ -276,85 +272,33 @@
 
                 /**
                  * Construct jsTree
-                 * @param {object} data
+                 * @param connection
                  */
-                function createJSTree(data) {
-                    $('#jstree').jstree({"core": {
-                            "data": data
-                        },
-                        'contextmenu': {
-                            'items': customMenu
+                function createJSTree(connection) {
+                    // Clear jsTree.
+                    $('#jstree').jstree("destroy").empty();
+
+                    var url = /*[[@{/workbench/}]]*/ "/workbench/";
+
+                    $('#jstree').jstree({
+                        'core': {
+                            'data': {
+                                "url": url + "tree/" + connection,
+                                "dataType": "json",
+                                "data": function (node) {
+                                    return {"parent": node.id};
+                                }
+                            }
                         },
                         "plugins": ["sort", "wholerow", "contextmenu", "search"],
                         "search": {
                             "show_only_matches": true
+                        },
+                        'contextmenu': {
+                            'items': customMenu
                         }
                     });
-                }
-                ;
-
-                /**
-                 * Load catalog/schema and tables in the plugin jsTree.
-                 * @returns {undefined}
-                 */
-                function getConnectionEntities() {
-                    // Clear jsTree.
-                    $('#jstree').jstree("destroy").empty();
-
-                    var url = /*[[@{/connection/}]]*/ "/connection/";
-
-                    $.ajax({
-                        url: url + connection + "/table/list",
-                        type: 'GET'
-                    }).done(function (result) {
-                        var arrayTable = [];
-                        var arrayCatalogSchema = [];
-
-                        $.each(result, function (index, data) {
-                            var catalogSchema = data.catalogSchema;
-                            var catalog = data.catalog;
-                            var schema = data.schema;
-                            var table = data.table;
-                            var target = data.target;
-
-                            // Save not to duplicate the catalog/schema.
-                            if ($.inArray(catalogSchema, Object.keys(arrayCatalogSchema)) === -1) {
-                                arrayCatalogSchema[catalogSchema] = index;
-
-                                // Add catalog/schema in the object.
-                                arrayTable.push({
-                                    'id': index,
-                                    "parent": "#",
-                                    "text": catalogSchema,
-                                    "icon": "glyphicon glyphicon-th-list"
-                                });
-                            }
-                            ;
-
-                            // Add table in the object.
-                            arrayTable.push({
-                                'id': 100000 + index,
-                                "parent": arrayCatalogSchema[catalogSchema],
-                                "text": table,
-                                "icon": "glyphicon glyphicon-th-large",
-                                "a_attr": {
-                                    "ondblclick": "fillQuery('" + catalogSchema + "', '" + table + "', '" + target + "')",
-                                    "catalog": catalog,
-                                    "schema": schema,
-                                    "table": table
-                                }
-                            });
-                        });
-
-                        createJSTree(arrayTable);
-
-                        $("#wait").css("display", "none");
-
-                    }).fail(function () {
-                        alert("Fail loading the tables.");
-                        $("#wait").css("display", "none");
-                    });
-                }
+                };
 
                 /**
                  * Refresh connection cache.
@@ -367,8 +311,9 @@
                         url: url + connection,
                         contentType: "text/html",
                         timeout: 1000000,
-                        success: function (result) {
-                            getConnectionEntities();
+                        success: function () {
+                            createJSTree(connection);
+
                         },
                         error: function (e) {
                             alert("Fail refreshing connection cache: " + e.statusText);

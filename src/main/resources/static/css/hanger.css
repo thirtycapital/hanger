@@ -899,5 +899,9 @@ input[type='file'] {
 }
 
 .form-control-search::placeholder {
-  color: #929292;
+    color: #929292;
+}
+
+.breadcrumb-connection {
+    margin: 10px 0 0 0;
 }

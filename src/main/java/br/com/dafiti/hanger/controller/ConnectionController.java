@@ -153,38 +153,83 @@ public class ConnectionController {
     }
 
     /**
-     * Connection tables.
+     * Connection Schemas.
      *
      * @param connection Connection
      * @param model Model
-     * @return Render connectionTables template.
+     * @return Render connectionSchema template.
      */
-    @GetMapping(path = "/{id}/table")
-    public String connectionTables(
+    @GetMapping(path = "/{id}/catalog/schema")
+    public String connectionSchemas(
             @PathVariable(name = "id") Connection connection,
             Model model) {
 
         try {
             model.addAttribute("connection", connection);
-            model.addAttribute("metadata", connectionService.getTables(connection));
+            model.addAttribute("metadata", connectionService.getSchemas(connection));
         } catch (Exception ex) {
-            model.addAttribute("errorMessage", "Fail listing tables " + new Message().getErrorMessage(ex));
+            model.addAttribute("errorMessage", "Fail listing schema " + new Message().getErrorMessage(ex));
         }
 
-        return "connection/table";
+        return "connection/schema";
+    }
+
+    /**
+     * Connection Schemas.
+     *
+     * @param connection Connection
+     * @return List connectionSchema.
+     */
+    @GetMapping(path = "/{id}/schema/list")
+    @ResponseBody
+    public List<ConnectionService.Entity> connectionSchemas(
+            @PathVariable(name = "id") Connection connection) {
+
+        return connectionService.getSchemas(connection);
     }
 
     /**
      * Connection tables.
      *
      * @param connection Connection
+     * @param catalog
+     * @param schema
      * @return arrayList with connection tables
      */
-    @GetMapping(path = "/{id}/table/list")
+    @GetMapping(path = "/{id}/{catalog}/{schema}/table/list")
     @ResponseBody
     public List<ConnectionService.Entity> getTables(
-            @PathVariable(name = "id") Connection connection) {
-        return connectionService.getTables(connection);
+            @PathVariable(name = "id") Connection connection,
+            @PathVariable(name = "catalog") String catalog,
+            @PathVariable(name = "schema") String schema) {
+
+        return connectionService.getTables(connection, catalog, schema);
+    }
+
+    /**
+     * Connection tables.
+     *
+     * @param connection Connection
+     * @param model Model
+     * @return Render connectionTables template.
+     */
+    @GetMapping(path = "/{id}/table/{catalog}/{schema}")
+    public String connectionTables(
+            @PathVariable(name = "id") Connection connection,
+            @PathVariable(name = "catalog") String catalog,
+            @PathVariable(name = "schema") String schema,
+            Model model) {
+
+        try {
+            model.addAttribute("connection", connection);
+            model.addAttribute("catalog", catalog);
+            model.addAttribute("schema", schema);
+            model.addAttribute("metadata", connectionService.getTables(connection, catalog, schema));
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", "Fail listing tables " + new Message().getErrorMessage(ex));
+        }
+
+        return "connection/table";
     }
 
     /**
@@ -206,6 +251,9 @@ public class ConnectionController {
             Model model) {
 
         try {
+            model.addAttribute("connection", connection);
+            model.addAttribute("catalog", catalog);
+            model.addAttribute("schema", schema);
             model.addAttribute("table", table);
             model.addAttribute("pk", connectionService.getPrimaryKey(connection, catalog, schema, table));
             model.addAttribute("column", connectionService.getColumns(connection, catalog, schema, table));

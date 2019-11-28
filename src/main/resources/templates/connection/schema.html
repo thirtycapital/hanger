@@ -7,22 +7,13 @@
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
             <ol class="breadcrumb breadcrumb-connection">
-                <li th:inline="text">
-                    <a th:href="@{'/connection/' + ${connection.id} + '/catalog/schema'}">
-                        [[${connection.name}]]
-                    </a>
-                </li>
-                <li th:inline="text" th:if="${catalog != 'null'}">[[${catalog}]]</li>
-                <li th:inline="text" th:if="${schema != 'null'}">[[${schema}]]</li>
+                <li th:inline="text">[[${connection.name}]]</li>
             </ol>
             
             <table>
                 <tr>
                     <th>
-                        <h3 th:inline="text" class="page-title">
-                            <span th:if="${catalog != 'null'}">[[${catalog}]]</span>
-                            <span th:if="${schema != 'null'}">[[${schema}]]</span>
-                        </h3>
+                        <h3 th:inline="text" class="page-title">[[${connection.name}]]</h3>
                     </th>
                 </tr>            
             </table>
@@ -43,17 +34,19 @@
                 <thead>
                     <tr>
                         <th style="width:1%">#</th>
-                        <th>Table</th>
+                        <th>Catalog</th>
+                        <th>Schema</th>
                         <th class="no-sort" style="width:1%"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="metadata, stat : ${metadata}">
-                        <td th:text="${stat.index + 1}">#</td>
-                        <td th:text="${metadata.table}">Table</td>
+                        <td th:text="${stat.index + 1}"></td>
+                        <td th:text="${metadata.catalog}"></td>
+                        <td th:text="${metadata.schema}"></td>
                         <td>
-                            <a th:href="@{'/connection/' + ${connection.id} + '/table/column/' + ${metadata.catalog} + '/' + ${metadata.schema} + '/' + ${metadata.table} }" class="btn btn-generic btn-xs">
-                                <span class="glyphicon glyphicon-th" aria-hidden="true"></span> Column
+                            <a th:href="@{'/connection/' + ${connection.id} + '/table/' + ${metadata.catalog} + '/' + ${metadata.schema} }" class="btn btn-generic btn-xs">
+                                <span class="glyphicon glyphicon-th-large" aria-hidden="true"></span> Table
                             </a>
                         </td>
                     </tr>

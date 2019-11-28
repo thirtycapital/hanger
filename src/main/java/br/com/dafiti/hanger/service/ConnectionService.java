@@ -233,20 +233,84 @@ public class ConnectionService {
     }
 
     /**
-     * Get tables.
+     * Get schemas.
      *
      * @param connection Connection
      * @return Database metadata
      */
+    @Cacheable(value = "schemas", key = "#connection")
+    public List<Entity> getSchemas(Connection connection) {
+        List schema = new ArrayList();
+        DataSource datasource = this.getDataSource(connection);
+
+        try {
+            ResultSet schemas = datasource.getConnection()
+                    .getMetaData()
+                    .getSchemas();
+
+            while (schemas.next()) {
+                schema.add(
+                        new Entity(
+                                schemas.getString("TABLE_CATALOG"),
+                                schemas.getString("TABLE_SCHEM"),
+                                "",
+                                connection.getTarget()));
+            }
+            
+            if (schema.isEmpty()) {
+                ResultSet catalogs = datasource.getConnection()
+                        .getMetaData()
+                        .getCatalogs();
+
+                while (catalogs.next()) {
+                    schema.add(
+                            new Entity(
+                                    catalogs.getString("TABLE_CAT"),
+                                    null,
+                                    "",
+                                    connection.getTarget()
+                            ));
+                }
+            }            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(
+                    ConnectionService.class.getName())
+                    .log(Level.SEVERE, "Fail getting metadata of " + connection.getName(), ex);
+        } finally {
+            try {
+                datasource.getConnection().close();
+            } catch (SQLException ex) {
+                Logger.getLogger(
+                        ConnectionService.class.getName())
+                        .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
+            }
+        }
+
+        return schema;
+    }
+
+    /**
+     * Get tables.
+     *
+     * @param connection Connection
+     * @param catalog String
+     * @param schema String
+     * @return Database metadata
+     */
     @Cacheable(value = "tables", key = "#connection")
-    public List<Entity> getTables(Connection connection) {
+    public List<Entity> getTables(Connection connection, String catalog, String schema) {
         List table = new ArrayList();
         DataSource datasource = this.getDataSource(connection);
 
         try {
             ResultSet tables = datasource.getConnection()
                     .getMetaData()
-                    .getTables(null, null, "%", new String[]{"TABLE", "EXTERNAL TABLE"});
+                    .getTables(
+                            catalog,
+                            schema,
+                            "%",
+                            new String[]{"TABLE", "EXTERNAL TABLE"});
 
             while (tables.next()) {
                 table.add(

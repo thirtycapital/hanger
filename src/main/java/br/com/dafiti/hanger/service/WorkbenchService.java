@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Dafiti Group
+ * Copyright (c) 2019 Dafiti Group
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -32,7 +32,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -43,41 +42,42 @@ import org.springframework.stereotype.Service;
 public class WorkbenchService {
 
     private final ConnectionService connectionService;
+    private final ConfigurationService configurationService;
 
     @Autowired
-    public WorkbenchService(ConnectionService connectionService) {
+    public WorkbenchService(
+            ConnectionService connectionService,
+            ConfigurationService configurationService) {
         this.connectionService = connectionService;
+        this.configurationService = configurationService;
     }
 
     /**
-     * List tree
+     * Loads JSTree nodes.
      *
      * @param connection Connection
-     * @param parent String
+     * @param parent String JSTree node.
+     *
      * @return List Tree
      */
-    @Cacheable(value = "list_tree", key = "{#connection, #parent}")
-    public List<Tree> listTree(Connection connection, String parent) {
-
-        List<Tree> listTree = new ArrayList();
+    //@Cacheable(value = "list_tree", key = "{#connection, #parent}")
+    public List<Tree> loadTree(Connection connection, String parent) {
 
         //Identify if node is parent.
         if (parent.equals("#")) {
-            listTree = listSchemasTree(connection);
-        } else {
-            listTree = listTablesTree(connection, parent);
+            return loadTreeSchemas(connection);
         }
 
-        return listTree;
+        return loadTreeTables(connection, parent);
     }
 
     /**
-     * List schemas tree
+     * Loads JSTree schemas.
      *
      * @param connection Connection
      * @return List schemas tree
      */
-    public List<Tree> listSchemasTree(Connection connection) {
+    public List<Tree> loadTreeSchemas(Connection connection) {
 
         List schema = new ArrayList();
 
@@ -136,13 +136,13 @@ public class WorkbenchService {
     }
 
     /**
-     * List tables tree.
+     * Loads JSTree tables.
      *
      * @param connection Connection
      * @param parent String
      * @return list tables tree
      */
-    public List<Tree> listTablesTree(
+    public List<Tree> loadTreeTables(
             Connection connection,
             String parent) {
         List table = new ArrayList();
@@ -166,6 +166,12 @@ public class WorkbenchService {
                             "%",
                             new String[]{"TABLE", "EXTERNAL TABLE"});
 
+            // Get maximum number of tables to display. 
+            int max = Integer
+                    .valueOf(configurationService
+                            .findByParameter("WORKBENCH_NUMBER_TABLES")
+                            .getValue());
+
             while (tables.next()) {
 
                 TreeAttribute treeAttribute = new TreeAttribute(
@@ -184,6 +190,20 @@ public class WorkbenchService {
                                 false,
                                 treeAttribute
                         ));
+
+                if (table.size() == max) {
+                    table.add(
+                            new Tree(
+                                    "Limited by configuration rule",
+                                    "Limited by configuration rule",
+                                    parent,
+                                    "glyphicon glyphicon-option-horizontal",
+                                    false,
+                                    null
+                            ));
+
+                    break;
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(
@@ -203,7 +223,7 @@ public class WorkbenchService {
     }
 
     /**
-     * Represents a target entity tree.
+     * Represents a JSTree.
      */
     public class Tree {
 
@@ -280,7 +300,7 @@ public class WorkbenchService {
     }
 
     /**
-     * Represents a target entity tree attributes.
+     * Represents a JSTree node attributes.
      */
     public class TreeAttribute {
 

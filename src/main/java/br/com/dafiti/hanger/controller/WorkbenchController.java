@@ -127,6 +127,6 @@ public class WorkbenchController {
             @PathVariable(name = "id") Connection connection,
             @RequestParam(value = "parent") String parent) {
 
-        return workbenchService.listTree(connection, parent);
+        return workbenchService.loadTree(connection, parent);
     }
 }

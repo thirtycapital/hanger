@@ -210,6 +210,8 @@ public class ConnectionController {
      * Connection tables.
      *
      * @param connection Connection
+     * @param catalog
+     * @param schema
      * @param model Model
      * @return Render connectionTables template.
      */

@@ -56,6 +56,7 @@ public class WorkbenchService {
      * @param parent String
      * @return List Tree
      */
+    @Cacheable(value = "list_tree", key = "{#connection, #parent}")
     public List<Tree> listTree(Connection connection, String parent) {
 
         List<Tree> listTree = new ArrayList();
@@ -76,7 +77,6 @@ public class WorkbenchService {
      * @param connection Connection
      * @return List schemas tree
      */
-    @Cacheable(value = "schemas", key = "#connection")
     public List<Tree> listSchemasTree(Connection connection) {
 
         List schema = new ArrayList();
@@ -142,7 +142,6 @@ public class WorkbenchService {
      * @param parent String
      * @return list tables tree
      */
-    @Cacheable(value = "tables", key = "#connection")
     public List<Tree> listTablesTree(
             Connection connection,
             String parent) {

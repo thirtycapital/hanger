@@ -7,6 +7,11 @@
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
             <ol class="breadcrumb breadcrumb-connection">
+                <li th:inline="text">
+                    <a th:href="@{'/connection/list/'}">                    
+                        Connection
+                    </a>
+                </li>
                 <li th:inline="text">[[${connection.name}]]</li>
             </ol>
             

@@ -8,6 +8,11 @@
         <div class="container-fluid main-content">
             <ol class="breadcrumb breadcrumb-connection">
                 <li th:inline="text">
+                    <a th:href="@{'/connection/list/'}">                    
+                        Connection
+                    </a>
+                </li>
+                <li th:inline="text">
                     <a th:href="@{'/connection/' + ${connection.id} + '/catalog/schema'}">
                         [[${connection.name}]]
                     </a>
@@ -15,7 +20,7 @@
                 <li th:inline="text" th:if="${catalog != 'null'}">[[${catalog}]]</li>
                 <li th:inline="text" th:if="${schema != 'null'}">[[${schema}]]</li>
             </ol>
-            
+
             <table>
                 <tr>
                     <th>

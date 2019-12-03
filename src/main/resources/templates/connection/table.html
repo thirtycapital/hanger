@@ -60,10 +60,16 @@
                             <a th:href="@{'/connection/' + ${connection.id} + '/table/column/' + ${metadata.catalog} + '/' + ${metadata.schema} + '/' + ${metadata.table} }" class="btn btn-generic btn-xs">
                                 <span class="glyphicon glyphicon-th" aria-hidden="true"></span> Column
                             </a>
-                        </td>
-                    </tr>
+                        </td>                        
+                    </tr>                    
                 </tbody>
-            </table>
+            </table> 
+
+            <div th:if="${displayLimit}" class="form-group">
+                <div class="alert alert-info" role="alert">
+                    Limited by configuration rule
+                </div>  
+            </div>
         </div>
     </body>
 </html>

@@ -69,18 +69,21 @@ public class ConnectionService {
     private final PasswordCryptor passwordCryptor;
     private final JdbcTemplate jdbcTemplate;
     private final EventLogService eventLogService;
+    private final ConfigurationService configurationService;
 
     @Autowired
     public ConnectionService(
             ConnectionRepository connectionRepository,
             PasswordCryptor passwordCryptor,
             JdbcTemplate jdbcTemplate,
-            EventLogService eventLogService) {
+            EventLogService eventLogService,
+            ConfigurationService configurationService) {
 
         this.connectionRepository = connectionRepository;
         this.passwordCryptor = passwordCryptor;
         this.jdbcTemplate = jdbcTemplate;
         this.eventLogService = eventLogService;
+        this.configurationService = configurationService;
     }
 
     @Cacheable(value = "connections")
@@ -256,7 +259,7 @@ public class ConnectionService {
                                 "",
                                 connection.getTarget()));
             }
-            
+
             if (schema.isEmpty()) {
                 ResultSet catalogs = datasource.getConnection()
                         .getMetaData()
@@ -271,8 +274,8 @@ public class ConnectionService {
                                     connection.getTarget()
                             ));
                 }
-            }            
-            
+            }
+
         } catch (SQLException ex) {
             Logger.getLogger(
                     ConnectionService.class.getName())
@@ -312,13 +315,23 @@ public class ConnectionService {
                             "%",
                             new String[]{"TABLE", "EXTERNAL TABLE"});
 
+            // Get maximum number of tables to display. 
+            int max = Integer
+                    .valueOf(configurationService
+                            .findByParameter("WORKBENCH_NUMBER_TABLES")
+                            .getValue());
+
             while (tables.next()) {
-                table.add(
-                        new Entity(
-                                tables.getString("TABLE_CAT"),
-                                tables.getString("TABLE_SCHEM"),
-                                tables.getString("TABLE_NAME"),
-                                connection.getTarget()));
+                if (table.size() == max) {
+                    break;
+                } else {
+                    table.add(
+                            new Entity(
+                                    tables.getString("TABLE_CAT"),
+                                    tables.getString("TABLE_SCHEM"),
+                                    tables.getString("TABLE_NAME"),
+                                    connection.getTarget()));
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(
@@ -536,6 +549,23 @@ public class ConnectionService {
     @Caching(evict = {
         @CacheEvict(value = "tables", key = "#connection")})
     public void evictConnection(Connection connection) {
+    }
+
+    /**
+     * Identify if maximum number of tables was reached.
+     *
+     * @param numberOfTables
+     * @return
+     */
+    public boolean checkNumberOfTables(int numberOfTables) {
+
+        // Get maximum number of tables to display. 
+        int max = Integer
+                .valueOf(configurationService
+                        .findByParameter("WORKBENCH_NUMBER_TABLES")
+                        .getValue());
+
+        return numberOfTables >= max;
     }
 
     /**

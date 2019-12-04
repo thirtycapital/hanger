@@ -26,8 +26,10 @@ package br.com.dafiti.hanger.controller;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.model.ConnectionQueryStore;
 import br.com.dafiti.hanger.service.ConnectionService;
+import br.com.dafiti.hanger.service.WorkbenchService;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
 import java.security.Principal;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +38,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author Helio Leal
@@ -46,10 +50,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class WorkbenchController {
 
     private final ConnectionService connectionService;
+    private final WorkbenchService workbenchService;
 
     @Autowired
-    public WorkbenchController(ConnectionService connectionService) {
+    public WorkbenchController(ConnectionService connectionService, WorkbenchService workbenchService) {
         this.connectionService = connectionService;
+        this.workbenchService = workbenchService;
     }
 
     /**
@@ -106,5 +112,21 @@ public class WorkbenchController {
         model.addAttribute("connections", connectionService.list());
 
         return "workbench/workbench";
+    }
+
+    /**
+     * Workbench tree list.
+     *
+     * @param connection Connection
+     * @param parent String
+     * @return List Tree.
+     */
+    @GetMapping(path = "/tree/{id}")
+    @ResponseBody
+    public List<WorkbenchService.Tree> workbenchTree(
+            @PathVariable(name = "id") Connection connection,
+            @RequestParam(value = "parent") String parent) {
+
+        return workbenchService.loadTree(connection, parent);
     }
 }

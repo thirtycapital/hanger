@@ -64,7 +64,7 @@ public class ConfigurationService {
 
     /**
      * Find a parameter value based on the parameter name.
-     * 
+     *
      * @param parameter name of the parameter.
      * @return Configuration object.
      */
@@ -72,32 +72,31 @@ public class ConfigurationService {
         Configuration configuration = configurationRepository.findByParameter(parameter);
 
         if (configuration != null) {
-        	if (configuration.getType().toUpperCase().equals("PASSWORD")) {
+            if (configuration.getType().toUpperCase().equals("PASSWORD")) {
                 configuration.setValue(passwordCryptor.decrypt(configuration.getValue()));
             }
         }
-        
 
         return configuration;
     }
-    
+
     /**
      * Value of a parameter.
-     * 
-     * @param parameter name of the parameter. 
+     *
+     * @param parameter name of the parameter.
      * @return String with the parameter value.
      */
     public String getValue(String parameter) {
-    	String value = "";
-    	Configuration configuration = this.findByParameter(parameter);
+        String value = "";
+        Configuration configuration = this.findByParameter(parameter);
 
-    	if (configuration != null) {
-    		if (configuration.getValue() != null) {
-    			value = configuration.getValue();	
-    		}
-    	}
+        if (configuration != null) {
+            if (configuration.getValue() != null) {
+                value = configuration.getValue();
+            }
+        }
 
-    	return value;
+        return value;
     }
 
     public void save(Configuration configuration) {
@@ -191,6 +190,19 @@ public class ConfigurationService {
                 others,
                 15,
                 365,
+                "*"), true);
+
+        //Maximun number of tables to display on workbench.
+        ConfigurationGroup workbench = new ConfigurationGroup("Workbench");
+        this.configurationGroupService.save(workbench, true);
+        this.save(new Configuration(
+                "Number of tables to display",
+                "WORKBENCH_NUMBER_TABLES",
+                "5000",
+                "number",
+                workbench,
+                100,
+                50000,
                 "*"), true);
     }
 }

@@ -24,13 +24,10 @@
 package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import br.com.dafiti.hanger.option.Database;
+import br.com.dafiti.hanger.service.ConnectionService.Entity;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,184 +39,96 @@ import org.springframework.stereotype.Service;
 public class WorkbenchService {
 
     private final ConnectionService connectionService;
-    private final ConfigurationService configurationService;
 
     @Autowired
-    public WorkbenchService(
-            ConnectionService connectionService,
-            ConfigurationService configurationService) {
+    public WorkbenchService(ConnectionService connectionService) {
         this.connectionService = connectionService;
-        this.configurationService = configurationService;
     }
 
     /**
-     * Loads JSTree nodes.
+     * Identify if should load schema or table list.
      *
      * @param connection Connection
-     * @param parent String JSTree node.
+     * @param catalog
+     * @param schema
+     *
      *
      * @return List Tree
      */
-    //@Cacheable(value = "list_tree", key = "{#connection, #parent}")
-    public List<Tree> loadTree(Connection connection, String parent) {
+    public List<Tree> JSTreeExchange(
+            Connection connection,
+            String catalog,
+            String schema) {
 
-        //Identify if node is parent.
-        if (parent.equals("#")) {
-            return loadTreeSchemas(connection);
+        if (catalog.isEmpty() && schema.isEmpty()) {
+            return JSTreeSchemaList(connection);
         }
 
-        return loadTreeTables(connection, parent);
+        return JSTreeTableList(connection, catalog, schema);
     }
 
     /**
-     * Loads JSTree schemas.
+     * Fully qualified schema list.
      *
      * @param connection Connection
      * @return List schemas tree
      */
-    public List<Tree> loadTreeSchemas(Connection connection) {
+    public List<Tree> JSTreeSchemaList(Connection connection) {
+        List<Tree> tree = new ArrayList();
 
-        List schema = new ArrayList();
-
-        DataSource datasource = connectionService.getDataSource(connection);
-
-        try {
-            ResultSet schemas = datasource.getConnection()
-                    .getMetaData()
-                    .getSchemas();
-
-            while (schemas.next()) {
-                schema.add(
-                        new Tree(
-                                schemas.getString("TABLE_SCHEM"),
-                                schemas.getString("TABLE_SCHEM"),
-                                "#",
-                                "glyphicon glyphicon-th-list",
-                                true,
-                                null
-                        ));
-            }
-
-            if (schema.isEmpty()) {
-                ResultSet catalogs = datasource.getConnection()
-                        .getMetaData()
-                        .getCatalogs();
-
-                while (catalogs.next()) {
-                    schema.add(
-                            new Tree(
-                                    catalogs.getString("TABLE_CAT"),
-                                    catalogs.getString("TABLE_CAT"),
-                                    "#",
-                                    "glyphicon glyphicon-th-list",
-                                    true,
-                                    null
-                            ));
-                }
-            }
-
-        } catch (SQLException ex) {
-            Logger.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.SEVERE, "Fail getting schema of " + connection.getName(), ex);
-        } finally {
-            try {
-                datasource.getConnection().close();
-            } catch (SQLException ex) {
-                Logger.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
-            }
+        for (Entity schema : connectionService.getSchemas(connection)) {
+            tree.add(
+                    new Tree(
+                            schema.getCatalogSchema(),
+                            schema.getCatalogSchema(),
+                            "#",
+                            "glyphicon glyphicon-th-list",
+                            true,
+                            new TreeAttribute(
+                                    schema.getCatalog(),
+                                    schema.getSchema()
+                            )
+                    ));
         }
 
-        return schema;
+        return tree;
     }
 
     /**
-     * Loads JSTree tables.
+     * Table name list.
      *
      * @param connection Connection
-     * @param parent String
-     * @return list tables tree
+     * @param catalog Catalog
+     * @param schema Schema
+     * @return Table list
      */
-    public List<Tree> loadTreeTables(
+    public List<Tree> JSTreeTableList(
             Connection connection,
-            String parent) {
-        List table = new ArrayList();
-        DataSource datasource = connectionService.getDataSource(connection);
+            String catalog,
+            String schema) {
 
-        try {
+        List tree = new ArrayList();
+        List<Entity> tables = connectionService.getTables(connection, catalog, schema);
 
-            String catalog = null, schema = null;
-
-            if (connection.getTarget().toString().equals("MYSQL")) {
-                catalog = parent;
-            } else {
-                schema = parent;
-            }
-
-            ResultSet tables = datasource.getConnection()
-                    .getMetaData()
-                    .getTables(
-                            catalog,
-                            schema,
-                            "%",
-                            new String[]{"TABLE", "EXTERNAL TABLE"});
-
-            // Get maximum number of tables to display. 
-            int max = Integer
-                    .valueOf(configurationService
-                            .findByParameter("WORKBENCH_NUMBER_TABLES")
-                            .getValue());
-
-            while (tables.next()) {
-
-                TreeAttribute treeAttribute = new TreeAttribute(
-                        "fillQuery('" + parent + "', '" + tables.getString("TABLE_NAME") + "', '" + connection.getTarget() + "')",
-                        tables.getString("TABLE_CAT"),
-                        tables.getString("TABLE_SCHEM"),
-                        tables.getString("TABLE_NAME")
-                );
-
-                table.add(
-                        new Tree(
-                                tables.getString("TABLE_NAME"),
-                                tables.getString("TABLE_NAME"),
-                                parent,
-                                "glyphicon glyphicon-th-large",
-                                false,
-                                treeAttribute
-                        ));
-
-                if (table.size() == max) {
-                    table.add(
-                            new Tree(
-                                    "Limited by configuration rule",
-                                    "Limited by configuration rule",
-                                    parent,
-                                    "glyphicon glyphicon-option-horizontal",
-                                    false,
-                                    null
-                            ));
-
-                    break;
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.SEVERE, "Fail getting metadata of " + connection.getName(), ex);
-        } finally {
-            try {
-                datasource.getConnection().close();
-            } catch (SQLException ex) {
-                Logger.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
-            }
+        for (Entity table : tables) {
+            tree.add(
+                    new Tree(
+                            table.getTable(),
+                            table.getTable(),
+                            table.getCatalogSchema(),
+                            "glyphicon glyphicon-th-large",
+                            false,
+                            new TreeAttribute(
+                                    table.getCatalog(),
+                                    table.getSchema(),
+                                    table.getTable(),
+                                    connection.getTarget()
+                            )
+                    )
+            );
         }
 
-        return table;
+        return tree;
     }
 
     /**
@@ -232,7 +141,6 @@ public class WorkbenchService {
         String parent;
         String icon;
         boolean children;
-        // Name required to use jstree plugin.
         TreeAttribute a_attr;
 
         public Tree(
@@ -242,6 +150,7 @@ public class WorkbenchService {
                 String icon,
                 boolean children,
                 TreeAttribute a_attr) {
+
             this.id = id;
             this.text = text;
             this.parent = parent;
@@ -304,24 +213,21 @@ public class WorkbenchService {
      */
     public class TreeAttribute {
 
-        String ondblclick;
         String catalog;
         String schema;
         String table;
+        Database target;
 
-        public TreeAttribute(String ondblclick, String catalog, String schema, String table) {
-            this.ondblclick = ondblclick;
+        public TreeAttribute(String catalog, String schema) {
+            this.catalog = catalog;
+            this.schema = schema;
+        }
+
+        public TreeAttribute(String catalog, String schema, String table, Database target) {
             this.catalog = catalog;
             this.schema = schema;
             this.table = table;
-        }
-
-        public String getOndblclick() {
-            return ondblclick;
-        }
-
-        public void setOndblclick(String ondblclick) {
-            this.ondblclick = ondblclick;
+            this.target = target;
         }
 
         public String getCatalog() {
@@ -346,6 +252,14 @@ public class WorkbenchService {
 
         public void setTable(String table) {
             this.table = table;
+        }
+
+        public Database getTarget() {
+            return target;
+        }
+
+        public void setTarget(Database target) {
+            this.target = target;
         }
     }
 }

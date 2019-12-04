@@ -118,15 +118,17 @@ public class WorkbenchController {
      * Workbench tree list.
      *
      * @param connection Connection
-     * @param parent String
+     * @param catalog Catalog
+     * @param schema Schema
      * @return List Tree.
      */
     @GetMapping(path = "/tree/{id}")
     @ResponseBody
     public List<WorkbenchService.Tree> workbenchTree(
             @PathVariable(name = "id") Connection connection,
-            @RequestParam(value = "parent") String parent) {
+            @RequestParam(value = "catalog") String catalog,
+            @RequestParam(value = "schema") String schema) {
 
-        return workbenchService.loadTree(connection, parent);
+        return workbenchService.JSTreeExchange(connection, catalog, schema);
     }
 }

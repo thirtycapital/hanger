@@ -135,7 +135,7 @@
             $(document).ready(function () {
                 // Connection ID.
                 var connection = $("#connection").val();
-                
+
                 // Tree initial construction.
                 createJSTree(connection);
 
@@ -144,9 +144,7 @@
                  */
                 $("#connection").change(function () {
                     connection = $(this).val();
-
                     createJSTree(connection);
-
                 });
 
                 window.editor = CodeMirror.fromTextArea(document.getElementById('query'), {
@@ -227,6 +225,28 @@
                 });
 
                 /**
+                 * 
+                 */
+
+                $('#jstree').on('dblclick', '.jstree-anchor', function (e) {
+                    var instance = $.jstree.reference(this);
+                    var node = instance.get_node(this);
+                    var query = window.editor;
+                    var select = "";
+
+                    if (node.parent !== "#") {
+                        if (node.target === "MSSQL") {
+                            select = "SELECT TOP 10 * FROM " + node.parent + "." + node.text + ";";
+                        } else {
+                            select = "SELECT * FROM " + node.parent + "." + node.text + " LIMIT 10;";
+                        }
+
+                        query.setValue(select);
+                        query.focus();
+                    }
+                });
+
+                /**
                  * Search for job that match the search input value. 
                  * @returns {undefined}
                  */
@@ -286,7 +306,13 @@
                                 "url": url + "tree/" + connection,
                                 "dataType": "json",
                                 "data": function (node) {
-                                    return {"parent": node.id};
+                                    payload = {"catalog": "", "schema": ""};
+
+                                    if (node.a_attr) {
+                                        payload = {"catalog": node.a_attr.catalog, "schema": node.a_attr.schema};
+                                    }
+
+                                    return payload;
                                 }
                             }
                         },
@@ -298,7 +324,7 @@
                             'items': customMenu
                         }
                     });
-                };
+                }
 
                 /**
                  * Refresh connection cache.
@@ -402,28 +428,6 @@
                     });
                 }
             });
-
-            /**
-             * Fill query editor with selected catalog and table.
-             * 
-             * @param {type} catalogSchema
-             * @param {type} table
-             * @param {type} target
-             * @returns {undefined}
-             */
-            function fillQuery(catalogSchema, table, target) {
-                var query = window.editor;
-                var select = "";
-
-                if (target === "MSSQL") {
-                    select = "SELECT TOP 10 * FROM " + catalogSchema + "." + table + ";";
-                } else {
-                    select = "SELECT * FROM " + catalogSchema + "." + table + " LIMIT 10;";
-                }
-
-                query.setValue(select);
-                query.focus();
-            }
         </script>    
     </body>
 </html>

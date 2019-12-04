@@ -301,7 +301,7 @@ public class ConnectionService {
      * @param schema String
      * @return Database metadata
      */
-    @Cacheable(value = "tables", key = "#connection")
+    @Cacheable(value = "tables", key = "{#connection, #catalog, #schema}")
     public List<Entity> getTables(Connection connection, String catalog, String schema) {
         List table = new ArrayList();
         DataSource datasource = this.getDataSource(connection);
@@ -318,7 +318,7 @@ public class ConnectionService {
             // Get maximum number of tables to display. 
             int max = Integer
                     .valueOf(configurationService
-                            .findByParameter("WORKBENCH_NUMBER_TABLES")
+                            .findByParameter("WORKBENCH_MAX_ENTITY_NUMBER")
                             .getValue());
 
             while (tables.next()) {
@@ -470,7 +470,7 @@ public class ConnectionService {
             if (connection.getTarget().equals(Database.POSTGRES)
                     || connection.getTarget().equals(Database.ATHENA)) {
 
-                if (!query.toLowerCase().contains(" limit ")) {
+                if (!query.toLowerCase().contains("limit")) {
                     if (query.endsWith(";")) {
                         query = query.toLowerCase().replaceAll(";", " limit 100;");
                     } else {

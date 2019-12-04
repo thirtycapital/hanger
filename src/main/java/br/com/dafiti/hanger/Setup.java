@@ -123,7 +123,7 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
     }
 
     /**
-     * Calculate the expiration date. 
+     * Calculate the expiration date.
      *
      * @param days Days gone.
      * @return Date

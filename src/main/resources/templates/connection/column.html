@@ -29,14 +29,6 @@
                 </li>
                 <li th:inline="text">[[${table}]]</li>
             </ol>
-            
-            <table>
-                <tr>
-                    <th>
-                        <h3 th:inline="text" class="page-title">[[${table}]]'s metadata</h3>
-                    </th>
-                </tr>            
-            </table>
 
             <div th:if="${ errorMessage != null }" class="form-group">
                 <div class="alert alert-danger" role="alert">

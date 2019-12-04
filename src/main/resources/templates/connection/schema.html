@@ -14,14 +14,6 @@
                 </li>
                 <li th:inline="text">[[${connection.name}]]</li>
             </ol>
-            
-            <table>
-                <tr>
-                    <th>
-                        <h3 th:inline="text" class="page-title">[[${connection.name}]]</h3>
-                    </th>
-                </tr>            
-            </table>
 
             <div th:if="${ errorMessage != null }" class="form-group">
                 <div class="alert alert-danger" role="alert">

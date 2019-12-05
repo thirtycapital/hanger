@@ -196,8 +196,8 @@ public class ConfigurationService {
         ConfigurationGroup workbench = new ConfigurationGroup("Workbench");
         this.configurationGroupService.save(workbench, true);
         this.save(new Configuration(
-                "Number of tables to display",
-                "WORKBENCH_NUMBER_TABLES",
+                "Maximum entity number allowed",
+                "WORKBENCH_MAX_ENTITY_NUMBER",
                 "5000",
                 "number",
                 workbench,

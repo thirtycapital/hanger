@@ -21,17 +21,6 @@
                 <li th:inline="text" th:if="${schema != 'null'}">[[${schema}]]</li>
             </ol>
 
-            <table>
-                <tr>
-                    <th>
-                        <h3 th:inline="text" class="page-title">
-                            <span th:if="${catalog != 'null'}">[[${catalog}]]</span>
-                            <span th:if="${schema != 'null'}">[[${schema}]]</span>
-                        </h3>
-                    </th>
-                </tr>            
-            </table>
-
             <div th:if="${ errorMessage != null }" class="form-group">
                 <div class="alert alert-danger" role="alert">
                     <span th:text="${errorMessage}"></span>

@@ -103,9 +103,6 @@ public class EyeService {
             jobBuild.setStatus(buildNotification.optString("status").isEmpty() ? Status.SUCCESS : Status.valueOf(buildNotification.optString("status")));
             jobBuild.setJob(job);
 
-            //Log the job build.
-            Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job build {1}", new Object[]{uuid, jobBuild.toString()});
-
             //Define the job status.
             JobStatus jobStatus = job.getStatus();
 
@@ -141,6 +138,9 @@ public class EyeService {
 
             //Save the build.
             jobBuild = jobBuildService.save(jobBuild);
+
+            //Log the job build.
+            Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job build {1}", new Object[]{uuid, jobBuild.toString()});
 
             //Add the trigger and status to the job. 
             if (updateStatus) {

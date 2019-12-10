@@ -156,7 +156,6 @@ public class JobBuild implements Serializable {
     public String toString() {
         return "JobBuild{"
                 + "id=" + id
-                + ", job=" + job
                 + ", number=" + number
                 + ", phase=" + phase
                 + ", status=" + status

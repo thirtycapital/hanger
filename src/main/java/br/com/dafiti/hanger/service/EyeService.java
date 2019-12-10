@@ -80,9 +80,9 @@ public class EyeService {
     @Async
     @Transactional
     public void observer(String notificationPayload) {
+        UUID uuid = UUID.randomUUID();
         JSONObject notification = new JSONObject(notificationPayload);
         JSONObject buildNotification = notification.getJSONObject("build");
-        UUID uuid = UUID.randomUUID();
 
         //Log the notification payload.
         Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Received notification payload: {1}", new Object[]{uuid, notificationPayload});

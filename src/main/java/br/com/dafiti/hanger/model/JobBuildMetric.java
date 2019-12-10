@@ -23,7 +23,6 @@
  */
 package br.com.dafiti.hanger.model;
 
-import br.com.dafiti.hanger.option.Status;
 import java.util.Date;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
@@ -40,7 +39,6 @@ public class JobBuildMetric {
     private Date queueDate;
     private Date startDate;
     private Date finishDate;
-    private Status status;
 
     public JobBuildMetric(Job job, int hour, Long build) {
         this.job = job;
@@ -59,11 +57,6 @@ public class JobBuildMetric {
         }
 
         this.finishDate = finishDate;
-    }
-
-    public JobBuildMetric(Job job, Date queueDate, Date startDate, Date finishDate, Status status) {
-        this(job, queueDate, startDate, finishDate);
-        this.status = status;
     }
 
     public Job getJob() {
@@ -131,13 +124,4 @@ public class JobBuildMetric {
 
         return progress;
     }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
 }

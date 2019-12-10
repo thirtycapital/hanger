@@ -130,7 +130,6 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
             + "     , min( b.date ) "
             + "     , case when max(case when b.phase = 'STARTED' then b.date end) is null then now() else max(case when b.phase = 'STARTED' then b.date end) end"
             + "     , case when max(case when b.phase = 'FINALIZED' then b.date end) is null then now() else max(case when b.phase = 'FINALIZED' then b.date end) end"
-            + "     , case when max(case when b.phase = 'FINALIZED' then b.status end) is null then null else b.status end"
             + ") "
             + "from JobBuild b "
             + "where b.job in ( "

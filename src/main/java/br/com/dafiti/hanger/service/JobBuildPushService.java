@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,6 +150,7 @@ public class JobBuildPushService {
      * @return PushInfo Job build push information.
      */
     public PushInfo getPushInfo(Job job) {
+        UUID uuid = UUID.randomUUID();
         Scope scope = null;
         boolean ready = false;
         Map<Job, Boolean> all = new HashMap();
@@ -201,6 +203,9 @@ public class JobBuildPushService {
                 if (ready) {
                     scope = Scope.FULL;
                 }
+
+                //Log the full dependencies status.
+                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "[{0}] Job {1} push status with scope {2} and parents as {3}", new Object[]{uuid, job.getName(), scope, all});
             } else {
                 //Identify if all dependencies was built successfully.
                 for (Map.Entry<Job, Boolean> entry : all.entrySet()) {
@@ -229,7 +234,12 @@ public class JobBuildPushService {
                         scope = Scope.PARTIAL;
                     }
                 }
+                
+                //Log the partial dependencies status.
+                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "[{0}] Job {1} push status with scope as {2}, full path as {3}, partial path as {4}", new Object[]{uuid, job.getName(), scope, all, partial});
             }
+        } else {
+            Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "[{0}] Job {1} is not buildable", new Object[]{uuid, job.getName()});
         }
 
         return new PushInfo(ready, scope);

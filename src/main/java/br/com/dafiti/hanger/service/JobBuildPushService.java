@@ -205,7 +205,7 @@ public class JobBuildPushService {
                 }
 
                 //Log the full dependencies status.
-                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "[{0}] Job {1} FULL push path: Scope {2}, Parent {3}", new Object[]{uuid, job.getName(), scope, all});
+                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "[{0}] Job {1} push: Path FULL, Scope {2}, Parent {3}", new Object[]{uuid, job.getName(), scope, all});
             } else {
                 //Identify if all dependencies was built successfully.
                 for (Map.Entry<Job, Boolean> entry : all.entrySet()) {
@@ -236,7 +236,7 @@ public class JobBuildPushService {
                 }
 
                 //Log the partial dependencies status.
-                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "[{0}] Job {1} PARTIAL push path: Scope {2}, Parent {3}, Partial Parent {4}", new Object[]{uuid, job.getName(), scope, all, partial});
+                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "[{0}] Job {1} push: Path PARTIAL, Scope {2}, Parent {3}, Partial Parent {4}", new Object[]{uuid, job.getName(), scope, all, partial});
             }
         } else {
             Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "[{0}] Job {1} is not buildable", new Object[]{uuid, job.getName()});

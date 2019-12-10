@@ -184,7 +184,7 @@ public class EyeService {
             jobNotificationService.notify(job, true);
 
             //Log the job notification.
-            Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job notification sent", new Object[]{uuid});
+            Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job notification sent sucessfully", new Object[]{uuid});
 
             //Identify if the job is finalized sucessfully. 
             if (jobStatus.getFlow().equals(Flow.NORMAL)

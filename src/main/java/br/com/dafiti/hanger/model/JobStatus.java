@@ -133,4 +133,14 @@ public class JobStatus implements Serializable {
 
         return Objects.equals(this.id, other.id);
     }
+
+    @Override
+    public String toString() {
+        return "JobStatus{"
+                + "id=" + id
+                + ", date=" + date
+                + ", flow=" + flow
+                + ", scope=" + scope
+                + ", failureTimestamp=" + failureTimestamp + '}';
+    }
 }

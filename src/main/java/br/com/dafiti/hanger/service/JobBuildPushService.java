@@ -150,7 +150,6 @@ public class JobBuildPushService {
      * @return PushInfo Job build push information.
      */
     public PushInfo getPushInfo(Job job) {
-        UUID uuid = UUID.randomUUID();
         Scope scope = null;
         boolean ready = false;
         Map<Job, Boolean> all = new HashMap();
@@ -205,7 +204,7 @@ public class JobBuildPushService {
                 }
 
                 //Log the full dependencies status.
-                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "[{0}] Job {1} push: Path FULL, Scope {2}, Parent {3}", new Object[]{uuid, job.getName(), scope, all});
+                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "Job {0} push: Path FULL, Scope {1}, Parent {2}", new Object[]{job.getName(), scope, all});
             } else {
                 //Identify if all dependencies was built successfully.
                 for (Map.Entry<Job, Boolean> entry : all.entrySet()) {
@@ -236,10 +235,10 @@ public class JobBuildPushService {
                 }
 
                 //Log the partial dependencies status.
-                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "[{0}] Job {1} push: Path PARTIAL, Scope {2}, Parent {3}, Partial Parent {4}", new Object[]{uuid, job.getName(), scope, all, partial});
+                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "Job {0} push: Path PARTIAL, Scope {1}, Parent {2}, Partial Parent {3}", new Object[]{job.getName(), scope, all, partial});
             }
         } else {
-            Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "[{0}] Job {1} is not buildable", new Object[]{uuid, job.getName()});
+            Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "Job {0} is not buildable", new Object[]{job.getName()});
         }
 
         return new PushInfo(ready, scope);

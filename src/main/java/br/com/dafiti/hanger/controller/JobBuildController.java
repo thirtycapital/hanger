@@ -224,7 +224,6 @@ public class JobBuildController {
                         new Date()
                 ).stream()
                         .sorted(Comparator.comparing(JobBuildMetric::getStartDate).reversed())
-                        .filter(build -> build.getStatus() != null)
                         .collect(Collectors.toList())
         );
         

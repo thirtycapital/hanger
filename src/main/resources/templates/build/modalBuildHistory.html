@@ -18,7 +18,6 @@
                             <table id="table" class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th style="width:6%">Status</th>
                                         <th style="width:20%">Start</th>
                                         <th style="width:20%">Finish</th>
                                         <th>Duration in minutes</th>
@@ -27,7 +26,6 @@
                                 </thead>
                                 <tbody>
                                     <tr th:each="history : ${history}">
-                                        <td><img class="status" th:src="@{'/images/' + ${history.status} + '.png'}" th:attr="alt=${ history.status }" th:title="${history.status}"></img></td>
                                         <td th:text="${#dates.format(history.queueDate, 'yyyy-MM-dd HH:mm:ss')}">Start</td>
                                         <td th:text="${#dates.format(history.finishDate, 'yyyy-MM-dd HH:mm:ss')}">Finish</td>
                                         <td th:text="${history.getDurationTimeInMinutes()}">Finish</td>

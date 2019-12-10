@@ -192,7 +192,7 @@ public class EyeService {
                     && jobBuild.getStatus().equals(Status.SUCCESS)) {
 
                 //Log the job children build push.
-                Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job children build push", new Object[]{uuid});
+                Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job children build pushed", new Object[]{uuid});
 
                 //Push all jobs dependents on a job build. 
                 jobBuildPushService.push(job);

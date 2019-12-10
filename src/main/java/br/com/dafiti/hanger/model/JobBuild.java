@@ -151,4 +151,14 @@ public class JobBuild implements Serializable {
 
         return Objects.equals(this.id, other.id);
     }
+
+    @Override
+    public String toString() {
+        return "JobBuild{"
+                + "id=" + id
+                + ", number=" + number
+                + ", phase=" + phase
+                + ", status=" + status
+                + ", date=" + date + '}';
+    }
 }

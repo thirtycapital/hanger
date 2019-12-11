@@ -97,9 +97,20 @@
                             class="btn btn-generic pull-right btn-space" 
                             type="button">
 
-                            <span class="glyphicon glyphicon-download-alt" 
+                            <span class="glyphicon glyphicon-floppy-disk" 
                                   aria-hidden="true"></span> Store
                         </button>
+
+                        <div th:if="${#authorization.expression('hasRole(''HERO'')')}">
+                            <button 
+                                id="export-query-button" 
+                                class="btn btn-generic pull-right btn-space" 
+                                type="button">
+
+                                <span class="glyphicon glyphicon-download-alt" 
+                                      aria-hidden="true"></span> Export
+                            </button>
+                        </div>
 
                         <button 
                             id="query-button" 
@@ -120,10 +131,8 @@
                         </button>
                     </div>
 
-                    <hr/>
-
                     <!--Fragment--> 
-                    <div id="fragmentQueryResultSetHolder"/>
+                    <div id="fragmentQueryResultSetHolder" class="space-top"/>
                 </div>
             </div>
 
@@ -133,6 +142,17 @@
 
         <script th:inline="javascript">
             $(document).ready(function () {
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "timeOut": "3500",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+
                 // Connection ID.
                 var connection = $("#connection").val();
 
@@ -155,6 +175,7 @@
                     matchBrackets: true,
                     autofocus: true,
                     extraKeys: {"Ctrl-Enter": function () {
+                            $("#fragmentQueryResultSetHolder").show();
                             query();
                         }}
                 });
@@ -175,6 +196,7 @@
                     $("#wait").css("display", "block");
                     $("#query").prop("disabled", true);
                     $("#query-button").prop("disabled", true);
+                    $("#export-query-button").prop("disabled", true);
                 });
 
                 /**
@@ -185,12 +207,14 @@
                     $("#wait").css("display", "none");
                     $("#query").prop("disabled", false);
                     $("#query-button").prop("disabled", false);
+                    $("#export-query-button").prop("disabled", false);
                 });
 
                 /**
                  * Trigger job details search on search button click. 
                  */
                 $("#query-button").click(function () {
+                    $("#fragmentQueryResultSetHolder").show();
                     query();
                 });
 
@@ -199,6 +223,7 @@
                  * @returns {undefined}
                  */
                 $("[id^=query_]").click(function () {
+                    $("#fragmentQueryResultSetHolder").show();
                     query();
                 });
 
@@ -244,6 +269,14 @@
                         query.setValue(select);
                         query.focus();
                     }
+                });
+
+                /**
+                 * Opens modal to export a query.
+                 */
+                $("#export-query-button").click(function () {
+                    $("#fragmentQueryResultSetHolder").hide();
+                    queryExport();
                 });
 
                 /**
@@ -426,6 +459,38 @@
                             alert("Fail loading query resultset: " + e.statusText);
                         }
                     });
+                }
+
+                /**
+                 * Ajax to call export for a query. 
+                 * @returns {undefined}
+                 */
+                function queryExport() {
+                    var connection = $('#connection').val();
+                    var url = /*[[@{/export/query/}]]*/ "/export/query/";
+                    var query = window.editor.getValue();
+
+                    //Identify if query field is not empty.
+                    if (query.toString().trim() !== "") {
+                        $.ajax({
+                            type: "POST",
+                            url: url + connection,
+                            data: query,
+                            contentType: "text/html",
+                            timeout: 1000000,
+                            success: function (result) {
+                                if (result !== "") {
+                                    url = /*[[@{/export/download/}]]*/ "/export/download/";
+                                    window.location.href = url + result;
+                                } else {
+                                    toastr.error('Fail exporting query, check SQL syntax or if connection is valid.');
+                                }
+                            },
+                            error: function (e) {
+                                toastr.error("Fail exporting query, error: " + e.statusText);
+                            }
+                        });
+                    }
                 }
             });
         </script>    

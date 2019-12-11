@@ -79,7 +79,7 @@ public class WorkbenchService {
         for (Entity schema : connectionService.getSchemas(connection)) {
             tree.add(
                     new Tree(
-                            schema.getCatalogSchema(),
+                            schema.getSchema(),
                             schema.getCatalogSchema(),
                             "#",
                             "glyphicon glyphicon-th-list",
@@ -115,7 +115,7 @@ public class WorkbenchService {
                     new Tree(
                             table.getTable(),
                             table.getTable(),
-                            table.getCatalogSchema(),
+                            table.getSchema(),
                             "glyphicon glyphicon-th-large",
                             false,
                             new TreeAttribute(

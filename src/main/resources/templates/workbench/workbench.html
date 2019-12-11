@@ -235,7 +235,9 @@
                     var select = "";
 
                     if (node.parent !== "#") {
-                        if (node.target === "MSSQL") {
+                        alert(node.target);
+                        
+                        if (node.target == "MSSQL") {
                             select = "SELECT TOP 10 * FROM " + node.parent + "." + node.text + ";";
                         } else {
                             select = "SELECT * FROM " + node.parent + "." + node.text + " LIMIT 10;";

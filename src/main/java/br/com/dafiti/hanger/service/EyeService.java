@@ -36,9 +36,9 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.transaction.Transactional;
 import org.json.JSONObject;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -170,11 +170,7 @@ public class EyeService {
 
             //Save the job status.
             jobStatus = jobStatusService.save(jobStatus);
-
-            //Link job status with job.
             job.setStatus(jobStatus);
-
-            //Update the job.
             jobService.save(job);
 
             //Log the job update.

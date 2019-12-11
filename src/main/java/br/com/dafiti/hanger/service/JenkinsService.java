@@ -187,18 +187,22 @@ public class JenkinsService {
 
             if (jenkins != null) {
                 if (jenkins.isRunning()) {
-                    try {
-                        built = (jenkins.getJob(job.getName()).build(true) != null);
-                    } catch (IOException buildException) {
-                        Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail building job: " + job.getName(), buildException);
+                    JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
+
+                    if (jobWithDetails != null) {
                         try {
-                            built = (jenkins.getJob(job.getName()).build(new HashMap(), true) != null);
+                            built = (jobWithDetails.build(true) != null);
                         } catch (IOException ex) {
-                            Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail building parametrized job!" + job.getName(), buildException);
-                            throw buildException;
+                            Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail building job: " + job.getName(), ex);
+                            try {
+                                built = (jobWithDetails.build(new HashMap(), true) != null);
+                            } catch (IOException e) {
+                                Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail building parametrized job: " + job.getName(), ex);
+                                throw ex;
+                            }
+                        } finally {
+                            jenkins.close();
                         }
-                    } finally {
-                        jenkins.close();
                     }
                 }
             }
@@ -223,9 +227,13 @@ public class JenkinsService {
 
                 if (jenkins != null) {
                     if (jenkins.isRunning()) {
-                        jenkins.getJob(job.getName()).getUpstreamProjects().stream().forEach((upstream) -> {
-                            upstreamProjects.add(upstream.getName());
-                        });
+                        JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
+
+                        if (jobWithDetails != null) {
+                            jobWithDetails.getUpstreamProjects().stream().forEach((upstream) -> {
+                                upstreamProjects.add(upstream.getName());
+                            });
+                        }
                     }
 
                     jenkins.close();
@@ -254,12 +262,16 @@ public class JenkinsService {
 
                 if (jenkins != null) {
                     if (jenkins.isRunning()) {
-                        isInQueue = jenkins.getJob(job.getName()).isInQueue();
+                        JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
+
+                        if (jobWithDetails != null) {
+                            isInQueue = jobWithDetails.isInQueue();
+                        }
                     }
 
                     jenkins.close();
                 }
-            } catch (URISyntaxException | IOException ex) {
+            } catch (IOException | URISyntaxException ex) {
                 Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail identifying if a job is in queue!", ex);
             }
         }

@@ -36,7 +36,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,22 +105,32 @@ public class JobBuildPushService {
 
                 //Build the job child. 
                 try {
+                    //Set child job as rebuilding.
                     childJobStatus.setFlow(Flow.REBUILD);
+                    childJobStatus = jobStatusService.save(childJobStatus);
+                    childJob.setStatus(childJobStatus);
+                    jobService.save(childJob);
 
                     //Build the job.
                     BuildInfo buildInfo = jobBuildService.build(childJob);
 
                     //Identify if the prevalidation was sucessfuly.
                     if (!buildInfo.isHealthy()) {
-                        //Mark child job build as blocked in case pre-validation fail. 
+                        //Set child job as blocked in case pre-validation fail. 
                         childJobStatus.setFlow(Flow.BLOCKED);
+                        childJobStatus = jobStatusService.save(childJobStatus);
+                        childJob.setStatus(childJobStatus);
+                        jobService.save(childJob);
 
                         //Publish a job notification.
                         jobNotificationService.notify(childJob, true);
                     }
                 } catch (URISyntaxException | IOException ex) {
-                    //Mark child job build as fail in case of error. 
+                    //Set child job build as fail in case of error. 
                     childJobStatus.setFlow(Flow.ERROR);
+                    childJobStatus = jobStatusService.save(childJobStatus);
+                    childJob.setStatus(childJobStatus);
+                    jobService.save(childJob);
 
                     //Publish a job notification.
                     jobNotificationService.notify(childJob, true);
@@ -130,15 +139,6 @@ public class JobBuildPushService {
                     Logger.getLogger(EyeService.class.getName())
                             .log(Level.SEVERE, "Fail building job: " + childJob.getName(), ex);
                 }
-
-                //Save the job status.
-                childJobStatus = jobStatusService.save(childJobStatus);
-
-                //Link job status with job.
-                childJob.setStatus(childJobStatus);
-
-                //Update the job.
-                jobService.save(childJob);
             }
         });
     }

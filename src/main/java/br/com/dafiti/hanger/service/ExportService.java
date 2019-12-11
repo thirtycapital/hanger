@@ -78,7 +78,7 @@ public class ExportService {
 
                 //Identify if query ran successfully.
                 if (!queryResultSet.hasError()) {
-                    fileName = this.exportToCSV(queryResultSet);
+                    fileName = this.exportToCSV(queryResultSet, connection);
                 }
                 break;
             default:
@@ -92,18 +92,24 @@ public class ExportService {
     /**
      * Export a resultset to CSV.
      *
-     * @param queryResultSet
+     * @param queryResultSet QueryResultSet
+     * @param connection Connection
      * @return
      * @throws br.com.dafiti.mitt.exception.DuplicateEntityException
      */
-    public String exportToCSV(QueryResultSet queryResultSet)
+    public String exportToCSV(
+            QueryResultSet queryResultSet,
+            Connection connection)
             throws DuplicateEntityException {
 
         //Define the mitt.
         Mitt mitt = new Mitt();
 
         String temp = System.getProperty("java.io.tmpdir");
-        String fileName = UUID.randomUUID().toString().concat("_hanger_export.csv");
+        String fileName = connection.getName()
+                .concat("_hanger_export_")
+                .concat(UUID.randomUUID().toString())
+                .concat(".csv");
 
         //Define output file.
         mitt.setOutput(temp.concat("/").concat(fileName));

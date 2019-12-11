@@ -562,7 +562,7 @@ public class ConnectionService {
         // Get maximum number of tables to display. 
         int max = Integer
                 .valueOf(configurationService
-                        .findByParameter("WORKBENCH_NUMBER_TABLES")
+                        .findByParameter("WORKBENCH_MAX_ENTITY_NUMBER")
                         .getValue());
 
         return numberOfTables >= max;

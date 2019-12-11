@@ -170,9 +170,7 @@ public class ConnectionService {
                         properties.setProperty("connectTimeout", "5000");
                         break;
                     case GENERIC:
-                        URL url = new URL("file:${user.home}/.hanger/drivers/");
-                        URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
-                        driver = (Driver) Class.forName(connection.getClassName(), true, urlClassLoader).newInstance();
+                        driver = (Driver) Class.forName(connection.getClassName()).newInstance();
                         break;
                     default:
                         break;
@@ -186,7 +184,6 @@ public class ConnectionService {
 
                 dataSource.setConnectionProperties(properties);
             } catch (SQLException
-                    | MalformedURLException
                     | ClassNotFoundException
                     | InstantiationException
                     | IllegalAccessException ex) {

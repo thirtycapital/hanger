@@ -97,10 +97,7 @@ public class JobBuildPushService {
                     childJobStatus = new JobStatus();
                 }
 
-                //Identify the job scope.
                 childJobStatus.setScope(push.getScope());
-
-                //Identify the job status date. 
                 childJobStatus.setDate(new Date());
 
                 //Build the job child. 

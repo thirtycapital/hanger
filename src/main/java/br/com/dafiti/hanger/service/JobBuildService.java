@@ -28,8 +28,6 @@ import br.com.dafiti.hanger.model.JobBuild;
 import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.repository.JobBuildRepository;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.sql.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;

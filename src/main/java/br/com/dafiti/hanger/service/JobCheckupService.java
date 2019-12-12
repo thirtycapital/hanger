@@ -38,7 +38,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -186,7 +185,7 @@ public class JobCheckupService {
         if (!job.getCheckup().isEmpty()) {
             //Log the job status before checkup evaluation.
             Logger.getLogger(JobCheckupService.class.getName()).log(Level.INFO, "{0} status before checkup evaluation", new Object[]{job.getName()});
-            
+
             //Filter checkup by scope.
             List<JobCheckup> checkups = job.getCheckup()
                     .stream()

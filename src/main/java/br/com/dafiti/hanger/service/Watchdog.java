@@ -23,8 +23,6 @@
  */
 package br.com.dafiti.hanger.service;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;

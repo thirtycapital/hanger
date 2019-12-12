@@ -29,8 +29,6 @@ import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.service.JobBuildService.BuildInfo;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;

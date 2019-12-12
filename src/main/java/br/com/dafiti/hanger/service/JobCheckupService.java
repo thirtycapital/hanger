@@ -184,6 +184,9 @@ public class JobCheckupService {
 
         //Identifies if the job has checkup.
         if (!job.getCheckup().isEmpty()) {
+            //Log the job status before checkup evaluation.
+            Logger.getLogger(JobCheckupService.class.getName()).log(Level.INFO, "{0} status before checkup evaluation", new Object[]{job.getName()});
+            
             //Filter checkup by scope.
             List<JobCheckup> checkups = job.getCheckup()
                     .stream()
@@ -302,6 +305,9 @@ public class JobCheckupService {
                     retryService.remove(job);
                 }
             }
+
+            //Log the job status after checkup evaluation.
+            Logger.getLogger(JobCheckupService.class.getName()).log(Level.INFO, "{0} status after checkup evaluation", new Object[]{job.getName()});
         }
 
         return validated;

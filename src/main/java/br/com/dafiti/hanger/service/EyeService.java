@@ -161,16 +161,10 @@ public class EyeService {
                 if (jobBuild.getPhase().equals(Phase.FINALIZED)
                         && jobBuild.getStatus().equals(Status.SUCCESS)) {
 
-                    //Log the job status before checkup evaluation.
-                    Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job status before checkup evaluation {1}", new Object[]{uuid, jobStatus.toString()});
-
                     //Evaluates the job checkup. 
                     if (!jobCheckupService.evaluate(job, jobStatus.getScope())) {
                         jobStatus.setFlow(Flow.UNHEALTHY);
                     }
-
-                    //Log the job status after checkup evaluation.
-                    Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job status after checkup evaluation {1}", new Object[]{uuid, jobStatus.toString()});
                 }
             } else {
                 //Identify job as transiente.

@@ -122,7 +122,7 @@ public class JobBuildPushService {
                         //Publish a job notification.
                         jobNotificationService.notify(childJob, true);
                     }
-                } catch (URISyntaxException | IOException ex) {
+                } catch (Exception ex) {
                     //Set child job build as fail in case of error. 
                     childJobStatus.setFlow(Flow.ERROR);
                     childJobStatus = jobStatusService.save(childJobStatus);

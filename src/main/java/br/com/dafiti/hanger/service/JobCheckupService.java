@@ -327,7 +327,7 @@ public class JobCheckupService {
                 //Rebuild the job.
                 jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
                 jenkinsService.build(job);
-            } catch (URISyntaxException | IOException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building job: " + job.getName(), ex);
             }
 
@@ -341,7 +341,7 @@ public class JobCheckupService {
                     for (Job meshParent : parent) {
                         jenkinsService.build(meshParent);
                     }
-                } catch (URISyntaxException | IOException ex) {
+                } catch (Exception ex) {
                     Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building job mesh: " + job.getName(), ex);
                 }
 
@@ -364,7 +364,7 @@ public class JobCheckupService {
                             jenkinsService.build(jobTriggered);
                         }
                     }
-                } catch (URISyntaxException | IOException ex) {
+                } catch (Exception ex) {
                     Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building trigger: " + job.getName(), ex);
                 }
 

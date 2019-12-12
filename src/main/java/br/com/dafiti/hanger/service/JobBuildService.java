@@ -99,7 +99,7 @@ public class JobBuildService {
      * @throws java.net.URISyntaxException
      * @throws java.io.IOException
      */
-    public BuildInfo build(Job job) throws URISyntaxException, IOException {
+    public BuildInfo build(Job job) throws Exception {
         Scope scope;
         boolean built = false;
         boolean healthy = true;

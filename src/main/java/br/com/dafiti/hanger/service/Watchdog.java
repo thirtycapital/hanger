@@ -121,7 +121,7 @@ public class Watchdog {
                                     .append(job.getDisplayName())
                                     .append("*");
                         }
-                    } catch (URISyntaxException | IOException ex) {
+                    } catch (Exception ex) {
                         Logger.getLogger(
                                 Watchdog.class.getName())
                                 .log(Level.SEVERE, "The watchdog fail building " + job.getName(), ex);

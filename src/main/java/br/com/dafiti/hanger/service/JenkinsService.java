@@ -178,7 +178,7 @@ public class JenkinsService {
      * @throws URISyntaxException
      * @throws IOException
      */
-    public boolean build(Job job) throws URISyntaxException, IOException {
+    public boolean build(Job job) throws Exception {
         JenkinsServer jenkins;
         boolean built = false;
 

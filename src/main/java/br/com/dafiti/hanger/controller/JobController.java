@@ -255,7 +255,7 @@ public class JobController {
             } else {
                 jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
             }
-        } catch (URISyntaxException | IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(JobController.class.getName()).log(Level.SEVERE, "Fail building job " + job.getName() + " manually", ex);
         }
 
@@ -291,7 +291,7 @@ public class JobController {
             }
 
             redirectAttributes.addFlashAttribute("successMessage", "Mesh built successfully, refresh this page to see the build progress!");
-        } catch (URISyntaxException | IOException ex) {
+        } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("errorMessage", "Fail building mesh, " + ex.getMessage() + "!");
         }
 

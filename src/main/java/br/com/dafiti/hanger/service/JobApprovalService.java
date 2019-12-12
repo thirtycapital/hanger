@@ -165,7 +165,7 @@ public class JobApprovalService {
                 } else {
                     jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
                 }
-            } catch (URISyntaxException | IOException ex) {
+            } catch (Exception ex) {
                 return false;
             }
         }

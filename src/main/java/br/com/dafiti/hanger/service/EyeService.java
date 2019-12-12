@@ -36,9 +36,9 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.transaction.Transactional;
 import org.json.JSONObject;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -78,7 +78,6 @@ public class EyeService {
      * @param notificationPayload Notification Plugin information
      */
     @Async
-    @Transactional
     public void observer(String notificationPayload) {
         UUID uuid = UUID.randomUUID();
         JSONObject notification = new JSONObject(notificationPayload);
@@ -124,6 +123,16 @@ public class EyeService {
                     break;
                 case STARTED:
                     updateStatus = true;
+
+                    //Identifies if the STARTED status was received after a FINALIZED for the same execution.
+                    if (jobStatus.getBuild() != null) {
+                        updateStatus = jobStatus.getBuild().getNumber() != jobBuild.getNumber();
+
+                        if (!updateStatus) {
+                            Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Status reversion attempt blocked", new Object[]{uuid});
+                        }
+                    }
+
                     break;
                 case COMPLETED:
                     updateStatus = false;

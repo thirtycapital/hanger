@@ -38,7 +38,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -115,7 +114,7 @@ public class EyeService {
             Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job status {1}", new Object[]{uuid, jobStatus.toString()});
 
             //Define the job status update rule.  
-            boolean updateStatus = true;
+            boolean updateStatus;
 
             switch (jobBuild.getPhase()) {
                 case QUEUED:

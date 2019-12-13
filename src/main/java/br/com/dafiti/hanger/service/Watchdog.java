@@ -49,6 +49,7 @@ public class Watchdog {
     private final JobBuildPushService jobBuildPushService;
     private final SlackService slackService;
     private final ConnectionService connectionService;
+    private final JenkinsService jenkinsServive;
 
     @Autowired
     public Watchdog(
@@ -57,7 +58,8 @@ public class Watchdog {
             JobBuildService jobBuildService,
             JobBuildPushService jobBuildPushService,
             SlackService slackService,
-            ConnectionService connectionService) {
+            ConnectionService connectionService,
+            JenkinsService jenkinsServive) {
 
         this.jobService = jobService;
         this.jobDetailsService = jobDetailsService;
@@ -65,6 +67,7 @@ public class Watchdog {
         this.jobBuildPushService = jobBuildPushService;
         this.slackService = slackService;
         this.connectionService = connectionService;
+        this.jenkinsServive = jenkinsServive;
     }
 
     /**
@@ -135,6 +138,9 @@ public class Watchdog {
                         slackService.send(message.toString());
                     }
                 }
+            }
+
+            if (jobDetailsService.getDetailsOf(job).getStatus().equals(Status.RUNNING)) {
             }
         }
     }

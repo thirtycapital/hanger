@@ -43,6 +43,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -588,6 +589,9 @@ public class JobCheckupService {
             Logger.getLogger(JobCheckupService.class.getName()).log(Level.SEVERE, "Fail converting threshold " + threshold + " to float", ex);
         }
 
+        //Log the checkup value and threshold.
+        Logger.getLogger(JobCheckupService.class.getName()).log(Level.INFO, "Checkup {0} evaluated with value {1} and threshold {2}", new Object[]{checkup.getName(), finalValue, finalThreshold});
+
         //Check if the threshold is numeric.
         if (finalValue != null && finalThreshold != null) {
             //Check if the resultset match the threshold.
@@ -631,13 +635,16 @@ public class JobCheckupService {
             String id = threshold.replaceAll("[^\\d.]", "");
 
             if (!id.isEmpty()) {
-                //Load a checkup by id.
                 JobCheckup checkupRelation = this.load(Long.valueOf(id));
 
                 if (checkupRelation != null) {
-                    //Find the checkup threshold value.
                     if (!checkupRelation.getLog().isEmpty()) {
-                        threshold = checkupRelation.getLog().get(checkupRelation.getLog().size() - 1).getValue();
+                        //Identifies the last checkup value evaluated.
+                        threshold = checkupRelation.getLog()
+                                .stream()
+                                .max(Comparator.comparing(JobCheckupLog::getDate))
+                                .get()
+                                .getValue();
                     }
                 }
             }

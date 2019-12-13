@@ -48,7 +48,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
-import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -185,6 +184,7 @@ public class JobCheckup implements Serializable {
     }
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @Fetch(FetchMode.SELECT)
     @JoinTable(name = "checkup_command",
             joinColumns = {
                 @JoinColumn(name = "job_checkup_id", referencedColumnName = "id")},
@@ -204,8 +204,6 @@ public class JobCheckup implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "job_checkup_id", referencedColumnName = "id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-    @Fetch(FetchMode.SELECT)
-    @BatchSize(size = 20)
     @OrderBy(value = "date DESC")
     public List<JobCheckupLog> getLog() {
         return log;

@@ -51,6 +51,7 @@ import javax.validation.constraints.Size;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OrderBy;
@@ -194,6 +195,7 @@ public class Job extends Tracker implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "job_id", referencedColumnName = "id")
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 20)
     @OrderBy(clause = "id, scope")
     public List<JobParent> getParent() {
         return parent;
@@ -210,6 +212,7 @@ public class Job extends Tracker implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "job_id", referencedColumnName = "id")
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 20)
     public List<JobCheckup> getCheckup() {
         return checkup;
     }
@@ -225,6 +228,7 @@ public class Job extends Tracker implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "job_id", referencedColumnName = "id")
     @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 20)
     public List<JobApproval> getApproval() {
         return approval;
     }

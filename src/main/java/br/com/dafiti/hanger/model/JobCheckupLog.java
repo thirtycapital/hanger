@@ -66,6 +66,10 @@ public class JobCheckupLog implements Serializable {
     public JobCheckupLog() {
     }
 
+    public JobCheckupLog(JobCheckup jobCheckup) {
+        this(jobCheckup, "", false);
+    }
+
     public JobCheckupLog(JobCheckup jobCheckup, String value, boolean success) {
         this.query = jobCheckup.getQuery();
         this.threshold = jobCheckup.getThreshold();
@@ -105,11 +109,19 @@ public class JobCheckupLog implements Serializable {
     }
 
     public String getThreshold() {
-        return threshold.length() > 255 ? threshold.substring(0, 250) : threshold;
+        if (threshold == null) {
+            return "";
+        } else {
+            return threshold.length() > 255 ? threshold.substring(0, 250) : threshold;
+        }
     }
 
     public void setThreshold(String threshold) {
-        this.threshold = threshold.length() > 255 ? threshold.substring(0, 250) : threshold;
+        if (threshold == null) {
+            this.threshold = "";
+        } else {
+            this.threshold = threshold.length() > 255 ? threshold.substring(0, 250) : threshold;
+        }
     }
 
     @Enumerated(EnumType.STRING)
@@ -130,7 +142,11 @@ public class JobCheckupLog implements Serializable {
     }
 
     public void setValue(String value) {
-        this.value = value.length() > 255 ? value.substring(0, 250) : value;
+        if (value == null) {
+            this.value = "";
+        } else {
+            this.value = value.length() > 255 ? value.substring(0, 250) : value;
+        }
     }
 
     public boolean isSuccess() {

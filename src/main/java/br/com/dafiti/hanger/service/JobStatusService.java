@@ -26,10 +26,8 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.JobBuild;
 import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Flow;
-import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.repository.JobStatusRepository;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +49,6 @@ public class JobStatusService {
     public JobStatus save(JobStatus jobStatus) {
         boolean failure = false;
 
-        //Identifies fail on Hanger side. 
         switch (jobStatus.getFlow()) {
             case UNHEALTHY:
             case BLOCKED:
@@ -61,7 +58,6 @@ public class JobStatusService {
             default:
                 JobBuild jobBuild = jobStatus.getBuild();
 
-                //Identifies fail on Jenkins side. 
                 if (jobBuild != null) {
                     failure = ((jobBuild.getStatus().equals(Status.FAILURE)) || jobBuild.getStatus().equals(Status.ABORTED));
                 }

@@ -183,8 +183,7 @@ public class JobCheckup implements Serializable {
         this.trigger.add(job);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    @Fetch(FetchMode.SELECT)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "checkup_command",
             joinColumns = {
                 @JoinColumn(name = "job_checkup_id", referencedColumnName = "id")},
@@ -202,7 +201,7 @@ public class JobCheckup implements Serializable {
         this.command.add(command);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "job_checkup_id", referencedColumnName = "id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
     @OrderBy(value = "date DESC")
     public List<JobCheckupLog> getLog() {

@@ -166,10 +166,7 @@ public class JobDetailsService {
                             .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobBuild.getDate()));
                 } else {
                     //Identify the last build flow. 
-                    if (!jobStatus.getFlow().equals(Flow.NORMAL)
-                            && !jobStatus.getFlow().equals(Flow.TRANSIENT)
-                            && !jobStatus.getFlow().equals(Flow.UPSTREAM)) {
-
+                    if (!jobStatus.getFlow().equals(Flow.NORMAL)) {
                         status = Status.valueOf(jobStatus.getFlow().toString());
                     }
 

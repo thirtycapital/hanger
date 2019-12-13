@@ -192,9 +192,8 @@ public class Job extends Tracker implements Serializable {
         this.subject.add(subject);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "job_id", referencedColumnName = "id")
-    @Fetch(FetchMode.SELECT)
     @BatchSize(size = 20)
     @OrderBy(clause = "id, scope")
     public List<JobParent> getParent() {
@@ -209,9 +208,8 @@ public class Job extends Tracker implements Serializable {
         this.parent.add(parent);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "job_id", referencedColumnName = "id")
-    @Fetch(FetchMode.SELECT)
     @BatchSize(size = 20)
     public List<JobCheckup> getCheckup() {
         return checkup;
@@ -225,9 +223,8 @@ public class Job extends Tracker implements Serializable {
         this.checkup.add(checkup);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "job_id", referencedColumnName = "id")
-    @Fetch(FetchMode.SELECT)
     @BatchSize(size = 20)
     public List<JobApproval> getApproval() {
         return approval;

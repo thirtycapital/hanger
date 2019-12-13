@@ -93,18 +93,23 @@ public class JobBuildPushService {
                 //Define the job status.
                 if (childJobStatus == null) {
                     childJobStatus = new JobStatus();
-                }
+                    childJobStatus.setScope(push.getScope());
+                    childJobStatus.setDate(new Date());
 
-                childJobStatus.setScope(push.getScope());
-                childJobStatus.setDate(new Date());
+                    //Defines a relation between a job and it status.
+                    childJobStatus = jobStatusService.save(childJobStatus);
+                    childJob.setStatus(childJobStatus);
+                    jobService.save(childJob);
+                } else {
+                    childJobStatus.setScope(push.getScope());
+                    childJobStatus.setDate(new Date());
+                }
 
                 //Build the job child. 
                 try {
                     //Set child job as rebuilding.
                     childJobStatus.setFlow(Flow.REBUILD);
-                    childJobStatus = jobStatusService.save(childJobStatus);
-                    childJob.setStatus(childJobStatus);
-                    jobService.save(childJob);
+                    jobStatusService.save(childJobStatus);
 
                     //Build the job.
                     BuildInfo buildInfo = jobBuildService.build(childJob);
@@ -113,9 +118,7 @@ public class JobBuildPushService {
                     if (!buildInfo.isHealthy()) {
                         //Set child job as blocked in case pre-validation fail. 
                         childJobStatus.setFlow(Flow.BLOCKED);
-                        childJobStatus = jobStatusService.save(childJobStatus);
-                        childJob.setStatus(childJobStatus);
-                        jobService.save(childJob);
+                        jobStatusService.save(childJobStatus);
 
                         //Publish a job notification.
                         jobNotificationService.notify(childJob, true);
@@ -123,9 +126,7 @@ public class JobBuildPushService {
                 } catch (Exception ex) {
                     //Set child job build as fail in case of error. 
                     childJobStatus.setFlow(Flow.ERROR);
-                    childJobStatus = jobStatusService.save(childJobStatus);
-                    childJob.setStatus(childJobStatus);
-                    jobService.save(childJob);
+                    jobStatusService.save(childJobStatus);
 
                     //Publish a job notification.
                     jobNotificationService.notify(childJob, true);

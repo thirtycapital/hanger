@@ -26,6 +26,8 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.Server;
 import com.offbytwo.jenkins.JenkinsServer;
+import com.offbytwo.jenkins.model.Build;
+import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import java.io.IOException;
 import java.net.URI;
@@ -277,6 +279,48 @@ public class JenkinsService {
         }
 
         return isInQueue;
+    }
+
+    /**
+     * Identify if a job is building.
+     *
+     * @param job Job
+     * @param buildNumber Job build number
+     * @return Identify if a job is building
+     */
+    public boolean isBuilding(Job job, int buildNumber) {
+        JenkinsServer jenkins;
+        boolean isBuilding = false;
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
+
+                        if (jobWithDetails != null) {
+                            Build build = jobWithDetails.getBuildByNumber(buildNumber);
+
+                            if (build != null) {
+                                BuildWithDetails buildWithDetails = build.details();
+
+                                if (buildWithDetails != null) {
+                                    isBuilding = buildWithDetails.isBuilding();
+                                }
+                            }
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail identifying if a job is building!", ex);
+            }
+        }
+
+        return isBuilding;
     }
 
     /**

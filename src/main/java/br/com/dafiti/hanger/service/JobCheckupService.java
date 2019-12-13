@@ -213,26 +213,28 @@ public class JobCheckupService {
                         //Identify if should retry.
                         if (retry <= job.getRetry() || (retry == 1 && job.getRetry() == 0)) {
                             //Log the checkup result. 
-                            JobCheckupLog jobCheckupLog = jobCheckupLogService.save(new JobCheckupLog(checkup, value, validated));
+                            JobCheckupLog jobCheckupLog = jobCheckupLogService.save(
+                                    new JobCheckupLog(checkup, value, validated)
+                            );
 
                             //Identify if should execute something. 
                             if (!validated && !log) {
-                                boolean result = false;
+                                boolean commandResult = false;
 
                                 //Increase the retry counter.
                                 retryService.increase(job);
 
                                 //Execute the checkup command.
                                 for (Command command : checkup.getCommand()) {
-                                    result = this.executeCommand(checkup, command, jobCheckupLog);
+                                    commandResult = this.executeCommand(checkup, command, jobCheckupLog);
 
-                                    if (!result) {
+                                    if (!commandResult) {
                                         break;
                                     }
                                 }
 
                                 //Identify if should revalidate the checkup.
-                                if (result) {
+                                if (commandResult) {
                                     //Run the query. 
                                     value = this.executeQuery(checkup);
 
@@ -253,6 +255,9 @@ public class JobCheckupService {
 
                             //Add the log to the checkup. 
                             checkup.addLog(jobCheckupLog);
+                        } else {
+                            retryService.remove(job);
+                            stop = true;
                         }
 
                         //Verify if this check failed. 
@@ -324,14 +329,14 @@ public class JobCheckupService {
         switch (checkup.getAction()) {
             case REBUILD:
                 try {
-                //Rebuild the job.
-                jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
-                jenkinsService.build(job);
-            } catch (Exception ex) {
-                Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building job: " + job.getName(), ex);
-            }
+                    //Rebuild the job.
+                    jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
+                    jenkinsService.build(job);
+                } catch (Exception ex) {
+                    Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building job: " + job.getName(), ex);
+                }
 
-            break;
+                break;
             case REBUILD_MESH:
                 HashSet<Job> parent = jobService.getMeshParent(job);
                 jobService.rebuildMesh(job);

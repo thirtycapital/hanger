@@ -108,6 +108,11 @@ public class EyeService {
                 jobStatus = new JobStatus();
                 jobStatus.setScope(Scope.FULL);
                 jobStatus.setFlow(Flow.NORMAL);
+
+                //Defines a relation between a job and it status. 
+                jobStatus = jobStatusService.save(jobStatus);
+                job.setStatus(jobStatus);
+                job = jobService.save(job);
             }
 
             //Log the job status.
@@ -165,15 +170,10 @@ public class EyeService {
                         jobStatus.setFlow(Flow.UNHEALTHY);
                     }
                 }
-            } else {
-                //Identify job as transiente.
-                jobStatus.setFlow(Flow.TRANSIENT);
-            }
 
-            //Save the job status.
-            jobStatus = jobStatusService.save(jobStatus);
-            job.setStatus(jobStatus);
-            jobService.save(job);
+                //Save the job status.
+                jobStatus = jobStatusService.save(jobStatus);
+            }
 
             //Log the job update.
             Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job updated {1}", new Object[]{uuid, jobStatus.toString()});

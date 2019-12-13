@@ -29,7 +29,6 @@ package br.com.dafiti.hanger.option;
  */
 public enum Flow {
     NORMAL,
-    UPSTREAM,
     ERROR,
     REBUILD,
     TRANSIENT,

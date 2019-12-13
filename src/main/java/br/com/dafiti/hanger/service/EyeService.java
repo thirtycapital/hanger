@@ -38,7 +38,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -78,7 +77,6 @@ public class EyeService {
      * @param notificationPayload Notification Plugin information
      */
     @Async
-    @Transactional
     public void observer(String notificationPayload) {
         UUID uuid = UUID.randomUUID();
         JSONObject notification = new JSONObject(notificationPayload);
@@ -116,7 +114,7 @@ public class EyeService {
             Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job status {1}", new Object[]{uuid, jobStatus.toString()});
 
             //Define the job status update rule.  
-            boolean updateStatus = true;
+            boolean updateStatus;
 
             switch (jobBuild.getPhase()) {
                 case QUEUED:
@@ -124,6 +122,16 @@ public class EyeService {
                     break;
                 case STARTED:
                     updateStatus = true;
+
+                    //Identifies if the STARTED status was received after a FINALIZED for the same execution.
+                    if (jobStatus.getBuild() != null) {
+                        updateStatus = jobStatus.getBuild().getNumber() != jobBuild.getNumber();
+
+                        if (!updateStatus) {
+                            Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Status reversion attempt blocked", new Object[]{uuid});
+                        }
+                    }
+
                     break;
                 case COMPLETED:
                     updateStatus = false;
@@ -152,16 +160,10 @@ public class EyeService {
                 if (jobBuild.getPhase().equals(Phase.FINALIZED)
                         && jobBuild.getStatus().equals(Status.SUCCESS)) {
 
-                    //Log the job status before checkup evaluation.
-                    Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job status before checkup evaluation {1}", new Object[]{uuid, jobStatus.toString()});
-
                     //Evaluates the job checkup. 
                     if (!jobCheckupService.evaluate(job, jobStatus.getScope())) {
                         jobStatus.setFlow(Flow.UNHEALTHY);
                     }
-
-                    //Log the job status after checkup evaluation.
-                    Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job status after checkup evaluation {1}", new Object[]{uuid, jobStatus.toString()});
                 }
             } else {
                 //Identify job as transiente.
@@ -170,11 +172,7 @@ public class EyeService {
 
             //Save the job status.
             jobStatus = jobStatusService.save(jobStatus);
-
-            //Link job status with job.
             job.setStatus(jobStatus);
-
-            //Update the job.
             jobService.save(job);
 
             //Log the job update.

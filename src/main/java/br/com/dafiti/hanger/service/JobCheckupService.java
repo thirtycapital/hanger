@@ -38,7 +38,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -184,6 +183,9 @@ public class JobCheckupService {
 
         //Identifies if the job has checkup.
         if (!job.getCheckup().isEmpty()) {
+            //Log the job status before checkup evaluation.
+            Logger.getLogger(JobCheckupService.class.getName()).log(Level.INFO, "{0} status before checkup evaluation", new Object[]{job.getName()});
+
             //Filter checkup by scope.
             List<JobCheckup> checkups = job.getCheckup()
                     .stream()
@@ -302,6 +304,9 @@ public class JobCheckupService {
                     retryService.remove(job);
                 }
             }
+
+            //Log the job status after checkup evaluation.
+            Logger.getLogger(JobCheckupService.class.getName()).log(Level.INFO, "{0} status after checkup evaluation", new Object[]{job.getName()});
         }
 
         return validated;
@@ -321,7 +326,7 @@ public class JobCheckupService {
                 //Rebuild the job.
                 jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
                 jenkinsService.build(job);
-            } catch (URISyntaxException | IOException ex) {
+            } catch (Exception ex) {
                 Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building job: " + job.getName(), ex);
             }
 
@@ -335,7 +340,7 @@ public class JobCheckupService {
                     for (Job meshParent : parent) {
                         jenkinsService.build(meshParent);
                     }
-                } catch (URISyntaxException | IOException ex) {
+                } catch (Exception ex) {
                     Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building job mesh: " + job.getName(), ex);
                 }
 
@@ -358,7 +363,7 @@ public class JobCheckupService {
                             jenkinsService.build(jobTriggered);
                         }
                     }
-                } catch (URISyntaxException | IOException ex) {
+                } catch (Exception ex) {
                     Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building trigger: " + job.getName(), ex);
                 }
 

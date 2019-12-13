@@ -28,9 +28,6 @@ import br.com.dafiti.hanger.model.JobBuild;
 import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.repository.JobBuildRepository;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.sql.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -84,7 +81,7 @@ public class JobBuildService {
      * @return Elapsed time.
      */
     @Cacheable(value = "jobBuildTime", key = "{#job.id, #buildNumber}")
-    public Time findJobBuildTime(
+    public String findJobBuildTime(
             Job job,
             int buildNumber) {
 
@@ -99,7 +96,7 @@ public class JobBuildService {
      * @throws java.net.URISyntaxException
      * @throws java.io.IOException
      */
-    public BuildInfo build(Job job) throws URISyntaxException, IOException {
+    public BuildInfo build(Job job) throws Exception {
         Scope scope;
         boolean built = false;
         boolean healthy = true;

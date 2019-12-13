@@ -45,7 +45,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
@@ -55,6 +54,7 @@ import org.commonmark.renderer.html.HtmlRenderer;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.OrderBy;
 
 /**
  *
@@ -151,7 +151,7 @@ public class Job extends Tracker implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     @Transient
     public String getHTMLDescription() {
         Parser parser = Parser.builder().build();
@@ -163,7 +163,6 @@ public class Job extends Tracker implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "status_id", referencedColumnName = "id")
-    @BatchSize(size = 10)
     public JobStatus getStatus() {
         if (status == null) {
             status = new JobStatus();
@@ -193,9 +192,11 @@ public class Job extends Tracker implements Serializable {
         this.subject.add(subject);
     }
 
-    @OneToMany(mappedBy = "job", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "job_id", referencedColumnName = "id")
     @Fetch(FetchMode.SELECT)
-    @OrderBy(value = "id, scope")
+    @BatchSize(size = 20)
+    @OrderBy(clause = "id, scope")
     public List<JobParent> getParent() {
         return parent;
     }
@@ -208,9 +209,10 @@ public class Job extends Tracker implements Serializable {
         this.parent.add(parent);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "job_id", referencedColumnName = "id")
-    @BatchSize(size = 10)
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 20)
     public List<JobCheckup> getCheckup() {
         return checkup;
     }
@@ -223,9 +225,10 @@ public class Job extends Tracker implements Serializable {
         this.checkup.add(checkup);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "job_id", referencedColumnName = "id")
-    @BatchSize(size = 10)
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 20)
     public List<JobApproval> getApproval() {
         return approval;
     }

@@ -76,20 +76,20 @@ public class WorkbenchService {
     public List<Tree> JSTreeSchemaList(Connection connection) {
         List<Tree> tree = new ArrayList();
 
-        for (Entity schema : connectionService.getSchemas(connection)) {
+        connectionService.getSchemas(connection).forEach((schemaEntity) -> {
             tree.add(
                     new Tree(
-                            schema.getSchema(),
-                            schema.getCatalogSchema(),
+                            schemaEntity.getCatalogSchema(),
+                            schemaEntity.getCatalogSchema(),
                             "#",
                             "glyphicon glyphicon-th-list",
                             true,
                             new TreeAttribute(
-                                    schema.getCatalog(),
-                                    schema.getSchema()
+                                    schemaEntity.getCatalog(),
+                                    schemaEntity.getSchema()
                             )
                     ));
-        }
+        });
 
         return tree;
     }
@@ -108,24 +108,31 @@ public class WorkbenchService {
             String schema) {
 
         List tree = new ArrayList();
-        List<Entity> tables = connectionService.getTables(connection, catalog, schema);
 
-        for (Entity table : tables) {
-            tree.add(
-                    new Tree(
-                            table.getTable(),
-                            table.getTable(),
-                            table.getSchema(),
-                            "glyphicon glyphicon-th-large",
-                            false,
-                            new TreeAttribute(
-                                    table.getCatalog(),
-                                    table.getSchema(),
-                                    table.getTable(),
-                                    connection.getTarget()
+        for (Entity schemaEntity : connectionService.getSchemas(connection)) {
+            if ((schemaEntity.getCatalog() == null || schemaEntity.getCatalog().equals(catalog))
+                    && (schemaEntity.getSchema() == null || schemaEntity.getSchema().equals(schema))) {
+
+                connectionService.getTables(connection, catalog, schema).forEach((tableEntity) -> {
+                    tree.add(
+                            new Tree(
+                                    tableEntity.getTable(),
+                                    tableEntity.getTable(),
+                                    schemaEntity.getCatalogSchema(),
+                                    "glyphicon glyphicon-th-large",
+                                    false,
+                                    new TreeAttribute(
+                                            tableEntity.getCatalog(),
+                                            tableEntity.getSchema(),
+                                            tableEntity.getTable(),
+                                            connection.getTarget()
+                                    )
                             )
-                    )
-            );
+                    );
+                });
+
+                break;
+            }
         }
 
         return tree;

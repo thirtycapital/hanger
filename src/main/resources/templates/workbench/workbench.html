@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" 
       xmlns:th="http://www.thymeleaf.org" 
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
     <head lang="en" th:replace="base/header :: head">
         <title>Hanger</title>
     </head>
@@ -260,12 +261,7 @@
                     var select = "";
 
                     if (node.parent !== "#") {
-                        if (node.target === "MSSQL") {
-                            select = "SELECT TOP 10 * FROM " + node.parent + "." + node.text + ";";
-                        } else {
-                            select = "SELECT * FROM " + node.parent + "." + node.text + " LIMIT 10;";
-                        }
-
+                        select = "SELECT * FROM " + node.parent + "." + node.text + " LIMIT 10;";
                         query.setValue(select);
                         query.focus();
                     }
@@ -483,7 +479,7 @@
                                     url = /*[[@{/export/download/}]]*/ "/export/download/";
                                     window.location.href = url + result;
                                 } else {
-                                    toastr.error('Fail exporting query, check SQL syntax or if connection is valid.');
+                                    toastr.error('Fail exporting query!');
                                 }
                             },
                             error: function (e) {

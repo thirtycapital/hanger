@@ -906,3 +906,9 @@ input[type='file'] {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.icon-workbench-option {
+    padding: 4px 0 2px 6px;
+    font-size: 20px;
+    color: #3d3d3d;
+}

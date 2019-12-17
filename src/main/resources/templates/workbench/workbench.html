@@ -93,25 +93,11 @@
                     </div>                    
 
                     <div class="row">
-                        <button 
-                            id="store-query-button" 
-                            class="btn btn-generic pull-right btn-space" 
-                            type="button">
-
-                            <span class="glyphicon glyphicon-floppy-disk" 
-                                  aria-hidden="true"></span> Store
-                        </button>
-
-                        <div th:if="${#authorization.expression('hasRole(''HERO'')')}">
-                            <button 
-                                id="export-query-button" 
-                                class="btn btn-generic pull-right btn-space" 
-                                type="button">
-
-                                <span class="glyphicon glyphicon-download-alt" 
-                                      aria-hidden="true"></span> Export
-                            </button>
-                        </div>
+                        <div class="dropdown pull-right">
+                            <a href="#" id="workbeanch_option" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-option-vertical icon-workbench-option" aria-hidden="true"></span>
+                            </a>
+                        </div>                        
 
                         <button 
                             id="query-button" 
@@ -197,7 +183,6 @@
                     $("#wait").css("display", "block");
                     $("#query").prop("disabled", true);
                     $("#query-button").prop("disabled", true);
-                    $("#export-query-button").prop("disabled", true);
                 });
 
                 /**
@@ -208,7 +193,6 @@
                     $("#wait").css("display", "none");
                     $("#query").prop("disabled", false);
                     $("#query-button").prop("disabled", false);
-                    $("#export-query-button").prop("disabled", false);
                 });
 
                 /**
@@ -227,13 +211,30 @@
                     $("#fragmentQueryResultSetHolder").show();
                     query();
                 });
-
+                
                 /**
-                 * Opens modal to store a query.
+                 * Display option menu.
                  */
-                $("#store-query-button").click(function () {
-                    queryStoreModal();
-                });
+                $('#workbeanch_option').click(function (e) {
+                    e.preventDefault();
+
+                    var menuExport = function () {
+                        $("#fragmentQueryResultSetHolder").hide();
+                        queryExport();
+                    };
+
+                    var menuStore = function () {
+                        queryStoreModal();
+                    };
+
+                    // Available actions.
+                    var items = [
+                        {icon: 'glyphicon glyphicon-download-alt', label: 'Export', action: menuExport},
+                        {icon: 'glyphicon glyphicon-floppy-disk', label: 'Store', action: menuStore}
+                    ];
+
+                    superCm.createMenu(items, e);
+                });                
 
                 /**
                  * Jstree Search
@@ -250,10 +251,6 @@
                     }, 250);
                 });
 
-                /**
-                 * 
-                 */
-
                 $('#jstree').on('dblclick', '.jstree-anchor', function (e) {
                     var instance = $.jstree.reference(this);
                     var node = instance.get_node(this);
@@ -265,14 +262,6 @@
                         query.setValue(select);
                         query.focus();
                     }
-                });
-
-                /**
-                 * Opens modal to export a query.
-                 */
-                $("#export-query-button").click(function () {
-                    $("#fragmentQueryResultSetHolder").hide();
-                    queryExport();
                 });
 
                 /**

@@ -475,4 +475,37 @@ public class JenkinsService {
         @CacheEvict(value = "serverJobs", allEntries = true)})
     public void refreshCache() {
     }
+
+    /**
+     * Identify if a job exists on jenkins.
+     *
+     * @param job Job
+     * @return Identify if a job exists on jenkins.
+     */
+    public boolean exists(Job job) {
+        JenkinsServer jenkins;
+        boolean exists = false;
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
+
+                        if (jobWithDetails != null) {
+                            exists = true;
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail identifying if a job exists!", ex);
+            }
+        }
+
+        return exists;
+    }
 }

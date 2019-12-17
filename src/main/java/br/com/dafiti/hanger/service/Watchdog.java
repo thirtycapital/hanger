@@ -74,7 +74,7 @@ public class Watchdog {
     /**
      * Watchdog patrols at every minute past every 30th hour.
      */
-    @Scheduled(cron = "5 */30 * * * *")
+    @Scheduled(cron = "5 */1 * * * *")
     public void patrol() {
         Logger.getLogger(
                 Watchdog.class.getName())
@@ -128,6 +128,20 @@ public class Watchdog {
                         }
                     }
                 }
+            }
+
+            //Identify job existence on Jenkins.
+            if (!jenkinsServive.exists(job)) {
+                Logger.getLogger(Watchdog.class.getName())
+                        .log(Level.INFO, "The job "
+                                .concat(job.getDisplayName())
+                                .concat(" exists on Hanger, but not on Jenkins!")
+                        );
+
+                slackService.send(":doge: The job *"
+                        .concat(job.getDisplayName())
+                        .concat("*")
+                        .concat(" exists on Hanger, but not on Jenkins!"));
             }
         }
     }

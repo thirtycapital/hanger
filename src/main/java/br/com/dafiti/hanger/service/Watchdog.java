@@ -74,7 +74,7 @@ public class Watchdog {
     /**
      * Watchdog patrols at every minute past every 30th hour.
      */
-    @Scheduled(cron = "5 */1 * * * *")
+    @Scheduled(cron = "5 */30 * * * *")
     public void patrol() {
         Logger.getLogger(
                 Watchdog.class.getName())

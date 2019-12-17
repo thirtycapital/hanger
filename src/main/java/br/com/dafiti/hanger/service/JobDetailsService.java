@@ -125,6 +125,7 @@ public class JobDetailsService {
                         case APPROVED:
                         case DISAPPROVED:
                         case ERROR:
+                        case CHECKUP:
                             status = Status.valueOf(jobStatus.getFlow().toString());
                             building
                                     .append((yesterday ? "( - " + tolerance + " hours ) Yesterday" : "Today"))

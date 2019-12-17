@@ -157,19 +157,19 @@ public class EyeService {
 
             //Add the trigger and status to the job. 
             if (update) {
-                jobStatus.setDate(new Date());
-                jobStatus.setBuild(jobBuild);
-                jobStatus.setScope(jobStatus.getScope() == null ? Scope.FULL : jobStatus.getScope());
-                jobStatus.setFlow(Flow.NORMAL);
+                boolean healthy = true;
 
                 if (jobBuild.getPhase().equals(Phase.FINALIZED)
                         && jobBuild.getStatus().equals(Status.SUCCESS)) {
 
                     //Evaluates the job checkup. 
-                    if (!jobCheckupService.evaluate(job, jobStatus.getScope())) {
-                        jobStatus.setFlow(Flow.UNHEALTHY);
-                    }
+                    healthy = jobCheckupService.evaluate(job, jobStatus.getScope());
                 }
+
+                jobStatus.setDate(new Date());
+                jobStatus.setBuild(jobBuild);
+                jobStatus.setScope(jobStatus.getScope() == null ? Scope.FULL : jobStatus.getScope());
+                jobStatus.setFlow(healthy ? Flow.NORMAL : Flow.UNHEALTHY);
 
                 //Save the job status.
                 jobStatus = jobStatusService.save(jobStatus);

@@ -41,5 +41,6 @@ public enum Status {
     APPROVED,
     DISAPPROVED,
     DISABLED,
-    UNSTABLE;
+    UNSTABLE,
+    CHECKUP;
 }

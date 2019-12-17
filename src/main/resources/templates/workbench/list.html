@@ -45,7 +45,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="connectionQueryStore : ${connectionQueryStoreList}">
+                        <tr class="query-row" th:each="connectionQueryStore : ${connectionQueryStoreList}">
                             <td th:text="${connectionQueryStore.id}">#</td>
                             <td th:text="${connectionQueryStore.name}">#</td>
                             <td>                                
@@ -60,6 +60,9 @@
                                         </li>  
                                     </ul>                                    
                                 </div>
+                                <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${connectionQueryStore.query}">
+                                    <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="Copy"></span>
+                                </a>
                             </td>
                             <td th:text="${connectionQueryStore.connection.name}">#</td>
                             <td>                               
@@ -197,6 +200,8 @@
         </div>
         <script th:inline="javascript">
             $(document).ready(function () {
+                
+                new ClipboardJS('.btn-copy');
 
                 $("[id^=edit_]").click(function () {
                     var url = /*[[@{/query/load/modal/}]]*/ "/query/load/modal/";

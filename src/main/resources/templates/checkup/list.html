@@ -85,7 +85,7 @@
                         </thead>
 
                         <tbody>
-                            <tr th:each="checkupLog, checkupLogStat : ${checkup.log}">
+                            <tr class="checkup-row" th:each="checkupLog, checkupLogStat : ${checkup.log}">
                                 <td><img class="status" th:src="@{'/images/' + ${ checkupLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="title=${ checkupLog.success ? 'SUCCESS' : 'FAILURE' }"></img></td>                                 
                                 <td th:text="${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}"></td>        
                                 <td th:text="${checkupLog.scope}"></td>  
@@ -103,6 +103,9 @@
                                             </li>  
                                         </ul>
                                     </div>
+                                    <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${checkupLog.query}">
+                                        <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="copy"></span>
+                                    </a>
                                 </td>  
                                 <td>
                                     <span th:text="${#strings.length(checkupLog.value) > 35 ? #strings.substring(checkupLog.value,0,35) : checkupLog.value}"></span>                                
@@ -151,6 +154,10 @@
                 'remove-indent': true,
                 'left-trim': true,
                 'right-trim': true,
+            });
+            
+            $(function() {
+                new ClipboardJS('.btn-copy');
             });
         </script>
     </body>

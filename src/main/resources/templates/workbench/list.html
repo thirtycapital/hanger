@@ -157,7 +157,7 @@
                         </tr>                        
                     </thead>
                     <tbody>
-                        <tr th:each="connectionQueryStore : ${connectionQueryStoreSharedList}">
+                        <tr class="query-row" th:each="connectionQueryStore : ${connectionQueryStoreSharedList}">
                             <td th:text="${connectionQueryStore.id}">#</td>
                             <td th:text="${connectionQueryStore.name}">#</td>
                             <td>
@@ -172,6 +172,9 @@
                                         </li>  
                                     </ul>
                                 </div>
+                                <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${connectionQueryStore.query}">
+                                    <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="copy"></span>
+                                </a>
                             </td>
                             <td th:text="${connectionQueryStore.connection.name}">#</td>
                             <td th:text="${connectionQueryStore.user.username}">#</td>    

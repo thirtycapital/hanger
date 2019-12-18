@@ -203,8 +203,13 @@
         </div>
         <script th:inline="javascript">
             $(document).ready(function () {
-                
+
                 new ClipboardJS('.btn-copy');
+
+                $('.btn-copy').click(function () {
+                    toastr.options = {"timeOut": "1500"};
+                    toastr.info('Copied!');
+                });
 
                 $("[id^=edit_]").click(function () {
                     var url = /*[[@{/query/load/modal/}]]*/ "/query/load/modal/";
@@ -226,7 +231,7 @@
                                     + e.statusText);
                         }
                     });
-                });              
+                });
             });
         </script>
     </body>

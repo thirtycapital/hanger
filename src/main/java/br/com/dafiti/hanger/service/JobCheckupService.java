@@ -29,6 +29,7 @@ import br.com.dafiti.hanger.model.CommandLog;
 import br.com.dafiti.hanger.model.JobCheckup;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobCheckupLog;
+import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Action;
 import br.com.dafiti.hanger.option.CommandType;
 import br.com.dafiti.hanger.option.Flow;
@@ -59,6 +60,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import sun.misc.ObjectInputFilter;
 
 /**
  *
@@ -194,6 +196,9 @@ public class JobCheckupService {
             //Identify if the job has checkups.
             if (!checkups.isEmpty()) {
                 int retry = retryService.get(job);
+                
+                //Change the job flow to checkup.
+                jobStatusService.updateFlow(job.getStatus(), Flow.CHECKUP);
 
                 for (JobCheckup checkup : checkups) {
                     //Identify the query scope and if it is enabled. 
@@ -301,6 +306,9 @@ public class JobCheckupService {
                 //Clear tries.
                 if (validated) {
                     retryService.remove(job);
+                } else {
+                    //Change the job flow to checkup.
+                    jobStatusService.updateFlow(job.getStatus(), Flow.UNHEALTHY);
                 }
             }
 

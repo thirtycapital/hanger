@@ -122,6 +122,9 @@ public class JobBuildPushService {
 
                         //Publish a job notification.
                         jobNotificationService.notify(childJob, true);
+                    } else {
+                        childJobStatus.setFlow(Flow.NORMAL);
+                        jobStatusService.save(childJobStatus);
                     }
                 } catch (Exception ex) {
                     //Set child job build as fail in case of error. 

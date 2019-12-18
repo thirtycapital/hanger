@@ -140,7 +140,6 @@ public class JobBuildService {
                 } catch (Exception ex) {
                     Logger.getLogger(JobBuildService.class.getName()).log(Level.SEVERE, "Fail building job " + job.getName() + " manually", ex);
                 }
-
             }
         }
 

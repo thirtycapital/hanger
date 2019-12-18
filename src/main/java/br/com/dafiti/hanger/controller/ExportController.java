@@ -26,7 +26,6 @@ package br.com.dafiti.hanger.controller;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.option.ExportType;
 import br.com.dafiti.hanger.service.ExportService;
-import br.com.dafiti.mitt.exception.DuplicateEntityException;
 import java.io.IOException;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +58,7 @@ public class ExportController {
      * @param connection Connection
      * @param query String query of the user.
      * @param principal Logged User.
-     *
      * @return String file name
-     *
-     * @throws DuplicateEntityException
      * @throws IOException
      */
     @PostMapping(path = "/query/{id}")
@@ -71,7 +67,7 @@ public class ExportController {
             @PathVariable(name = "id") Connection connection,
             @RequestBody(required = false) String query,
             Principal principal) 
-            throws DuplicateEntityException, IOException {
+            throws IOException {
 
         String fileName = this.exportService.export(
                 connection,

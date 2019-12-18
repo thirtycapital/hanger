@@ -26,9 +26,8 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.option.ExportType;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
-import br.com.dafiti.hanger.service.ConnectionService.QueryResultSetRow;
-import br.com.dafiti.mitt.Mitt;
-import br.com.dafiti.mitt.exception.DuplicateEntityException;
+import com.univocity.parsers.csv.CsvWriter;
+import com.univocity.parsers.csv.CsvWriterSettings;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,13 +61,12 @@ public class ExportService {
      * @param principal
      * @param exportType
      * @return
-     * @throws br.com.dafiti.mitt.exception.DuplicateEntityException
      */
     public String export(
             Connection connection,
             String query,
             Principal principal,
-            ExportType exportType) throws DuplicateEntityException {
+            ExportType exportType) {
         String fileName = "";
 
         switch (exportType) {
@@ -94,34 +92,35 @@ public class ExportService {
      *
      * @param queryResultSet QueryResultSet
      * @param connection Connection
-     * @return
-     * @throws br.com.dafiti.mitt.exception.DuplicateEntityException
+     * @return String fileName
      */
     public String exportToCSV(
             QueryResultSet queryResultSet,
-            Connection connection)
-            throws DuplicateEntityException {
-
-        //Define the mitt.
-        Mitt mitt = new Mitt();
+            Connection connection) {
 
         String temp = System.getProperty("java.io.tmpdir");
         String fileName = connection.getName()
                 .concat("_hanger_export_")
                 .concat(UUID.randomUUID().toString())
                 .concat(".csv");
-
+        
         //Define output file.
-        mitt.setOutput(temp.concat("/").concat(fileName));
+        File csvFile = new File(temp.concat("/").concat(fileName));
+        
+        //Define csv settings.
+        CsvWriterSettings csvWriterSettings = new CsvWriterSettings();
+        csvWriterSettings.getFormat().setDelimiter(";");
+
+        CsvWriter csvWriter = new CsvWriter(csvFile, csvWriterSettings);
 
         //Define fields.
-        mitt.getConfiguration().addField(queryResultSet.getHeader());
+        csvWriter.writeHeaders(queryResultSet.getHeader());
 
-        for (QueryResultSetRow row : queryResultSet.getRow()) {
-            mitt.write(row.getColumn());
-        }
+        queryResultSet.getRow().forEach((row) -> {
+            csvWriter.writeRow(row.getColumn());
+        });
 
-        mitt.close();
+        csvWriter.flush();
 
         return fileName;
     }

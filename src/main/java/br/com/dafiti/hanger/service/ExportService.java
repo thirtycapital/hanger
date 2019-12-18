@@ -121,6 +121,7 @@ public class ExportService {
         });
 
         csvWriter.flush();
+        csvWriter.close();
 
         return fileName;
     }

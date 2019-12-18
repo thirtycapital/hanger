@@ -121,12 +121,12 @@ $(document).ready(function () {
         format: "yyyy-mm-dd",
         todayHighlight: true
     });
-    
-    $('[id^=query_stored_]').DataTable({        
+
+    $('[id^=query_stored_]').DataTable({
         "pageLength": 10,
         "bLengthChange": false,
         "info": false,
-        "order": [],        
+        "order": [],
         "columnDefs": [{
                 "targets": 'no-sort',
                 "orderable": false
@@ -140,5 +140,17 @@ $(document).ready(function () {
                 "searchable": false
             }
         ]
+    });
+
+    // Default copy button
+    // Always use class .btn-copy for copy operation
+    var clipboard = new ClipboardJS('.btn-copy');
+
+    clipboard.on('success', function () {
+        toastr.info('Copied!');
+    });
+
+    clipboard.on('error', function () {
+        toastr.error("Not copied!");
     });
 });

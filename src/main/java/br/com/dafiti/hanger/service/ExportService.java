@@ -110,6 +110,8 @@ public class ExportService {
         //Define csv settings.
         CsvWriterSettings csvWriterSettings = new CsvWriterSettings();
         csvWriterSettings.getFormat().setDelimiter(";");
+        csvWriterSettings.getFormat().setQuote('"');
+        csvWriterSettings.getFormat().setQuoteEscape('"');
 
         CsvWriter csvWriter = new CsvWriter(csvFile, csvWriterSettings);
 

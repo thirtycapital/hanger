@@ -27,7 +27,7 @@
 
             <fieldset>
                 <legend class="space-top">Mine</legend>
-
+                
                 <table id="query_stored_my_queries" class="table table-hover">
                     <thead>
                         <tr>
@@ -203,13 +203,6 @@
         </div>
         <script th:inline="javascript">
             $(document).ready(function () {
-
-                new ClipboardJS('.btn-copy');
-
-                $('.btn-copy').click(function () {
-                    toastr.options = {"timeOut": "1500"};
-                    toastr.info('Copied!');
-                });
 
                 $("[id^=edit_]").click(function () {
                     var url = /*[[@{/query/load/modal/}]]*/ "/query/load/modal/";

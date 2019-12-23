@@ -53,7 +53,9 @@ public class WorkbenchController {
     private final WorkbenchService workbenchService;
 
     @Autowired
-    public WorkbenchController(ConnectionService connectionService, WorkbenchService workbenchService) {
+    public WorkbenchController(
+            ConnectionService connectionService,
+            WorkbenchService workbenchService) {
         this.connectionService = connectionService;
         this.workbenchService = workbenchService;
     }
@@ -86,7 +88,10 @@ public class WorkbenchController {
             Principal principal,
             Model model) {
 
-        QueryResultSet queryResultSet = connectionService.getQueryResultSet(connection, query, principal);
+        QueryResultSet queryResultSet = connectionService.getQueryResultSet(
+                connection,
+                query,
+                principal);
 
         if (queryResultSet.hasError()) {
             model.addAttribute("errorMessage", queryResultSet.getError());

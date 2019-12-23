@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Dafiti Group
+ * Copyright (c) 2019 Dafiti Group
  * 
  * Permission is hereby granted, free of charge, recipient any person obtaining
  * a copy of this software and associated documentation files (the
@@ -23,46 +23,35 @@
  */
 package br.com.dafiti.hanger.model;
 
-import java.io.File;
-import java.util.HashMap;
+import java.util.List;
 
 /**
- * Mail blueprint
+ * Export e-mail.
  *
- * @author Valdiney V Gomes
+ * @author Helio Leal
  */
-public class Blueprint {
+public class ExportEmail {
 
-    String recipient;
-    String path;
+    List<String> recipient;
+    String query;
     String subject;
-    String template;
-    File file;
-    HashMap<String, Object> variables;
+    String content;    
+    Connection connection;
 
-    public Blueprint(String recipient, String subject, String template) {
-        this.recipient = recipient;
-        this.subject = subject;
-        this.template = template;
-        this.path = "templates/blueprint";
-
-        variables = new HashMap<>();
-    }
-
-    public String getRecipient() {
+    public List<String> getRecipient() {
         return recipient;
     }
 
-    public void setRecipient(String recipient) {
+    public void setRecipient(List<String> recipient) {
         this.recipient = recipient;
     }
 
-    public String getPath() {
-        return path;
+    public String getQuery() {
+        return query;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setQuery(String query) {
+        this.query = query;
     }
 
     public String getSubject() {
@@ -73,28 +62,19 @@ public class Blueprint {
         this.subject = subject;
     }
 
-    public String getTemplate() {
-        return template;
+    public String getContent() {
+        return content;
     }
 
-    public void setTemplate(String template) {
-        this.template = template;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public HashMap<String, Object> getVariables() {
-        return variables;
+    public Connection getConnection() {
+        return connection;
     }
 
-    public void addVariable(String key, Object value) {
-        this.variables.put(key, value);
+    public void setConnection(Connection connection) {
+        this.connection = connection;
     }
-
-    public File getFile() {
-        return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
-    }
-
 }

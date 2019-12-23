@@ -93,7 +93,7 @@ public class FlowService {
         js.append("        nodeAlign: \"LEFT\",");
         js.append("        node: { collapsable: true },");
         js.append("        connectors: {");
-        js.append("            type: 'step'");
+        js.append("            type: 'curve'");
         js.append("        }");
         js.append("    }");
 

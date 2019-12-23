@@ -23,7 +23,10 @@
  */
 package br.com.dafiti.hanger.service;
 
+import br.com.dafiti.hanger.model.Blueprint;
 import br.com.dafiti.hanger.model.Connection;
+import br.com.dafiti.hanger.model.ExportEmail;
+import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.option.ExportType;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
 import com.univocity.parsers.csv.CsvWriter;
@@ -34,6 +37,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
 import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.mail.EmailAttachment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -47,10 +52,17 @@ import org.springframework.stereotype.Service;
 public class ExportService {
 
     ConnectionService connectionService;
+    MailService mailService;
+    UserService userService;
 
     @Autowired
-    public ExportService(ConnectionService connectionService) {
+    public ExportService(
+            ConnectionService connectionService,
+            MailService mailService,
+            UserService userService) {
         this.connectionService = connectionService;
+        this.mailService = mailService;
+        this.userService = userService;
     }
 
     /**
@@ -103,10 +115,10 @@ public class ExportService {
                 .concat("_hanger_export_")
                 .concat(UUID.randomUUID().toString())
                 .concat(".csv");
-        
+
         //Define output file.
         File csvFile = new File(temp.concat("/").concat(fileName));
-        
+
         //Define csv settings.
         CsvWriterSettings csvWriterSettings = new CsvWriterSettings();
         csvWriterSettings.getFormat().setDelimiter(";");
@@ -159,5 +171,65 @@ public class ExportService {
         Files.deleteIfExists(path);
 
         return download;
+    }
+
+    /**
+     * Export a resultset to E-mail.
+     *
+     * @param exportEmail
+     * @param principal
+     * @throws java.io.IOException
+     */
+    public void exportToEmail(ExportEmail exportEmail, Principal principal)
+            throws IOException {
+
+        QueryResultSet queryResultSet = this.connectionService
+                .getQueryResultSet(
+                        exportEmail.getConnection(),
+                        exportEmail.getQuery(),
+                        principal);
+
+        //Identify if query ran successfully.
+        if (!queryResultSet.hasError()) {
+            String fileName = this.exportToCSV(
+                    queryResultSet,
+                    exportEmail.getConnection());
+
+            File file = new File(System.getProperty("java.io.tmpdir")
+                    .concat("/")
+                    .concat(fileName));
+
+            //Get temp file path.
+            Path path = file.toPath();
+
+            //Get logged user.
+            User user = userService.findByUsername(principal.getName());
+
+            //Put logged user on subject of e-mail.
+            if (user != null) {
+                exportEmail.setSubject(
+                        exportEmail.getSubject()
+                                .concat(" (")
+                                .concat(user.getEmail())
+                                .concat(")"));
+            }
+
+            //New blueprint.
+            Blueprint blueprint = new Blueprint(
+                    StringUtils.join(exportEmail.getRecipient(), ","),
+                    exportEmail.getSubject(),
+                    "exportQuery");
+
+            blueprint.setFile(file);
+            blueprint.addVariable("query", exportEmail.getQuery());
+            blueprint.addVariable("connection", exportEmail.getConnection());
+            blueprint.addVariable("content", exportEmail.getContent());
+
+            //Send e-mail to users.
+            this.mailService.send(blueprint);
+
+            //Delete temp file.
+         //   Files.deleteIfExists(path);
+        }
     }
 }

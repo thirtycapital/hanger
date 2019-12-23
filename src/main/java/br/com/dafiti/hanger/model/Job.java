@@ -138,9 +138,9 @@ public class Job extends Tracker implements Serializable {
     @Transient
     public String getDisplayName() {
         if (alias == null || alias.isEmpty()) {
-            return name;
+            return name.replaceAll(" ", "_");
         }
-        return alias + " [alias]";
+        return alias.replaceAll(" ", "_") + "[alias]";
     }
 
     @Column(columnDefinition = "text")

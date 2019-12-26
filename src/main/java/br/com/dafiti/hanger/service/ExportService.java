@@ -181,7 +181,7 @@ public class ExportService {
      * @throws java.io.IOException
      */
     public void exportToEmail(ExportEmail exportEmail, Principal principal)
-            throws IOException {
+            throws IOException, Exception {
 
         QueryResultSet queryResultSet = this.connectionService
                 .getQueryResultSet(
@@ -215,21 +215,18 @@ public class ExportService {
             }
 
             //New blueprint.
-            Blueprint blueprint = new Blueprint(
-                    StringUtils.join(exportEmail.getRecipient(), ","),
-                    exportEmail.getSubject(),
-                    "exportQuery");
-
+            Blueprint blueprint = new Blueprint(exportEmail.getSubject(), "exportQuery");
+            blueprint.setRecipient(exportEmail.getRecipient());
             blueprint.setFile(file);
             blueprint.addVariable("query", exportEmail.getQuery());
             blueprint.addVariable("connection", exportEmail.getConnection());
             blueprint.addVariable("content", exportEmail.getContent());
 
             //Send e-mail to users.
-            this.mailService.send(blueprint);
+            this.mailService.sendMail(blueprint);
 
             //Delete temp file.
-         //   Files.deleteIfExists(path);
+            Files.deleteIfExists(path);
         }
     }
 }

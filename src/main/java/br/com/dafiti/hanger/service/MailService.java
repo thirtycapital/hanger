@@ -24,7 +24,9 @@
 package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.Blueprint;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,7 +63,46 @@ public class MailService {
      */
     @Async
     public void send(Blueprint blueprint) {
-        HtmlEmail mail = new HtmlEmail();
+
+        try {
+            HtmlEmail mail = new HtmlEmail();
+            mail.addTo(blueprint.getRecipient());
+
+            this.sendMail(blueprint, mail);
+        } catch (EmailException ex) {
+            Logger.getLogger(MailService.class.getName()).log(Level.SEVERE, "Fail sending e-mail", ex);
+        }
+    }
+
+    /**
+     * Send a mail with a HTML blueprint.
+     *
+     * @param blueprint blueprint
+     */
+    public void sendMail(Blueprint blueprint) {
+
+        try {
+            HtmlEmail mail = new HtmlEmail();
+
+            if (blueprint.getRecipients().size() > 0) {
+                for (String recipient : blueprint.getRecipients()) {
+                    mail.addTo(blueprint.getRecipient());
+                }
+            }
+
+            this.sendMail(blueprint, mail);
+        } catch (EmailException ex) {
+            Logger.getLogger(MailService.class.getName()).log(Level.SEVERE, "Fail sending e-mail", ex);
+        }
+    }
+
+    /**
+     * Send a mail with a HTML blueprint.
+     *
+     * @param blueprint blueprint
+     * @param mail
+     */
+    public void sendMail(Blueprint blueprint, HtmlEmail mail) {
 
         String host = configurationService.getValue("EMAIL_HOST");
         int port = Integer.valueOf(configurationService.getValue("EMAIL_PORT"));
@@ -76,7 +117,6 @@ public class MailService {
             mail.addHeader("X-Priority", "1");
             mail.setFrom(email);
             mail.setSubject(blueprint.getSubject());
-            mail.addTo(blueprint.getRecipient());
             mail.setHtmlMsg(this.getTemplateHTMLOf(blueprint.getPath(), blueprint.getTemplate(), blueprint.getVariables()));
 
             //Check if blueprint has attachment.

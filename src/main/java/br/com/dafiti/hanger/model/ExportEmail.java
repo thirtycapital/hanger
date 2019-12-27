@@ -37,6 +37,7 @@ public class ExportEmail {
     String subject;
     String content;    
     Connection connection;
+    boolean queryContent;
 
     public List<String> getRecipient() {
         return recipient;
@@ -76,5 +77,13 @@ public class ExportEmail {
 
     public void setConnection(Connection connection) {
         this.connection = connection;
+    }
+
+    public boolean isQueryContent() {
+        return queryContent;
+    }
+
+    public void setQueryContent(boolean queryContent) {
+        this.queryContent = queryContent;
     }
 }

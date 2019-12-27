@@ -66,33 +66,17 @@ public class MailService {
 
         try {
             HtmlEmail mail = new HtmlEmail();
-            mail.addTo(blueprint.getRecipient());
-
-            this.sendMail(blueprint, mail);
-        } catch (EmailException ex) {
-            Logger.getLogger(MailService.class.getName()).log(Level.SEVERE, "Fail sending e-mail", ex);
-        }
-    }
-
-    /**
-     * Send a mail with a HTML blueprint.
-     *
-     * @param blueprint blueprint
-     */
-    public void sendMail(Blueprint blueprint) {
-
-        try {
-            HtmlEmail mail = new HtmlEmail();
 
             if (blueprint.getRecipients().size() > 0) {
                 for (String recipient : blueprint.getRecipients()) {
-                    mail.addTo(blueprint.getRecipient());
+                    mail.addTo(recipient);
                 }
             }
 
-            this.sendMail(blueprint, mail);
+            this.send(blueprint, mail);
         } catch (EmailException ex) {
-            Logger.getLogger(MailService.class.getName()).log(Level.SEVERE, "Fail sending e-mail", ex);
+            Logger.getLogger(MailService.class.getName())
+                    .log(Level.SEVERE, "Fail sending e-mail", ex);
         }
     }
 
@@ -102,7 +86,7 @@ public class MailService {
      * @param blueprint blueprint
      * @param mail
      */
-    public void sendMail(Blueprint blueprint, HtmlEmail mail) {
+    public void send(Blueprint blueprint, HtmlEmail mail) {
 
         String host = configurationService.getValue("EMAIL_HOST");
         int port = Integer.valueOf(configurationService.getValue("EMAIL_PORT"));

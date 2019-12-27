@@ -60,18 +60,6 @@ public class Blueprint {
     }
 
     /**
-     * Identify if there is any recipient and return the first one.
-     *
-     * @return
-     */
-    public String getRecipient() {
-        if (this.recipient.size() > 0) {
-            return recipient.get(0);
-        }
-        return "";
-    }
-
-    /**
      * Return a list of recipients.
      *
      * @return

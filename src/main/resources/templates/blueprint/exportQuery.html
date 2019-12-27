@@ -73,11 +73,12 @@
                                     <tr>
                                         <td class="bodycopy">
                                             <b>Connection: </b>                                            
-                                            <span th:text="${connection.name}"></span>                                            
+                                            <span th:text="${connection.name}"></span>      
+                                            <br /> 
                                         </td>
                                     </tr>
 
-                                    <tr>
+                                    <tr th:if="${queryContent}">
                                         <td class="bodycopy">
                                             <br /> 
                                             <b>Query: </b>

@@ -37,8 +37,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
 import java.util.UUID;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.mail.EmailAttachment;
+import org.apache.commons.mail.HtmlEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -215,15 +214,27 @@ public class ExportService {
             }
 
             //New blueprint.
-            Blueprint blueprint = new Blueprint(exportEmail.getSubject(), "exportQuery");
+            Blueprint blueprint = new Blueprint(
+                    exportEmail.getSubject(),
+                    "exportQuery");
             blueprint.setRecipient(exportEmail.getRecipient());
             blueprint.setFile(file);
             blueprint.addVariable("query", exportEmail.getQuery());
+            blueprint.addVariable("queryContent", exportEmail.isQueryContent());
             blueprint.addVariable("connection", exportEmail.getConnection());
             blueprint.addVariable("content", exportEmail.getContent());
 
+            //Set the HTML content to send on e-mail.
+            HtmlEmail mail = new HtmlEmail();
+
+            if (blueprint.getRecipients().size() > 0) {
+                for (String recipient : blueprint.getRecipients()) {
+                    mail.addTo(recipient);
+                }
+            }
+
             //Send e-mail to users.
-            this.mailService.sendMail(blueprint);
+            this.mailService.send(blueprint, mail);
 
             //Delete temp file.
             Files.deleteIfExists(path);

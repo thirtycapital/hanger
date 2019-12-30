@@ -214,9 +214,7 @@ public class ExportService {
             }
 
             //New blueprint.
-            Blueprint blueprint = new Blueprint(
-                    exportEmail.getSubject(),
-                    "exportQuery");
+            Blueprint blueprint = new Blueprint(exportEmail.getSubject(), "exportQuery");
             blueprint.setRecipient(exportEmail.getRecipient());
             blueprint.setFile(file);
             blueprint.addVariable("query", exportEmail.getQuery());

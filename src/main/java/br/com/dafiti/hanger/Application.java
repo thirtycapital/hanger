@@ -74,7 +74,7 @@ public class Application extends SpringBootServletInitializer {
 
     /**
      * Define the password encoder.
-     * 
+     *
      * @return bCryptPasswordEncoder
      */
     @Bean
@@ -91,9 +91,8 @@ public class Application extends SpringBootServletInitializer {
     @Bean
     public Executor asyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(25);
-        executor.setMaxPoolSize(50);
-        executor.setQueueCapacity(150);
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(25);
         executor.setThreadNamePrefix("hanger_");
         executor.initialize();
         return executor;

@@ -3,7 +3,7 @@
 
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>New user created on Hanger.</title>
+        <title>Query export</title>
         <style type="text/css">
             body {margin: 0; padding: 0; min-width: 100%!important;}
             img {height: auto;}
@@ -42,7 +42,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td class="h1" style="padding: 5px 0 0 0;">
-                                                        Query result.
+                                                        Query export
                                                     </td>
                                                 </tr>
                                             </table>
@@ -66,21 +66,14 @@
                             <td class="innerpadding borderbottom">
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
-                                        <td class="h2">
-                                            Additional
-                                        </td>
-                                    </tr>
-                                    <tr>
                                         <td class="bodycopy">
                                             <b>Connection: </b>                                            
                                             <span th:text="${connection.name}"></span>      
-                                            <br /> 
                                         </td>
                                     </tr>
 
                                     <tr th:if="${queryContent}">
                                         <td class="bodycopy">
-                                            <br /> 
                                             <b>Query: </b>
                                             <span th:text="${query}"></span>                                            
                                         </td>

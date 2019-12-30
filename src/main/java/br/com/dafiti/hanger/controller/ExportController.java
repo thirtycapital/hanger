@@ -148,12 +148,9 @@ public class ExportController {
 
         try {
             this.exportService.exportToEmail(exportEmail, principal);
-
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Query resultset sent successfully in e-mail.");
+            redirectAttributes.addFlashAttribute("successMessage", "Query resultset sent by e-mail!");
         } catch (Exception exception) {
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    new Message().getErrorMessage(exception));
+            redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(exception));
         }
 
         return "redirect:/workbench/workbench/";

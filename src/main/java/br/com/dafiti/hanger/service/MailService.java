@@ -24,9 +24,7 @@
 package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.Blueprint;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -125,7 +123,7 @@ public class MailService {
     private String getTemplateHTMLOf(String path, String template, HashMap<String, Object> variables) {
         //Define the template resolver. 
         TemplateResolver resolver = new ClassLoaderTemplateResolver();
-        resolver.setPrefix(path += !path.endsWith("/") ? '/' : "");
+        resolver.setPrefix(path + (!path.endsWith("/") ? '/' : ""));
         resolver.setSuffix(".html");
         resolver.setTemplateMode("HTML5");
 

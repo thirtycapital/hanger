@@ -107,7 +107,7 @@ public class Watchdog {
                             .stream()
                             .filter(jobParent -> !jobParent.getScope().equals(Scope.OPTIONAL) && jobParent.getJob().isEnabled())
                             .collect(Collectors.toList())
-                            .size() == 0;
+                            .isEmpty();
 
                     if (!onlyOptionalorDisabled) {
                         this.catcher(job);
@@ -186,9 +186,8 @@ public class Watchdog {
      * Find broken connections.
      */
     private void connectionPatrol() {
-        for (ConnectionStatus status : this.connectionService.listConnectionStatus()) {
+        this.connectionService.listConnectionStatus().forEach((status) -> {
             StringBuilder message = new StringBuilder();
-
             if (status.getStatus().equals(Status.FAILURE)) {
                 message
                         .append(":broken_heart: The connection ")
@@ -197,6 +196,6 @@ public class Watchdog {
 
                 slackService.send(message.toString());
             }
-        }
+        });
     }
 }

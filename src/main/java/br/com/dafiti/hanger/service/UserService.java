@@ -47,7 +47,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final SessionRegistry sessionRegistry;
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final MailService mailService;
 
     public UserService(

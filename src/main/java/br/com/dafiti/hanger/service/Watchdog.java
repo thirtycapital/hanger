@@ -34,7 +34,6 @@ import br.com.dafiti.hanger.model.JobBuild;
 import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.option.Status;
-import br.com.dafiti.hanger.service.ConnectionService.ConnectionStatus;
 import br.com.dafiti.hanger.service.JobBuildPushService.PushInfo;
 
 /**

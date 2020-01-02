@@ -24,7 +24,6 @@
 package br.com.dafiti.hanger.model;
 
 /**
- * This class has the subject and summary of its jobs.
  *
  * @author Helio Leal
  * @author Valdiney Gomes

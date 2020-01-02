@@ -146,14 +146,9 @@ public class MailService {
         String user = configurationService.getValue("EMAIL_ADDRESS");
         String password = configurationService.getValue("EMAIL_PASSWORD");
 
-        // All parameters need to be full filled.
-        if (host.isEmpty()
+        return !(host.isEmpty()
                 || port.isEmpty()
                 || user.isEmpty()
-                || password.isEmpty()) {
-
-            return false;
-        }
-        return true;
+                || password.isEmpty());
     }
 }

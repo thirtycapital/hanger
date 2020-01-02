@@ -26,16 +26,15 @@ package br.com.dafiti.hanger.model;
 import java.util.List;
 
 /**
- * Export e-mail.
  *
  * @author Helio Leal
  */
-public class ExportEmail {
+public class Email {
 
     List<String> recipient;
     String query;
     String subject;
-    String content;    
+    String content;
     Connection connection;
     boolean queryContent;
 

@@ -29,13 +29,13 @@ import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 /**
- * 
+ *
  * @author Helio Leal
  */
-public interface ConnectionQueryStoreRepository 
+public interface ConnectionQueryStoreRepository
         extends CrudRepository<ConnectionQueryStore, Long> {
-    
+
     public List<ConnectionQueryStore> findByUser(User user);
-    
+
     public List<ConnectionQueryStore> findBySharedTrue();
 }

@@ -61,10 +61,10 @@ public class EventLogController {
     @GetMapping(path = {"/list", "/list/filter"})
     public String listServer(Model model) throws ParseException {
         this.modelDefault(model);
-        
+
         return "eventlog/list";
     }
-    
+
     /**
      * List log with date filter.
      *
@@ -81,19 +81,19 @@ public class EventLogController {
 
         this.modelDefault(model, dateFrom, dateTo);
         return "eventlog/list";
-    }    
-    
+    }
+
     /**
      * Model default attribute.
      *
      * @param model Model
      */
     private void modelDefault(Model model) throws ParseException {
-        
+
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
         String from = sdfDate.format(new Date()) + " 00:00:00";
         String to = sdfDate.format(new Date()) + " 23:59:59";
-        
+
         SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date dateFrom = sdfDateTime.parse(from);
         Date dateTo = sdfDateTime.parse(to);
@@ -109,10 +109,10 @@ public class EventLogController {
      * @param dateTo end date
      */
     private void modelDefault(Model model, Date dateFrom, Date dateTo) {
-        model.addAttribute("events", eventLogService.listDateBetween(dateFrom, dateTo));
-
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        model.addAttribute("events", eventLogService.listDateBetween(dateFrom, dateTo));
         model.addAttribute("dateFrom", simpleDateFormat.format(dateFrom));
         model.addAttribute("dateTo", simpleDateFormat.format(dateTo));
-    }    
+    }
 }

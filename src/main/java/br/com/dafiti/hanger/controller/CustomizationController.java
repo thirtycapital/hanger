@@ -61,9 +61,7 @@ public class CustomizationController {
     public byte[] getLogo() throws IOException {
         File logo = new File(System.getProperty("user.home") + "/.hanger/logo");
 
-        //Identify if the custom logo exists. 
         if (!logo.exists()) {
-            //Get the default logo. 
             logo = new ClassPathResource("static/images/hanger.png").getFile();
         }
 
@@ -97,7 +95,7 @@ public class CustomizationController {
     }
 
     /**
-     * Shows change logo modal.
+     * Update logo modal.
      *
      * @param model Model
      * @return Change logo modal

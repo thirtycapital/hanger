@@ -25,7 +25,7 @@ package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.Blueprint;
 import br.com.dafiti.hanger.model.Connection;
-import br.com.dafiti.hanger.model.ExportEmail;
+import br.com.dafiti.hanger.model.Email;
 import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.option.ExportType;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
@@ -179,7 +179,7 @@ public class ExportService {
      * @param principal
      * @throws java.io.IOException
      */
-    public void exportToEmail(ExportEmail exportEmail, Principal principal)
+    public void exportToEmail(Email exportEmail, Principal principal)
             throws IOException, Exception {
 
         QueryResultSet queryResultSet = this.connectionService

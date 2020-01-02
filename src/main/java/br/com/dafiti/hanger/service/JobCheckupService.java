@@ -258,40 +258,7 @@ public class JobCheckupService {
 
                         //Verify if this check failed. 
                         if (!validated || (!validated && log)) {
-                            if (job.getApprover() != null) {
-                                Blueprint blueprint = new Blueprint(job.getApprover().getEmail(), "Nick Checkup failure", "checkupFailure");
-                                blueprint.addVariable("approver", job.getApprover().getFirstName());
-                                blueprint.addVariable("job", job.getName());
-                                blueprint.addVariable("checkup", checkup.getDescription());
-
-                                mailService.send(blueprint);
-                            }
-
-                            //Verify if this job has some notification to do.
-                            if (job.isNotify()) {
-                                StringBuilder message = new StringBuilder();
-
-                                message
-                                        .append(":broken_heart: ")
-                                        .append("*")
-                                        .append(job.getDisplayName())
-                                        .append("*’s")
-                                        .append(" checkup ")
-                                        .append("*")
-                                        .append(checkup.getDescription())
-                                        .append("*")
-                                        .append(" failed because the result was ")
-                                        .append("*")
-                                        .append(value)
-                                        .append("*")
-                                        .append(" but the expected is ")
-                                        .append(checkup.getConditional())
-                                        .append(" *")
-                                        .append(checkup.getThreshold())
-                                        .append("*");
-
-                                slackService.send(message.toString(), job.getChannel());
-                            }
+                            this.notify(checkup, value);
                         }
 
                         //Checked will be always true when is LOG_AND_CONTINUE.
@@ -301,7 +268,6 @@ public class JobCheckupService {
                     }
                 }
 
-                //Clear tries.
                 if (validated) {
                     retryService.remove(job);
                 } else {
@@ -627,7 +593,7 @@ public class JobCheckupService {
     }
 
     /**
-     * Identify if threshold is a macro.
+     * Identify if the threshold is a macro.
      *
      * @param threshold String
      * @return String macro value or threshold itself value.
@@ -655,5 +621,46 @@ public class JobCheckupService {
         }
 
         return threshold;
+    }
+
+    /**
+     * Checkup failure notification.
+     *
+     * @param checkup Checkup
+     * @param value Evaluated value
+     */
+    public void notify(JobCheckup checkup, String value) {
+        Job job = checkup.getJob();
+
+        //Identifies if the job has approver. 
+        if (job.getApprover() != null) {
+            Blueprint blueprint = new Blueprint(job.getApprover().getEmail(), "Nick Checkup failure", "checkupFailure");
+            blueprint.addVariable("approver", job.getApprover().getFirstName());
+            blueprint.addVariable("job", job.getName());
+            blueprint.addVariable("checkup", checkup.getDescription());
+
+            mailService.send(blueprint);
+        }
+
+        //Identify if the job has notification enabled.
+        if (job.isNotify()) {
+            StringBuilder message = new StringBuilder();
+
+            message
+                    .append(":broken_heart: ")
+                    .append("*")
+                    .append(job.getDisplayName())
+                    .append("*’s checkup *")
+                    .append(checkup.getDescription())
+                    .append("* failed because the result was *")
+                    .append(value)
+                    .append("* but the expected is ")
+                    .append(checkup.getConditional())
+                    .append(" *")
+                    .append(checkup.getThreshold())
+                    .append("*");
+
+            slackService.send(message.toString(), job.getChannel());
+        }
     }
 }

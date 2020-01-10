@@ -58,7 +58,7 @@
                                     <option th:each="connection : ${connections}" 
                                             th:value="${connection.id}" 
                                             th:text="${connection.name}"
-                                            th:selected="${connectionQueryStore != null ? connection == connectionQueryStore.connection : 0}">
+                                            th:selected="${connectionQueryStore != null ? connection == connectionQueryStore.connection : jobCheckup != null ? connection == jobCheckup.connection : 0}">
                                     </option>
                                 </select>
                             </div>
@@ -87,7 +87,7 @@
                                     rows="10" 
                                     minlength="1" 
                                     maxlength="5000"
-                                    th:text="${connectionQueryStore != null ? connectionQueryStore.query : ''}"></textarea>
+                                    th:text="${connectionQueryStore != null ? connectionQueryStore.query : jobCheckup != null ? jobCheckup.query : ''}"></textarea>
                             </div>
                         </div>
                     </div>                    

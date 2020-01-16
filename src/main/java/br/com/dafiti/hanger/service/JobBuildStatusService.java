@@ -31,6 +31,11 @@ import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.option.Status;
+import static com.cronutils.model.CronType.QUARTZ;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.model.time.ExecutionTime;
+import com.cronutils.parser.CronParser;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import org.joda.time.DateTime;
@@ -124,82 +129,107 @@ public class JobBuildStatusService {
         boolean buildable = job.isEnabled();
 
         if (buildable) {
-            //Get the status of each child.
-            JobStatus jobStatus = job.getStatus();
+            //Identify if it is within the job execution period defined by a cron.
+            buildable = isTimeRestrictionMatch(job.getTimeRestriction());
 
-            //Identify if the job has status.
-            buildable = (jobStatus == null);
+            if (buildable) {
+                //Get the status of each child.
+                JobStatus jobStatus = job.getStatus();
 
-            if (!buildable) {
-                JobBuild jobBuild = jobStatus.getBuild();
-
-                //Identify if the job was never trigger.
-                buildable = (jobBuild == null);
+                //Identify if the job has status.
+                buildable = (jobStatus == null);
 
                 if (!buildable) {
-                    //Get the job build date. 
-                    Date jobBuildDate = jobBuild.getDate();
+                    JobBuild jobBuild = jobStatus.getBuild();
 
-                    //Identify if the job was not built today.
-                    buildable = Days.daysBetween(new LocalDate(jobBuildDate), new LocalDate()).getDays() != 0;
+                    //Identify if the job was never trigger.
+                    buildable = (jobBuild == null);
 
                     if (!buildable) {
-                        //Identify if the job was not built in the antecipation tolerance interval today.
-                        if (job.getTolerance() != 0) {
-                            buildable = Days.daysBetween(
-                                    new LocalDate(new DateTime(jobBuildDate).plusHours(job.getTolerance())),
-                                    new LocalDate()).getDays() != 0;
+                        //Get the job build date. 
+                        Date jobBuildDate = jobBuild.getDate();
+
+                        //Identify if the job was not built today.
+                        buildable = Days.daysBetween(new LocalDate(jobBuildDate), new LocalDate()).getDays() != 0;
+
+                        if (!buildable) {
+                            //Identify if the job was not built in the antecipation tolerance interval today.
+                            if (job.getTolerance() != 0) {
+                                buildable = Days.daysBetween(
+                                        new LocalDate(new DateTime(jobBuildDate).plusHours(job.getTolerance())),
+                                        new LocalDate()).getDays() != 0;
+                            }
                         }
                     }
-                }
-
-                if (!buildable) {
-                    //Identify if the job was not built fully.
-                    buildable = (jobStatus.getScope() == Scope.PARTIAL);
 
                     if (!buildable) {
-                        //Identify if the job can be rebuilt along the day. 
-                        buildable = job.isRebuild();
+                        //Identify if the job was not built fully.
+                        buildable = (jobStatus.getScope() == Scope.PARTIAL);
 
-                        if (buildable) {
-                            //Identify if should wait all parents be built before rebuild. 
-                            if (job.isRebuildBlocked()) {
-                                boolean blocked;
-                                List<JobParent> parents = job.getParent();
+                        if (!buildable) {
+                            //Identify if the job can be rebuilt along the day. 
+                            buildable = job.isRebuild();
 
-                                for (JobParent parent : parents) {
-                                    //Identify if a parent is a rebuild blocker. 
-                                    if (parent.isBlocker()) {
-                                        blocked = this.isBuilt(parent.getParent(), jobBuild.getDate());
+                            if (buildable) {
+                                //Identify if should wait all parents be built before rebuild. 
+                                if (job.isRebuildBlocked()) {
+                                    boolean blocked;
+                                    List<JobParent> parents = job.getParent();
 
-                                        if (!blocked) {
-                                            buildable = false;
-                                            break;
+                                    for (JobParent parent : parents) {
+                                        //Identify if a parent is a rebuild blocker. 
+                                        if (parent.isBlocker()) {
+                                            blocked = this.isBuilt(parent.getParent(), jobBuild.getDate());
+
+                                            if (!blocked) {
+                                                buildable = false;
+                                                break;
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            if (buildable) {
-                                //Identify if it is in waiting time.
-                                if (job.getWait() != 0) {
-                                    buildable = Minutes.minutesBetween(new DateTime(
-                                            jobBuild.getDate()),
-                                            new DateTime()).getMinutes() >= job.getWait();
+                                if (buildable) {
+                                    //Identify if it is in waiting time.
+                                    if (job.getWait() != 0) {
+                                        buildable = Minutes.minutesBetween(new DateTime(
+                                                jobBuild.getDate()),
+                                                new DateTime()).getMinutes() >= job.getWait();
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                if (!buildable) {
-                    //Identify if the job has any problem or is a rebuild mesh.
-                    buildable = jobStatus.getFlow().equals(Flow.ERROR)
-                            || jobStatus.getFlow().equals(Flow.REBUILD);
+                    if (!buildable) {
+                        //Identify if the job has any problem or is a rebuild mesh.
+                        buildable = jobStatus.getFlow().equals(Flow.ERROR)
+                                || jobStatus.getFlow().equals(Flow.REBUILD);
+                    }
                 }
             }
         }
 
         return buildable;
+    }
+
+    /**
+     * Identifies if this instant is matched by the cron expression.
+     *
+     * @param cron Cron expression.
+     * @return Instant is matched by the cron expression.
+     */
+    public static boolean isTimeRestrictionMatch(String cron) {
+        boolean match = true;
+
+        if (!cron.equals(null)) {
+            if (!cron.isEmpty()) {
+                match = ExecutionTime.forCron(
+                        new CronParser(CronDefinitionBuilder.instanceDefinitionFor(QUARTZ))
+                                .parse(cron)).isMatch(ZonedDateTime.now());
+            }
+        }
+
+        return match;
     }
 }

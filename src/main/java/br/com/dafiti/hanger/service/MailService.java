@@ -61,8 +61,31 @@ public class MailService {
      */
     @Async
     public void send(Blueprint blueprint) {
-        HtmlEmail mail = new HtmlEmail();
-        
+
+        try {
+            HtmlEmail mail = new HtmlEmail();
+
+            if (blueprint.getRecipients().size() > 0) {
+                for (String recipient : blueprint.getRecipients()) {
+                    mail.addTo(recipient);
+                }
+            }
+
+            this.send(blueprint, mail);
+        } catch (EmailException ex) {
+            Logger.getLogger(MailService.class.getName())
+                    .log(Level.SEVERE, "Fail sending e-mail", ex);
+        }
+    }
+
+    /**
+     * Send a mail with a HTML blueprint.
+     *
+     * @param blueprint blueprint
+     * @param mail
+     */
+    public void send(Blueprint blueprint, HtmlEmail mail) {
+
         String host = configurationService.getValue("EMAIL_HOST");
         int port = Integer.valueOf(configurationService.getValue("EMAIL_PORT"));
         String email = configurationService.getValue("EMAIL_ADDRESS");
@@ -76,8 +99,13 @@ public class MailService {
             mail.addHeader("X-Priority", "1");
             mail.setFrom(email);
             mail.setSubject(blueprint.getSubject());
-            mail.addTo(blueprint.getRecipient());
             mail.setHtmlMsg(this.getTemplateHTMLOf(blueprint.getPath(), blueprint.getTemplate(), blueprint.getVariables()));
+
+            //Check if blueprint has attachment.
+            if (blueprint.getFile() != null) {
+                mail.attach(blueprint.getFile());
+            }
+
             mail.send();
         } catch (EmailException ex) {
             Logger.getLogger(MailService.class.getName()).log(Level.SEVERE, "Fail sending e-mail", ex);
@@ -95,7 +123,7 @@ public class MailService {
     private String getTemplateHTMLOf(String path, String template, HashMap<String, Object> variables) {
         //Define the template resolver. 
         TemplateResolver resolver = new ClassLoaderTemplateResolver();
-        resolver.setPrefix(path += !path.endsWith("/") ? '/' : "");
+        resolver.setPrefix(path + (!path.endsWith("/") ? '/' : ""));
         resolver.setSuffix(".html");
         resolver.setTemplateMode("HTML5");
 
@@ -106,26 +134,21 @@ public class MailService {
         //Proccess the template. 
         return engine.process(template, new Context(Locale.getDefault(), variables));
     }
-    
+
     /**
      * Verify if configuration of e-mail is ok.
-     * 
+     *
      * @return
      */
     public boolean isEmailOk() {
-    	String host = configurationService.getValue("EMAIL_HOST");
+        String host = configurationService.getValue("EMAIL_HOST");
         String port = configurationService.getValue("EMAIL_PORT");
         String user = configurationService.getValue("EMAIL_ADDRESS");
         String password = configurationService.getValue("EMAIL_PASSWORD");
-        
-        // All parameters need to be full filled.
-        if (host.isEmpty() || 
-    		port.isEmpty() ||
-    		user.isEmpty() || 
-    		password.isEmpty()) {
 
-			return false;
-        }
-        return true;
+        return !(host.isEmpty()
+                || port.isEmpty()
+                || user.isEmpty()
+                || password.isEmpty());
     }
 }

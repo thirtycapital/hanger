@@ -27,7 +27,6 @@ import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobBuild;
 import br.com.dafiti.hanger.model.JobBuildMetric;
 import br.com.dafiti.hanger.option.Phase;
-import java.sql.Time;
 import java.util.Date;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
@@ -51,7 +50,7 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
             + "     j.job = :job "
             + " and "
             + "     j.number = :buildNumber")
-    Time findJobBuildTime(
+    String findJobBuildTime(
             @Param("job") Job job,
             @Param("buildNumber") int buildNumber);
 

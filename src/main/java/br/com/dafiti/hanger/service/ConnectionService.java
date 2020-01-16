@@ -31,9 +31,6 @@ import br.com.dafiti.hanger.option.Event;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.repository.ConnectionRepository;
 import br.com.dafiti.hanger.security.PasswordCryptor;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.security.Principal;
 import java.sql.Driver;
 import java.sql.ResultSet;
@@ -170,9 +167,7 @@ public class ConnectionService {
                         properties.setProperty("connectTimeout", "5000");
                         break;
                     case GENERIC:
-                        URL url = new URL("file:${user.home}/.hanger/drivers/");
-                        URLClassLoader urlClassLoader = new URLClassLoader(new URL[]{url});
-                        driver = (Driver) Class.forName(connection.getClassName(), true, urlClassLoader).newInstance();
+                        driver = (Driver) Class.forName(connection.getClassName()).newInstance();
                         break;
                     default:
                         break;
@@ -186,7 +181,6 @@ public class ConnectionService {
 
                 dataSource.setConnectionProperties(properties);
             } catch (SQLException
-                    | MalformedURLException
                     | ClassNotFoundException
                     | InstantiationException
                     | IllegalAccessException ex) {
@@ -275,7 +269,6 @@ public class ConnectionService {
                             ));
                 }
             }
-
         } catch (SQLException ex) {
             Logger.getLogger(
                     ConnectionService.class.getName())
@@ -310,19 +303,13 @@ public class ConnectionService {
             ResultSet tables = datasource.getConnection()
                     .getMetaData()
                     .getTables(
-                            catalog,
-                            schema,
+                            ("null".equals(catalog) || catalog.isEmpty()) ? null : catalog,
+                            ("null".equals(schema) || schema.isEmpty()) ? null : schema,
                             "%",
                             new String[]{"TABLE", "EXTERNAL TABLE"});
 
-            // Get maximum number of tables to display. 
-            int max = Integer
-                    .valueOf(configurationService
-                            .findByParameter("WORKBENCH_MAX_ENTITY_NUMBER")
-                            .getValue());
-
             while (tables.next()) {
-                if (table.size() == max) {
+                if (this.isDisplayLimit(table.size())) {
                     break;
                 } else {
                     table.add(
@@ -336,7 +323,7 @@ public class ConnectionService {
         } catch (SQLException ex) {
             Logger.getLogger(
                     ConnectionService.class.getName())
-                    .log(Level.SEVERE, "Fail getting metadata of " + connection.getName(), ex);
+                    .log(Level.SEVERE, "Fail getting tables of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
@@ -371,7 +358,12 @@ public class ConnectionService {
         try {
             ResultSet columns = datasource.getConnection()
                     .getMetaData()
-                    .getColumns(catalog, schema, table, null);
+                    .getColumns(
+                            ("null".equals(catalog) || catalog.isEmpty()) ? null : catalog,
+                            ("null".equals(schema) || schema.isEmpty()) ? null : schema,
+                            table,
+                            null
+                    );
 
             while (columns.next()) {
                 column.add(
@@ -386,7 +378,7 @@ public class ConnectionService {
         } catch (SQLException ex) {
             Logger.getLogger(
                     ConnectionService.class.getName())
-                    .log(Level.SEVERE, "Fail getting metadata of " + connection.getName(), ex);
+                    .log(Level.SEVERE, "Fail getting columns of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
@@ -432,7 +424,7 @@ public class ConnectionService {
         } catch (SQLException ex) {
             Logger.getLogger(
                     ConnectionService.class.getName())
-                    .log(Level.SEVERE, "Fail getting metadata of " + connection.getName(), ex);
+                    .log(Level.SEVERE, "Fail getting primary key of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
@@ -547,25 +539,22 @@ public class ConnectionService {
      * @param connection
      */
     @Caching(evict = {
-        @CacheEvict(value = "tables", key = "#connection")})
+        @CacheEvict(value = "tables", key = "#connection")
+    })
     public void evictConnection(Connection connection) {
     }
 
     /**
-     * Identify if maximum number of tables was reached.
+     * Identifies if the table quantity excedeed the configuration limit.
      *
-     * @param numberOfTables
-     * @return
+     * @param tables Table quantity.
+     * @return table quantity excedeed the configuration limit
      */
-    public boolean checkNumberOfTables(int numberOfTables) {
-
-        // Get maximum number of tables to display. 
-        int max = Integer
+    public boolean isDisplayLimit(int tables) {
+        return tables >= Integer
                 .valueOf(configurationService
                         .findByParameter("WORKBENCH_MAX_ENTITY_NUMBER")
                         .getValue());
-
-        return numberOfTables >= max;
     }
 
     /**

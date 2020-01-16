@@ -125,6 +125,7 @@ public class JobDetailsService {
                         case APPROVED:
                         case DISAPPROVED:
                         case ERROR:
+                        case CHECKUP:
                             status = Status.valueOf(jobStatus.getFlow().toString());
                             building
                                     .append((yesterday ? "( - " + tolerance + " hours ) Yesterday" : "Today"))
@@ -167,8 +168,7 @@ public class JobDetailsService {
                 } else {
                     //Identify the last build flow. 
                     if (!jobStatus.getFlow().equals(Flow.NORMAL)
-                            && !jobStatus.getFlow().equals(Flow.TRANSIENT)
-                            && !jobStatus.getFlow().equals(Flow.UPSTREAM)) {
+                            && !jobStatus.getFlow().equals(Flow.TRANSIENT)) {
 
                         status = Status.valueOf(jobStatus.getFlow().toString());
                     }
@@ -223,7 +223,8 @@ public class JobDetailsService {
             //Identifi if the job scope. 
             scope
                     .append(jobStatus.getScope().toString())
-                    .append((job.isRebuild() ? ", rebuildable" + (job.isRebuildBlocked() ? " if all blocker parent are done" : "") + (job.getWait() != 0 ? " once every " + job.getWait() + " min" : "") : ""));
+                    .append((job.isRebuild() ? ", rebuild" + (job.isRebuildBlocked() ? " if all blocker parent are done" : "") + (job.getWait() != 0 ? " once every " + job.getWait() + " min" : "") : ""))
+                    .append((job.getTimeRestriction() == null || job.getTimeRestriction().isEmpty()) ? "" : ", time restriction");
 
             //Identify the number of build retries. 
             if (retryService.exists(job)
@@ -251,7 +252,7 @@ public class JobDetailsService {
         return new JobDetails(
                 job,
                 status,
-                scope.toString(),
+                scope.toString().toLowerCase(),
                 flow,
                 phase,
                 number,

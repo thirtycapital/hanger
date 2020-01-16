@@ -25,6 +25,7 @@ package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.model.ConnectionQueryStore;
+import br.com.dafiti.hanger.model.JobCheckup;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.WorkbenchService;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
@@ -53,7 +54,9 @@ public class WorkbenchController {
     private final WorkbenchService workbenchService;
 
     @Autowired
-    public WorkbenchController(ConnectionService connectionService, WorkbenchService workbenchService) {
+    public WorkbenchController(
+            ConnectionService connectionService,
+            WorkbenchService workbenchService) {
         this.connectionService = connectionService;
         this.workbenchService = workbenchService;
     }
@@ -86,7 +89,10 @@ public class WorkbenchController {
             Principal principal,
             Model model) {
 
-        QueryResultSet queryResultSet = connectionService.getQueryResultSet(connection, query, principal);
+        QueryResultSet queryResultSet = connectionService.getQueryResultSet(
+                connection,
+                query,
+                principal);
 
         if (queryResultSet.hasError()) {
             model.addAttribute("errorMessage", queryResultSet.getError());
@@ -113,6 +119,23 @@ public class WorkbenchController {
 
         return "workbench/workbench";
     }
+    
+    /**
+     * Job checkup query on workbench
+     *
+     * @param jobCheckup
+     * @param model Model
+     * @return SQL workbench template.
+     */
+    @GetMapping(path = "/job/checkup/{id}")
+    public String workbench(
+            @PathVariable(name = "id") JobCheckup jobCheckup,
+            Model model) {
+        model.addAttribute("jobCheckup", jobCheckup);
+        model.addAttribute("connections", connectionService.list());
+
+        return "workbench/workbench";
+    }    
 
     /**
      * Workbench tree list.

@@ -29,14 +29,11 @@ import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.service.JobBuildService.BuildInfo;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,32 +93,43 @@ public class JobBuildPushService {
                 //Define the job status.
                 if (childJobStatus == null) {
                     childJobStatus = new JobStatus();
+                    childJobStatus.setScope(push.getScope());
+                    childJobStatus.setDate(new Date());
+
+                    //Defines a relation between a job and it status.
+                    childJobStatus = jobStatusService.save(childJobStatus);
+                    childJob.setStatus(childJobStatus);
+                    jobService.save(childJob);
+                } else {
+                    childJobStatus.setScope(push.getScope());
+                    childJobStatus.setDate(new Date());
                 }
-
-                //Identify the job scope.
-                childJobStatus.setScope(push.getScope());
-
-                //Identify the job status date. 
-                childJobStatus.setDate(new Date());
 
                 //Build the job child. 
                 try {
+                    //Set child job as rebuilding.
                     childJobStatus.setFlow(Flow.REBUILD);
+                    jobStatusService.save(childJobStatus);
 
                     //Build the job.
                     BuildInfo buildInfo = jobBuildService.build(childJob);
 
                     //Identify if the prevalidation was sucessfuly.
                     if (!buildInfo.isHealthy()) {
-                        //Mark child job build as blocked in case pre-validation fail. 
+                        //Set child job as blocked in case pre-validation fail. 
                         childJobStatus.setFlow(Flow.BLOCKED);
+                        jobStatusService.save(childJobStatus);
 
                         //Publish a job notification.
                         jobNotificationService.notify(childJob, true);
+                    } else {
+                        childJobStatus.setFlow(Flow.NORMAL);
+                        jobStatusService.save(childJobStatus);
                     }
-                } catch (URISyntaxException | IOException ex) {
-                    //Mark child job build as fail in case of error. 
+                } catch (Exception ex) {
+                    //Set child job build as fail in case of error. 
                     childJobStatus.setFlow(Flow.ERROR);
+                    jobStatusService.save(childJobStatus);
 
                     //Publish a job notification.
                     jobNotificationService.notify(childJob, true);
@@ -130,15 +138,6 @@ public class JobBuildPushService {
                     Logger.getLogger(EyeService.class.getName())
                             .log(Level.SEVERE, "Fail building job: " + childJob.getName(), ex);
                 }
-
-                //Save the job status.
-                childJobStatus = jobStatusService.save(childJobStatus);
-
-                //Link job status with job.
-                childJob.setStatus(childJobStatus);
-
-                //Update the job.
-                jobService.save(childJob);
             }
         });
     }

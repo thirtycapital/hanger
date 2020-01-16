@@ -26,11 +26,11 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobBuild;
 import br.com.dafiti.hanger.model.JobStatus;
+import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.repository.JobBuildRepository;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.sql.Time;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -45,16 +45,22 @@ public class JobBuildService {
     private final JobBuildRepository jobBuildRepository;
     private final JenkinsService jenkinsService;
     private final JobCheckupService checkupService;
+    private final JobStatusService jobStatusService;
+    private final JobNotificationService jobNotificationService;
 
     @Autowired
     public JobBuildService(
             JobBuildRepository jobBuildRepository,
             JenkinsService jenkinsService,
-            JobCheckupService checkupService) {
+            JobCheckupService checkupService,
+            JobStatusService jobStatusService,
+            JobNotificationService jobNotificationService) {
 
         this.jobBuildRepository = jobBuildRepository;
         this.jenkinsService = jenkinsService;
         this.checkupService = checkupService;
+        this.jobStatusService = jobStatusService;
+        this.jobNotificationService = jobNotificationService;
     }
 
     /**
@@ -84,7 +90,7 @@ public class JobBuildService {
      * @return Elapsed time.
      */
     @Cacheable(value = "jobBuildTime", key = "{#job.id, #buildNumber}")
-    public Time findJobBuildTime(
+    public String findJobBuildTime(
             Job job,
             int buildNumber) {
 
@@ -99,7 +105,7 @@ public class JobBuildService {
      * @throws java.net.URISyntaxException
      * @throws java.io.IOException
      */
-    public BuildInfo build(Job job) throws URISyntaxException, IOException {
+    public BuildInfo build(Job job) throws Exception {
         Scope scope;
         boolean built = false;
         boolean healthy = true;
@@ -124,7 +130,16 @@ public class JobBuildService {
 
             //Evalute prevalidation. 
             if (healthy) {
-                built = jenkinsService.build(job);
+                try {
+                    built = jenkinsService.build(job);
+
+                    if (!built) {
+                        jobStatusService.updateFlow(job.getStatus(), Flow.ERROR);
+                        jobNotificationService.notify(job, true);
+                    }
+                } catch (Exception ex) {
+                    Logger.getLogger(JobBuildService.class.getName()).log(Level.SEVERE, "Fail building job " + job.getName() + " manually", ex);
+                }
             }
         }
 

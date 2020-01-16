@@ -23,10 +23,15 @@
  */
 package br.com.dafiti.hanger.model;
 
+import com.cronutils.descriptor.CronDescriptor;
+import static com.cronutils.model.CronType.QUARTZ;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.parser.CronParser;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -45,16 +50,15 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
+import org.apache.commons.lang.StringUtils;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.OrderBy;
 
 /**
  *
@@ -84,6 +88,7 @@ public class Job extends Tracker implements Serializable {
     private boolean notify;
     private boolean rebuild;
     private boolean rebuildBlocked;
+    private String timeRestriction;
 
     public Job() {
     }
@@ -138,9 +143,9 @@ public class Job extends Tracker implements Serializable {
     @Transient
     public String getDisplayName() {
         if (alias == null || alias.isEmpty()) {
-            return name;
+            return name.replaceAll(" ", "_");
         }
-        return alias + " [alias]";
+        return alias.replaceAll(" ", "_") + "[alias]";
     }
 
     @Column(columnDefinition = "text")
@@ -151,7 +156,7 @@ public class Job extends Tracker implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     @Transient
     public String getHTMLDescription() {
         Parser parser = Parser.builder().build();
@@ -163,7 +168,6 @@ public class Job extends Tracker implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "status_id", referencedColumnName = "id")
-    @BatchSize(size = 10)
     public JobStatus getStatus() {
         if (status == null) {
             status = new JobStatus();
@@ -193,9 +197,10 @@ public class Job extends Tracker implements Serializable {
         this.subject.add(subject);
     }
 
-    @OneToMany(mappedBy = "job", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @Fetch(FetchMode.SELECT)
-    @OrderBy(value = "id, scope")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "job_id", referencedColumnName = "id")
+    @BatchSize(size = 20)
+    @OrderBy(clause = "id, scope")
     public List<JobParent> getParent() {
         return parent;
     }
@@ -210,7 +215,7 @@ public class Job extends Tracker implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "job_id", referencedColumnName = "id")
-    @BatchSize(size = 10)
+    @BatchSize(size = 20)
     public List<JobCheckup> getCheckup() {
         return checkup;
     }
@@ -225,7 +230,7 @@ public class Job extends Tracker implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "job_id", referencedColumnName = "id")
-    @BatchSize(size = 10)
+    @BatchSize(size = 20)
     public List<JobApproval> getApproval() {
         return approval;
     }
@@ -317,6 +322,34 @@ public class Job extends Tracker implements Serializable {
 
     public void setRebuildBlocked(boolean rebuildBlocked) {
         this.rebuildBlocked = rebuildBlocked;
+    }
+
+    public String getTimeRestriction() {
+        return timeRestriction;
+    }
+
+    public void setTimeRestriction(String timeRestriction) {
+        this.timeRestriction = timeRestriction;
+    }
+
+    @Transient
+    public String getTimeRestrictionDescription() {
+        String verbose = "";
+
+        if (this.getTimeRestriction() != null) {
+            if (!this.getTimeRestriction().isEmpty()) {
+                verbose = StringUtils.capitalize(
+                        CronDescriptor
+                                .instance(Locale.ENGLISH)
+                                .describe(new CronParser(
+                                        CronDefinitionBuilder.instanceDefinitionFor(QUARTZ))
+                                        .parse(this.getTimeRestriction())
+                                )
+                );
+            }
+        }
+
+        return verbose;
     }
 
     @Override

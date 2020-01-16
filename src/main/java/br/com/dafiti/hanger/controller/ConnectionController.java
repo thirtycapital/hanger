@@ -25,7 +25,6 @@ package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Connection;
-import br.com.dafiti.hanger.service.ConfigurationService;
 import br.com.dafiti.hanger.service.ConnectionService;
 import java.util.List;
 import javax.validation.Valid;
@@ -224,15 +223,13 @@ public class ConnectionController {
             Model model) {
 
         try {
+            List<ConnectionService.Entity> tables = connectionService.getTables(connection, catalog, schema);
+
             model.addAttribute("connection", connection);
             model.addAttribute("catalog", catalog);
             model.addAttribute("schema", schema);
-
-            List<ConnectionService.Entity> tables = connectionService.getTables(connection, catalog, schema);
-
             model.addAttribute("metadata", tables);
-            model.addAttribute("displayLimit", this.connectionService.checkNumberOfTables(tables.size()));
-
+            model.addAttribute("displayLimit", connectionService.isDisplayLimit(tables.size()));
         } catch (Exception ex) {
             model.addAttribute("errorMessage", "Fail listing tables " + new Message().getErrorMessage(ex));
         }
@@ -335,7 +332,7 @@ public class ConnectionController {
      * @return Test connections modal
      */
     @GetMapping(path = "/modal/{id}/table/column/{catalog}/{schema}/{table}")
-    public String gettableMetadataModal(
+    public String getTableMetadataModal(
             @PathVariable(name = "id") Connection connection,
             @PathVariable(name = "catalog") String catalog,
             @PathVariable(name = "schema") String schema,

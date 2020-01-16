@@ -37,14 +37,16 @@
                 <form class="form-horizontal" th:method="post" th:action="@{'/approval/submit/' + ${job.id}}" th:object="${jobApproval}">
                     <div>
                         <div class="form-group">
-                            <div class="col-sm-8">
-                                <label>Justification</label>
-                                <textarea class="form-control" th:field="*{description}" required="true" rows="3" minlength="15" maxlength="65000"></textarea>
+                            <div class="col-sm-12">
+                                <fieldset>
+                                    <legend class="space-top">Approval</legend>
+                                    <textarea class="form-control" th:field="*{description}" required="true" rows="3" minlength="15" maxlength="65000"></textarea>
+                                </fieldset>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <div class="col-sm-8">
+                            <div class="col-sm-12">
                                 <button type="submit" class="btn btn-generic btn-sm" name="approve_job">
                                     <span class="glyphicon glyphicon-thumbs-up">
                                     </span> 
@@ -60,8 +62,8 @@
                     </div>
                 </form>
                 <div th:each="checkup, checkupStat : ${job.checkup}" th:remove="tag">
-                    <div th:if="${not #lists.isEmpty(checkup.log)}">
-                        <label class="space-top" th:inline="text"><b>[[${ checkup.description }]]</b></label>
+                    <fieldset th:if="${not #lists.isEmpty(checkup.log)}" >
+                        <legend class="space-top" th:inline="text">[[${ checkup.description + '  >  ' + ( checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION' ) + '  >  ' + checkup.action}]]</legend>
                         <table th:id="'table_clean' + ${checkup.id}" class="table table-hover">
                             <thead>
                                 <tr>
@@ -118,7 +120,7 @@
                                                 <tbody>
                                                     <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}" th:remove="tag">
                                                         <td style="width:5%"><img class="hanger-img-sm" th:src="@{'/images/' + ${ commandLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="alt=${ commandLog.success }"></img></td>
-                                                       	<td>
+                                                        <td>
                                                             <a th:inline="text" th:href="@{'/checkup/log/' + ${commandLog.id}}">
                                                                 [[${ (commandLogStat.index + 1) + '. ' + commandLog.commandType}]]
                                                             </a>
@@ -131,7 +133,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
+                    </fieldset>
                 </div>
             </div>
         </div>

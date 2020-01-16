@@ -241,6 +241,23 @@
             <artifactId>ngdbc</artifactId>
             <version>2.4.64</version>
         </dependency>
+        
+        <!-- Univocity -->
+        
+        <dependency>
+            <groupId>com.univocity</groupId>
+            <artifactId>univocity-parsers</artifactId>
+            <version>2.8.3</version>
+        </dependency>
+        
+        <!-- Cron-utils -->
+        
+        <dependency>
+            <groupId>com.cronutils</groupId>
+            <artifactId>cron-utils</artifactId>
+            <version>9.0.1</version>
+        </dependency>
+        
     </dependencies>
 
     <properties>

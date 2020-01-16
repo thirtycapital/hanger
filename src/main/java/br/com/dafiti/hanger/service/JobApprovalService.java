@@ -33,8 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import br.com.dafiti.hanger.repository.JobApprovalRepository;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.HashSet;
@@ -151,7 +149,7 @@ public class JobApprovalService {
         if (flow.equals(Flow.UNHEALTHY)) {
             //Notify that the job was approved. 
             this.jobNotificationService.notify(job, false);
-            
+
             //Push the childs build if is a postvalidation.
             jobBuildPushService.push(job);
 
@@ -165,7 +163,7 @@ public class JobApprovalService {
                 } else {
                     jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
                 }
-            } catch (URISyntaxException | IOException ex) {
+            } catch (Exception ex) {
                 return false;
             }
         }

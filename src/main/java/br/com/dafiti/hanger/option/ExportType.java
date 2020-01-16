@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Dafiti Group
+ * Copyright (c) 2019 Dafiti Group
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -25,22 +25,8 @@ package br.com.dafiti.hanger.option;
 
 /**
  *
- * @author Valdiney V GOMES
+ * @author Helio Leal
  */
-public enum Status {
-    NONE,
-    WAITING,
-    REBUILD,
-    RUNNING,
-    SUCCESS,
-    ABORTED,
-    FAILURE,
-    UNHEALTHY,
-    ERROR,
-    BLOCKED,
-    APPROVED,
-    DISAPPROVED,
-    DISABLED,
-    UNSTABLE,
-    CHECKUP;
+public enum ExportType {
+    CSV;
 }

@@ -24,7 +24,6 @@
 package br.com.dafiti.hanger.controller;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,7 +32,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import br.com.dafiti.hanger.model.Configuration;
 import br.com.dafiti.hanger.service.ConfigurationGroupService;
 import br.com.dafiti.hanger.service.ConfigurationService;
@@ -58,12 +56,12 @@ public class ConfigurationController {
     }
 
     /**
-     * Save the configuration came by ajax.
+     * Save configuration.
      *
      * @param value value
      * @param request request
      * @param parameter Parameter
-     * @return
+     * @return Identifies if the configuration was saved successfully.
      */
     @PostMapping("/save/{parameter}")
     @ResponseBody
@@ -90,7 +88,7 @@ public class ConfigurationController {
     }
 
     /**
-     * Edit configurations.
+     * Edit configuration.
      *
      * @param model Model
      * @return Configuration edit template.

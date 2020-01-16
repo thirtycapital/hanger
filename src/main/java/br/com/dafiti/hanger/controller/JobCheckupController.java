@@ -28,7 +28,6 @@ import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.service.JobApprovalService;
 import br.com.dafiti.hanger.service.JobDetailsService;
 import java.security.Principal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,8 +66,9 @@ public class JobCheckupController {
     @GetMapping(path = "/job/{id}/list")
     public String list(
             Principal principal,
-            @PathVariable(name = "id") Job job, 
+            @PathVariable(name = "id") Job job,
             Model model) {
+
         model.addAttribute("approvals", jobApprovalService.findByJobOrderByCreatedAtDesc(job));
         model.addAttribute("job", job);
         model.addAttribute("jobDetail", this.jobDetailsService.getDetailsOf(job));

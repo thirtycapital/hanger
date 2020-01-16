@@ -906,3 +906,30 @@ input[type='file'] {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.icon-workbench-option {
+    padding: 4px 0 2px 6px;
+    font-size: 20px;
+    color: #3d3d3d;
+}
+
+.icon-copy {
+    margin-left: 6px;
+    color: #7f8c8d;
+}
+
+.icon-copy:hover {
+    color: #95a5a6;
+}
+
+.btn-copy {
+    display: none;
+}
+                               
+.query-row:hover .btn-copy { 
+    display: inline;
+}
+
+.checkup-row:hover .btn-copy {
+    display: inline;
+}

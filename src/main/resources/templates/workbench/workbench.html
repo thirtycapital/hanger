@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" 
       xmlns:th="http://www.thymeleaf.org" 
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
     <head lang="en" th:replace="base/header :: head">
         <title>Hanger</title>
     </head>
@@ -57,7 +58,7 @@
                                     <option th:each="connection : ${connections}" 
                                             th:value="${connection.id}" 
                                             th:text="${connection.name}"
-                                            th:selected="${connectionQueryStore != null ? connection == connectionQueryStore.connection : 0}">
+                                            th:selected="${connectionQueryStore != null ? connection == connectionQueryStore.connection : jobCheckup != null ? connection == jobCheckup.connection : 0}">
                                     </option>
                                 </select>
                             </div>
@@ -86,28 +87,31 @@
                                     rows="10" 
                                     minlength="1" 
                                     maxlength="5000"
-                                    th:text="${connectionQueryStore != null ? connectionQueryStore.query : ''}"></textarea>
+                                    th:text="${connectionQueryStore != null ? connectionQueryStore.query : jobCheckup != null ? jobCheckup.query : ''}"></textarea>
                             </div>
                         </div>
                     </div>                    
 
                     <div class="row">
-                        <button 
-                            id="store-query-button" 
-                            class="btn btn-generic pull-right btn-space" 
-                            type="button">
-
-                            <span class="glyphicon glyphicon-download-alt" 
-                                  aria-hidden="true"></span> Store
-                        </button>
+                        <div class="dropdown pull-right">
+                            <a 
+                                href="#" 
+                                id="workbench_option" 
+                                data-toggle="dropdown" 
+                                aria-haspopup="true" 
+                                aria-expanded="false" 
+                                title="View more">
+                                <span class="glyphicon glyphicon-option-vertical icon-workbench-option" aria-hidden="true"></span>
+                            </a>
+                        </div>                        
 
                         <button 
                             id="query-button" 
                             class="btn btn-generic pull-right btn-space" 
                             type="button">
 
-                            <span class="glyphicon glyphicon-search" 
-                                  aria-hidden="true"></span> Query
+                            <span class="glyphicon glyphicon-play" 
+                                  aria-hidden="true"></span> Play
                         </button>
 
                         <button 
@@ -120,10 +124,8 @@
                         </button>
                     </div>
 
-                    <hr/>
-
                     <!--Fragment--> 
-                    <div id="fragmentQueryResultSetHolder"/>
+                    <div id="fragmentQueryResultSetHolder" class="space-top"/>
                 </div>
             </div>
 
@@ -133,6 +135,17 @@
 
         <script th:inline="javascript">
             $(document).ready(function () {
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "timeOut": "3500",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+
                 // Connection ID.
                 var connection = $("#connection").val();
 
@@ -155,6 +168,7 @@
                     matchBrackets: true,
                     autofocus: true,
                     extraKeys: {"Ctrl-Enter": function () {
+                            $("#fragmentQueryResultSetHolder").show();
                             query();
                         }}
                 });
@@ -191,6 +205,7 @@
                  * Trigger job details search on search button click. 
                  */
                 $("#query-button").click(function () {
+                    $("#fragmentQueryResultSetHolder").show();
                     query();
                 });
 
@@ -199,14 +214,37 @@
                  * @returns {undefined}
                  */
                 $("[id^=query_]").click(function () {
+                    $("#fragmentQueryResultSetHolder").show();
                     query();
                 });
 
                 /**
-                 * Opens modal to store a query.
+                 * Display option menu.
                  */
-                $("#store-query-button").click(function () {
-                    queryStoreModal();
+                $('#workbench_option').click(function (e) {
+                    e.preventDefault();
+
+                    var menuExport = function () {
+                        $("#fragmentQueryResultSetHolder").hide();
+                        queryExport();
+                    };
+
+                    var menuStore = function () {
+                        queryStoreModal();
+                    };
+
+                    var menuEmail = function () {
+                        queryEmail();
+                    };
+
+                    // Available actions.
+                    var items = [
+                        {icon: 'glyphicon glyphicon-envelope', label: 'E-mail', action: menuEmail},
+                        {icon: 'glyphicon glyphicon-download-alt', label: 'Export', action: menuExport},
+                        {icon: 'glyphicon glyphicon-floppy-disk', label: 'Store', action: menuStore}
+                    ];
+
+                    superCm.createMenu(items, e);
                 });
 
                 /**
@@ -224,10 +262,6 @@
                     }, 250);
                 });
 
-                /**
-                 * 
-                 */
-
                 $('#jstree').on('dblclick', '.jstree-anchor', function (e) {
                     var instance = $.jstree.reference(this);
                     var node = instance.get_node(this);
@@ -235,12 +269,7 @@
                     var select = "";
 
                     if (node.parent !== "#") {
-                        if (node.target === "MSSQL") {
-                            select = "SELECT TOP 10 * FROM " + node.parent + "." + node.text + ";";
-                        } else {
-                            select = "SELECT * FROM " + node.parent + "." + node.text + " LIMIT 10;";
-                        }
-
+                        select = "SELECT * FROM " + node.parent + "." + node.text + " LIMIT 10;";
                         query.setValue(select);
                         query.focus();
                     }
@@ -426,6 +455,71 @@
                             alert("Fail loading query resultset: " + e.statusText);
                         }
                     });
+                }
+
+                /**
+                 * Ajax to call export for a query. 
+                 * @returns {undefined}
+                 */
+                function queryExport() {
+                    var connection = $('#connection').val();
+                    var url = /*[[@{/export/query/}]]*/ "/export/query/";
+                    var query = window.editor.getValue();
+
+                    //Identify if query field is not empty.
+                    if (query.toString().trim() !== "") {
+                        $.ajax({
+                            type: "POST",
+                            url: url + connection,
+                            data: query,
+                            contentType: "text/html",
+                            timeout: 1000000,
+                            success: function (result) {
+                                if (result !== "") {
+                                    url = /*[[@{/export/download/}]]*/ "/export/download/";
+                                    window.location.href = url + result;
+                                } else {
+                                    toastr.error('Fail exporting query!');
+                                }
+                            },
+                            error: function (e) {
+                                toastr.error("Fail exporting query, error: " + e.statusText);
+                            }
+                        });
+                    } else {
+                        toastr.error('Query cannot be empty!');
+                    }
+                }
+
+                /**
+                 * Calls modal with form to send query result in e-mail. 
+                 * @returns {undefined}
+                 */
+                function queryEmail() {
+                    var connection = $('#connection').val();
+                    var url = /*[[@{/export/email/modal/}]]*/ "/export/email/modal/";
+                    var query = window.editor.getValue();
+
+                    //Identify if query field is not empty.
+                    if (query.toString().trim() !== "") {
+                        $.ajax({
+                            type: "POST",
+                            url: url + connection,
+                            data: query,
+                            contentType: "text/html",
+                            timeout: 1000000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalQueryEmail").modal({backdrop: 'static'});
+                                $('.selectpicker').selectpicker();
+                            },
+                            error: function (e) {
+                                alert("Fail loading send query in e-mail modal: " + e.statusText);
+                            }
+                        });
+                    } else {
+                        toastr.error('Query cannot be empty!');
+                    }
                 }
             });
         </script>    

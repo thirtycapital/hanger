@@ -32,6 +32,9 @@ import br.com.dafiti.hanger.option.Action;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.repository.JobRepository;
+import static com.cronutils.model.CronType.QUARTZ;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.parser.CronParser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -136,6 +139,13 @@ public class JobService {
                         stream().
                         filter(parent -> parent.isBlocker()).count() != 0
         );
+
+        //Identify if the time windows cron expression is valid. 
+        if (!job.getTimeRestriction().isEmpty()) {
+            new CronParser(
+                    CronDefinitionBuilder.instanceDefinitionFor(QUARTZ))
+                    .parse(job.getTimeRestriction()).validate();
+        }
 
         return jobRepository.save(job);
     }

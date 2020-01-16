@@ -23,10 +23,15 @@
  */
 package br.com.dafiti.hanger.model;
 
+import com.cronutils.descriptor.CronDescriptor;
+import static com.cronutils.model.CronType.QUARTZ;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.parser.CronParser;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -48,6 +53,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
+import org.apache.commons.lang.StringUtils;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
@@ -82,6 +88,7 @@ public class Job extends Tracker implements Serializable {
     private boolean notify;
     private boolean rebuild;
     private boolean rebuildBlocked;
+    private String timeRestriction;
 
     public Job() {
     }
@@ -315,6 +322,34 @@ public class Job extends Tracker implements Serializable {
 
     public void setRebuildBlocked(boolean rebuildBlocked) {
         this.rebuildBlocked = rebuildBlocked;
+    }
+
+    public String getTimeRestriction() {
+        return timeRestriction;
+    }
+
+    public void setTimeRestriction(String timeRestriction) {
+        this.timeRestriction = timeRestriction;
+    }
+
+    @Transient
+    public String getTimeRestrictionDescription() {
+        String verbose = "";
+
+        if (this.getTimeRestriction() != null) {
+            if (!this.getTimeRestriction().isEmpty()) {
+                verbose = StringUtils.capitalize(
+                        CronDescriptor
+                                .instance(Locale.ENGLISH)
+                                .describe(new CronParser(
+                                        CronDefinitionBuilder.instanceDefinitionFor(QUARTZ))
+                                        .parse(this.getTimeRestriction())
+                                )
+                );
+            }
+        }
+
+        return verbose;
     }
 
     @Override

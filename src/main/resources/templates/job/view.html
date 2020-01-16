@@ -77,7 +77,17 @@
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" th:value="*{alias}" readonly="true"/>
                             </div>
-                        </div>                       
+                        </div> 
+
+                        <label>Time restriction</label>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" th:value="*{timeRestriction}" readonly="true"/>
+                                <div th:if="${not #lists.isEmpty(job.getTimeRestrictionDescription())}" class="alert alert-warning" role="alert" style="margin-bottom: 0">
+                                    <span th:text="${job.getTimeRestrictionDescription()}"></span>
+                                </div>
+                            </div>                
+                        </div>
 
                         <div class="form-group">
                             <div class="col-sm-10">

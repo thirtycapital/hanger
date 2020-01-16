@@ -89,6 +89,14 @@
                             <span th:if="${#fields.hasErrors('description')}" class="help-block" th:errors="*{description}"></span>
                         </div>
 
+                        <label>Time restriction</label>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <input type="text" maxlength="255" class="form-control" th:field="*{timeRestriction}" placeholder="Cron expression"/>
+                                <span th:if="${#fields.hasErrors('timeRestriction')}" class="help-block" th:errors="*{timeRestriction}"></span>
+                            </div>
+                        </div>
+
                         <!--Notification-->                        
                         <div class="form-group">
                             <div class="col-sm-10">

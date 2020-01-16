@@ -130,7 +130,7 @@ public class JobBuildStatusService {
 
         if (buildable) {
             //Identify if it is within the job execution period defined by a cron.
-            buildable = isTimeWindowMatch(job.getTimeRestriction());
+            buildable = isTimeRestrictionMatch(job.getTimeRestriction());
 
             if (buildable) {
                 //Get the status of each child.
@@ -219,13 +219,15 @@ public class JobBuildStatusService {
      * @param cron Cron expression.
      * @return Instant is matched by the cron expression.
      */
-    public static boolean isTimeWindowMatch(String cron) {
+    public static boolean isTimeRestrictionMatch(String cron) {
         boolean match = true;
 
-        if (!cron.isEmpty()) {
-            match = ExecutionTime.forCron(
-                    new CronParser(CronDefinitionBuilder.instanceDefinitionFor(QUARTZ))
-                            .parse(cron)).isMatch(ZonedDateTime.now());
+        if (!cron.equals(null)) {
+            if (!cron.isEmpty()) {
+                match = ExecutionTime.forCron(
+                        new CronParser(CronDefinitionBuilder.instanceDefinitionFor(QUARTZ))
+                                .parse(cron)).isMatch(ZonedDateTime.now());
+            }
         }
 
         return match;

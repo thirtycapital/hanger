@@ -754,12 +754,12 @@ h3.page-title {
     vertical-align: middle !important;
 }
 
-.login_logout {
+.wrapper-bottom {
     position: absolute;
     bottom: 0;
     font-size: 14px;
     padding-top: 20px;
-    padding-bottom: 40px;
+    padding-bottom: 20px;
     width: 199px;
     background-color: #fff;
 }
@@ -932,4 +932,13 @@ input[type='file'] {
 
 .checkup-row:hover .btn-copy {
     display: inline;
+}
+
+.link-version:link, .link-version:active, .link-version:visited, .link-version:hover {
+    color: #898989;
+}
+
+.hanger-version {
+    margin-top: 25px;
+    text-align: center;
 }

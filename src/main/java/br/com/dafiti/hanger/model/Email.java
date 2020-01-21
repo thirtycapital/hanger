@@ -31,18 +31,18 @@ import java.util.List;
  */
 public class Email {
 
-    List<String> recipient;
+    String recipient;
     String query;
     String subject;
     String content;
     Connection connection;
     boolean queryContent;
 
-    public List<String> getRecipient() {
+    public String getRecipient() {
         return recipient;
     }
 
-    public void setRecipient(List<String> recipient) {
+    public void setRecipient(String recipient) {
         this.recipient = recipient;
     }
 

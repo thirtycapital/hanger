@@ -49,18 +49,13 @@
                                 <label>To</label> 
                                 <div class="form-group">
                                     <div class="col-sm-12">
-                                        <select 
-                                            class="selectpicker form-control col-xs-6" 
-                                            data-live-search="true" 
-                                            multiple="true"
+                                        <input 
+                                            type="text" 
+                                            class="form-control" 
+                                            maxlength="255"                                            
+                                            placeholder="Use semicolon(;) to separate the emails addresses"
                                             th:field="*{recipient}" 
-                                            data-selected-text-format="count > 1">
-
-                                            <option th:each="user: ${users}" 
-                                                    th:value="${user.email}" 
-                                                    th:text="${user.getFullName()}">
-                                            </option>
-                                        </select>
+                                            required="true" />
                                     </div>
                                 </div>  
                                 <label>Subject</label> 

@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import org.apache.commons.mail.HtmlEmail;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -212,10 +214,12 @@ public class ExportService {
                                 .concat(user.getEmail())
                                 .concat(")"));
             }
+            
+            List<String> recipientList = Arrays.asList(exportEmail.getRecipient().split("\\,|\\;"));
 
             //New blueprint.
             Blueprint blueprint = new Blueprint(exportEmail.getSubject(), "exportQuery");
-            blueprint.setRecipient(exportEmail.getRecipient());
+            blueprint.setRecipient(recipientList);
             blueprint.setFile(file);
             blueprint.addVariable("query", exportEmail.getQuery());
             blueprint.addVariable("queryContent", exportEmail.isQueryContent());

@@ -53,7 +53,7 @@
                                             type="text" 
                                             class="form-control" 
                                             maxlength="255"                                            
-                                            placeholder="Use semicolon(;) to separate the emails addresses"
+                                            placeholder="E-mail list separated by semicolon or comma"
                                             th:field="*{recipient}" 
                                             required="true" />
                                     </div>
@@ -79,12 +79,6 @@
                                             th:field="*{content}"
                                             rows="5" 
                                             maxlength="10000"></textarea>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="col-sm-12">
-                                        <input type="checkbox" id="send_query" th:field="*{queryContent}" />
-                                        <label for="send_query">Send the query in message body</label>
                                     </div>
                                 </div>
                             </div>

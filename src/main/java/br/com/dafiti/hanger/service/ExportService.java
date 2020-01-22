@@ -89,7 +89,7 @@ public class ExportService {
 
                 //Identify if query ran successfully.
                 if (!queryResultSet.hasError()) {
-                    fileName = this.exportToCSV(queryResultSet, connection);
+                    fileName = this.toCSV(queryResultSet, connection);
                 }
                 break;
             default:
@@ -107,18 +107,11 @@ public class ExportService {
      * @param connection Connection
      * @return String fileName
      */
-    public String exportToCSV(
+    public String toCSV(
             QueryResultSet queryResultSet,
             Connection connection) {
 
-        String temp = System.getProperty("java.io.tmpdir");
-        String fileName = connection.getName()
-                .concat("_hanger_export_")
-                .concat(UUID.randomUUID().toString())
-                .concat(".csv");
-
-        //Define output file.
-        File csvFile = new File(temp.concat("/").concat(fileName));
+        String name = UUID.randomUUID().toString().concat(".csv");
 
         //Define csv settings.
         CsvWriterSettings csvWriterSettings = new CsvWriterSettings();
@@ -126,7 +119,11 @@ public class ExportService {
         csvWriterSettings.getFormat().setQuote('"');
         csvWriterSettings.getFormat().setQuoteEscape('"');
 
-        CsvWriter csvWriter = new CsvWriter(csvFile, csvWriterSettings);
+        CsvWriter csvWriter = new CsvWriter(
+                new File(System.getProperty("java.io.tmpdir")
+                        .concat("/")
+                        .concat(name)),
+                csvWriterSettings);
 
         //Define fields.
         csvWriter.writeHeaders(queryResultSet.getHeader());
@@ -138,7 +135,7 @@ public class ExportService {
         csvWriter.flush();
         csvWriter.close();
 
-        return fileName;
+        return name;
     }
 
     /**
@@ -177,61 +174,52 @@ public class ExportService {
     /**
      * Export a resultset to E-mail.
      *
-     * @param exportEmail
+     * @param email
      * @param principal
      * @throws java.io.IOException
      */
-    public void exportToEmail(Email exportEmail, Principal principal)
+    public void toEmail(Email email, Principal principal)
             throws IOException, Exception {
 
         QueryResultSet queryResultSet = this.connectionService
                 .getQueryResultSet(
-                        exportEmail.getConnection(),
-                        exportEmail.getQuery(),
+                        email.getConnection(),
+                        email.getQuery(),
                         principal);
 
         //Identify if query ran successfully.
         if (!queryResultSet.hasError()) {
-            String fileName = this.exportToCSV(
+            String fileName = this.toCSV(
                     queryResultSet,
-                    exportEmail.getConnection());
+                    email.getConnection());
 
             File file = new File(System.getProperty("java.io.tmpdir")
                     .concat("/")
                     .concat(fileName));
 
-            //Get temp file path.
-            Path path = file.toPath();
+            email.setSubject(email.getSubject());
 
-            //Get logged user.
-            User user = userService.findByUsername(principal.getName());
-
-            //Put logged user on subject of e-mail.
-            if (user != null) {
-                exportEmail.setSubject(
-                        exportEmail.getSubject()
-                                .concat(" (")
-                                .concat(user.getEmail())
-                                .concat(")"));
-            }
-            
-            List<String> recipientList = Arrays.asList(exportEmail.getRecipient().split("\\,|\\;"));
+            // Get list of field divided with , or ;
+            List<String> recipients = Arrays.asList(email.getRecipient().split("\\,|\\;"));
 
             //New blueprint.
-            Blueprint blueprint = new Blueprint(exportEmail.getSubject(), "exportQuery");
-            blueprint.setRecipient(recipientList);
+            Blueprint blueprint = new Blueprint(email.getSubject(), "exportQuery");
+            blueprint.setRecipient(recipients);
             blueprint.setFile(file);
-            blueprint.addVariable("query", exportEmail.getQuery());
-            blueprint.addVariable("queryContent", exportEmail.isQueryContent());
-            blueprint.addVariable("connection", exportEmail.getConnection());
-            blueprint.addVariable("content", exportEmail.getContent());
+            blueprint.addVariable("query", email.getQuery());
+            blueprint.addVariable("queryContent", email.isQueryContent());
+            blueprint.addVariable("connection", email.getConnection());
+            blueprint.addVariable("content", email.getContent());
+            blueprint.addVariable("queryResultSet", queryResultSet);
+            blueprint.addVariable("subject", email.getSubject());
+            blueprint.addVariable("user", userService.findByUsername(principal.getName()).getEmail());
 
             //Set the HTML content to send on e-mail.
             HtmlEmail mail = new HtmlEmail();
 
             if (blueprint.getRecipients().size() > 0) {
                 for (String recipient : blueprint.getRecipients()) {
-                    mail.addTo(recipient);
+                    mail.addBcc(recipient);
                 }
             }
 
@@ -239,7 +227,7 @@ public class ExportService {
             this.mailService.send(blueprint, mail);
 
             //Delete temp file.
-            Files.deleteIfExists(path);
+            Files.deleteIfExists(file.toPath());
         }
     }
 }

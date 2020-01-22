@@ -715,15 +715,15 @@ h3.page-title {
 }
 
 .btn-delete {
-    color: #d65549;
-    border: 1px solid #D8D8D8;    
+    color: #337ab7;
+    border: 1px solid #D8D8D8;
     background-color: transparent;
 }
 
 .btn-delete:hover {
-    color: #ffffff;
+    color: #fff;
     border: 1px solid #D8D8D8;
-    background-color: #d65549;
+    background-color: #337ab7;
 }
 
 .btn-generic {

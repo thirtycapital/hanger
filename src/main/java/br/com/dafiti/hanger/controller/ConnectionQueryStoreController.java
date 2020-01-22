@@ -121,6 +121,7 @@ public class ConnectionQueryStoreController {
             redirectAttributes.addFlashAttribute(
                     "successMessage",
                     "Query successfully stored!");
+            redirect = redirect.concat(connectionQueryStore.getId().toString());
         } catch (Exception ex) {
             model.addAttribute("connectionQueryStore", connectionQueryStore);
             redirectAttributes.addFlashAttribute("errorMessage",

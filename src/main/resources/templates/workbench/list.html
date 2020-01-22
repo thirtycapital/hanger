@@ -26,17 +26,15 @@
             </div>
 
             <fieldset>
-                <legend class="space-top">Mine</legend>
-                
                 <table id="query_stored_my_queries" class="table table-hover">
                     <thead>
                         <tr>
                             <th style="width:3%">#</th>
-                            <th style="width:10%">Name</th>
+                            <th style="width:30%">Name</th>
                             <th style="width:30%">Query</th>
-                            <th style="width:29%">Connection</th>
-                            <th style="width:5%">
-                                <span class="glyphicon glyphicon-share-alt"
+                            <th style="width:30%">Connection</th>
+                            <th style="width:1%">
+                                <span class="glyphicon glyphicon-eye-open"
                                       title="Shared"></span>
                             </th>
                             <th style="width:1%" class="no-sort"></th>
@@ -67,7 +65,7 @@
                             <td th:text="${connectionQueryStore.connection.name}">#</td>
                             <td>                               
                                 <div th:if="${connectionQueryStore.shared}">
-                                    <span class="glyphicon glyphicon-share-alt"></span>
+                                    <span class="glyphicon glyphicon-eye-open"></span>
                                 </div>
                             </td> 
                             <td>
@@ -149,7 +147,7 @@
                     <thead>
                         <tr>
                             <th style="width:3%">#</th>
-                            <th style="width:10%">Name</th>
+                            <th style="width:30%">Name</th>
                             <th style="width:30%">Query</th>
                             <th style="width:25%">Connection</th>
                             <th style="width:15%">Owner</th>

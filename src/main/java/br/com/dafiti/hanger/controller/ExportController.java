@@ -135,7 +135,7 @@ public class ExportController {
      * Send query resultset in e-mail.
      *
      * @param redirectAttributes
-     * @param exportEmail
+     * @param email
      * @param principal
      * @return
      * @throws java.io.IOException
@@ -143,11 +143,11 @@ public class ExportController {
     @PostMapping(path = "/email")
     public String email(
             RedirectAttributes redirectAttributes,
-            @Valid @ModelAttribute Email exportEmail,
+            @Valid @ModelAttribute Email email,
             Principal principal) throws IOException {
 
         try {
-            this.exportService.exportToEmail(exportEmail, principal);
+            this.exportService.toEmail(email, principal);
             redirectAttributes.addFlashAttribute("successMessage", "Query resultset sent by e-mail!");
         } catch (Exception exception) {
             redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(exception));

@@ -14,7 +14,7 @@
                             <span class="badge" th:text="${subjects.jobCount}"></span>
                         </a>
                     </li>
-                    <li role="presentation" th:if="${not #lists.isEmpty(warnings)}">
+                    <li role="presentation" class="pull-right" th:if="${not #lists.isEmpty(warnings)}">
                         <a href="#" th:id="'modal_warning_' + ${job.id}" th:name="${job.id}" th:inline="text">                                                     
                             WARNING 
                             <span class="badge badge-warning" th:text="${#lists.size(warnings)}"></span>

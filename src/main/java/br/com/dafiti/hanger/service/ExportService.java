@@ -207,7 +207,6 @@ public class ExportService {
             blueprint.setRecipient(recipients);
             blueprint.setFile(file);
             blueprint.addVariable("query", email.getQuery());
-            blueprint.addVariable("queryContent", email.isQueryContent());
             blueprint.addVariable("connection", email.getConnection());
             blueprint.addVariable("content", email.getContent());
             blueprint.addVariable("queryResultSet", queryResultSet);

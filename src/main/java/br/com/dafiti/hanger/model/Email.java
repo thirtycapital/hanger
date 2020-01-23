@@ -23,8 +23,6 @@
  */
 package br.com.dafiti.hanger.model;
 
-import java.util.List;
-
 /**
  *
  * @author Helio Leal
@@ -36,7 +34,6 @@ public class Email {
     String subject;
     String content;
     Connection connection;
-    boolean queryContent;
 
     public String getRecipient() {
         return recipient;
@@ -77,12 +74,5 @@ public class Email {
     public void setConnection(Connection connection) {
         this.connection = connection;
     }
-
-    public boolean isQueryContent() {
-        return queryContent;
-    }
-
-    public void setQueryContent(boolean queryContent) {
-        this.queryContent = queryContent;
-    }
+    
 }

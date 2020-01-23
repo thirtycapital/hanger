@@ -8,13 +8,13 @@
         <div class="container-fluid main-content">
             <center>           
                 <ul class="nav nav-pills space-top">
-                    <li role="presentation" th:each="subjects : ${subjectSummary}">
+                    <li role="presentation" class="pull-right" th:each="subjects : ${subjectSummary}">
                         <a th:href="@{'/detail/' + ${subjects.subject.id}}" th:inline="text">                                                     
                             [[${subjects.subject.name}]] 
                             <span class="badge" th:text="${subjects.jobCount}"></span>
                         </a>
                     </li>
-                    <li role="presentation" class="pull-right" th:if="${not #lists.isEmpty(warnings)}">
+                    <li role="presentation" th:if="${not #lists.isEmpty(warnings)}">
                         <a href="#" th:id="'modal_warning_' + ${job.id}" th:name="${job.id}" th:inline="text">                                                     
                             WARNING 
                             <span class="badge badge-warning" th:text="${#lists.size(warnings)}"></span>

@@ -955,6 +955,7 @@ input[type='file'] {
 
 .nav>li>a:hover{    
     color: #007BFF;
+    background-color: #F4F5F7
 }
 
 .hanger-version {

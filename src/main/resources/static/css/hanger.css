@@ -739,15 +739,15 @@ h3.page-title {
 }
 
 .btn-approval {
-    color: #E57E00;
-    border: 1px solid #D8D8D8;
+    color: #d65549;
+    border: 1px solid #D8D8D8;    
     background-color: transparent;
 }
 
 .btn-approval:hover {
-    color: #fff;
+    color: #ffffff;
     border: 1px solid #D8D8D8;
-    background-color: #E57E00;
+    background-color: #d65549;
 }
 
 .table-user tbody td {

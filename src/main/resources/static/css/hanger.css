@@ -962,3 +962,7 @@ input[type='file'] {
     margin-top: 10px;
     text-align: center;
 }
+
+.context-menu-option{
+    font-size: inherit;
+}

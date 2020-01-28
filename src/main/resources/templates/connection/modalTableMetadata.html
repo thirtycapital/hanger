@@ -129,12 +129,8 @@
                              * Check or Unckeck all fields.
                              */
                             $('#select_fields').on('click', function (e) {                                
-                                $("input[name='fields']").each( function () {  
-                                    
-                                    
-
-
-                                    $(this).attr('checked','checked');
+                                $("input[name='fields']").each( function () {
+                                    $(this).prop('checked', $("#select_fields").is(":checked"));
                                 });
                             });
                         });

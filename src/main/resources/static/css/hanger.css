@@ -963,6 +963,12 @@ input[type='file'] {
     text-align: center;
 }
 
-.context-menu-option{
-    font-size: inherit;
+.context-menu-option,
+.context-menu-disabled,
+.context-menu-submenu {
+    font-size: inherit !important;
+}
+
+.span-field {
+    font-weight: normal;
 }

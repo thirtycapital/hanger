@@ -343,6 +343,10 @@ public class ConnectionController {
             model.addAttribute("table", table);
             model.addAttribute("pk", connectionService.getPrimaryKey(connection, catalog, schema, table));
             model.addAttribute("column", connectionService.getColumns(connection, catalog, schema, table));
+            model.addAttribute("connection", connection);
+            model.addAttribute("catalog", catalog);
+            model.addAttribute("schema", schema);
+            model.addAttribute("table", table);
         } catch (Exception ex) {
             model.addAttribute("errorMessage", "Fail listing columns " + new Message().getErrorMessage(ex));
         }

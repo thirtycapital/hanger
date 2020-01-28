@@ -119,7 +119,7 @@ public class WorkbenchController {
 
         return "workbench/workbench";
     }
-    
+
     /**
      * Job checkup query on workbench
      *
@@ -135,7 +135,7 @@ public class WorkbenchController {
         model.addAttribute("connections", connectionService.list());
 
         return "workbench/workbench";
-    }    
+    }
 
     /**
      * Workbench tree list.
@@ -153,5 +153,36 @@ public class WorkbenchController {
             @RequestParam(value = "schema") String schema) {
 
         return workbenchService.JSTreeExchange(connection, catalog, schema);
+    }
+
+    /**
+     * Add fields to workbench.
+     *
+     * @param connection
+     * @param fields
+     * @param catalog
+     * @param schema
+     * @param table
+     * @param model Model
+     * @return Query result set fragment.
+     */
+    @PostMapping(path = "/fields")
+    public String addFields(
+            @RequestParam(value = "id", required = false) Connection connection,
+            @RequestParam(value = "fields", required = false) List<String> fields,
+            @RequestParam(name = "catalog", required = false) String catalog,
+            @RequestParam(name = "schema", required = false) String schema,
+            @RequestParam(name = "table", required = false) String table,
+            Model model) {
+
+        if (fields != null && fields.size() > 0) {
+            ConnectionQueryStore connectionQueryStore = new ConnectionQueryStore();
+            connectionQueryStore.setConnection(connection);
+            connectionQueryStore.setQuery(this.workbenchService.doQuery(fields, catalog, schema, table));
+
+            model.addAttribute("connectionQueryStore", connectionQueryStore);
+        }
+
+        return this.workbench(model);
     }
 }

@@ -139,6 +139,44 @@ public class WorkbenchService {
     }
 
     /**
+     * Do a simple query with field list.
+     *
+     * @param field Fields that will be put on query.
+     * @param catalog
+     * @param schema
+     * @param table
+     * @return Query
+     */
+    public String doQuery(
+            List<String> field,
+            String catalog,
+            String schema,
+            String table) {
+        StringBuilder query = new StringBuilder("SELECT ");
+        query.append(String.join(",", field));
+        query.append(" FROM ");
+
+        List<String> catalogSchema = new ArrayList();
+
+        if (catalog != null && !"null".equals(catalog)) {
+            catalogSchema.add(catalog);
+        }
+
+        if (schema != null && !"null".equals(schema)) {
+            catalogSchema.add(schema);
+        }
+
+        if (table != null && !"null".equals(table)) {
+            catalogSchema.add(table);
+        }
+
+        query.append(String.join(".", catalogSchema));
+        query.append(" LIMIT 100");
+
+        return query.toString();
+    }
+
+    /**
      * Represents a JSTree.
      */
     public class Tree {

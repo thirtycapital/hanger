@@ -424,7 +424,7 @@
                         url: url + connection + "/table/column/" + node.a_attr.catalog + "/" + node.a_attr.schema + "/" + node.a_attr.table,
                         success: function (result) {
                             $("#modalHolder").html(result);
-                            $("#modalTableMetadata").modal({backdrop: 'static', keyboard: false});
+                            $("#modalTableMetadata").modal({backdrop: 'static'});
                         },
                         error: function (e) {
                             alert("Error getting table metadata: " + e.statusText);

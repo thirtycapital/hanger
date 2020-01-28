@@ -558,6 +558,64 @@ public class ConnectionService {
     }
 
     /**
+     * Get indexes.
+     *
+     * @param connection Connection
+     * @param catalog Caralog
+     * @param schema Schema
+     * @param table Table
+     * @return Table columns
+     */
+    public List<Column> getIndexes(
+            Connection connection,
+            String catalog,
+            String schema,
+            String table) {
+
+        List index = new ArrayList();
+        DataSource datasource = this.getDataSource(connection);
+
+        try {
+            ResultSet indexes = datasource.getConnection()
+                    .getMetaData()
+                    .getIndexInfo(
+                            ("null".equals(catalog) || catalog.isEmpty()) ? null : catalog,
+                            ("null".equals(schema) || schema.isEmpty()) ? null : schema,
+                            table,
+                            true,
+                            true
+                    );
+
+            while (indexes.next()) {
+                index.add(
+                        new Index(
+                                indexes.getBoolean("NON_UNIQUE"),
+                                indexes.getString("INDEX_QUALIFIER"),
+                                indexes.getString("INDEX_NAME"),
+                                indexes.getString("TYPE"),
+                                indexes.getInt("ORDINAL_POSITION"),
+                                indexes.getString("COLUMN_NAME"),
+                                indexes.getString("ASC_OR_DESC"),
+                                indexes.getInt("CARDINALITY")));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(
+                    ConnectionService.class.getName())
+                    .log(Level.SEVERE, "Fail getting indexes of " + connection.getName(), ex);
+        } finally {
+            try {
+                datasource.getConnection().close();
+            } catch (SQLException ex) {
+                Logger.getLogger(
+                        ConnectionService.class.getName())
+                        .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
+            }
+        }
+
+        return index;
+    }
+
+    /**
      * Represents a target entity.
      */
     public class Entity {
@@ -798,5 +856,105 @@ public class ConnectionService {
         public void setConnection(Connection connection) {
             this.connection = connection;
         }
+    }
+
+    /**
+     * Represents a target entity index.
+     */
+    public class Index {
+
+        boolean nonUnique;
+        String qualifier;
+        String name;
+        String type;
+        int position;
+        String columnName;
+        String ascOrDesc;
+        int cardinality;
+
+        public Index(
+                boolean nonUnique,
+                String qualifier,
+                String name,
+                String type,
+                int position,
+                String columnName,
+                String ascOrDesc,
+                int cardinality) {
+
+            this.nonUnique = nonUnique;
+            this.qualifier = qualifier;
+            this.name = name;
+            this.type = type;
+            this.position = position;
+            this.columnName = columnName;
+            this.ascOrDesc = ascOrDesc;
+            this.cardinality = cardinality;
+        }
+
+        public boolean isNonUnique() {
+            return nonUnique;
+        }
+
+        public void setNonUnique(boolean nonUnique) {
+            this.nonUnique = nonUnique;
+        }
+
+        public String getQualifier() {
+            return qualifier;
+        }
+
+        public void setQualifier(String qualifier) {
+            this.qualifier = qualifier;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public int getPosition() {
+            return position;
+        }
+
+        public void setPosition(int position) {
+            this.position = position;
+        }
+
+        public String getColumnName() {
+            return columnName;
+        }
+
+        public void setColumnName(String columnName) {
+            this.columnName = columnName;
+        }
+
+        public String getAscOrDesc() {
+            return ascOrDesc;
+        }
+
+        public void setAscOrDesc(String ascOrDesc) {
+            this.ascOrDesc = ascOrDesc;
+        }
+
+        public int getCardinality() {
+            return cardinality;
+        }
+
+        public void setCardinality(int cardinality) {
+            this.cardinality = cardinality;
+        }
+
     }
 }

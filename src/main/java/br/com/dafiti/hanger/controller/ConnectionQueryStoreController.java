@@ -110,18 +110,19 @@ public class ConnectionQueryStoreController {
             @Valid @ModelAttribute ConnectionQueryStore connectionQueryStore,
             Model model,
             Principal principal) {
-        String redirect = "redirect:/workbench/workbench/";
-
-        if (connectionQueryStore.getId() != null) {
-            redirect = "redirect:/query/list/";
-        }
+        boolean update = connectionQueryStore.getId() != null;
+        String redirect = "redirect:/query/list/";
 
         try {
             connectionQueryStoreService.save(connectionQueryStore);
             redirectAttributes.addFlashAttribute(
                     "successMessage",
                     "Query successfully stored!");
-            redirect = redirect.concat(connectionQueryStore.getId().toString());
+
+            if (!update) {
+                redirect = "redirect:/workbench/workbench/"
+                        .concat(connectionQueryStore.getId().toString());
+            }
         } catch (Exception ex) {
             model.addAttribute("connectionQueryStore", connectionQueryStore);
             redirectAttributes.addFlashAttribute("errorMessage",

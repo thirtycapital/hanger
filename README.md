@@ -68,6 +68,7 @@ Utilizando o [Apache Tomcat](http://tomcat.apache.org/):
 O *Monitor* é onde a carga de trabalho do Hanger é monitorada. O *dashboard* é organizado da seguinte forma:
 
 - Na parte superior são exibidos todos os *subjects* disponíveis e uma opção de filtro:
+	- Ao lado do nome do assunto é exibido o total de *jobs* em um subject.
 	- Na aba de assuntos:
 		- Clique sob o nome do *subject* desejado e será exibida a lista de *jobs* do subject contendo as seguintes informações:
 			- **Status:** Status do *job*.
@@ -91,16 +92,16 @@ O *Monitor* é onde a carga de trabalho do Hanger é monitorada. O *dashboard* �
 	- No gráfico: 
 		- **Cinza:** Representa o percentual de *jobs* ainda não executados. 
 		- **Verde:** Representa o percentual de *jobs* executados com sucesso. 
-		- **Vermelho:** Representa o percentual de *jobs* com com falha ou com problema de validação dos dados.
+		- **Vermelho:** Representa o percentual de *jobs* com falha ou com problema de validação dos dados.
 		- **Laranja:** Representa o percentual de *jobs* com alertas na cadeia de dependência. 
 	- Na tabela:
-		- **Jobs:** Total de *jobs* em um subjects
 		- **Success:** Total de *jobs* executados com sucesso.
 		- **Waiting:** Total de *jobs* ainda não executados. 
-		- **Building:** Total de *jobs* prontos para serem executado mas ainda aguardando na fila. 
+		- **Building:** Total de *jobs* prontos para serem executados, mas ainda aguardando na fila. 
 		- **Running:** Total de *jobs* sendo executados.
 		- **Warning:** Total de *jobs* com alertas na cadeia de dependência. 
 		- **Failure:** Total de *jobs* com falha ou com problema de validação dos dados. 
+- Na guia **ALL** são exibidos todos os jobs cadastrados no Hanger e seus respectivos status.
 
 ## Search
 
@@ -125,19 +126,30 @@ Cada *job* representado no *flow* apresenta uma imagem representando o status e 
 	- Clique no botão ***View*** para visualizar a configuração do *job*.
 	- Clique no botão ***Flow*** para ser redirecionado novamente para a cadeia de dependência do *job*.
 - Instância do Jenkins na qual o job é executado.  
-- Data de execução do *job*
-- Escopo do *job*
-Clique com o botão direito sobre o status do *job* e será exibida uma lista suspensa com as seguintes opções:
-- **Flow:** Atalho para o *flow* do *job* selecionado. 
-- **Propagation:** Atalho para o propagation do *job* selecionado. 
-- **Build:** Permite executar o *job* selecionado. 
-- **Build Mesh:** Permite executar toda a cadeia do *job* selecionado. 
-- **Build history:** Exibe uma lista com o histórico completo de execuções do *job* selecionado, a lista contem os campos:
-	- **Status:** Status da execução.
-	- **Start:** Data e hora inicial da execução.
-	- **Finish:** Data e hora final da execução.
-	- **Duration in minutes:** Duração da execução em minutos.
-	- **Efficiency:** Exibe a porcentagem que a execução ficou em fila e o tempo real.
+- Data de execução do *job*.
+- Escopo do *job*.
+- Clique com o botão direito no status do *job* e será exibida uma lista suspensa com as seguintes opções:
+	- **Flow:** Atalho para o *flow* do *job* selecionado. 
+	- **Propagation:** Atalho para o propagation do *job* selecionado. 	
+	- **Build history:** Exibe uma lista com o histórico completo de execuções do *job* selecionado, a lista contem os campos:
+		- **Start:** Data e hora inicial da execução.
+		- **Finish:** Data e hora final da execução.
+		- **Duration in minutes:** Duração da execução em minutos.
+		- **Efficiency:** Exibe a porcentagem que a execução ficou em fila e o tempo real.
+	- **Actions:**
+		- **Build:** Permite executar o *job* selecionado. 
+		- **Build Mesh:** Permite executar toda a cadeia do *job* selecionado. 
+		- **Parent:** Exibe uma lista com todos os servidores do Jenkins disponíveis, onde é possível adicionar um ou vários pais para o job corrente:
+			- Clique no servidor desejado.
+			- Uma tela com os jobs disponíveis naquele servidor será exibida.
+			- É possível selecionar os jobs desejados na lista ou simplesmente digitar o nome dos *jobs* no campo Jobs (separados por vírgula).
+			- Clique em Add para que a ação seja concluída.
+		- **Children:** Exibe uma lista com todos os servidores do Jenkins disponíveis, onde é possível adicionar um ou vários filhos para o job corrente:
+			- Clique no servidor desejado.
+			- Uma tela com os jobs disponíveis naquele servidor será exibida.
+			- É possível selecionar os jobs desejados na lista ou simplesmente digitar o nome dos *jobs* no campo Jobs (separados por vírgula).
+			- Clique em Add para que a ação seja concluída.
+		- **Disable:** Permite desabilitar/habilitar um job.
 
 ##### ZOOM OUT
 Permite reduzir o zoom do *flow*. 
@@ -166,20 +178,20 @@ Exibe o glossário de todos os possíveis status de um *job*, contendo:
 ## Servers
 Servers são as instâncias de Jenkins que serão gerenciadas pelo Hanger. 
 
+##### IMPORT
+Permite importar todos os jobs cadastrados no Jenkins.
+
+- No menu lateral, acesse a opção ***Server***.
+- Selecione o servidor desejado e clique no botão ***Import***, será exibido o modal ***Import jobs*** no qual será apresentado uma mensagem de confirmação.
+- Caso deseje realmente importar todos os jobs do Jenkins, clique em ***Yes*** .
+- Após a importação de todos os jobs, uma frase aparecerá no topo da tela informando que os *jobs* foram sincronizados.
+
 ##### CONNECT
 Permite testar conexão uma instância do Jenkins cadastrada.
 
 - No menu lateral, acesse a opção ***Server***.
 - Selecione o servidor desejado e clique no botão ***Connect***.
 - Uma frase aparecerá no topo da tela informando se o servidor está ou não conectado.
-
-##### IMPORT
-Permite importar todos os jobs cadastrados no Jenkins.
-
-- No menu lateral, acesse a opção ***Server***.
-- Selecione o servidor desejado e clique no botão ***Import***, será exibido o modal ***Import jobs*** no qual será apresentado uma mensagem de confirmação.
-- Caso deseje realmente importar todos os jobs do Jenkins, clique em Yes.
-- Após a importação de todos os jobs, uma frase aparecerá no topo da tela informando que os *jobs* foram sincronizados.
 
 ##### ADD SERVER
 Permite adicionar uma nova instância do Jenkins.
@@ -199,7 +211,7 @@ Permite alterar um servidor.
 Permite exluir um servidor.
 
 ## Connections
-*Connections* são as conexões com os bancos de dados que serão utilizados no processo de validação de dados.
+*Connections* são as conexões com os bancos de dados que pode ser utilizados no processo de validação de dados ou para queries no Workbench.
 
 ##### ADD CONNECTION
 Permite adicionar uma nova conexão.
@@ -212,7 +224,6 @@ Permite adicionar uma nova conexão.
 - Informe o usuário do banco de dados no campo ***Username***.
 - Informe a senha do usuário no campo ***Password***.
 - Clique no botão ***Save***.
-
 
 Os bancos de dados suportados e as respectivas JDBC Urls são as seguintes:
 
@@ -237,9 +248,15 @@ Permite alterar uma conexão.
 ##### DELETE
 Permite excluir uma conexão.
 
-##### TABLE
-Permite explorar as tabelas de uma conexão.
-
+##### SCHEMA
+Permite explorar os catálogos e schemas de uma conexão.
+- No menu lateral, acesse a opção ***Connection***.
+- Clique no botão ***Schema***.
+- Será exibido uma tabela com todos os catálogos e schemas daquela conexão. No lado direito da tabela é possível explorar as tabelas de um catálogo ou schema.
+- Clique no botão ***Table***.
+- Será exibida todas as tabelas do catálogo ou schema. No lado direito da tabela é possível acessar os metadados de uma tabela.
+- Clique no botão ***Column***.
+- Será exibido a chave primária da tabela, os índices dela e todos os campos com seus respectivos tipos.
 
 ## Subjects
 Subjects são agrupadores utilizados para a organização e o acompanhamento sumarizado da execução dos *jobs*. 

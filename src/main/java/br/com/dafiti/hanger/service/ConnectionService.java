@@ -582,7 +582,7 @@ public class ConnectionService {
                             ("null".equals(catalog) || catalog.isEmpty()) ? null : catalog,
                             ("null".equals(schema) || schema.isEmpty()) ? null : schema,
                             table,
-                            true,
+                            false,
                             true
                     );
 

@@ -23,24 +23,35 @@
  */
 package br.com.dafiti.hanger.model;
 
+import java.util.List;
+
 /**
  *
  * @author Helio Leal
  */
 public class Email {
 
-    String recipient;
+    List<String> recipient;
+    String externalRecipient;
     String query;
     String subject;
     String content;
     Connection connection;
 
-    public String getRecipient() {
+    public List<String> getRecipient() {
         return recipient;
     }
 
-    public void setRecipient(String recipient) {
+    public void setRecipient(List<String> recipient) {
         this.recipient = recipient;
+    }
+
+    public String getExternalRecipient() {
+        return externalRecipient;
+    }
+
+    public void setExternalRecipient(String externalRecipient) {
+        this.externalRecipient = externalRecipient;
     }
 
     public String getQuery() {
@@ -74,5 +85,5 @@ public class Email {
     public void setConnection(Connection connection) {
         this.connection = connection;
     }
-    
+
 }

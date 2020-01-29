@@ -26,7 +26,6 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.Blueprint;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.model.Email;
-import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.option.ExportType;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
 import com.univocity.parsers.csv.CsvWriter;
@@ -36,6 +35,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -55,15 +55,18 @@ public class ExportService {
     ConnectionService connectionService;
     MailService mailService;
     UserService userService;
+    private final ConfigurationService configurationService;
 
     @Autowired
     public ExportService(
             ConnectionService connectionService,
             MailService mailService,
-            UserService userService) {
+            UserService userService,
+            ConfigurationService configurationService) {
         this.connectionService = connectionService;
         this.mailService = mailService;
         this.userService = userService;
+        this.configurationService = configurationService;
     }
 
     /**
@@ -176,10 +179,14 @@ public class ExportService {
      *
      * @param email
      * @param principal
+     * @return invalidRecipient
      * @throws java.io.IOException
      */
-    public void toEmail(Email email, Principal principal)
+    public List<String> toEmail(Email email, Principal principal)
             throws IOException, Exception {
+
+        //Saves the recipient not allowed
+        List<String> invalidRecipient = new ArrayList<>();
 
         QueryResultSet queryResultSet = this.connectionService
                 .getQueryResultSet(
@@ -197,10 +204,26 @@ public class ExportService {
                     .concat("/")
                     .concat(fileName));
 
-            email.setSubject(email.getSubject());
+            //Get internal recipients
+            List<String> recipients = email.getRecipient();
 
-            // Get list of field divided with , or ;
-            List<String> recipients = Arrays.asList(email.getRecipient().split("\\,|\\;"));
+            if (!email.getExternalRecipient().trim().isEmpty()) {
+                //Get external recipient list separated by , or ;
+                List<String> externalRecipients = Arrays.asList(email.getExternalRecipient().split("\\,|\\;"));
+
+                String pattern = configurationService.findByParameter("EMAIL_DOMAIN_ACCEPTED").getValue();
+
+                for (String externalRecipient : externalRecipients) {
+                    if (externalRecipient.matches(pattern)) {
+                        recipients.add(externalRecipient);
+                    } else {
+                        invalidRecipient.add(externalRecipient);
+                    }
+                }
+
+            }
+
+            email.setSubject(email.getSubject());
 
             //New blueprint.
             Blueprint blueprint = new Blueprint(email.getSubject(), "exportQuery");
@@ -228,5 +251,7 @@ public class ExportService {
             //Delete temp file.
             Files.deleteIfExists(file.toPath());
         }
+
+        return invalidRecipient;
     }
 }

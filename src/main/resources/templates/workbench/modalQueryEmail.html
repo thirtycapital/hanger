@@ -46,7 +46,24 @@
                                         </div>  
                                     </div> 
                                 </div>
-                                <label>To</label> 
+                                <label>Recipient</label>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <select 
+                                            class="selectpicker form-control col-xs-6" 
+                                            data-live-search="true" 
+                                            multiple="true"
+                                            th:field="*{recipient}" 
+                                            data-selected-text-format="count > 1">
+
+                                            <option th:each="user: ${users}" 
+                                                    th:value="${user.email}" 
+                                                    th:text="${user.getFullName()}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <label>External Recipient</label> 
                                 <div class="form-group">
                                     <div class="col-sm-12">
                                         <input 
@@ -54,8 +71,7 @@
                                             class="form-control" 
                                             maxlength="255"                                            
                                             placeholder="E-mail list separated by semicolon or comma"
-                                            th:field="*{recipient}" 
-                                            required="true" />
+                                            th:field="*{externalRecipient}" />
                                     </div>
                                 </div>  
                                 <label>Subject</label> 

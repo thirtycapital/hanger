@@ -31,7 +31,9 @@ import br.com.dafiti.hanger.service.ExportService;
 import br.com.dafiti.hanger.service.UserService;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 import javax.validation.Valid;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Controller;
@@ -147,8 +149,28 @@ public class ExportController {
             Principal principal) throws IOException {
 
         try {
-            this.exportService.toEmail(email, principal);
-            redirectAttributes.addFlashAttribute("successMessage", "Query resultset sent by e-mail!");
+            //Check that the recipient fields are empty
+            if (email.getRecipient().isEmpty() && email.getExternalRecipient().isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "No recipient was chosen for sending the email.");
+            } else {
+
+                //Sends the email to the recipient and returns an email list that 
+                //was not sent because it did not match the allowed standard.
+                List<String> invalidRecipient = this.exportService.toEmail(email, principal);
+
+                if (invalidRecipient.isEmpty()) {
+                    redirectAttributes.addFlashAttribute(
+                            "successMessage",
+                            "Query resultset sent by e-mail!");
+                } else {
+                    redirectAttributes.addFlashAttribute(
+                            "errorMessage",
+                            "Some emails were not sent due to system configuration restrictions. Recipient not accepted: "
+                                    .concat(StringUtils.join(invalidRecipient, ", "))
+                    );
+                }
+            }
+
         } catch (Exception exception) {
             redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(exception));
         }

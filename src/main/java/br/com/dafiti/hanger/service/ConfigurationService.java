@@ -204,5 +204,16 @@ public class ConfigurationService {
                 100,
                 50000,
                 "*"), true);
+
+        //E-mail domain accepted.
+        this.save(new Configuration(
+                "E-mail domain accepted",
+                "EMAIL_DOMAIN_ACCEPTED",
+                "^[a-zA-Z0-9_.+-]+@(?:(?:[a-zA-Z0-9-]+\\.)?[a-zA-Z]+\\.)?(dafiti|kanui|tricae)\\..*",
+                "text",
+                workbench,
+                0,
+                255,
+                "*"), true);
     }
 }

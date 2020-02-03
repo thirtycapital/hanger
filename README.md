@@ -211,7 +211,7 @@ Permite alterar um servidor.
 Permite exluir um servidor.
 
 ## Connections
-*Connections* são as conexões com os bancos de dados que pode ser utilizados no processo de validação de dados ou para queries no Workbench.
+*Connections* são as conexões com os bancos de dados que podem ser utilizados no processo de validação de dados ou para queries no Workbench.
 
 ##### ADD CONNECTION
 Permite adicionar uma nova conexão.

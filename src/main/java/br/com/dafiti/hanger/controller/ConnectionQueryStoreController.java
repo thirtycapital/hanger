@@ -148,9 +148,7 @@ public class ConnectionQueryStoreController {
 
         if (user != null) {
             model.addAttribute("connectionQueryStoreList",
-                    this.connectionQueryStoreService.findByUser(user));
-            model.addAttribute("connectionQueryStoreSharedList",
-                    this.connectionQueryStoreService.findBySharedTrue());
+                    this.connectionQueryStoreService.findByUserOrSharedTrue(user));
         }
 
         return "workbench/list";

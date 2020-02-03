@@ -16,116 +16,156 @@
                         <th>
                             <h3 class="page-title">Workbench</h3>
                         </th>
-                        <th class="btn-action">
-                            <a th:href="@{'/query/list/'}" 
-                               title="Stored queries">
-                                <span 
-                                    class="glyphicon glyphicon-bookmark"></span>
-                            </a>
-                        </th>
                     </tr>            
                 </table>
 
                 <div class="form-horizontal">
-                    <div th:if="${ errorMessage != null }" class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <div class="alert alert-danger" role="alert">
-                                    <span th:text="${errorMessage}"></span>
-                                </div>  
+                    <div id="workbench_top" class="collapse in">
+                        <div th:if="${ errorMessage != null }" class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <div class="alert alert-danger" role="alert">
+                                        <span th:text="${errorMessage}"></span>
+                                    </div>  
+                                </div>
                             </div>
+                        </div>
+                        <div th:if="${ successMessage != null }" class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <div class="alert alert-info" role="alert">
+                                        <span th:text="${successMessage}"></span>
+                                    </div>  
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label>Connection</label>
+                                    <select 
+                                        id="connection" 
+                                        class="selectpicker form-control" 
+                                        data-live-search="true" 
+                                        required="true" 
+                                        placeholder="Connection">
+                                        <option th:each="connection : ${connections}" 
+                                                th:value="${connection.id}" 
+                                                th:text="${connection.name}"
+                                                th:selected="${connectionQueryStore != null ? connection == connectionQueryStore.connection : jobCheckup != null ? connection == jobCheckup.connection : 0}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group col-div-jstree">
+                                    <input type="text"
+                                           id="jstree-search"
+                                           class="form-control form-control-search" 
+                                           maxlength="50" 
+                                           placeholder="Search: "/>
+
+                                    <div class="div-jstree">
+                                        <div id="jstree"></div>
+                                    </div>                                
+                                </div>
+                            </div>
+                            <div class="col-sm-9 col-div-query">
+                                <div class="form-group">
+                                    <textarea 
+                                        class="form-control" 
+                                        id="query" 
+                                        required="true" 
+                                        rows="10" 
+                                        minlength="1" 
+                                        maxlength="5000"
+                                        th:text="${connectionQueryStore != null ? connectionQueryStore.query : jobCheckup != null ? jobCheckup.query : ''}"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <button 
+                                id="wait" 
+                                type="button"
+                                class="btn btn-default btn-sm" 
+                                style="display:none;">
+
+                                <img th:src="@{'/images/ajax-loader.gif'}"></img>
+                            </button>
+
+                            <button 
+                                id="query-button" 
+                                class="btn-generic btn-sm pull-right btn-space" 
+                                type="button"
+                                title="Run query.">
+
+                                <span class="glyphicon glyphicon-play" 
+                                      aria-hidden="true"></span> Play
+                            </button>
+
+                            <button 
+                                id="email-button" 
+                                class="btn btn-generic btn-sm btn-space" 
+                                type="button"
+                                title="Send query resultset in e-mail.">
+
+                                <span class="glyphicon glyphicon-envelope" 
+                                      aria-hidden="true"></span> E-mail
+                            </button>
+
+                            <button 
+                                id="export-button" 
+                                class="btn btn-generic btn-sm btn-space" 
+                                type="button"
+                                title="Export query resultset to csv.">
+
+                                <span class="glyphicon glyphicon-download-alt" 
+                                      aria-hidden="true"></span> Export
+                            </button>
+
+                            <button 
+                                id="store-button" 
+                                class="btn btn-generic btn-sm btn-space" 
+                                type="button"
+                                title="Save a query.">
+
+                                <span class="glyphicon glyphicon-floppy-disk" 
+                                      aria-hidden="true"></span> Save
+                            </button>                            
+
+                            <a id="query-button" 
+                               class="btn btn-generic btn-sm btn-space" 
+                               type="button"
+                               th:href="@{'/query/list/'}" 
+                               title="Stored queries list.">
+
+                                <span class="glyphicon glyphicon-inbox" 
+                                      aria-hidden="true"></span> Stored
+                            </a>                           
                         </div>
                     </div>
-                    <div th:if="${ successMessage != null }" class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <div class="alert alert-info" role="alert">
-                                    <span th:text="${successMessage}"></span>
-                                </div>  
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="form-group">
-                                <label>Connection</label>
-                                <select 
-                                    id="connection" 
-                                    class="selectpicker form-control" 
-                                    data-live-search="true" 
-                                    required="true" 
-                                    placeholder="Connection">
-                                    <option th:each="connection : ${connections}" 
-                                            th:value="${connection.id}" 
-                                            th:text="${connection.name}"
-                                            th:selected="${connectionQueryStore != null ? connection == connectionQueryStore.connection : jobCheckup != null ? connection == jobCheckup.connection : 0}">
-                                    </option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-3">
-                            <div class="form-group col-div-jstree">
-                                <input type="text"
-                                       id="jstree-search"
-                                       class="form-control form-control-search" 
-                                       maxlength="50" 
-                                       placeholder="Search: "/>
 
-                                <div class="div-jstree">
-                                    <div id="jstree"></div>
-                                </div>                                
-                            </div>
-                        </div>
-                        <div class="col-sm-9 col-div-query">
-                            <div class="form-group">
-                                <textarea 
-                                    class="form-control" 
-                                    id="query" 
-                                    required="true" 
-                                    rows="10" 
-                                    minlength="1" 
-                                    maxlength="5000"
-                                    th:text="${connectionQueryStore != null ? connectionQueryStore.query : jobCheckup != null ? jobCheckup.query : ''}"></textarea>
-                            </div>
-                        </div>
-                    </div>                    
+                    <hr/>
 
-                    <div class="row">
-                        <div class="dropdown pull-right">
-                            <a 
-                                href="#" 
-                                id="workbench_option" 
-                                data-toggle="dropdown" 
-                                aria-haspopup="true" 
-                                aria-expanded="false" 
-                                title="View more">
-                                <span class="glyphicon glyphicon-option-vertical icon-workbench-option" aria-hidden="true"></span>
-                            </a>
-                        </div>                        
-
-                        <button 
-                            id="query-button" 
-                            class="btn btn-generic pull-right btn-space" 
-                            type="button">
-
-                            <span class="glyphicon glyphicon-play" 
-                                  aria-hidden="true"></span> Play
-                        </button>
-
-                        <button 
-                            id="wait" 
-                            type="button"
-                            class="btn btn-default btn-sm pull-left" 
-                            style="display:none;">
-
-                            <img th:src="@{'/images/ajax-loader.gif'}"></img>
-                        </button>
+                    <div id="workbench_collapse_top" class="text-center">
+                        <a class="link glyphicon glyphicon-triangle-top" 
+                           id="a_collapse_top"
+                           data-toggle="collapse" 
+                           href="#workbench_top" 
+                           role="button" aria-expanded="false" 
+                           aria-controls="workbench_top" 
+                           title="Click me to see a greater table."
+                           style="text-decoration: none">
+                        </a>
                     </div>
 
-                    <!--Fragment--> 
-                    <div id="fragmentQueryResultSetHolder" class="space-top"/>
+                    <div id="workbench_bottom" class="space-top">
+                        <!--Fragment-->
+                        <div id="fragmentQueryResultSetHolder" />
+                    </div>
                 </div>
             </div>
 
@@ -219,32 +259,25 @@
                 });
 
                 /**
-                 * Display option menu.
+                 * Export a query to csv.
                  */
-                $('#workbench_option').click(function (e) {
-                    e.preventDefault();
+                $("#export-button").click(function () {
+                    $("#fragmentQueryResultSetHolder").hide();
+                    queryExport();
+                });
 
-                    var menuExport = function () {
-                        $("#fragmentQueryResultSetHolder").hide();
-                        queryExport();
-                    };
+                /**
+                 * Store a query. 
+                 */
+                $("#store-button").click(function () {
+                    queryStoreModal();
+                });
 
-                    var menuStore = function () {
-                        queryStoreModal();
-                    };
-
-                    var menuEmail = function () {
-                        queryEmail();
-                    };
-
-                    // Available actions.
-                    var items = [
-                        {icon: 'glyphicon glyphicon-envelope', label: 'E-mail', action: menuEmail},
-                        {icon: 'glyphicon glyphicon-download-alt', label: 'Export', action: menuExport},
-                        {icon: 'glyphicon glyphicon-floppy-disk', label: 'Store', action: menuStore}
-                    ];
-
-                    superCm.createMenu(items, e);
+                /**
+                 * Send an e-mail with query result. 
+                 */
+                $("#email-button").click(function () {
+                    queryEmail();
                 });
 
                 /**
@@ -273,6 +306,18 @@
                         query.setValue(select);
                         query.focus();
                     }
+                });
+
+                $('#workbench_top').on('shown.bs.collapse', function () {
+                    $("#a_collapse_top").addClass('glyphicon-triangle-top').removeClass('glyphicon-triangle-bottom');
+                    $("#a_collapse_top").removeAttr("title").attr("title", "Click me to see a greater table.");
+                    $("#table").addClass("table-workbench-result");
+                });
+
+                $('#workbench_top').on('hidden.bs.collapse', function () {
+                    $("#a_collapse_top").addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-top');
+                    $("#a_collapse_top").removeAttr("title").attr("title", "Click me to expand workbench settings.");
+                    $("#table").removeClass("table-workbench-result");
                 });
 
                 /**

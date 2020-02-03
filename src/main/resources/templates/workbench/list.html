@@ -26,13 +26,14 @@
             </div>
 
             <fieldset>
-                <table id="query_stored_my_queries" class="table table-hover">
+                <table id="table_paginated" class="table table-hover">
                     <thead>
                         <tr>
                             <th style="width:3%">#</th>
-                            <th style="width:30%">Name</th>
-                            <th style="width:30%">Query</th>
-                            <th style="width:30%">Connection</th>
+                            <th style="width:25%">Name</th>
+                            <th style="width:35%">Query</th>
+                            <th style="width:35%">Connection</th>
+                            <th style="width:20%">Owner</th>
                             <th style="width:1%">
                                 <span class="glyphicon glyphicon-eye-open"
                                       title="Shared"></span>
@@ -63,6 +64,7 @@
                                 </a>
                             </td>
                             <td th:text="${connectionQueryStore.connection.name}">#</td>
+                            <td th:text="${connectionQueryStore.user.username}">#</td>  
                             <td>                               
                                 <div th:if="${connectionQueryStore.shared}">
                                     <span class="glyphicon glyphicon-eye-open"></span>
@@ -78,113 +80,67 @@
                                 </a>                                
                             </td>
                             <td>
-                                <button 
-                                    type="button" 
-                                    class="btn btn-generic btn-xs" 
-                                    th:id="'edit_' + ${connectionQueryStore.id}" 
-                                    th:value="${connectionQueryStore.id}">
-                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 
-                                    Edit
-                                </button>
+                                <div th:if="*{#authorization.expression('hasRole(''HERO'')') or connectionQueryStore.user.username == #httpServletRequest.remoteUser}">
+                                    <button 
+                                        type="button" 
+                                        class="btn btn-generic btn-xs" 
+                                        th:id="'edit_' + ${connectionQueryStore.id}" 
+                                        th:value="${connectionQueryStore.id}">
+                                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 
+                                        Edit
+                                    </button>
+                                </div>
                             </td>
                             <td>
-                                <a class="btn btn-xs btn-delete" 
-                                   data-toggle="modal" 
-                                   th:attr="data-target='#'+${connectionQueryStore.id}" 
-                                   href="">
-                                    <span 
-                                        class="glyphicon glyphicon-trash" 
-                                        aria-hidden="true"></span> 
-                                    Delete
-                                </a>
+                                <div th:if="*{#authorization.expression('hasRole(''HERO'')') or connectionQueryStore.user.username == #httpServletRequest.remoteUser}">
+                                    <a class="btn btn-xs btn-delete" 
+                                       data-toggle="modal" 
+                                       th:attr="data-target='#'+${connectionQueryStore.id}" 
+                                       href="">
+                                        <span 
+                                            class="glyphicon glyphicon-trash" 
+                                            aria-hidden="true"></span> 
+                                        Delete
+                                    </a>
 
-                                <!-- INÍCIO MODAL DELETE -->
-                                <div class="modal fade" 
-                                     th:id="${connectionQueryStore.id}" 
-                                     tabindex="-1" role="dialog" 
-                                     aria-labelledby="modalDelete">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" 
-                                                        class="close" 
-                                                        data-dismiss="modal" 
-                                                        aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                                <h4 class="modal-title" 
-                                                    id="modalParentLabel">Delete</h4>
-                                            </div>
-                                            <div class="modal-body">
-                                                <span th:inline="text">Are you sure you want to delete [[${connectionQueryStore.name}]]?</span>
-                                            </div>
-                                            <div class="modal-footer"> 
-                                                <a th:href="@{'/query/delete/' + ${connectionQueryStore.id}}" 
-                                                   class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
-                                                    Yes
-                                                </a>
-                                                <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" 
-                                                   data-dismiss="modal" 
-                                                   aria-label="Close">
-                                                    No
-                                                </a>
+
+                                    <!-- INÍCIO MODAL DELETE -->
+                                    <div class="modal fade" 
+                                         th:id="${connectionQueryStore.id}" 
+                                         tabindex="-1" role="dialog" 
+                                         aria-labelledby="modalDelete">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" 
+                                                            class="close" 
+                                                            data-dismiss="modal" 
+                                                            aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                    <h4 class="modal-title" 
+                                                        id="modalParentLabel">Delete</h4>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <span th:inline="text">Are you sure you want to delete [[${connectionQueryStore.name}]]?</span>
+                                                </div>
+                                                <div class="modal-footer"> 
+                                                    <a th:href="@{'/query/delete/' + ${connectionQueryStore.id}}" 
+                                                       class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
+                                                        Yes
+                                                    </a>
+                                                    <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" 
+                                                       data-dismiss="modal" 
+                                                       aria-label="Close">
+                                                        No
+                                                    </a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- FIM MODAL DELETE -->
                                 </div>
-                                <!-- FIM MODAL DELETE -->
                             </td>                            
-                        </tr>
-                    </tbody>
-                </table>
-            </fieldset>
-
-            <fieldset>
-                <legend class="space-top">Shared</legend>
-
-                <table id="query_stored_shared_queries" 
-                       class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th style="width:3%">#</th>
-                            <th style="width:30%">Name</th>
-                            <th style="width:30%">Query</th>
-                            <th style="width:25%">Connection</th>
-                            <th style="width:15%">Owner</th>
-                            <th style="width:1%" class="no-sort"></th>
-                        </tr>                        
-                    </thead>
-                    <tbody>
-                        <tr class="query-row" th:each="connectionQueryStore : ${connectionQueryStoreSharedList}">
-                            <td th:text="${connectionQueryStore.id}">#</td>
-                            <td th:text="${connectionQueryStore.name}">#</td>
-                            <td>
-                                <span th:text="${#strings.length(connectionQueryStore.query) > 70 ? #strings.substring(connectionQueryStore.query,0,70) : connectionQueryStore.query}"></span>                                
-                                <div class="btn-group" th:if="${#strings.length(connectionQueryStore.query) > 70}">
-                                    <button class="dropdown-toggle close" data-toggle="dropdown">...</button>
-                                    <ul class="dropdown-menu">                                                
-                                        <li>
-                                            <pre class="line-numbers">
-                                                    <code class="language-sql" th:text="${connectionQueryStore.query}"></code>
-                                            </pre>
-                                        </li>  
-                                    </ul>
-                                </div>
-                                <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${connectionQueryStore.query}">
-                                    <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="copy"></span>
-                                </a>
-                            </td>
-                            <td th:text="${connectionQueryStore.connection.name}">#</td>
-                            <td th:text="${connectionQueryStore.user.username}">#</td>    
-                            <td>
-                                <a 
-                                    th:href="@{'/workbench/workbench/' + ${connectionQueryStore.id}}" 
-                                    class="btn btn-generic btn-xs"  
-                                    title="Open query">
-                                    <span class="glyphicon glyphicon-chevron-right"></span>
-                                    Open
-                                </a>                                
-                            </td>
                         </tr>
                     </tbody>
                 </table>

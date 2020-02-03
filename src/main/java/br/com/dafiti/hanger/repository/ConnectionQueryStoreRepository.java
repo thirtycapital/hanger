@@ -34,8 +34,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface ConnectionQueryStoreRepository
         extends CrudRepository<ConnectionQueryStore, Long> {
-
-    public List<ConnectionQueryStore> findByUser(User user);
-
-    public List<ConnectionQueryStore> findBySharedTrue();
+    
+    public List<ConnectionQueryStore> findByUserOrSharedTrue(User user);
 }

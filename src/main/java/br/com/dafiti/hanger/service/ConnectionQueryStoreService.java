@@ -49,13 +49,9 @@ public class ConnectionQueryStoreService {
     public Iterable<ConnectionQueryStore> list() {
         return connectionQueryStoreRepository.findAll();
     }
-
-    public List<ConnectionQueryStore> findByUser(User user) {
-        return connectionQueryStoreRepository.findByUser(user);
-    }
     
-    public List<ConnectionQueryStore> findBySharedTrue() {
-        return connectionQueryStoreRepository.findBySharedTrue();
+    public List<ConnectionQueryStore> findByUserOrSharedTrue(User user) {
+        return connectionQueryStoreRepository.findByUserOrSharedTrue(user);
     }
 
     public ConnectionQueryStore load(Long id) {

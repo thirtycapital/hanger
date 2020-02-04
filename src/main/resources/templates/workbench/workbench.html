@@ -20,26 +20,8 @@
                 </table>
 
                 <div class="form-horizontal">
-                    <div id="workbench_top" class="collapse in">
-                        <div th:if="${ errorMessage != null }" class="row">
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <div class="alert alert-danger" role="alert">
-                                        <span th:text="${errorMessage}"></span>
-                                    </div>  
-                                </div>
-                            </div>
-                        </div>
-                        <div th:if="${ successMessage != null }" class="row">
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <div class="alert alert-info" role="alert">
-                                        <span th:text="${successMessage}"></span>
-                                    </div>  
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
+                    <div id="workbench_top" class="collapse in">                        
+                        <div class="row space-top">
                             <div class="col-sm-12">
                                 <div class="form-group">
                                     <label>Connection</label>
@@ -88,19 +70,9 @@
 
                         <div class="row">
                             <button 
-                                id="wait" 
-                                type="button"
-                                class="btn btn-default btn-sm" 
-                                style="display:none;">
-
-                                <img th:src="@{'/images/ajax-loader.gif'}"></img>
-                            </button>
-
-                            <button 
                                 id="query-button" 
                                 class="btn-generic btn-sm pull-right btn-space" 
-                                type="button"
-                                title="Run query.">
+                                type="button">
 
                                 <span class="glyphicon glyphicon-play" 
                                       aria-hidden="true"></span> Play
@@ -109,8 +81,7 @@
                             <button 
                                 id="email-button" 
                                 class="btn btn-generic btn-sm btn-space" 
-                                type="button"
-                                title="Send query resultset in e-mail.">
+                                type="button">
 
                                 <span class="glyphicon glyphicon-envelope" 
                                       aria-hidden="true"></span> E-mail
@@ -119,8 +90,7 @@
                             <button 
                                 id="export-button" 
                                 class="btn btn-generic btn-sm btn-space" 
-                                type="button"
-                                title="Export query resultset to csv.">
+                                type="button">
 
                                 <span class="glyphicon glyphicon-download-alt" 
                                       aria-hidden="true"></span> Export
@@ -129,8 +99,7 @@
                             <button 
                                 id="store-button" 
                                 class="btn btn-generic btn-sm btn-space" 
-                                type="button"
-                                title="Save a query.">
+                                type="button">
 
                                 <span class="glyphicon glyphicon-floppy-disk" 
                                       aria-hidden="true"></span> Save
@@ -139,12 +108,20 @@
                             <a id="query-button" 
                                class="btn btn-generic btn-sm btn-space" 
                                type="button"
-                               th:href="@{'/query/list/'}" 
-                               title="Stored queries list.">
+                               th:href="@{'/query/list/'}">
 
                                 <span class="glyphicon glyphicon-inbox" 
                                       aria-hidden="true"></span> Stored
-                            </a>                           
+                            </a>      
+
+                            <button 
+                                id="wait" 
+                                type="button"
+                                class="btn btn-default btn-sm" 
+                                style="display:none;">
+
+                                <img th:src="@{'/images/ajax-loader.gif'}"></img>
+                            </button>
                         </div>
                     </div>
 
@@ -165,6 +142,25 @@
                     <div id="workbench_bottom" class="space-top">
                         <!--Fragment-->
                         <div id="fragmentQueryResultSetHolder" />
+
+                        <div th:if="${ errorMessage != null }" class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <div class="alert alert-danger" role="alert">
+                                        <span th:text="${errorMessage}"></span>
+                                    </div>  
+                                </div>
+                            </div>
+                        </div>
+                        <div th:if="${ successMessage != null }" class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <div class="alert alert-info" role="alert">
+                                        <span th:text="${successMessage}"></span>
+                                    </div>  
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -226,7 +222,7 @@
                  * @returns {undefined}
                  */
                 $(document).ajaxStart(function () {
-                    $("#wait").css("display", "block");
+                    $("#wait").css("display", "inline");
                     $("#query").prop("disabled", true);
                     $("#query-button").prop("disabled", true);
                 });

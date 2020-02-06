@@ -81,7 +81,8 @@
                         </td>
                         <td>
                             <div class="form-group">
-                                <a class="btn btn-xs btn-delete" data-toggle="modal" th:attr="data-target='#'+${connection.id}" href=""><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</a>
+                                <a  th:if="${#authorization.expression('hasRole(''HERO'')')}"
+                                    class="btn btn-xs btn-delete" data-toggle="modal" th:attr="data-target='#'+${connection.id}" href=""><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</a>
                             </div>
                             <!-- INÍCIO MODAL DELETE -->
                             <div class="modal fade" th:id="${connection.id}" tabindex="-1" role="dialog" aria-labelledby="modalDelete">

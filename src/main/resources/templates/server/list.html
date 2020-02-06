@@ -97,7 +97,8 @@
                         </td>
                         <td>
                             <div class="form-group">
-                                <a class="btn btn-xs btn-delete" data-toggle="modal" 
+                                <a th:if="${#authorization.expression('hasRole(''HERO'')')}"
+                                   class="btn btn-xs btn-delete" data-toggle="modal" 
                                    th:attr="data-target='#' + 'delete_' + ${server.id}" 
                                    href="">
 

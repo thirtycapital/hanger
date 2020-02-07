@@ -240,8 +240,7 @@
                                         data-parent="#accordion" 
                                         th:href="'#check' + ${stat.index}"
                                         class="link">
-
-                                        <span th:text="*{checkup[__${stat.index}__].name}" 
+                                        <span th:text="*{checkup[__${stat.index}__].name + ' > ' + ( checkup[__${stat.index}__].prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION' ) + ' > ' +  checkup[__${stat.index}__].action}" 
                                               th:classappend="*{checkup[__${stat.index}__].enabled ? '':'panel-heading-add-checkup'}"></span>
                                         <span th:text="*{checkup[__${stat.index}__].enabled ? '':'[Disabled]'}" 
                                               class="panel-heading-add-checkup"></span>
@@ -466,7 +465,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <hr/>
 
                     <!--Buttons-->

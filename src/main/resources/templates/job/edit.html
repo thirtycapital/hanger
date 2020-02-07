@@ -338,7 +338,7 @@
                                             th:href="'#check' + ${checkupStat.index}"
                                             class="link">
 
-                                            <span th:text="*{checkup[__${checkupStat.index}__].name}" 
+                                            <span th:text="*{checkup[__${checkupStat.index}__].name + ' > ' + ( checkup[__${checkupStat.index}__].prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION' ) + ' > ' +  checkup[__${checkupStat.index}__].action}"
                                                   th:classappend="*{checkup[__${checkupStat.index}__].enabled ? '':'panel-heading-add-checkup'}"></span>
                                             <span th:text="*{checkup[__${checkupStat.index}__].enabled ? '':'[Disabled]'}" 
                                                   class="panel-heading-add-checkup"></span>
@@ -499,8 +499,7 @@
                                                         <input  
                                                             id="jobEnabled" 
                                                             name="jobEnabled"
-                                                            type="checkbox" 
-                                                            disabled="true"
+                                                            type="checkbox"                                                             
                                                             th:field="*{checkup[__${checkupStat.index}__].enabled}" 
                                                             th:checked="*{checkup[__${checkupStat.index}__].enabled}"/> Enabled
                                                     </label>

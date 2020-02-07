@@ -210,7 +210,7 @@
                             <tr>
                                 <th style="width:5%">#</th>
                                 <th style="width:72.5%">Privilege</th>
-                                <th>Delete</th>
+                                <th></th>
                             </tr>
                             <tr th:each="privileges, privilegeStat : ${user.privileges}">
                                 <input type="hidden" th:field="*{privileges[__${privilegeStat.index}__]}"/> 

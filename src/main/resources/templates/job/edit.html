@@ -118,7 +118,7 @@
                             <table class="table">
                                 <tr>
                                     <th style="width:77.5%">Channel</th>
-                                    <th>Delete</th>
+                                    <th></th>
                                 </tr>
                                 <tr th:each="slackChannel, slackChannelStat : ${job.channel}">
                                     <td> 
@@ -178,7 +178,7 @@
                             <tr>
                                 <th style="width:5%">#</th>
                                 <th style="width:72.5%">Subject</th>
-                                <th>Delete</th>
+                                <th></th>
                             </tr>
                             <tr th:each="subject, subjectStat : ${job.subject}">
                                 <input type="hidden" th:field="*{subject[__${subjectStat.index}__]}"/> 
@@ -231,7 +231,7 @@
                                         <th style="width:47.5%">Name</th>
                                         <th style="width:5%">History</th>
                                         <th style="width:5%">Scope</th>
-                                        <th>Delete</th>
+                                        <th></th>
                                     </tr>
                                     <tr th:each="parent, parentStat : ${job.parent}">
                                         <input type="hidden" th:field="*{parent[__${parentStat.index}__].id}"/> 
@@ -283,23 +283,16 @@
                                 <table class="table">
                                     <tr>
                                         <th style="width:5%">#</th>
+                                        <th style="width:5%">Blocker</th>
                                         <th style="width:10%">Server</th>
                                         <th style="width:47.5%">Name</th>
-                                        <th style="width:5%">History</th>
-                                        <th style="width:5%">Blocker</th>
+                                        <th style="width:5%">History</th>                                        
                                         <th style="width:5%">Scope</th>
                                         <th></th>
                                     </tr>
                                     <tr th:each="child, childStat : ${children}">
                                         <td> 
                                             <span th:text="${child.job.id}"></span>
-                                        </td>
-                                        <td th:text="${child.job.server.name}"></td>
-                                        <td><a class="link" th:text="${child.job.name}" th:href="@{'/job/view/' + ${child.job.id}}" target="_blank"></a></td>
-                                        <td>
-                                            <a href="javascript:;" class="build-history" th:id="${child.job.id}">
-                                                +
-                                            </a>                         
                                         </td>
                                         <td>
                                             <input  
@@ -308,6 +301,13 @@
                                                 type="checkbox" 
                                                 th:checked="${child.blocker}"
                                                 disabled="true"/>
+                                        </td>
+                                        <td th:text="${child.job.server.name}"></td>
+                                        <td><a class="link" th:text="${child.job.name}" th:href="@{'/job/view/' + ${child.job.id}}" target="_blank"></a></td>
+                                        <td>
+                                            <a href="javascript:;" class="build-history" th:id="${child.job.id}">
+                                                +
+                                            </a>                         
                                         </td>
                                         <td>
                                             <span th:text="${child.scope}"></span>
@@ -546,7 +546,7 @@
                                                     <th style="width:5%">#</th>
                                                     <th style="width:10%">Server</th>
                                                     <th style="width:62.5%">Name</th>
-                                                    <th>Delete</th>
+                                                    <th></th>
                                                 </tr>     
                                                 <tr th:each="trigger, triggetStat : *{checkup[__${checkupStat.index}__].trigger}">
                                                     <input type="hidden" th:field="*{checkup[__${checkupStat.index}__].trigger[__${triggetStat.index}__].id}"/>   
@@ -631,15 +631,16 @@
                         </div>
                     </div>  
 
+
                     <!--Options-->
-                    <div class="form-group" th:if="${ job.server != null }">
+                    <div th:if="${ job.server != null }">
                         <fieldset>
                             <legend>
                                 Options
                             </legend>
                         </fieldset>   
 
-                        <div>
+                        <div class="form-group">
                             <div class="col-sm-10">
                                 <div class="btn-group btn-space">
                                     <label>

@@ -187,23 +187,16 @@
                                 <table class="table">
                                     <tr>
                                         <th style="width:5%">#</th>
+                                        <th style="width:5%">Blocker</th>
                                         <th style="width:10%">Server</th>
                                         <th style="width:52.5%">Name</th>
                                         <th style="width:5%">History</th>
-                                        <th style="width:5%">Blocker</th>
                                         <th style="width:5%">Scope</th>
                                         <th></th>
                                     </tr>
                                     <tr th:each="child, childStat : ${children}">
                                         <td> 
                                             <span th:text="${child.job.id}"></span>
-                                        </td>
-                                        <td th:text="${child.job.server.name}"></td>
-                                        <td><a class="link" th:text="${child.job.name}" th:href="@{'/job/view/' + ${child.job.id}}" target="_blank"></a></td>
-                                        <td>
-                                            <a href="javascript:;" class="build-history" th:id="${child.job.id}">
-                                                +
-                                            </a>                         
                                         </td>
                                         <td>
                                             <input  
@@ -212,6 +205,13 @@
                                                 type="checkbox" 
                                                 th:checked="${child.blocker}"
                                                 disabled="true"/>
+                                        </td>
+                                        <td th:text="${child.job.server.name}"></td>
+                                        <td><a class="link" th:text="${child.job.name}" th:href="@{'/job/view/' + ${child.job.id}}" target="_blank"></a></td>
+                                        <td>
+                                            <a href="javascript:;" class="build-history" th:id="${child.job.id}">
+                                                +
+                                            </a>                         
                                         </td>
                                         <td>
                                             <span th:text="${child.scope}"></span>

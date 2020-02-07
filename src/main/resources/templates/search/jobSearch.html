@@ -24,24 +24,22 @@
                             id="search"/>
                     </div>
 
-                    <div class="row">
-                        <button 
-                            id="search-button" 
-                            class="btn btn-generic pull-right" 
-                            type="button">
+                    <button 
+                        id="search-button" 
+                        class="btn btn-generic" 
+                        type="button">
 
-                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Search
-                        </button>     
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Search
+                    </button>     
 
-                        <button 
-                            id="wait" 
-                            type="button" 
-                            class="btn btn-default btn-sm pull-left" 
-                            style="display:none;">
+                    <button 
+                        id="wait" 
+                        type="button" 
+                        class="btn btn-space btn-default btn-sm" 
+                        style="display:none;">
 
-                            <img th:src="@{'/images/ajax-loader.gif'}"></img>
-                        </button>
-                    </div>
+                        <img th:src="@{'/images/ajax-loader.gif'}"></img>
+                    </button>
                 </div>
 
                 <hr/>

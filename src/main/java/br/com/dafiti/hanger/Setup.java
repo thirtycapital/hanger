@@ -95,7 +95,6 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
         if (!this.setup) {
             //Setup the additional privileges. 
             privilegeService.createPrivilegeIfNotExists("WORKBENCH");
-            privilegeService.createPrivilegeIfNotExists("DELETE_ME_BECAUSE_TEST");
 
             //Setup the admin role. 
             roleService.createRoleIfNotExists("USER");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Dafiti Group
+ * Copyright (c) 2020 Dafiti Group
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -23,65 +23,64 @@
  */
 package br.com.dafiti.hanger.service;
 
-import br.com.dafiti.hanger.model.Role;
-import br.com.dafiti.hanger.repository.RoleRepository;
+import br.com.dafiti.hanger.model.Privilege;
+import br.com.dafiti.hanger.repository.PrivilegeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
  *
- * @author Valdiney V GOMES
- * @author Guilherme ALMEIDA
+ * @author Helio Leal
  */
 @Service
-public class RoleService {
+public class PrivilegeService {
 
-    private final RoleRepository roleRepository;
+    private final PrivilegeRepository privilegeRepository;
 
     @Autowired
-    public RoleService(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
+    public PrivilegeService(PrivilegeRepository privilegeRepository) {
+        this.privilegeRepository = privilegeRepository;
     }
 
-    public Iterable<Role> list() {
-        return roleRepository.findAll();
-    }
-
-    /**
-     * Save a role
-     *
-     * @param role Role
-     * @return Role
-     */
-    public Role save(Role role) {
-        return roleRepository.save(role);
+    public Iterable<Privilege> list() {
+        return privilegeRepository.findAll();
     }
 
     /**
-     * Find a role by name
+     * Save a privilege
      *
-     * @param name Role name
-     * @return Role
+     * @param privilege Privilege
+     * @return Privilege
      */
-    public Role findByName(String name) {
-        return roleRepository.findByName(name);
+    public Privilege save(Privilege privilege) {
+        return privilegeRepository.save(privilege);
     }
 
     /**
-     * Create a role if not exists one
+     * Find a privilege by name
      *
-     * @param name Role name
-     * @return Role
+     * @param name Privilege name
+     * @return Privilege
      */
-    public Role createRoleIfNotExists(String name) {
-        Role role = this.findByName(name);
+    public Privilege findByName(String name) {
+        return privilegeRepository.findByName(name);
+    }
 
-        if (role == null) {
-            Role newRole = new Role();
-            newRole.setName(name);
-            role = this.save(newRole);
+    /**
+     * Create a privilege if not exists one
+     *
+     * @param name Privilege name
+     * @return Privilege
+     */
+    public Privilege createPrivilegeIfNotExists(String name) {
+        Privilege privilege = this.findByName(name);
+
+        if (privilege == null) {
+            Privilege newPrivilege = new Privilege();
+            newPrivilege.setName(name);
+            privilege = this.save(newPrivilege);
         }
 
-        return role;
+        return privilege;
     }
 }

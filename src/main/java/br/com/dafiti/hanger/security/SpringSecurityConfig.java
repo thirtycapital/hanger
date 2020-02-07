@@ -30,7 +30,10 @@ import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.access.PermissionEvaluator;
+import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -38,6 +41,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.FilterInvocation;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
@@ -48,6 +53,7 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 @Configuration
 @EnableWebSecurity
 @EnableScheduling
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -59,6 +65,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private @Value("${hanger.anonymous.access:true}")
     boolean anonymousEnabled;
+
+    @Autowired
+    private CustomPermissionEvaluator customPermissionEvaluator;
 
     @Override
     public void configure(WebSecurity web) throws Exception {
@@ -97,6 +106,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .authorizeRequests()
+                .expressionHandler(permissionHandler())
                 .antMatchers(
                         "/user/add/",
                         "/user/role/**",
@@ -104,12 +114,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/configuration/**").access("hasRole('HERO')")
                 .antMatchers(
                         "/**/delete/**",
-                        "/**/rebuild/**",
-                        "/workbench/workbench/**",
-                        "/workbench/query/**").access("hasRole('ADMIN') || hasRole('HERO')")
+                        "/**/rebuild/**").access("hasRole('ADMIN') || hasRole('HERO')")
                 .antMatchers(
                         "/**/edit/**",
-                        "/**/add/**").access("hasRole('USER') || hasRole('ADMIN') || hasRole('HERO')")
+                        "/**/add/**").access("hasRole('USER') || hasRole('ADMIN') || hasRole('HERO')")                
+                .antMatchers(
+                        "/workbench/workbench/**",
+                        "/workbench/query/**").access("hasRole('ADMIN') || hasRole('HERO') || hasPermission('WORKBENCH', 'read') ")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login").permitAll().defaultSuccessUrl("/home").successHandler(loginSuccessHandler())
@@ -145,5 +156,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public ServletListenerRegistrationBean<HttpSessionEventPublisher> httpSessionEventPublisher() {
         return new ServletListenerRegistrationBean<>(new HttpSessionEventPublisher());
+    }
+
+    @Bean
+    public DefaultWebSecurityExpressionHandler permissionHandler() {
+        final DefaultWebSecurityExpressionHandler webSecurityExpressionHandler = new DefaultWebSecurityExpressionHandler();
+        webSecurityExpressionHandler.setPermissionEvaluator(customPermissionEvaluator);
+        return webSecurityExpressionHandler;
     }
 }

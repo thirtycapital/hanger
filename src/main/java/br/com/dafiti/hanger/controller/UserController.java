@@ -44,11 +44,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Blueprint;
 import br.com.dafiti.hanger.model.Job;
+import br.com.dafiti.hanger.model.Privilege;
 import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.MailService;
+import br.com.dafiti.hanger.service.PrivilegeService;
 import br.com.dafiti.hanger.service.RoleService;
 import br.com.dafiti.hanger.service.UserService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -62,6 +68,7 @@ public class UserController {
     private final RoleService roleService;
     private final MailService mailService;
     private final JobService jobService;
+    private final PrivilegeService privilegeService;
 
     @Autowired
     public UserController(
@@ -69,12 +76,14 @@ public class UserController {
             RoleService roleService,
             MailService mailService,
             JobService jobService,
-            SessionRegistry sessionRegistry) {
+            SessionRegistry sessionRegistry,
+            PrivilegeService privilegeService) {
 
         this.userService = userService;
         this.roleService = roleService;
         this.mailService = mailService;
         this.jobService = jobService;
+        this.privilegeService = privilegeService;
     }
 
     /**
@@ -308,8 +317,9 @@ public class UserController {
     }
 
     /**
-     * Indentify confirmation code sent by e-mail and redirect to change password.
-     * 
+     * Indentify confirmation code sent by e-mail and redirect to change
+     * password.
+     *
      * @param userConfirmation
      * @param bindingResult
      * @param model
@@ -425,5 +435,68 @@ public class UserController {
             @PathVariable(value = "userId") Long userId) {
 
         return this.userService.resetPassword(userId);
+    }
+
+    /**
+     * Privileges list modal.
+     *
+     * @param model Model
+     * @return Privileges modal
+     */
+    @GetMapping(path = "/modal/privileges")
+    public String privilegesListModal(Model model) {
+        model.addAttribute("privileges", privilegeService.list());
+        return "user/modalPrivileges::privileges";
+    }
+
+    /**
+     * Add user privileges.
+     *
+     * @param user User
+     * @param privilegesList
+     * @param bindingResult BindingResult
+     * @param model Model
+     * @return Subject edit
+     */
+    @PostMapping(path = "/save", params = {"partial_add_privileges"})
+    public String addPrivilege(
+            @ModelAttribute User user,
+            @RequestParam(value = "privilegesList", required = false) List<Privilege> privilegesList,
+            BindingResult bindingResult,
+            Model model) {
+
+        try {
+            user.setPrivileges(privilegesList);
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+        } finally {            
+            model.addAttribute("user", user);
+            model.addAttribute("roles", roleService.list());
+        }
+
+        return "user/edit";
+    }
+    
+    /**
+     * Remove a privilege.
+     *
+     * @param user User
+     * @param index int
+     * @param bindingResult BindingResult
+     * @param model Model
+     * @return Subject edit
+     */
+    @PostMapping(path = "/save", params = {"partial_remove_privilege"})
+    public String removeSlackChannel(
+            @ModelAttribute User user,
+            @RequestParam("partial_remove_privilege") int index,
+            BindingResult bindingResult,
+            Model model) {
+
+        user.getPrivileges().remove(index);
+        model.addAttribute("user", user);
+        model.addAttribute("roles", roleService.list());
+
+        return "user/edit";
     }
 }

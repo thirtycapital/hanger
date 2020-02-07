@@ -179,6 +179,10 @@ public class UserService implements UserDetailsService {
         if (user.getLastName() != null) {
             currentUser.setLastName(user.getLastName());
         }
+        
+        if (!user.getPrivileges().isEmpty()) {
+            currentUser.setPrivileges(user.getPrivileges());
+        }
 
         currentUser.setEnabled(user.isEnabled());
 

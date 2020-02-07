@@ -51,9 +51,7 @@ import br.com.dafiti.hanger.service.MailService;
 import br.com.dafiti.hanger.service.PrivilegeService;
 import br.com.dafiti.hanger.service.RoleService;
 import br.com.dafiti.hanger.service.UserService;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -469,14 +467,14 @@ public class UserController {
             user.setPrivileges(privilegesList);
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
-        } finally {            
+        } finally {
             model.addAttribute("user", user);
             model.addAttribute("roles", roleService.list());
         }
 
         return "user/edit";
     }
-    
+
     /**
      * Remove a privilege.
      *

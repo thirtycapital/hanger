@@ -23,8 +23,6 @@
  */
 package br.com.dafiti.hanger;
 
-import br.com.dafiti.hanger.model.Privilege;
-import br.com.dafiti.hanger.model.Role;
 import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.service.ConfigurationService;
 import br.com.dafiti.hanger.service.JobApprovalService;

@@ -54,7 +54,7 @@ public class ConfigurationGroupService {
         save(configurationGroup, false);
     }
 
-    public void save(ConfigurationGroup configurationGroup, boolean add) {
+    public ConfigurationGroup save(ConfigurationGroup configurationGroup, boolean add) {
         ConfigurationGroup group = configurationGroupRepository.findByName(configurationGroup.getName());
 
         if (group == null || !add) {
@@ -62,8 +62,10 @@ public class ConfigurationGroupService {
                 configurationGroup.setId(group.getId());
             }
 
-            configurationGroupRepository.save(configurationGroup);
+            group = configurationGroupRepository.save(configurationGroup);
         }
+
+        return group;
     }
 
     public void delete(Long id) {

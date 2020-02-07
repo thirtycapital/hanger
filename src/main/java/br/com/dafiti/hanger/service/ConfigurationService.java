@@ -125,7 +125,7 @@ public class ConfigurationService {
     private void init() {
         //E-mail configuration.
         ConfigurationGroup emailGroup = new ConfigurationGroup("E-mail");
-        this.configurationGroupService.save(emailGroup, true);
+        emailGroup = this.configurationGroupService.save(emailGroup, true);
         this.save(new Configuration(
                 "Host",
                 "EMAIL_HOST",
@@ -168,7 +168,7 @@ public class ConfigurationService {
 
         //Slack configuration.
         ConfigurationGroup slackGroup = new ConfigurationGroup("Slack");
-        this.configurationGroupService.save(slackGroup, true);
+        slackGroup = this.configurationGroupService.save(slackGroup, true);
         this.save(new Configuration(
                 "Default channel",
                 "SLACK_CHANNEL",
@@ -181,7 +181,7 @@ public class ConfigurationService {
 
         //Generic configuration.
         ConfigurationGroup others = new ConfigurationGroup("Others");
-        this.configurationGroupService.save(others, true);
+        others = this.configurationGroupService.save(others, true);
         this.save(new Configuration(
                 "Log retention (in days)",
                 "LOG_RETENTION_PERIOD",
@@ -194,9 +194,9 @@ public class ConfigurationService {
 
         //Maximun number of tables to display on workbench.
         ConfigurationGroup workbench = new ConfigurationGroup("Workbench");
-        this.configurationGroupService.save(workbench, true);
+        workbench = this.configurationGroupService.save(workbench, true);
         this.save(new Configuration(
-                "Maximum entity number allowed",
+                "Schema and table searcheble",
                 "WORKBENCH_MAX_ENTITY_NUMBER",
                 "5000",
                 "number",
@@ -205,11 +205,11 @@ public class ConfigurationService {
                 50000,
                 "*"), true);
 
-        //E-mail domain accepted.
+        //E-mail domain filter.
         this.save(new Configuration(
-                "E-mail domain accepted",
-                "EMAIL_DOMAIN_ACCEPTED",
-                "^[a-zA-Z0-9_.+-]+@(?:(?:[a-zA-Z0-9-]+\\.)?[a-zA-Z]+\\.)?(dafiti|kanui|tricae)\\..*",
+                "E-mail filter (RegExp)",
+                "EMAIL_DOMAIN_FILTER",
+                "",
                 "text",
                 workbench,
                 0,

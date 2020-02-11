@@ -26,6 +26,7 @@ package br.com.dafiti.hanger.controller;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.model.ConnectionQueryStore;
 import br.com.dafiti.hanger.model.JobCheckup;
+import br.com.dafiti.hanger.service.ConfigurationService;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.WorkbenchService;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
@@ -52,13 +53,16 @@ public class WorkbenchController {
 
     private final ConnectionService connectionService;
     private final WorkbenchService workbenchService;
+    private final ConfigurationService configurationService;
 
     @Autowired
     public WorkbenchController(
             ConnectionService connectionService,
-            WorkbenchService workbenchService) {
+            WorkbenchService workbenchService,
+            ConfigurationService configurationService) {
         this.connectionService = connectionService;
         this.workbenchService = workbenchService;
+        this.configurationService = configurationService;
     }
 
     /**
@@ -98,6 +102,7 @@ public class WorkbenchController {
             model.addAttribute("errorMessage", queryResultSet.getError());
         } else {
             model.addAttribute("resultset", queryResultSet);
+            model.addAttribute("maxRows", configurationService.getMaxRows());
         }
 
         return "workbench/fragmentQueryResultSet::resultSet";

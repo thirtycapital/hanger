@@ -28,6 +28,7 @@ import br.com.dafiti.hanger.model.ConfigurationGroup;
 import br.com.dafiti.hanger.repository.ConfigurationRepository;
 import br.com.dafiti.hanger.security.PasswordCryptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /**
@@ -215,5 +216,28 @@ public class ConfigurationService {
                 0,
                 255,
                 "*"), true);
+
+        //Limit of rows per query.
+        this.save(new Configuration(
+                "Max rows per query",
+                "WORKBENCH_MAX_ROWS",
+                "100",
+                "number",
+                workbench,
+                100,
+                1000000,
+                "*"), true);
+    }
+
+    /**
+     * Get max rows allowed in a query.
+     *
+     * @return int
+     */
+    @Cacheable(value = "maxRows")
+    public int getMaxRows() {
+        return Integer.valueOf(this
+                .findByParameter("WORKBENCH_MAX_ROWS")
+                .getValue());
     }
 }

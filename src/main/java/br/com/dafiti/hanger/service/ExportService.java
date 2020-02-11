@@ -211,7 +211,7 @@ public class ExportService {
                 //Get external recipient list separated by , or ;
                 List<String> externalRecipients = Arrays.asList(email.getExternalRecipient().split("\\,|\\;"));
 
-                String pattern = configurationService.findByParameter("EMAIL_DOMAIN_ACCEPTED").getValue();
+                String pattern = configurationService.findByParameter("EMAIL_DOMAIN_FILTER").getValue();
 
                 for (String externalRecipient : externalRecipients) {
                     if (externalRecipient.matches(pattern)) {

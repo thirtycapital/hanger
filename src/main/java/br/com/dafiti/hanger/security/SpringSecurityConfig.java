@@ -117,7 +117,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/add/**").access("hasRole('USER') || hasRole('ADMIN') || hasRole('HERO')")                
                 .antMatchers(
                         "/workbench/workbench/**",
-                        "/workbench/query/**").access("hasRole('ADMIN') || hasRole('HERO') || hasPermission('WORKBENCH', 'read') ")
+                        "/workbench/query/**",
+                        "/query/list").access("hasRole('ADMIN') || hasRole('HERO') || hasPermission('WORKBENCH', 'read') ")
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/login").permitAll().defaultSuccessUrl("/home").successHandler(loginSuccessHandler())

@@ -93,6 +93,9 @@
                         <th style="width:13%">User</th>
                         <th style="width:23%">Name</th>
                         <th style="width:50%">E-mail</th>
+                        <th style="width:2.5%">
+                            <span class="glyphicon glyphicon-equalizer"></span>
+                        </th>
                         <th style="width:2.5%">Role</th>
                         <th class="no-sort"></th>
                         <th class="no-sort"></th>
@@ -110,7 +113,12 @@
                                 [[${#lists.contains(logged, user) ? '  online': '' }]]
                             </span>
                         </td>                            
-                        <td th:text="${user.email}"></td>                        
+                        <td th:text="${user.email}"></td>   
+                        <td>
+                            <span th:if="${#lists.size(user.privileges) > 0}" 
+                                  class="glyphicon glyphicon-equalizer"
+                                  th:title="${user.privileges}"></span>
+                        </td>
                         <td th:text="${user.roles[0].name}"></td>
                         <td>
                             <div 

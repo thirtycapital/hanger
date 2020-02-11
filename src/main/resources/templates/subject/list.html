@@ -61,7 +61,7 @@
                         </td>
                         <td>
                             <div th:if="${subject.notified}">
-                                <span th:attr="title=${ not #lists.isEmpty(subject.channel) ?  'Channels: ' + subject.channel : 'Default channel' }"  
+                                <span th:attr="title=${ not #lists.isEmpty(subject.channel) ?  '[' + subject.channel + ']' : 'Default channel' }"  
                                       class="glyphicon glyphicon-bell">
                                 </span>
                             </div>

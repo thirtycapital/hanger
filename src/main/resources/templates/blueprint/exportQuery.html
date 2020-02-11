@@ -79,6 +79,11 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                <div th:if="${queryResultSet.getRow().size() > 30}">
+                                    <span style="font-size: 10px; color: gray">
+                                        Showing the first 30 lines, whole resultset attached to this email
+                                    </span>
+                                </div>
                             </center>
                         </tr>
                         <tr>

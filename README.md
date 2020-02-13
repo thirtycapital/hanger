@@ -100,7 +100,7 @@ O *Monitor* é onde a carga de trabalho do Hanger é monitorada. O *dashboard* �
 		- **Building:** Total de *jobs* prontos para serem executados, mas ainda aguardando na fila. 
 		- **Running:** Total de *jobs* sendo executados.
 		- **Warning:** Total de *jobs* com alertas na cadeia de dependência. 
-		- **Failure:** Total de *jobs* com falha ou com problema de validação dos dados. 
+		- **Failure:** Total de *jobs* com falhas ou com problema de validação dos dados. 
 - Na guia **ALL** são exibidos todos os jobs cadastrados no Hanger e seus respectivos status.
 
 ## Search

@@ -11,10 +11,10 @@
 - Jenkins ( [https://jenkins.io/](https://jenkins.io/) )
 - Jenkins Notification Plugin ( [https://wiki.jenkins.io/display/JENKINS/Notification+Plugin](https://wiki.jenkins.io/display/JENKINS/Notification+Plugin) )
 
-> Caso haja problemas de permissão entre Hanger e o Jenkins (Erro 403), verifique se a opção Prevenir site contra invasões está marcada e a desmarque:
+> Caso haja problemas de permissão entre Hanger e o Jenkins (Erro 403), verifique se a opção *Prevenir site contra invasões* está marcada e a desmarque:
 > - Acesse o Jenkins e vá no menu Gerenciar Jenkins
 > - Clique no menu em Configurar segurança global
-> - Na seção CSRF Protection, desmarque a opção Prevenir site contra invasões.
+> - Na seção CSRF Protection, desmarque a opção *Prevenir site contra invasões*.
 
 ##### CONSTRUÇÃO
 Utilizando o [Maven](https://maven.apache.org/):
@@ -240,13 +240,7 @@ Permite validar o estado de todas as conexões cadastradas.
 > Dependendo do número de conexões este processo pode ser demorado. 
 
 ##### CONNECT
-Permite testar o estado de uma conexão específica. 
-
-##### EDIT 
-Permite alterar uma conexão.
-
-##### DELETE
-Permite excluir uma conexão.
+Permite testar o estado de uma conexão específica.
 
 ##### SCHEMA
 Permite explorar os catálogos e schemas de uma conexão.
@@ -256,7 +250,85 @@ Permite explorar os catálogos e schemas de uma conexão.
 - Clique no botão ***Table***.
 - Será exibida todas as tabelas do catálogo ou schema. No lado direito da tabela é possível acessar os metadados de uma tabela.
 - Clique no botão ***Column***.
-- Será exibido a chave primária da tabela, os índices dela e todos os campos com seus respectivos tipos.
+- Será exibido a chave primária da tabela, os índices dela e todos os campos com seus respectivos tipos. 
+
+##### EDIT 
+Permite alterar uma conexão.
+
+##### DELETE
+Permite excluir uma conexão.
+
+##### WORKBENCH
+O *Workbench* é uma ferramenta que permite realizar queries com as conexões já estabelecidas.
+
+- No menu lateral, acesse a opção ***Connection***.
+- Clique no botão ***Workbench***, representado pelo ícone **>**.
+- Selecione a conexão desejada no campo ***Connection***.
+- No campo ***Search*** informe o nome do schema desejado para realizar a consulta ou escolha umas das opções listadas.
+- Uma query pré-estabelecida será exibida na área de texto ao lado.
+- Altere, se necessário e então, clique no botão ***Play*** para realizar a execução.
+- Será exibido o resultado da query executada.
+
+###### E-MAIL
+Em *E-mail* é possível enviar o resultado de uma consulta para outros usuários.
+
+- Em ***Workbench***, clique no botão ***E-mail***.
+- No campo ***Recipient***, selecione ou escreva os nomes dos destinatários.
+- No campo ***External Recipient***, selecione ou escreva o endereço de usuários externos, caso seja necessário.
+- No campo ***Subject***, informe o assunto do e-mail.
+- Na área de texto ***Body***, escreva ou não alguma mensagem.
+- Ao final, clique no botão ***Send*** para enviar.
+- Clique no botão ***Close*** para cancelar a operação.
+
+###### EXPORT
+Permite exportar o resultado de uma query para um arquivo CSV.
+
+###### SAVE
+Permite salvar a query, caso seja necessário utulizá-la novamente em outro momento.
+
+- Em ***Workbench***, clique no botão ***Save***.
+- Determine o nome da query no campo ***Name***.
+- O campo ***Connection*** informa a conexão utilizada.
+- Na área de texto ***Query*** é informada a query a ser salva.
+- Clique em ***Shared***, caso deseje compartilhar a query com outros usuários do sistema.
+- Ao final, clique no botão ***Save*** para salvar.
+- Clique no botão ***Close*** para cancelar a operação.
+
+###### STORED
+Permite visualizar todas as queries salvas.
+
+- Em ***Workbench***, clique no botão ***Stored***.
+- Será exibida uma lista com todas as ***Queries*** salvas.
+
+##### QUERIES
+Visualização de todas as queries salvas.
+
+###### OPEN
+Permite abrir uma query e executá-la.
+ 
+###### EDIT
+Permite editar as informações de uma query.
+
+- No campo ***Name*** determine o novo nome da query escolhida para edição.
+- O campo ***Connection*** informa a conexão utilizada.
+- Na área de texto ***Query*** é informada a query a ser editada.
+- Clique em ***Shared***, caso deseje compartilhar a query com outros usuários do sistema.
+- Ao final, clique no botão ***Save*** para salvar.
+- Clique no botão ***Close*** para cancelar a operação.
+- Em ***Queries***, clique no botão ***>*** para voltar ao ***Workbench***.
+
+###### DELETE
+Permite deletar uma query.
+
+###### VIEW MORE
+O botão representado por ***...*** permite visualizar uma query por completo.
+
+- Na lista de queries, clique no botão ***...*** (três pontos) para visualizar a query por completo.
+
+###### COPY
+Permite copiar uma query.
+
+- Na lista de queries, passe o mouse em qualquer query e clique no botão ***Copy***, que será exibido, para copiá-la.
 
 ## Subjects
 Subjects são agrupadores utilizados para a organização e o acompanhamento sumarizado da execução dos *jobs*. 

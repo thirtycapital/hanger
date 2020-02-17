@@ -13,11 +13,11 @@
                             <th style="width:5%" class="img-sort">Status</th>
                             <th style="width:10%">Server</th>
                             <th style="width:43%">Job</th>  
-                            <th style="width:1.5%"><span class="glyphicon glyphicon-exclamation-sign" title="Warning"></span></th>
+                            <th style="width:1.5%"><span class="glyphicon glyphicon-bullhorn" title="Warning"></span></th>
                             <th style="width:1.5%" class="no-sort"><span class="glyphicon glyphicon-link" title="Link"></span></th>
                             <th style="width:1.5%"><span class="glyphicon glyphicon-heart-empty" title="Check-Up"></span></th>
+                            <th style="width:16%">Updated</th>
                             <th style="width:18%">Scope</th>
-                            <th style="width:16%">Update</th>
                             <th style="width:1%" class="no-sort"></th>
                             <th style="width:1%" class="no-sort"></th>
                             <th style="width:1%" class="no-sort"></th>
@@ -59,8 +59,8 @@
                                     </a>
                                 </div>                                
                             </td>
+                            <td th:text="${jobDetail.buildTime}">Updated</td>
                             <td th:text="${jobDetail.scope}">Scope</td>
-                            <td th:text="${jobDetail.buildTime}">Build time</td>
                             <td>
                                 <div sec:authorize="isAuthenticated()">                            
                                     <button class="btn btn-generic btn-xs pull-right" 
@@ -78,7 +78,7 @@
 
                                     <button class="btn btn-delete btn-xs pull-right" 
                                             th:attr="onclick='deleteJobModal('+${jobDetail.job.id} + ',' + ${currentSubject.id} + ', \'' + ${jobDetail.job.name} + '\', \'' +${currentSubject.name}+ '\');'">
-                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
+                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove
                                     </button>
                                 </div>
                             </td>

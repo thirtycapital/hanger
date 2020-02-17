@@ -54,15 +54,15 @@
                     <fieldset>
                         <legend>Maintenance</legend>                    
                         <div class="btn-group">
-                            <a class="btn btn-generic btn-sm" th:id="modal_change_logo" title="Update application logo">                                         
+                            <a class="btn btn-generic btn-sm" th:id="modal_change_logo">                                         
                                 <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Update logo
                             </a>
 
-                            <a class="btn btn-generic btn-space btn-sm" th:href="@{/job/refresh/}" title="Update application cache">
+                            <a class="btn btn-generic btn-space btn-sm" th:href="@{/job/refresh/}">
                                 <span class="glyphicon glyphicon-refresh"></span> Update cache 
                             </a>
 
-                            <a class="btn btn-delete btn-space btn-sm" th:attr="onclick='modalUpdate();'"  title="Update notification plugin" >
+                            <a class="btn btn-delete btn-space btn-sm" th:attr="onclick='modalUpdate();'">
                                 <span class="glyphicon glyphicon-plane" aria-hidden="true"></span> 
                                 Update plugin
                             </a>

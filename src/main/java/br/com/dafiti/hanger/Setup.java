@@ -29,6 +29,7 @@ import br.com.dafiti.hanger.service.JobApprovalService;
 import br.com.dafiti.hanger.service.JobCheckupLogService;
 import br.com.dafiti.hanger.service.JobNotificationService;
 import br.com.dafiti.hanger.service.JobService;
+import br.com.dafiti.hanger.service.PrivilegeService;
 import br.com.dafiti.hanger.service.RoleService;
 import br.com.dafiti.hanger.service.UserService;
 import java.util.Date;
@@ -54,6 +55,7 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
     private final JobService jobService;
     private final JobNotificationService jobNotificationService;
     private final ConfigurationService configurationService;
+    private final PrivilegeService privilegeService;
 
     boolean setup = false;
 
@@ -65,7 +67,8 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
             JobCheckupLogService jobCheckupLogService,
             JobApprovalService jobApprovalService,
             JobService jobService,
-            JobNotificationService jobNotificationService) {
+            JobNotificationService jobNotificationService,
+            PrivilegeService privilegeService) {
 
         this.jobNotificationService = jobNotificationService;
         this.userService = userService;
@@ -74,6 +77,7 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
         this.jobApprovalService = jobApprovalService;
         this.jobService = jobService;
         this.configurationService = configurationService;
+        this.privilegeService = privilegeService;
     }
 
     /**
@@ -87,6 +91,9 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
                 configurationService.findByParameter("LOG_RETENTION_PERIOD").getValue());
 
         if (!this.setup) {
+            //Setup the additional privileges. 
+            privilegeService.createPrivilegeIfNotExists("WORKBENCH");
+
             //Setup the admin role. 
             roleService.createRoleIfNotExists("USER");
             roleService.createRoleIfNotExists("ADMIN");

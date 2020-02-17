@@ -199,22 +199,60 @@
                         </div>
                     </div>
 
-                    <!--Enabled-->
+                    <div th:if="${not #lists.isEmpty(user.privileges)}">
+                        <fieldset>
+                            <legend>
+                                Privileges
+                            </legend>
+                        </fieldset> 
+
+                        <table class="table">
+                            <tr>
+                                <th style="width:5%">#</th>
+                                <th style="width:72.5%">Privilege</th>
+                                <th></th>
+                            </tr>
+                            <tr th:each="privileges, privilegeStat : ${user.privileges}">
+                                <input type="hidden" th:field="*{privileges[__${privilegeStat.index}__]}"/> 
+                                <td> 
+                                    <span th:text="*{privileges[__${privilegeStat.index}__].id}"></span>
+                                </td>
+                                <td>
+                                    <span th:text="*{privileges[__${privilegeStat.index}__].name}"></span>
+                                </td>
+                                <td>
+                                    <button type="submit" 
+                                            name="partial_remove_privilege" 
+                                            th:value="${privilegeStat.index}" 
+                                            class="btn btn-delete btn-xs"
+                                            th:classappend="${#authorization.expression('hasRole(''HERO'')') ? '':'dispDef'}">
+                                        <span class="glyphicon glyphicon-trash" 
+                                              aria-hidden="true"></span> Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div> 
+
+                    <!--Enabled-->                    
+                    <fieldset>
+                        <legend>
+                            Options
+                        </legend>
+                    </fieldset>   
+
                     <div class="form-group">
                         <div class="col-sm-10">
-                            <div class="form-check pull-right">
-                                <input  
-                                    id="userEnabled" 
-                                    name="userEnabled"
-                                    type="checkbox" 
-                                    data-toggle="toggle" 
-                                    data-on="Enabled" 
-                                    data-off="Disabled" 
-                                    data-size="small"
-                                    data-onstyle="default" 
-                                    th:field="*{enabled}" 
-                                    th:checked="*{enabled}"
-                                    th:disabled="*{!#authorization.expression('hasRole(''HERO'')') or username == #httpServletRequest.remoteUser}"/>
+                            <div class="btn-group btn-space">
+                                <label>
+                                    <input  
+                                        id="userEnabled" 
+                                        name="userEnabled"
+                                        type="checkbox" 
+                                        th:field="*{enabled}" 
+                                        th:checked="*{enabled}"
+                                        th:disabled="*{!#authorization.expression('hasRole(''HERO'')') or username == #httpServletRequest.remoteUser}"/> Enabled
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -224,9 +262,17 @@
                     <div th:if="*{#authorization.expression('hasRole(''HERO'')') or username == #httpServletRequest.remoteUser}">
                         <div class="form-group">
                             <div class="col-sm-10">
-                                <button type="submit" class="btn btn-generic btn-sm">
-                                    <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+                                <button type="submit" 
+                                        class="btn btn-generic btn-sm">
+                                    <span class="glyphicon glyphicon-save" 
+                                          aria-hidden="true"></span>
                                     Save
+                                </button>    
+                                <button id="modal_wait" 
+                                        type="button" 
+                                        class="btn btn-generic btn-sm btn-space" 
+                                        style="display:none;">
+                                    <img th:src="@{'/images/ajax-loader.gif'}"></img>
                                 </button>
 
                                 <button 
@@ -242,6 +288,15 @@
                                     </span>
                                     Reset password
                                 </button>
+
+                                <button type="button" 
+                                        class="btn btn-generic btn-sm pull-right"
+                                        th:id="modal_add_privileges"
+                                        th:classappend="${#authorization.expression('hasRole(''HERO'')') ? '':'dispDef'}">
+                                    <span class="glyphicon glyphicon-equalizer" 
+                                          aria-hidden="true"></span>
+                                    Privileges
+                                </button>
                             </div>
                         </div>
                     </div>                    
@@ -256,9 +311,12 @@
                             </div>
                         </div>
                     </div>
+
+                    <!--Modal--> 
+                    <div id="modalHolder"/>
                 </form>
             </div>
-        </div>
+        </div>        
 
         <!-- INÍCIO MODAL CHANGE PASSWORD -->
         <div class="modal fade" id="modal_changepassword" tabindex="-1" role="dialog" aria-labelledby="modal_changepassword">
@@ -285,15 +343,26 @@
         <!-- FIM MODAL CHANGE PASSWORD -->
 
         <script th:inline="javascript" type="text/javascript">
-            // This function call modal password.
-            function modalResetPassword(id, username) {
-                document.getElementsByName("btn_change_password_")[0].value = id;
-                document.getElementsByName("btn_change_password_")[0].id = "btn_change_password_" + id;
-                $("#modal_changepassword").modal('show');
-            }
-
             // Reset user password.
-            $(function () {
+            $(document).ready(function () {
+                /**
+                 * Show wait panel.
+                 * @returns {undefined}
+                 */
+                $(document).ajaxStart(function () {
+                    $("#modal_wait").css("display", "inline");
+                    $("[id^=modal_add_privileges]").prop("disabled", true);
+                });
+
+                /**
+                 * Hide wait panel.
+                 * @returns {undefined}
+                 */
+                $(document).ajaxComplete(function () {
+                    $("#modal_wait").css("display", "none");
+                    $("[id^=modal_add_privileges]").prop("disabled", false);
+                });
+
                 $("[id^=btn_change_password_]").click(function () {
                     $("#modal_changepassword").modal('hide');
                     var url = /*[[@{/user/resetpassword/}]]*/ "/user/resetpassword/";
@@ -329,7 +398,36 @@
                         }
                     });
                 });
-            })
+
+                /**
+                 * Show slack channel modal. 
+                 * @returns {undefined}
+                 */
+                $("#modal_add_privileges").click(function () {
+                    var url = /*[[@{/user/modal/privileges/}]]*/ "/user/modal/privileges/";
+
+                    $.ajax({
+                        type: "GET",
+                        url: url,
+                        timeout: 30000,
+                        success: function (result) {
+                            $("#modalHolder").html(result);
+                            $("#modalPrivileges").modal({backdrop: 'static', keyboard: true});
+                            $('.selectpicker').selectpicker();
+                        },
+                        error: function (e) {
+                            alert("Error loading privileges: " + e);
+                        }
+                    });
+                });
+            });
+
+            // This function call modal password.
+            function modalResetPassword(id, username) {
+                document.getElementsByName("btn_change_password_")[0].value = id;
+                document.getElementsByName("btn_change_password_")[0].id = "btn_change_password_" + id;
+                $("#modal_changepassword").modal('show');
+            }
         </script>
     </body>
 </html>

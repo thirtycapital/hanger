@@ -180,6 +180,12 @@ public class UserService implements UserDetailsService {
             currentUser.setLastName(user.getLastName());
         }
 
+        if (!user.getPrivileges().isEmpty()) {
+            currentUser.setPrivileges(user.getPrivileges());
+        } else {
+            currentUser.getPrivileges().clear();
+        }
+
         currentUser.setEnabled(user.isEnabled());
 
         return userRepository.save(currentUser);

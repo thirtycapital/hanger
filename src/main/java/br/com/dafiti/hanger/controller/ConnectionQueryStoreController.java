@@ -144,11 +144,13 @@ public class ConnectionQueryStoreController {
             Model model,
             Principal principal) {
 
-        User user = userService.findByUsername(principal.getName());
+        if (principal != null) {
+            User user = userService.findByUsername(principal.getName());
 
-        if (user != null) {
-            model.addAttribute("connectionQueryStoreList",
-                    this.connectionQueryStoreService.findByUserOrSharedTrue(user));
+            if (user != null) {
+                model.addAttribute("connectionQueryStoreList",
+                        this.connectionQueryStoreService.findByUserOrSharedTrue(user));
+            }
         }
 
         return "workbench/list";

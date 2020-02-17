@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Dafiti Group
+ * Copyright (c) 2020 Dafiti Group
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -23,52 +23,64 @@
  */
 package br.com.dafiti.hanger.service;
 
-import br.com.dafiti.hanger.model.ConfigurationGroup;
+import br.com.dafiti.hanger.model.Privilege;
+import br.com.dafiti.hanger.repository.PrivilegeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import br.com.dafiti.hanger.repository.ConfigurationGroupRepository;
 
 /**
  *
  * @author Helio Leal
  */
 @Service
-public class ConfigurationGroupService {
+public class PrivilegeService {
 
-    private final ConfigurationGroupRepository configurationGroupRepository;
+    private final PrivilegeRepository privilegeRepository;
 
     @Autowired
-    public ConfigurationGroupService(ConfigurationGroupRepository configurationGroupRepository) {
-        this.configurationGroupRepository = configurationGroupRepository;
+    public PrivilegeService(PrivilegeRepository privilegeRepository) {
+        this.privilegeRepository = privilegeRepository;
     }
 
-    public Iterable<ConfigurationGroup> list() {
-        return configurationGroupRepository.findAll();
+    public Iterable<Privilege> list() {
+        return privilegeRepository.findAll();
     }
 
-    public ConfigurationGroup load(Long id) {
-        return configurationGroupRepository.findOne(id);
+    /**
+     * Save a privilege
+     *
+     * @param privilege Privilege
+     * @return Privilege
+     */
+    public Privilege save(Privilege privilege) {
+        return privilegeRepository.save(privilege);
     }
 
-    public void save(ConfigurationGroup configurationGroup) {
-        save(configurationGroup, false);
+    /**
+     * Find a privilege by name
+     *
+     * @param name Privilege name
+     * @return Privilege
+     */
+    public Privilege findByName(String name) {
+        return privilegeRepository.findByName(name);
     }
 
-    public ConfigurationGroup save(ConfigurationGroup configurationGroup, boolean add) {
-        ConfigurationGroup group = configurationGroupRepository.findByName(configurationGroup.getName());
+    /**
+     * Create a privilege if not exists one
+     *
+     * @param name Privilege name
+     * @return Privilege
+     */
+    public Privilege createPrivilegeIfNotExists(String name) {
+        Privilege privilege = this.findByName(name);
 
-        if (group == null || !add) {
-            if (!add) {
-                configurationGroup.setId(group.getId());
-            }
-
-            group = configurationGroupRepository.save(configurationGroup);
+        if (privilege == null) {
+            Privilege newPrivilege = new Privilege();
+            newPrivilege.setName(name);
+            privilege = this.save(newPrivilege);
         }
 
-        return group;
-    }
-
-    public void delete(Long id) {
-        configurationGroupRepository.delete(id);
+        return privilege;
     }
 }

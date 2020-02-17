@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -457,18 +459,11 @@ public class ConnectionService {
         try {
             //Set a connection to target.
             jdbcTemplate.setDataSource(datasource);
-            jdbcTemplate.setMaxRows(100);
+            jdbcTemplate.setMaxRows(this.configurationService.getMaxRows());
 
             if (connection.getTarget().equals(Database.POSTGRES)
                     || connection.getTarget().equals(Database.ATHENA)) {
-
-                if (!query.toLowerCase().contains("limit")) {
-                    if (query.endsWith(";")) {
-                        query = query.toLowerCase().replaceAll(";", " limit 100;");
-                    } else {
-                        query = query.concat(" limit 100;");
-                    }
-                }
+                query = this.evaluate(query);
             }
 
             //Execute a query. 
@@ -555,6 +550,43 @@ public class ConnectionService {
                 .valueOf(configurationService
                         .findByParameter("WORKBENCH_MAX_ENTITY_NUMBER")
                         .getValue());
+    }
+
+    /**
+     * Evaluate query.
+     *
+     * @param query
+     * @return table quantity excedeed the configuration limit
+     */
+    public String evaluate(String query) {
+        String limit = " limit "
+                + String.valueOf(this.configurationService.getMaxRows());
+
+        if (!query.toLowerCase().contains("limit")) {
+            if (query.endsWith(";")) {
+                query = query.toLowerCase().replaceAll(";", limit);
+            } else {
+                query = query.concat(limit);
+            }
+        } else {
+            //Identifies if query has "limit <number>"
+            String regex = "limit\\s[0-9]+";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(query.toLowerCase());
+
+            while (matcher.find()) {
+                String found = query.toLowerCase().substring(
+                        matcher.start(),
+                        matcher.end());
+
+                //Identifies if query limit exceeds configuration allowed
+                if (Integer.valueOf(found.substring(6))
+                        > this.configurationService.getMaxRows()) {
+                    query = query.toLowerCase().replace(found, limit);
+                }
+            }
+        }
+        return query;
     }
 
     /**

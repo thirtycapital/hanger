@@ -101,11 +101,12 @@ O *Monitor* é onde a carga de trabalho do Hanger é monitorada. O *dashboard* �
 		- **Running:** Total de *jobs* sendo executados.
 		- **Warning:** Total de *jobs* com alertas na cadeia de dependência. 
 		- **Failure:** Total de *jobs* com falhas ou com problema de validação dos dados. 
+		- **Checkup:** validação de health check de todos os checkups do *job*.
 - Na guia **ALL** são exibidos todos os jobs cadastrados no Hanger e seus respectivos status.
 
 ## Search
 
-O *Search* é o caminho mais rápido para encontrar e ter acesso as informações de status de um *job* no Hanger. 
+O *Search* é o caminho mais rápido para encontrar e ter acesso às informações de status de um *job* no Hanger. 
 
 - Clique na opção *Search*.
 - Será exibida a tela de pesquisa, contendo um campo de texto e um botão com o desenho de uma lupa. 

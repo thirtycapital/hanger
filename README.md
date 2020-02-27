@@ -68,7 +68,8 @@ Utilizando o [Apache Tomcat](http://tomcat.apache.org/):
 O *Monitor* é onde a carga de trabalho do Hanger é monitorada. O *dashboard* é organizado da seguinte forma:
 
 - Na parte superior são exibidos todos os *subjects* disponíveis e uma opção de filtro:
-	- Ao lado do nome do assunto é exibido o total de *jobs* em um subject.
+	- Ao lado esquerdo do nome do assunto é exibido um ícone indicando que o usuário logado está inscrito (o ícone só aparece se o assunto não for *mandatory*).
+	- Ao lado direito do nome do assunto é exibido o total de *jobs* em um subject.
 	- Na aba de assuntos:
 		- Clique sob o nome do *subject* desejado e será exibida a lista de *jobs* do subject contendo as seguintes informações:
 			- **Status:** Status do *job*.
@@ -341,7 +342,11 @@ Permite adicionar um novo assunto.
 - Clique no botão ***Add Subject***, representado pelo ícone **+**.
 - Defina o nome do assunto no campo ***Subject***.
 - Defina a descrição do assunto no campo ***Description***.
+<<<<<<< HEAD
+	> Neste campo é possível utilizar a linguagem ***Markdown*** para formatação do texto.
+=======
 - Para definir se o assunto deve ser visto por todos os usuários no monitor, marque a opção ***Mandatory***. 
+>>>>>>> e35115537a23c4f7460cac9ddc37af38a5b53dbc
 - Caso deseje receber notificações dos jobs pertencentes deste subject no slack, marque a opção ***Slack notification***.
 - Para definir o canal no qual as notificações serão enviadas, clique no botão ***Add channel***. Será exibido o modal ***Slack channels*** no qual será possível selecionar um ou mais canais do Slack nos quais as notificações devem ser enviadas.
 	> Caso nenhum canal seja selecionado no modal ***Slack channels***, o canal configurado na guia ***Configuration*** será usado para notificação deste *job*.
@@ -371,11 +376,18 @@ Permite adicionar um novo *job*.
 - Selecione o *job* desejado no combo ***Name***. 
 - Caso deseje definir um nome sugestivo para o *job*, informe o no campo ***Alias***. O alias, com o sufixo [alias], substituirá o nome do *job* nas principais funcionalidades do Hanger.
 - Defina a descrição do *job* no campo ***Description***.
+<<<<<<< HEAD
+	> Neste campo é possível utilizar a linguagem ***Markdown*** para formatação do texto.
+- Caso o *job* possa ser executado mais de uma vez ao dia, marque o checkbox ***Rebuild along the day***. Por padrão, um *job* pode ser executado apenas uma vez ao dia. Quando esta opção estiver selecionada, o *job* será executado a primeira vez quando todas as dependências forem atendidas e voltará a ser executado sempre que qualquer uma das dependências for executada com sucesso no decorrer do dia. Caso necessite que o *job* somente seja reexecutado quando todas as dependências forem atendidas novamente, selecione quais dependências serão ***blockers*** na lista de ***parents***.
+- Caso deseje definir um intervalo mínimo para que o *job* seja reexecutado, digite a quantidade de minutos no campo ***Rebuild interval in minutes***.
+- Defina o conteúdo do campo **Eagerness** do job entre 0 e 12 horas. Para que uma dependência de um *job* seja considerada atendida, ela precisa ser executada com sucesso ao menos uma vez no dia. Caso alguma dependência precise ser executada antes da meia noite, o campo ***Eagerness*** deve ser preenchido com o número de horas, antes da meia noite, em que caso o job seja executado com sucesso, a dependência seja considerada como atendida. 
+=======
 - Defina, em formato cron, o período permitido para a execução do job no campo ***Time restriction***.
 - Defina o conteúdo do campo ***Eagerness*** do job entre 0 e 12 horas. Para que uma dependência de um *job* seja considerada atendida, ela precisa ser executada com sucesso ao menos uma vez no dia. Caso alguma dependência precise ser executada antes da meia noite, o campo ***Eagerness*** deve ser preenchido com o número de horas, antes da meia noite, em que caso o job seja executado com sucesso, a dependência seja considerada como atendida.
 - Caso deseje definir um intervalo mínimo para que o *job* seja reexecutado, digite a quantidade de minutos no campo ***Rebuild interval***.
 - Marque o checkbox ***Enabled*** para habilitar o job ou desmarque para desabilitá-lo. 
 - Caso o *job* possa ser executado mais de uma vez ao dia, marque o checkbox ***Rebuildable***. Por padrão, um *job* pode ser executado apenas uma vez ao dia. Quando esta opção estiver selecionada, o *job* será executado pela primeira vez quando todas as dependências forem atendidas e voltará a ser executado sempre que qualquer uma das dependências for executada com sucesso no decorrer do dia. Caso necessite que o *job* somente seja reexecutado quando todas as dependências forem atendidas novamente, selecione quais dependências serão ***blockers*** na lista de ***parents***.
+>>>>>>> e35115537a23c4f7460cac9ddc37af38a5b53dbc
 - Caso deseje receber notificações de execuções do job, marque a opção ***Slack notification***.
 - Para definir o canal no qual as notificações serão enviadas, clique no botão ***Slack channel***. Será exibido o modal ***Slack channels*** no qual será possível selecionar um ou mais canais do Slack nos quais as notificações devem ser enviadas.
 	> Caso nenhum canal seja selecionado no modal Slack channels, o canal configurado na guia Configuration será usado para notificação deste *job*.
@@ -404,6 +416,9 @@ Uma dependência pode ter os seguintes escopos:
 	- Informe a descrição do *checkup* no campo ***Description***.
 	- Selecione em qual conexão a validação será executada no combo ***Connection***.
 	- Defina em qual escopo a validação será realizada, selecionando uma das opções do combo ***Scope***. 
+		> **FULL:** o checkup do ***job*** só será executado quando todas as dependências com escopo **FULL** e **PARTIAL** foram atendidas.
+		> **PARTIAL:** o checkup do ***job*** só será executado quando as dependências com o escopo **PARTIAL** foram atendidas.
+		> **ONYONE:** o checkup do ***job*** será executado sempre que as depêndencias com escopo **PARTIAL** ou **FULL** foram atendidas.
 	- Defina a instrução SQL de validação no campo ***SQL Select Statement***, o *resultset* deve retornar apenas um valor inteiro. 
 	- Defina o teste que será feito para comparação entre o resultset e o threshold, selecionando uma das opções disponíveis no combo ***Test***.
 	- Defina o resultado esperado no campo ***Threshold***.

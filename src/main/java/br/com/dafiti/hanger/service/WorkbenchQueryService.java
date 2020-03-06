@@ -37,32 +37,32 @@ import br.com.dafiti.hanger.repository.WorkbenchQueryRepository;
 @Service
 public class WorkbenchQueryService {
 
-    private final WorkbenchQueryRepository connectionQueryStoreRepository;
+    private final WorkbenchQueryRepository workbenchQueryRepository;
 
     @Autowired
     public WorkbenchQueryService(
             WorkbenchQueryRepository connectionRepository) {
 
-        this.connectionQueryStoreRepository = connectionRepository;
+        this.workbenchQueryRepository = connectionRepository;
     }
 
     public Iterable<WorkbenchQuery> list() {
-        return connectionQueryStoreRepository.findAll();
+        return workbenchQueryRepository.findAll();
     }
     
     public List<WorkbenchQuery> findByUserOrSharedTrue(User user) {
-        return connectionQueryStoreRepository.findByUserOrSharedTrue(user);
+        return workbenchQueryRepository.findByUserOrSharedTrue(user);
     }
 
     public WorkbenchQuery load(Long id) {
-        return connectionQueryStoreRepository.findOne(id);
+        return workbenchQueryRepository.findOne(id);
     }
 
-    public void save(WorkbenchQuery connectionQueryStore) {
-        connectionQueryStoreRepository.save(connectionQueryStore);
+    public void save(WorkbenchQuery workbenchQuery) {
+        workbenchQueryRepository.save(workbenchQuery);
     }
 
     public void delete(Long id) {
-        connectionQueryStoreRepository.delete(id);
+        workbenchQueryRepository.delete(id);
     }
 }

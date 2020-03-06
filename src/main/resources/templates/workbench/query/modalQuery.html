@@ -14,7 +14,7 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                             <h4 class="modal-title" id="modalQueryStoreLabel">Query</h4>
                         </div>
-                        <form class="form-horizontal" th:object="${connectionQueryStore}" th:action="@{/query/save}" method="post">
+                        <form class="form-horizontal" th:object="${workbenchQuery}" th:action="@{/query/save}" method="post">
                             <!--ID-->
                             <input type="hidden" th:field="*{id}"/>
                             <!--Connection-->

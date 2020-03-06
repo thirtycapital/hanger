@@ -44,35 +44,35 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="query-row" th:each="connectionQueryStore : ${connectionQueryStoreList}">
-                            <td th:text="${connectionQueryStore.id}">#</td>
-                            <td th:text="${connectionQueryStore.name}">#</td>
+                        <tr class="query-row" th:each="workbenchQuery : ${workbenchQueryList}">
+                            <td th:text="${workbenchQuery.id}">#</td>
+                            <td th:text="${workbenchQuery.name}">#</td>
                             <td>                                
-                                <span th:text="${#strings.length(connectionQueryStore.query) > 70 ? #strings.substring(connectionQueryStore.query,0,70) : connectionQueryStore.query}"></span>                                
-                                <div class="btn-group" th:if="${#strings.length(connectionQueryStore.query) > 70}">
+                                <span th:text="${#strings.length(workbenchQuery.query) > 70 ? #strings.substring(workbenchQuery.query,0,70) : workbenchQuery.query}"></span>                                
+                                <div class="btn-group" th:if="${#strings.length(workbenchQuery.query) > 70}">
                                     <button class="dropdown-toggle close" data-toggle="dropdown">...</button>
                                     <ul class="dropdown-menu">                                                
                                         <li>
                                             <pre class="line-numbers">
-                                                <code class="language-sql" th:text="${connectionQueryStore.query}"></code>
+                                                <code class="language-sql" th:text="${workbenchQuery.query}"></code>
                                             </pre>
                                         </li>  
                                     </ul>                                    
                                 </div>
-                                <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${connectionQueryStore.query}">
+                                <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${workbenchQuery.query}">
                                     <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="Copy"></span>
                                 </a>
                             </td>
-                            <td th:text="${connectionQueryStore.connection.name}">#</td>
-                            <td th:text="${connectionQueryStore.user.username}">#</td>  
+                            <td th:text="${workbenchQuery.connection.name}">#</td>
+                            <td th:text="${workbenchQuery.user.username}">#</td>  
                             <td>                               
-                                <div th:if="${connectionQueryStore.shared}">
+                                <div th:if="${workbenchQuery.shared}">
                                     <span class="glyphicon glyphicon-eye-open"></span>
                                 </div>
                             </td> 
                             <td>
                                 <a 
-                                    th:href="@{'/workbench/workbench/' + ${connectionQueryStore.id}}" 
+                                    th:href="@{'/workbench/workbench/' + ${workbenchQuery.id}}" 
                                     class="btn btn-generic btn-xs"  
                                     title="Open query">
                                     <span class="glyphicon glyphicon-chevron-right"></span>
@@ -80,22 +80,22 @@
                                 </a>                                
                             </td>
                             <td>
-                                <div th:if="*{#authorization.expression('hasRole(''HERO'')') or connectionQueryStore.user.username == #httpServletRequest.remoteUser}">
+                                <div th:if="*{#authorization.expression('hasRole(''HERO'')') or workbenchQuery.user.username == #httpServletRequest.remoteUser}">
                                     <button 
                                         type="button" 
                                         class="btn btn-generic btn-xs" 
-                                        th:id="'edit_' + ${connectionQueryStore.id}" 
-                                        th:value="${connectionQueryStore.id}">
+                                        th:id="'edit_' + ${workbenchQuery.id}" 
+                                        th:value="${workbenchQuery.id}">
                                         <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 
                                         Edit
                                     </button>
                                 </div>
                             </td>
                             <td>
-                                <div th:if="*{#authorization.expression('hasRole(''HERO'')') or connectionQueryStore.user.username == #httpServletRequest.remoteUser}">
+                                <div th:if="*{#authorization.expression('hasRole(''HERO'')') or workbenchQuery.user.username == #httpServletRequest.remoteUser}">
                                     <a class="btn btn-xs btn-delete" 
                                        data-toggle="modal" 
-                                       th:attr="data-target='#'+${connectionQueryStore.id}" 
+                                       th:attr="data-target='#'+${workbenchQuery.id}" 
                                        href="">
                                         <span 
                                             class="glyphicon glyphicon-trash" 
@@ -106,7 +106,7 @@
 
                                     <!-- INÍCIO MODAL DELETE -->
                                     <div class="modal fade" 
-                                         th:id="${connectionQueryStore.id}" 
+                                         th:id="${workbenchQuery.id}" 
                                          tabindex="-1" role="dialog" 
                                          aria-labelledby="modalDelete">
                                         <div class="modal-dialog" role="document">
@@ -122,10 +122,10 @@
                                                         id="modalParentLabel">Delete</h4>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <span th:inline="text">Are you sure you want to delete [[${connectionQueryStore.name}]]?</span>
+                                                    <span th:inline="text">Are you sure you want to delete [[${workbenchQuery.name}]]?</span>
                                                 </div>
                                                 <div class="modal-footer"> 
-                                                    <a th:href="@{'/query/delete/' + ${connectionQueryStore.id}}" 
+                                                    <a th:href="@{'/query/delete/' + ${workbenchQuery.id}}" 
                                                        class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
                                                         Yes
                                                     </a>

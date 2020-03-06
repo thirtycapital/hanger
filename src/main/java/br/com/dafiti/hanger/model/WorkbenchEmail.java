@@ -132,7 +132,7 @@ public class WorkbenchEmail extends Tracker implements Serializable {
         this.connection = connection;
     }
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     public User getUser() {
         return user;

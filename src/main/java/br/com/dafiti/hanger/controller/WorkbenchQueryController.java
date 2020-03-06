@@ -50,15 +50,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping(path = "/query")
 public class WorkbenchQueryController {
 
-    private final WorkbenchQueryService connectionQueryStoreService;
+    private final WorkbenchQueryService workbenchQueryService;
     private final UserService userService;
 
     @Autowired
     public WorkbenchQueryController(
-            WorkbenchQueryService connectionQueryStoreService,
+            WorkbenchQueryService workbenchQueryService,
             UserService userService) {
 
-        this.connectionQueryStoreService = connectionQueryStoreService;
+        this.workbenchQueryService = workbenchQueryService;
         this.userService = userService;
     }
 
@@ -82,13 +82,13 @@ public class WorkbenchQueryController {
         User user = userService.findByUsername(principal.getName());
 
         if (user != null) {
-            WorkbenchQuery connectionQueryStore
+            WorkbenchQuery workbenchQuery
                     = new WorkbenchQuery(connection, user);
 
             if (query != null && !query.isEmpty()) {
-                connectionQueryStore.setQuery(query);
+                workbenchQuery.setQuery(query);
             }
-            model.addAttribute("connectionQueryStore", connectionQueryStore);
+            model.addAttribute("workbenchQuery", workbenchQuery);
         }
 
         return "workbench/modalQueryStore::query";
@@ -98,7 +98,7 @@ public class WorkbenchQueryController {
      * Save a connection query store.
      *
      * @param redirectAttributes
-     * @param connectionQueryStore
+     * @param workbenchQuery
      * @param model
      * @param principal
      *
@@ -107,24 +107,24 @@ public class WorkbenchQueryController {
     @PostMapping(path = "/save")
     public String save(
             RedirectAttributes redirectAttributes,
-            @Valid @ModelAttribute WorkbenchQuery connectionQueryStore,
+            @Valid @ModelAttribute WorkbenchQuery workbenchQuery,
             Model model,
             Principal principal) {
-        boolean update = connectionQueryStore.getId() != null;
+        boolean update = workbenchQuery.getId() != null;
         String redirect = "redirect:/query/list/";
 
         try {
-            connectionQueryStoreService.save(connectionQueryStore);
+            workbenchQueryService.save(workbenchQuery);
             redirectAttributes.addFlashAttribute(
                     "successMessage",
                     "Query successfully stored!");
 
             if (!update) {
                 redirect = "redirect:/workbench/workbench/"
-                        .concat(connectionQueryStore.getId().toString());
+                        .concat(workbenchQuery.getId().toString());
             }
         } catch (Exception ex) {
-            model.addAttribute("connectionQueryStore", connectionQueryStore);
+            model.addAttribute("workbenchQuery", workbenchQuery);
             redirectAttributes.addFlashAttribute("errorMessage",
                     new Message().getErrorMessage(ex));
         }
@@ -148,18 +148,18 @@ public class WorkbenchQueryController {
             User user = userService.findByUsername(principal.getName());
 
             if (user != null) {
-                model.addAttribute("connectionQueryStoreList",
-                        this.connectionQueryStoreService.findByUserOrSharedTrue(user));
+                model.addAttribute("workbenchQueryList",
+                        this.workbenchQueryService.findByUserOrSharedTrue(user));
             }
         }
 
-        return "workbench/list";
+        return "workbench/query/list";
     }
 
     /**
      * Call query store modal.
      *
-     * @param connectionQueryStore
+     * @param workbenchQuery
      * @param model Model
      * @param principal
      *
@@ -167,14 +167,14 @@ public class WorkbenchQueryController {
      */
     @GetMapping(path = "/load/modal/{id}")
     public String queryLoadModal(
-            @PathVariable(name = "id") WorkbenchQuery connectionQueryStore,
+            @PathVariable(name = "id") WorkbenchQuery workbenchQuery,
             Model model,
             Principal principal) {
 
         User user = userService.findByUsername(principal.getName());
 
         if (user != null) {
-            model.addAttribute("connectionQueryStore", connectionQueryStore);
+            model.addAttribute("workbenchQuery", workbenchQuery);
         }
 
         return "workbench/modalQueryStore::query";
@@ -195,7 +195,7 @@ public class WorkbenchQueryController {
             Principal principal) {
 
         try {
-            connectionQueryStoreService.delete(id);
+            workbenchQueryService.delete(id);
         } catch (Exception ex) {
             model.addAttribute("errorMessage",
                     "Fail deleting the connection query: " + ex.getMessage());

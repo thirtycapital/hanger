@@ -16,6 +16,16 @@
                         <th>
                             <h3 class="page-title">Workbench</h3>
                         </th>
+                        <th class="btn-action">
+                            <a th:href="@{'/query/list/'}" title="Queries">
+                                <span class="glyphicon glyphicon-list-alt"></span>
+                            </a>
+                        </th>    
+                        <th class="btn-action">
+                            <a th:href="@{'/email/list/'}" title="E-mails">
+                                <span class="glyphicon glyphicon-envelope"></span>
+                            </a>
+                        </th>
                     </tr>            
                 </table>
 
@@ -34,7 +44,7 @@
                                         <option th:each="connection : ${connections}" 
                                                 th:value="${connection.id}" 
                                                 th:text="${connection.name}"
-                                                th:selected="${connectionQueryStore != null ? connection == connectionQueryStore.connection : jobCheckup != null ? connection == jobCheckup.connection : 0}">
+                                                th:selected="${workbenchQuery != null ? connection == workbenchQuery.connection : jobCheckup != null ? connection == jobCheckup.connection : 0}">
                                         </option>
                                     </select>
                                 </div>
@@ -63,19 +73,28 @@
                                         rows="10" 
                                         minlength="1" 
                                         maxlength="5000"
-                                        th:text="${connectionQueryStore != null ? connectionQueryStore.query : jobCheckup != null ? jobCheckup.query : ''}"></textarea>
+                                        th:text="${workbenchQuery != null ? workbenchQuery.query : jobCheckup != null ? jobCheckup.query : ''}"></textarea>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
                             <button 
-                                id="query-button" 
+                                id="play-button" 
                                 class="btn-generic btn-sm pull-right btn-space" 
                                 type="button">
 
                                 <span class="glyphicon glyphicon-play" 
                                       aria-hidden="true"></span> Play
+                            </button>
+
+                            <button 
+                                id="save-query-button" 
+                                class="btn btn-generic btn-sm btn-space" 
+                                type="button">
+
+                                <span class="glyphicon glyphicon-floppy-disk" 
+                                      aria-hidden="true"></span> Query
                             </button>
 
                             <button 
@@ -92,27 +111,9 @@
                                 class="btn btn-generic btn-sm btn-space" 
                                 type="button">
 
-                                <span class="glyphicon glyphicon-download-alt" 
+                                <span class="glyphicon glyphicon-export" 
                                       aria-hidden="true"></span> Export
                             </button>
-
-                            <button 
-                                id="store-button" 
-                                class="btn btn-generic btn-sm btn-space" 
-                                type="button">
-
-                                <span class="glyphicon glyphicon-floppy-disk" 
-                                      aria-hidden="true"></span> Save
-                            </button>                            
-
-                            <a id="query-button" 
-                               class="btn btn-generic btn-sm btn-space" 
-                               type="button"
-                               th:href="@{'/query/list/'}">
-
-                                <span class="glyphicon glyphicon-inbox" 
-                                      aria-hidden="true"></span> Stored
-                            </a>      
 
                             <button 
                                 id="wait" 
@@ -224,7 +225,7 @@
                 $(document).ajaxStart(function () {
                     $("#wait").css("display", "inline");
                     $("#query").prop("disabled", true);
-                    $("#query-button").prop("disabled", true);
+                    $("#play-button").prop("disabled", true);
                 });
 
                 /**
@@ -234,13 +235,13 @@
                 $(document).ajaxComplete(function () {
                     $("#wait").css("display", "none");
                     $("#query").prop("disabled", false);
-                    $("#query-button").prop("disabled", false);
+                    $("#play-button").prop("disabled", false);
                 });
 
                 /**
-                 * Trigger job details search on search button click. 
+                 * Play a query. 
                  */
-                $("#query-button").click(function () {
+                $("#play-button").click(function () {
                     $("#fragmentQueryResultSetHolder").show();
                     query();
                 });
@@ -265,12 +266,12 @@
                 /**
                  * Store a query. 
                  */
-                $("#store-button").click(function () {
-                    queryStoreModal();
+                $("#save-query-button").click(function () {
+                    queryModal();
                 });
 
                 /**
-                 * Send an e-mail with query result. 
+                 * Save e-mail with query result. 
                  */
                 $("#email-button").click(function () {
                     queryEmail();
@@ -477,9 +478,9 @@
                  * Calls modal with form to store the query. 
                  * @returns {undefined}
                  */
-                function queryStoreModal() {
+                function queryModal() {
                     var connection = $('#connection').val();
-                    var url = /*[[@{/query/store/modal/}]]*/ "/query/store/modal/";
+                    var url = /*[[@{/query/modal/}]]*/ "/query/modal/";
                     var query = window.editor.getValue();
 
                     $.ajax({
@@ -490,7 +491,7 @@
                         timeout: 1000000,
                         success: function (result) {
                             $("#modalHolder").html(result);
-                            $("#modalQueryStore").modal({backdrop: 'static'});
+                            $("#modalQuery").modal({backdrop: 'static'});
                         },
                         error: function (e) {
                             alert("Fail loading query resultset: " + e.statusText);
@@ -529,6 +530,7 @@
                         });
                     } else {
                         toastr.error('Query cannot be empty!');
+						window.editor.focus();
                     }
                 }
 
@@ -538,7 +540,7 @@
                  */
                 function queryEmail() {
                     var connection = $('#connection').val();
-                    var url = /*[[@{/export/email/modal/}]]*/ "/export/email/modal/";
+                    var url = /*[[@{/email/modal/}]]*/ "/email/modal/";
                     var query = window.editor.getValue();
 
                     //Identify if query field is not empty.
@@ -551,15 +553,16 @@
                             timeout: 1000000,
                             success: function (result) {
                                 $("#modalHolder").html(result);
-                                $("#modalQueryEmail").modal({backdrop: 'static'});
+                                $("#modalEmail").modal({backdrop: 'static'});
                                 $('.selectpicker').selectpicker();
                             },
                             error: function (e) {
-                                alert("Fail loading send query in e-mail modal: " + e.statusText);
+                                alert("Fail loading e-mail modal: " + e.statusText);
                             }
                         });
                     } else {
                         toastr.error('Query cannot be empty!');
+						window.editor.focus();
                     }
                 }
             });

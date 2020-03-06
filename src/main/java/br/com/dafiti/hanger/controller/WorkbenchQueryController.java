@@ -25,9 +25,9 @@ package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Connection;
-import br.com.dafiti.hanger.model.ConnectionQueryStore;
+import br.com.dafiti.hanger.model.WorkbenchQuery;
 import br.com.dafiti.hanger.model.User;
-import br.com.dafiti.hanger.service.ConnectionQueryStoreService;
+import br.com.dafiti.hanger.service.WorkbenchQueryService;
 import br.com.dafiti.hanger.service.UserService;
 import java.security.Principal;
 import javax.validation.Valid;
@@ -48,14 +48,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  */
 @Controller
 @RequestMapping(path = "/query")
-public class ConnectionQueryStoreController {
+public class WorkbenchQueryController {
 
-    private final ConnectionQueryStoreService connectionQueryStoreService;
+    private final WorkbenchQueryService connectionQueryStoreService;
     private final UserService userService;
 
     @Autowired
-    public ConnectionQueryStoreController(
-            ConnectionQueryStoreService connectionQueryStoreService,
+    public WorkbenchQueryController(
+            WorkbenchQueryService connectionQueryStoreService,
             UserService userService) {
 
         this.connectionQueryStoreService = connectionQueryStoreService;
@@ -82,8 +82,8 @@ public class ConnectionQueryStoreController {
         User user = userService.findByUsername(principal.getName());
 
         if (user != null) {
-            ConnectionQueryStore connectionQueryStore
-                    = new ConnectionQueryStore(connection, user);
+            WorkbenchQuery connectionQueryStore
+                    = new WorkbenchQuery(connection, user);
 
             if (query != null && !query.isEmpty()) {
                 connectionQueryStore.setQuery(query);
@@ -107,7 +107,7 @@ public class ConnectionQueryStoreController {
     @PostMapping(path = "/save")
     public String save(
             RedirectAttributes redirectAttributes,
-            @Valid @ModelAttribute ConnectionQueryStore connectionQueryStore,
+            @Valid @ModelAttribute WorkbenchQuery connectionQueryStore,
             Model model,
             Principal principal) {
         boolean update = connectionQueryStore.getId() != null;
@@ -167,7 +167,7 @@ public class ConnectionQueryStoreController {
      */
     @GetMapping(path = "/load/modal/{id}")
     public String queryLoadModal(
-            @PathVariable(name = "id") ConnectionQueryStore connectionQueryStore,
+            @PathVariable(name = "id") WorkbenchQuery connectionQueryStore,
             Model model,
             Principal principal) {
 

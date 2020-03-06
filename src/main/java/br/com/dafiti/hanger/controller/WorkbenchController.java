@@ -24,7 +24,7 @@
 package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.model.Connection;
-import br.com.dafiti.hanger.model.ConnectionQueryStore;
+import br.com.dafiti.hanger.model.WorkbenchQuery;
 import br.com.dafiti.hanger.model.JobCheckup;
 import br.com.dafiti.hanger.service.ConfigurationService;
 import br.com.dafiti.hanger.service.ConnectionService;
@@ -111,15 +111,15 @@ public class WorkbenchController {
     /**
      * Show SQL workbench
      *
-     * @param connectionQueryStore
+     * @param workbenchQuery
      * @param model Model
      * @return SQL workbench template.
      */
     @GetMapping(path = "/workbench/{id}")
     public String workbench(
-            @PathVariable(name = "id") ConnectionQueryStore connectionQueryStore,
+            @PathVariable(name = "id") WorkbenchQuery workbenchQuery,
             Model model) {
-        model.addAttribute("connectionQueryStore", connectionQueryStore);
+        model.addAttribute("workbenchQuery", workbenchQuery);
         model.addAttribute("connections", connectionService.list());
 
         return "workbench/workbench";
@@ -181,11 +181,11 @@ public class WorkbenchController {
             Model model) {
 
         if (fields != null && fields.size() > 0) {
-            ConnectionQueryStore connectionQueryStore = new ConnectionQueryStore();
-            connectionQueryStore.setConnection(connection);
-            connectionQueryStore.setQuery(this.workbenchService.doQuery(fields, catalog, schema, table));
+            WorkbenchQuery workbenchQuery = new WorkbenchQuery();
+            workbenchQuery.setConnection(connection);
+            workbenchQuery.setQuery(this.workbenchService.doQuery(fields, catalog, schema, table));
 
-            model.addAttribute("connectionQueryStore", connectionQueryStore);
+            model.addAttribute("workbenchQuery", workbenchQuery);
         }
 
         return this.workbench(model);

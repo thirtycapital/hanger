@@ -23,9 +23,7 @@
  */
 package br.com.dafiti.hanger.service;
 
-import br.com.dafiti.hanger.model.Blueprint;
 import br.com.dafiti.hanger.model.Connection;
-import br.com.dafiti.hanger.model.Email;
 import br.com.dafiti.hanger.option.ExportType;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
 import com.univocity.parsers.csv.CsvWriter;
@@ -35,11 +33,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
-import org.apache.commons.mail.HtmlEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -172,86 +166,5 @@ public class ExportService {
         Files.deleteIfExists(path);
 
         return download;
-    }
-
-    /**
-     * Export a resultset to E-mail.
-     *
-     * @param email
-     * @param principal
-     * @return invalidRecipient
-     * @throws java.io.IOException
-     */
-    public List<String> toEmail(Email email, Principal principal)
-            throws IOException, Exception {
-
-        //Saves the recipient not allowed
-        List<String> invalidRecipient = new ArrayList<>();
-
-        QueryResultSet queryResultSet = this.connectionService
-                .getQueryResultSet(
-                        email.getConnection(),
-                        email.getQuery(),
-                        principal);
-
-        //Identify if query ran successfully.
-        if (!queryResultSet.hasError()) {
-            String fileName = this.toCSV(
-                    queryResultSet,
-                    email.getConnection());
-
-            File file = new File(System.getProperty("java.io.tmpdir")
-                    .concat("/")
-                    .concat(fileName));
-
-            //Get internal recipients
-            List<String> recipients = email.getRecipient();
-
-            if (!email.getExternalRecipient().trim().isEmpty()) {
-                //Get external recipient list separated by , or ;
-                List<String> externalRecipients = Arrays.asList(email.getExternalRecipient().split("\\,|\\;"));
-
-                String pattern = configurationService.findByParameter("EMAIL_DOMAIN_FILTER").getValue();
-
-                for (String externalRecipient : externalRecipients) {
-                    if (externalRecipient.matches(pattern)) {
-                        recipients.add(externalRecipient);
-                    } else {
-                        invalidRecipient.add(externalRecipient);
-                    }
-                }
-
-            }
-
-            email.setSubject(email.getSubject());
-
-            //New blueprint.
-            Blueprint blueprint = new Blueprint(email.getSubject(), "exportQuery");
-            blueprint.setRecipient(recipients);
-            blueprint.setFile(file);
-            blueprint.addVariable("query", email.getQuery());
-            blueprint.addVariable("connection", email.getConnection());
-            blueprint.addVariable("content", email.getContent());
-            blueprint.addVariable("queryResultSet", queryResultSet);
-            blueprint.addVariable("subject", email.getSubject());
-            blueprint.addVariable("user", userService.findByUsername(principal.getName()).getEmail());
-
-            //Set the HTML content to send on e-mail.
-            HtmlEmail mail = new HtmlEmail();
-
-            if (blueprint.getRecipients().size() > 0) {
-                for (String recipient : blueprint.getRecipients()) {
-                    mail.addBcc(recipient);
-                }
-            }
-
-            //Send e-mail to users.
-            this.mailService.send(blueprint, mail);
-
-            //Delete temp file.
-            Files.deleteIfExists(file.toPath());
-        }
-
-        return invalidRecipient;
     }
 }

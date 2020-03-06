@@ -124,11 +124,11 @@ public class JobBuildService {
                     scope = jobStatus.getScope();
                 }
 
-                //Evalute prevalidation.
+                //Evaluate prevalidation.
                 healthy = checkupService.evaluate(job, true, scope);
             }
 
-            //Evalute prevalidation. 
+            //Identify if job is healthy. 
             if (healthy) {
                 try {
                     built = jenkinsService.build(job);

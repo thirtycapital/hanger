@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Dafiti Group
+ * Copyright (c) 2020 Dafiti Group
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -23,17 +23,18 @@
  */
 package br.com.dafiti.hanger.repository;
 
-import br.com.dafiti.hanger.model.ConnectionQueryStore;
+import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.model.User;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 /**
  *
- * @author Helio Leal
+ * @author Fernando Saga
+ * @author Flávia Lima
  */
-public interface ConnectionQueryStoreRepository
-        extends CrudRepository<ConnectionQueryStore, Long> {
-    
-    public List<ConnectionQueryStore> findByUserOrSharedTrue(User user);
+public interface WorkbenchEmailRepository 
+        extends CrudRepository<WorkbenchEmail, Long> {
+
+    public List<WorkbenchEmail> findByUser(User user);
 }

@@ -141,6 +141,25 @@ $(document).ready(function () {
             }
         ]
     });
+    
+    $('#table_workbench_email').DataTable({
+        "paging": false,
+        "bLengthChange": false,
+        "info": false,        
+        "columnDefs": [{
+                "targets": 'no-sort',
+                "orderable": false
+            },
+            {
+                targets: 'img-sort',
+                "type": "alt-string"
+            },
+            {
+                targets: 'no-search',
+                "searchable": false
+            }
+        ]
+    });
 
     // Default copy button
     // Always use class .btn-copy for copy operation

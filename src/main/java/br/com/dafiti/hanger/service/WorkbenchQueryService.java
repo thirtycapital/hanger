@@ -23,42 +23,42 @@
  */
 package br.com.dafiti.hanger.service;
 
-import br.com.dafiti.hanger.model.ConnectionQueryStore;
+import br.com.dafiti.hanger.model.WorkbenchQuery;
 import br.com.dafiti.hanger.model.User;
-import br.com.dafiti.hanger.repository.ConnectionQueryStoreRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import br.com.dafiti.hanger.repository.WorkbenchQueryRepository;
 
 /**
  *
  * @author Helio Leal
  */
 @Service
-public class ConnectionQueryStoreService {
+public class WorkbenchQueryService {
 
-    private final ConnectionQueryStoreRepository connectionQueryStoreRepository;
+    private final WorkbenchQueryRepository connectionQueryStoreRepository;
 
     @Autowired
-    public ConnectionQueryStoreService(
-            ConnectionQueryStoreRepository connectionRepository) {
+    public WorkbenchQueryService(
+            WorkbenchQueryRepository connectionRepository) {
 
         this.connectionQueryStoreRepository = connectionRepository;
     }
 
-    public Iterable<ConnectionQueryStore> list() {
+    public Iterable<WorkbenchQuery> list() {
         return connectionQueryStoreRepository.findAll();
     }
     
-    public List<ConnectionQueryStore> findByUserOrSharedTrue(User user) {
+    public List<WorkbenchQuery> findByUserOrSharedTrue(User user) {
         return connectionQueryStoreRepository.findByUserOrSharedTrue(user);
     }
 
-    public ConnectionQueryStore load(Long id) {
+    public WorkbenchQuery load(Long id) {
         return connectionQueryStoreRepository.findOne(id);
     }
 
-    public void save(ConnectionQueryStore connectionQueryStore) {
+    public void save(WorkbenchQuery connectionQueryStore) {
         connectionQueryStoreRepository.save(connectionQueryStore);
     }
 

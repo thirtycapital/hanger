@@ -72,8 +72,8 @@ public class WorkbenchQueryController {
      *
      * @return Test connections modal
      */
-    @PostMapping(path = "/store/modal/{id}")
-    public String queryStoreModal(
+    @PostMapping(path = "/modal/{id}")
+    public String queryModal(
             @PathVariable(name = "id") Connection connection,
             @RequestBody(required = false) String query,
             Model model,
@@ -91,7 +91,7 @@ public class WorkbenchQueryController {
             model.addAttribute("workbenchQuery", workbenchQuery);
         }
 
-        return "workbench/modalQueryStore::query";
+        return "workbench/query/modalQuery::query";
     }
 
     /**
@@ -144,13 +144,11 @@ public class WorkbenchQueryController {
             Model model,
             Principal principal) {
 
-        if (principal != null) {
-            User user = userService.findByUsername(principal.getName());
+        User user = userService.findByUsername(principal.getName());
 
-            if (user != null) {
-                model.addAttribute("workbenchQueryList",
-                        this.workbenchQueryService.findByUserOrSharedTrue(user));
-            }
+        if (user != null) {
+            model.addAttribute("workbenchQueryList",
+                    this.workbenchQueryService.findByUserOrSharedTrue(user));
         }
 
         return "workbench/query/list";
@@ -165,7 +163,7 @@ public class WorkbenchQueryController {
      *
      * @return Test connections modal
      */
-    @GetMapping(path = "/load/modal/{id}")
+    @GetMapping(path = "/modal/{id}")
     public String queryLoadModal(
             @PathVariable(name = "id") WorkbenchQuery workbenchQuery,
             Model model,
@@ -177,7 +175,7 @@ public class WorkbenchQueryController {
             model.addAttribute("workbenchQuery", workbenchQuery);
         }
 
-        return "workbench/modalQueryStore::query";
+        return "workbench/query/modalQuery::query";
     }
 
     /**

@@ -49,7 +49,7 @@ public class WorkbenchQueryService {
     public Iterable<WorkbenchQuery> list() {
         return workbenchQueryRepository.findAll();
     }
-    
+
     public List<WorkbenchQuery> findByUserOrSharedTrue(User user) {
         return workbenchQueryRepository.findByUserOrSharedTrue(user);
     }

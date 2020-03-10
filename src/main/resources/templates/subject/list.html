@@ -61,7 +61,7 @@
                         </td>
                         <td>
                             <div th:if="${subject.notified}">
-                                <span th:attr="title=${ not #lists.isEmpty(subject.channel) ?  'Channels: ' + subject.channel : 'Default channel' }"  
+                                <span th:attr="title=${ not #lists.isEmpty(subject.channel) ?  '[' + subject.channel + ']' : 'Default channel' }"  
                                       class="glyphicon glyphicon-bell">
                                 </span>
                             </div>
@@ -90,7 +90,8 @@
                         </td>
                         <td>
                             <div class="form-group">
-                                <a class="btn btn-xs btn-delete" data-toggle="modal" th:attr="data-target='#'+${subject.id}" href="">
+                                <a  th:if="${#authorization.expression('hasRole(''HERO'')')}"
+                                    class="btn btn-xs btn-delete" data-toggle="modal" th:attr="data-target='#'+${subject.id}" href="">
                                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
                                 </a>
                             </div>

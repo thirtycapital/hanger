@@ -252,7 +252,7 @@ public class JobDetailsService {
         return new JobDetails(
                 job,
                 status,
-                scope.toString().toLowerCase(),
+                scope.toString(),
                 flow,
                 phase,
                 number,

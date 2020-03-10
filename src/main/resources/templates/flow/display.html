@@ -8,7 +8,7 @@
         <div class="container-fluid main-content">
             <center>           
                 <ul class="nav nav-pills space-top">
-                    <li role="presentation" th:each="subjects : ${subjectSummary}">
+                    <li role="presentation" class="pull-right" th:each="subjects : ${subjectSummary}">
                         <a th:href="@{'/detail/' + ${subjects.subject.id}}" th:inline="text">                                                     
                             [[${subjects.subject.name}]] 
                             <span class="badge" th:text="${subjects.jobCount}"></span>

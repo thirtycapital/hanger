@@ -25,9 +25,9 @@ package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Connection;
-import br.com.dafiti.hanger.model.ConnectionQueryStore;
+import br.com.dafiti.hanger.model.WorkbenchQuery;
 import br.com.dafiti.hanger.model.User;
-import br.com.dafiti.hanger.service.ConnectionQueryStoreService;
+import br.com.dafiti.hanger.service.WorkbenchQueryService;
 import br.com.dafiti.hanger.service.UserService;
 import java.security.Principal;
 import javax.validation.Valid;
@@ -48,17 +48,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  */
 @Controller
 @RequestMapping(path = "/query")
-public class ConnectionQueryStoreController {
+public class WorkbenchQueryController {
 
-    private final ConnectionQueryStoreService connectionQueryStoreService;
+    private final WorkbenchQueryService workbenchQueryService;
     private final UserService userService;
 
     @Autowired
-    public ConnectionQueryStoreController(
-            ConnectionQueryStoreService connectionQueryStoreService,
+    public WorkbenchQueryController(
+            WorkbenchQueryService workbenchQueryService,
             UserService userService) {
 
-        this.connectionQueryStoreService = connectionQueryStoreService;
+        this.workbenchQueryService = workbenchQueryService;
         this.userService = userService;
     }
 
@@ -72,8 +72,8 @@ public class ConnectionQueryStoreController {
      *
      * @return Test connections modal
      */
-    @PostMapping(path = "/store/modal/{id}")
-    public String queryStoreModal(
+    @PostMapping(path = "/modal/{id}")
+    public String queryModal(
             @PathVariable(name = "id") Connection connection,
             @RequestBody(required = false) String query,
             Model model,
@@ -82,23 +82,23 @@ public class ConnectionQueryStoreController {
         User user = userService.findByUsername(principal.getName());
 
         if (user != null) {
-            ConnectionQueryStore connectionQueryStore
-                    = new ConnectionQueryStore(connection, user);
+            WorkbenchQuery workbenchQuery
+                    = new WorkbenchQuery(connection, user);
 
             if (query != null && !query.isEmpty()) {
-                connectionQueryStore.setQuery(query);
+                workbenchQuery.setQuery(query);
             }
-            model.addAttribute("connectionQueryStore", connectionQueryStore);
+            model.addAttribute("workbenchQuery", workbenchQuery);
         }
 
-        return "workbench/modalQueryStore::query";
+        return "workbench/query/modalQuery::query";
     }
 
     /**
      * Save a connection query store.
      *
      * @param redirectAttributes
-     * @param connectionQueryStore
+     * @param workbenchQuery
      * @param model
      * @param principal
      *
@@ -107,22 +107,24 @@ public class ConnectionQueryStoreController {
     @PostMapping(path = "/save")
     public String save(
             RedirectAttributes redirectAttributes,
-            @Valid @ModelAttribute ConnectionQueryStore connectionQueryStore,
+            @Valid @ModelAttribute WorkbenchQuery workbenchQuery,
             Model model,
             Principal principal) {
-        String redirect = "redirect:/workbench/workbench/";
-
-        if (connectionQueryStore.getId() != null) {
-            redirect = "redirect:/query/list/";
-        }
+        boolean update = workbenchQuery.getId() != null;
+        String redirect = "redirect:/query/list/";
 
         try {
-            connectionQueryStoreService.save(connectionQueryStore);
+            workbenchQueryService.save(workbenchQuery);
             redirectAttributes.addFlashAttribute(
                     "successMessage",
                     "Query successfully stored!");
+
+            if (!update) {
+                redirect = "redirect:/workbench/workbench/"
+                        .concat(workbenchQuery.getId().toString());
+            }
         } catch (Exception ex) {
-            model.addAttribute("connectionQueryStore", connectionQueryStore);
+            model.addAttribute("workbenchQuery", workbenchQuery);
             redirectAttributes.addFlashAttribute("errorMessage",
                     new Message().getErrorMessage(ex));
         }
@@ -145,37 +147,35 @@ public class ConnectionQueryStoreController {
         User user = userService.findByUsername(principal.getName());
 
         if (user != null) {
-            model.addAttribute("connectionQueryStoreList",
-                    this.connectionQueryStoreService.findByUser(user));
-            model.addAttribute("connectionQueryStoreSharedList",
-                    this.connectionQueryStoreService.findBySharedTrue());
+            model.addAttribute("workbenchQueryList",
+                    this.workbenchQueryService.findByUserOrSharedTrue(user));
         }
 
-        return "workbench/list";
+        return "workbench/query/list";
     }
 
     /**
      * Call query store modal.
      *
-     * @param connectionQueryStore
+     * @param workbenchQuery
      * @param model Model
      * @param principal
      *
      * @return Test connections modal
      */
-    @GetMapping(path = "/load/modal/{id}")
+    @GetMapping(path = "/modal/{id}")
     public String queryLoadModal(
-            @PathVariable(name = "id") ConnectionQueryStore connectionQueryStore,
+            @PathVariable(name = "id") WorkbenchQuery workbenchQuery,
             Model model,
             Principal principal) {
 
         User user = userService.findByUsername(principal.getName());
 
         if (user != null) {
-            model.addAttribute("connectionQueryStore", connectionQueryStore);
+            model.addAttribute("workbenchQuery", workbenchQuery);
         }
 
-        return "workbench/modalQueryStore::query";
+        return "workbench/query/modalQuery::query";
     }
 
     /**
@@ -193,7 +193,7 @@ public class ConnectionQueryStoreController {
             Principal principal) {
 
         try {
-            connectionQueryStoreService.delete(id);
+            workbenchQueryService.delete(id);
         } catch (Exception ex) {
             model.addAttribute("errorMessage",
                     "Fail deleting the connection query: " + ex.getMessage());

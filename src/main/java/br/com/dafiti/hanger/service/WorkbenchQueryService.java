@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Dafiti Group
+ * Copyright (c) 2019 Dafiti Group
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -23,52 +23,46 @@
  */
 package br.com.dafiti.hanger.service;
 
-import br.com.dafiti.hanger.model.ConfigurationGroup;
+import br.com.dafiti.hanger.model.WorkbenchQuery;
+import br.com.dafiti.hanger.model.User;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import br.com.dafiti.hanger.repository.ConfigurationGroupRepository;
+import br.com.dafiti.hanger.repository.WorkbenchQueryRepository;
 
 /**
  *
  * @author Helio Leal
  */
 @Service
-public class ConfigurationGroupService {
+public class WorkbenchQueryService {
 
-    private final ConfigurationGroupRepository configurationGroupRepository;
+    private final WorkbenchQueryRepository workbenchQueryRepository;
 
     @Autowired
-    public ConfigurationGroupService(ConfigurationGroupRepository configurationGroupRepository) {
-        this.configurationGroupRepository = configurationGroupRepository;
+    public WorkbenchQueryService(
+            WorkbenchQueryRepository connectionRepository) {
+
+        this.workbenchQueryRepository = connectionRepository;
     }
 
-    public Iterable<ConfigurationGroup> list() {
-        return configurationGroupRepository.findAll();
+    public Iterable<WorkbenchQuery> list() {
+        return workbenchQueryRepository.findAll();
     }
 
-    public ConfigurationGroup load(Long id) {
-        return configurationGroupRepository.findOne(id);
+    public List<WorkbenchQuery> findByUserOrSharedTrue(User user) {
+        return workbenchQueryRepository.findByUserOrSharedTrue(user);
     }
 
-    public void save(ConfigurationGroup configurationGroup) {
-        save(configurationGroup, false);
+    public WorkbenchQuery load(Long id) {
+        return workbenchQueryRepository.findOne(id);
     }
 
-    public ConfigurationGroup save(ConfigurationGroup configurationGroup, boolean add) {
-        ConfigurationGroup group = configurationGroupRepository.findByName(configurationGroup.getName());
-
-        if (group == null || !add) {
-            if (!add) {
-                configurationGroup.setId(group.getId());
-            }
-
-            group = configurationGroupRepository.save(configurationGroup);
-        }
-
-        return group;
+    public void save(WorkbenchQuery workbenchQuery) {
+        workbenchQueryRepository.save(workbenchQuery);
     }
 
     public void delete(Long id) {
-        configurationGroupRepository.delete(id);
+        workbenchQueryRepository.delete(id);
     }
 }

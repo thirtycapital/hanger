@@ -7,14 +7,14 @@
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
             <!--OPTION FRAGMENT BEGIN-->
-            <div class="modal fade" id="modalQueryStore" tabindex="-1" role="dialog" aria-labelledby="modalQueryStoreLabel" th:fragment="query">
+            <div class="modal fade" id="modalQuery" tabindex="-1" role="dialog" aria-labelledby="modalQueryLabel" th:fragment="query">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="modalQueryStoreLabel">Query</h4>
+                            <h4 class="modal-title" id="modalQueryLabel">Query</h4>
                         </div>
-                        <form class="form-horizontal" th:object="${connectionQueryStore}" th:action="@{/query/save}" method="post">
+                        <form class="form-horizontal" th:object="${workbenchQuery}" th:action="@{/query/save}" method="post">
                             <!--ID-->
                             <input type="hidden" th:field="*{id}"/>
                             <!--Connection-->
@@ -64,7 +64,6 @@
                                     </div>
                                 </div>
 
-
                                 <!--Query-->   
                                 <div class="form-group">
                                     <div class="col-sm-12">
@@ -99,22 +98,19 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal-footer">    
-                                <button 
-                                    type="submit" 
-                                    class="btn btn-generic btn-sm">
-                                    <span 
-                                        class="glyphicon glyphicon-save" 
-                                        aria-hidden="true"></span> 
-                                    Save
-                                </button>
-
+                            <div class="modal-footer">
                                 <button 
                                     type="button" 
                                     class="btn btn-generic btn-sm" 
                                     data-dismiss="modal">
                                     <span aria-hidden="true"></span> 
                                     Close
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    class="btn btn-generic btn-sm">
+                                    <span aria-hidden="true"></span> 
+                                    Save
                                 </button>
                             </div>
                         </form>

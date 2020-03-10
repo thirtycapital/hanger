@@ -11,10 +11,10 @@
 - Jenkins ( [https://jenkins.io/](https://jenkins.io/) )
 - Jenkins Notification Plugin ( [https://wiki.jenkins.io/display/JENKINS/Notification+Plugin](https://wiki.jenkins.io/display/JENKINS/Notification+Plugin) )
 
-> Caso haja problemas de permissão entre Hanger e o Jenkins (Erro 403), verifique se a opção Prevenir site contra invasões está marcada e a desmarque:
+> Caso haja problemas de permissão entre Hanger e o Jenkins (Erro 403), verifique se a opção *Prevenir site contra invasões* está marcada e a desmarque:
 > - Acesse o Jenkins e vá no menu Gerenciar Jenkins
 > - Clique no menu em Configurar segurança global
-> - Na seção CSRF Protection, desmarque a opção Prevenir site contra invasões.
+> - Na seção CSRF Protection, desmarque a opção *Prevenir site contra invasões*.
 
 ##### CONSTRUÇÃO
 Utilizando o [Maven](https://maven.apache.org/):
@@ -68,6 +68,8 @@ Utilizando o [Apache Tomcat](http://tomcat.apache.org/):
 O *Monitor* é onde a carga de trabalho do Hanger é monitorada. O *dashboard* é organizado da seguinte forma:
 
 - Na parte superior são exibidos todos os *subjects* disponíveis e uma opção de filtro:
+	- Ao lado esquerdo do nome do assunto é exibido um ícone indicando que o usuário logado está inscrito (o ícone só aparece se o assunto não for *mandatory*).
+	- Ao lado direito do nome do assunto é exibido o total de *jobs* em um subject.
 	- Na aba de assuntos:
 		- Clique sob o nome do *subject* desejado e será exibida a lista de *jobs* do subject contendo as seguintes informações:
 			- **Status:** Status do *job*.
@@ -91,20 +93,21 @@ O *Monitor* é onde a carga de trabalho do Hanger é monitorada. O *dashboard* �
 	- No gráfico: 
 		- **Cinza:** Representa o percentual de *jobs* ainda não executados. 
 		- **Verde:** Representa o percentual de *jobs* executados com sucesso. 
-		- **Vermelho:** Representa o percentual de *jobs* com com falha ou com problema de validação dos dados.
+		- **Vermelho:** Representa o percentual de *jobs* com falha ou com problema de validação dos dados.
 		- **Laranja:** Representa o percentual de *jobs* com alertas na cadeia de dependência. 
 	- Na tabela:
-		- **Jobs:** Total de *jobs* em um subjects
 		- **Success:** Total de *jobs* executados com sucesso.
 		- **Waiting:** Total de *jobs* ainda não executados. 
-		- **Building:** Total de *jobs* prontos para serem executado mas ainda aguardando na fila. 
+		- **Building:** Total de *jobs* prontos para serem executados, mas ainda aguardando na fila. 
 		- **Running:** Total de *jobs* sendo executados.
 		- **Warning:** Total de *jobs* com alertas na cadeia de dependência. 
-		- **Failure:** Total de *jobs* com falha ou com problema de validação dos dados. 
+		- **Failure:** Total de *jobs* com falhas ou com problema de validação dos dados. 
+		- **Checkup:** validação de health check de todos os checkups do *job*.
+- Na guia **ALL** são exibidos todos os jobs cadastrados no Hanger e seus respectivos status.
 
 ## Search
 
-O *Search* é o caminho mais rápido para encontrar e ter acesso as informações de status de um *job* no Hanger. 
+O *Search* é o caminho mais rápido para encontrar e ter acesso às informações de status de um *job* no Hanger. 
 
 - Clique na opção *Search*.
 - Será exibida a tela de pesquisa, contendo um campo de texto e um botão com o desenho de uma lupa. 
@@ -125,19 +128,30 @@ Cada *job* representado no *flow* apresenta uma imagem representando o status e 
 	- Clique no botão ***View*** para visualizar a configuração do *job*.
 	- Clique no botão ***Flow*** para ser redirecionado novamente para a cadeia de dependência do *job*.
 - Instância do Jenkins na qual o job é executado.  
-- Data de execução do *job*
-- Escopo do *job*
-Clique com o botão direito sobre o status do *job* e será exibida uma lista suspensa com as seguintes opções:
-- **Flow:** Atalho para o *flow* do *job* selecionado. 
-- **Propagation:** Atalho para o propagation do *job* selecionado. 
-- **Build:** Permite executar o *job* selecionado. 
-- **Build Mesh:** Permite executar toda a cadeia do *job* selecionado. 
-- **Build history:** Exibe uma lista com o histórico completo de execuções do *job* selecionado, a lista contem os campos:
-	- **Status:** Status da execução.
-	- **Start:** Data e hora inicial da execução.
-	- **Finish:** Data e hora final da execução.
-	- **Duration in minutes:** Duração da execução em minutos.
-	- **Efficiency:** Exibe a porcentagem que a execução ficou em fila e o tempo real.
+- Data de execução do *job*.
+- Escopo do *job*.
+- Clique com o botão direito no status do *job* e será exibida uma lista suspensa com as seguintes opções:
+	- **Flow:** Atalho para o *flow* do *job* selecionado. 
+	- **Propagation:** Atalho para o propagation do *job* selecionado. 	
+	- **Build history:** Exibe uma lista com o histórico completo de execuções do *job* selecionado, a lista contem os campos:
+		- **Start:** Data e hora inicial da execução.
+		- **Finish:** Data e hora final da execução.
+		- **Duration in minutes:** Duração da execução em minutos.
+		- **Efficiency:** Exibe a porcentagem que a execução ficou em fila e o tempo real.
+	- **Actions:**
+		- **Build:** Permite executar o *job* selecionado. 
+		- **Build Mesh:** Permite executar toda a cadeia do *job* selecionado. 
+		- **Parent:** Exibe uma lista com todos os servidores do Jenkins disponíveis, onde é possível adicionar um ou vários pais para o job corrente:
+			- Clique no servidor desejado.
+			- Uma tela com os jobs disponíveis naquele servidor será exibida.
+			- É possível selecionar os jobs desejados na lista ou simplesmente digitar o nome dos *jobs* no campo Jobs (separados por vírgula).
+			- Clique em Add para que a ação seja concluída.
+		- **Children:** Exibe uma lista com todos os servidores do Jenkins disponíveis, onde é possível adicionar um ou vários filhos para o job corrente:
+			- Clique no servidor desejado.
+			- Uma tela com os jobs disponíveis naquele servidor será exibida.
+			- É possível selecionar os jobs desejados na lista ou simplesmente digitar o nome dos *jobs* no campo Jobs (separados por vírgula).
+			- Clique em Add para que a ação seja concluída.
+		- **Disable:** Permite desabilitar/habilitar um job.
 
 ##### ZOOM OUT
 Permite reduzir o zoom do *flow*. 
@@ -163,8 +177,16 @@ Exibe o glossário de todos os possíveis status de um *job*, contendo:
 - ***Name*:** Nome do status. 
 - ***Description*:** Descrição do status.
 
-## Servers
+## Server
 Servers são as instâncias de Jenkins que serão gerenciadas pelo Hanger. 
+
+##### IMPORT
+Permite importar todos os jobs cadastrados no Jenkins.
+
+- No menu lateral, acesse a opção ***Server***.
+- Selecione o servidor desejado e clique no botão ***Import***, será exibido o modal ***Import jobs*** no qual será apresentado uma mensagem de confirmação.
+- Caso deseje realmente importar todos os jobs do Jenkins, clique em ***Yes*** .
+- Após a importação de todos os jobs, uma frase aparecerá no topo da tela informando que os *jobs* foram sincronizados.
 
 ##### CONNECT
 Permite testar conexão uma instância do Jenkins cadastrada.
@@ -172,14 +194,6 @@ Permite testar conexão uma instância do Jenkins cadastrada.
 - No menu lateral, acesse a opção ***Server***.
 - Selecione o servidor desejado e clique no botão ***Connect***.
 - Uma frase aparecerá no topo da tela informando se o servidor está ou não conectado.
-
-##### IMPORT
-Permite importar todos os jobs cadastrados no Jenkins.
-
-- No menu lateral, acesse a opção ***Server***.
-- Selecione o servidor desejado e clique no botão ***Import***, será exibido o modal ***Import jobs*** no qual será apresentado uma mensagem de confirmação.
-- Caso deseje realmente importar todos os jobs do Jenkins, clique em Yes.
-- Após a importação de todos os jobs, uma frase aparecerá no topo da tela informando que os *jobs* foram sincronizados.
 
 ##### ADD SERVER
 Permite adicionar uma nova instância do Jenkins.
@@ -198,8 +212,8 @@ Permite alterar um servidor.
 ##### DELETE
 Permite exluir um servidor.
 
-## Connections
-*Connections* são as conexões com os bancos de dados que serão utilizados no processo de validação de dados.
+## Connection
+*Connections* são as conexões com os bancos de dados que podem ser utilizados no processo de validação de dados ou para queries no Workbench.
 
 ##### ADD CONNECTION
 Permite adicionar uma nova conexão.
@@ -212,7 +226,6 @@ Permite adicionar uma nova conexão.
 - Informe o usuário do banco de dados no campo ***Username***.
 - Informe a senha do usuário no campo ***Password***.
 - Clique no botão ***Save***.
-
 
 Os bancos de dados suportados e as respectivas JDBC Urls são as seguintes:
 
@@ -229,7 +242,17 @@ Permite validar o estado de todas as conexões cadastradas.
 > Dependendo do número de conexões este processo pode ser demorado. 
 
 ##### CONNECT
-Permite testar o estado de uma conexão específica. 
+Permite testar o estado de uma conexão específica.
+
+##### SCHEMA
+Permite explorar os catálogos e schemas de uma conexão.
+- No menu lateral, acesse a opção ***Connection***.
+- Clique no botão ***Schema***.
+- Será exibido uma tabela com todos os catálogos e schemas daquela conexão. No lado direito da tabela é possível explorar as tabelas de um catálogo ou schema.
+- Clique no botão ***Table***.
+- Será exibida todas as tabelas do catálogo ou schema. No lado direito da tabela é possível acessar os metadados de uma tabela.
+- Clique no botão ***Column***.
+- Será exibido a chave primária da tabela, os índices dela e todos os campos com seus respectivos tipos. 
 
 ##### EDIT 
 Permite alterar uma conexão.
@@ -237,11 +260,79 @@ Permite alterar uma conexão.
 ##### DELETE
 Permite excluir uma conexão.
 
-##### TABLE
-Permite explorar as tabelas de uma conexão.
+##### WORKBENCH
+O *Workbench* é uma ferramenta que permite realizar queries com as conexões já estabelecidas.
 
+- No menu lateral, acesse a opção ***Connection***.
+- Clique no botão ***Workbench***, representado pelo ícone **>**.
+- Selecione a conexão desejada no campo ***Connection***.
+- No campo ***Search*** informe o nome do schema desejado para realizar a consulta ou escolha umas das opções listadas.
+- Uma query pré-estabelecida será exibida na área de texto ao lado.
+- Altere, se necessário e então, clique no botão ***Play*** para realizar a execução.
+- Será exibido o resultado da query executada.
 
-## Subjects
+###### E-MAIL
+Em *E-mail* é possível enviar o resultado de uma consulta para outros usuários.
+
+- Em ***Workbench***, clique no botão ***E-mail***.
+- No campo ***Recipient***, selecione ou escreva os nomes dos destinatários.
+- No campo ***External Recipient***, selecione ou escreva o endereço de usuários externos, caso seja necessário.
+- No campo ***Subject***, informe o assunto do e-mail.
+- Na área de texto ***Body***, escreva ou não alguma mensagem.
+- Ao final, clique no botão ***Send*** para enviar.
+- Clique no botão ***Close*** para cancelar a operação.
+
+###### EXPORT
+Permite exportar o resultado de uma query para um arquivo CSV.
+
+###### SAVE
+Permite salvar a query, caso seja necessário utulizá-la novamente em outro momento.
+
+- Em ***Workbench***, clique no botão ***Save***.
+- Determine o nome da query no campo ***Name***.
+- O campo ***Connection*** informa a conexão utilizada.
+- Na área de texto ***Query*** é informada a query a ser salva.
+- Clique em ***Shared***, caso deseje compartilhar a query com outros usuários do sistema.
+- Ao final, clique no botão ***Save*** para salvar.
+- Clique no botão ***Close*** para cancelar a operação.
+
+###### STORED
+Permite visualizar todas as queries salvas.
+
+- Em ***Workbench***, clique no botão ***Stored***.
+- Será exibida uma lista com todas as ***Queries*** salvas.
+
+##### QUERIES
+Visualização de todas as queries salvas.
+
+###### OPEN
+Permite abrir uma query e executá-la.
+ 
+###### EDIT
+Permite editar as informações de uma query.
+
+- No campo ***Name*** determine o novo nome da query escolhida para edição.
+- O campo ***Connection*** informa a conexão utilizada.
+- Na área de texto ***Query*** é informada a query a ser editada.
+- Clique em ***Shared***, caso deseje compartilhar a query com outros usuários do sistema.
+- Ao final, clique no botão ***Save*** para salvar.
+- Clique no botão ***Close*** para cancelar a operação.
+- Em ***Queries***, clique no botão ***>*** para voltar ao ***Workbench***.
+
+###### DELETE
+Permite deletar uma query.
+
+###### VIEW MORE
+O botão representado por ***...*** permite visualizar uma query por completo.
+
+- Na lista de queries, clique no botão ***...*** (três pontos) para visualizar a query por completo.
+
+###### COPY
+Permite copiar uma query.
+
+- Na lista de queries, passe o mouse em qualquer query e clique no botão ***Copy***, que será exibido, para copiá-la.
+
+## Subject
 Subjects são agrupadores utilizados para a organização e o acompanhamento sumarizado da execução dos *jobs*. 
 
 ##### ADD SUBJECT
@@ -251,17 +342,17 @@ Permite adicionar um novo assunto.
 - Clique no botão ***Add Subject***, representado pelo ícone **+**.
 - Defina o nome do assunto no campo ***Subject***.
 - Defina a descrição do assunto no campo ***Description***.
+	> Neste campo é possível utilizar a linguagem ***Markdown*** para formatação do texto.
+- Para definir se o assunto deve ser visto por todos os usuários no monitor, marque a opção ***Mandatory***. 
 - Caso deseje receber notificações dos jobs pertencentes deste subject no slack, marque a opção ***Slack notification***.
 - Para definir o canal no qual as notificações serão enviadas, clique no botão ***Add channel***. Será exibido o modal ***Slack channels*** no qual será possível selecionar um ou mais canais do Slack nos quais as notificações devem ser enviadas.
 	> Caso nenhum canal seja selecionado no modal ***Slack channels***, o canal configurado na guia ***Configuration*** será usado para notificação deste *job*.
-- Para definir se o assunto deve ser visto por todos os usuários no monitor, marque a opção ***Mandatory***. 
 - Clique no botão ***Save***.
 
 ##### SUBSCRIPTION
 Permite selecionar qual subject será exibido no monitor quando o usuário estiver logado.
 
 > Alguns *subjects* são obrigatórios e não podem ser removidos do monitor, estes *subjects* são exibidos com o checkbox de subscrição desabilitado.
-
 
 ##### EDIT 
 Permite editar um assunto. 
@@ -282,18 +373,24 @@ Permite adicionar um novo *job*.
 - Selecione o *job* desejado no combo ***Name***. 
 - Caso deseje definir um nome sugestivo para o *job*, informe o no campo ***Alias***. O alias, com o sufixo [alias], substituirá o nome do *job* nas principais funcionalidades do Hanger.
 - Defina a descrição do *job* no campo ***Description***.
+	> Neste campo é possível utilizar a linguagem ***Markdown*** para formatação do texto.
 - Caso o *job* possa ser executado mais de uma vez ao dia, marque o checkbox ***Rebuild along the day***. Por padrão, um *job* pode ser executado apenas uma vez ao dia. Quando esta opção estiver selecionada, o *job* será executado a primeira vez quando todas as dependências forem atendidas e voltará a ser executado sempre que qualquer uma das dependências for executada com sucesso no decorrer do dia. Caso necessite que o *job* somente seja reexecutado quando todas as dependências forem atendidas novamente, selecione quais dependências serão ***blockers*** na lista de ***parents***.
 - Caso deseje definir um intervalo mínimo para que o *job* seja reexecutado, digite a quantidade de minutos no campo ***Rebuild interval in minutes***.
 - Defina o conteúdo do campo **Eagerness** do job entre 0 e 12 horas. Para que uma dependência de um *job* seja considerada atendida, ela precisa ser executada com sucesso ao menos uma vez no dia. Caso alguma dependência precise ser executada antes da meia noite, o campo ***Eagerness*** deve ser preenchido com o número de horas, antes da meia noite, em que caso o job seja executado com sucesso, a dependência seja considerada como atendida. 
+- Defina, em formato cron, o período permitido para a execução do job no campo ***Time restriction***.
+- Defina o conteúdo do campo ***Eagerness*** do job entre 0 e 12 horas. Para que uma dependência de um *job* seja considerada atendida, ela precisa ser executada com sucesso ao menos uma vez no dia. Caso alguma dependência precise ser executada antes da meia noite, o campo ***Eagerness*** deve ser preenchido com o número de horas, antes da meia noite, em que caso o job seja executado com sucesso, a dependência seja considerada como atendida.
+- Caso deseje definir um intervalo mínimo para que o *job* seja reexecutado, digite a quantidade de minutos no campo ***Rebuild interval***.
+- Marque o checkbox ***Enabled*** para habilitar o job ou desmarque para desabilitá-lo. 
+- Caso o *job* possa ser executado mais de uma vez ao dia, marque o checkbox ***Rebuildable***. Por padrão, um *job* pode ser executado apenas uma vez ao dia. Quando esta opção estiver selecionada, o *job* será executado pela primeira vez quando todas as dependências forem atendidas e voltará a ser executado sempre que qualquer uma das dependências for executada com sucesso no decorrer do dia. Caso necessite que o *job* somente seja reexecutado quando todas as dependências forem atendidas novamente, selecione quais dependências serão ***blockers*** na lista de ***parents***.
 - Caso deseje receber notificações de execuções do job, marque a opção ***Slack notification***.
-- Para definir o canal no qual as notificações serão enviadas, clique no botão ***Add channel***. Será exibido o modal ***Slack channels*** no qual será possível selecionar um ou mais canais do Slack nos quais as notificações devem ser enviadas.
+- Para definir o canal no qual as notificações serão enviadas, clique no botão ***Slack channel***. Será exibido o modal ***Slack channels*** no qual será possível selecionar um ou mais canais do Slack nos quais as notificações devem ser enviadas.
 	> Caso nenhum canal seja selecionado no modal Slack channels, o canal configurado na guia Configuration será usado para notificação deste *job*.
 - Caso deseje classificar o *job* dentro de um ou mais assuntos, clique no botão ***Add subject***. Será exibido o modal ***Subject*** no qual será possível selecionar um ou mais subjects para o *job*. 
 	- Clique no botão ***Add***.
 	- Será criada uma nova seção denominada ***Subjects***, onde será possível gerenciar os subjects do job.
 	- Para remover um subject, clique no botão ***Remove***. 
 Caso o *job* tenha uma ou mais dependências, clique no botão ***Add Parent***, para adicionar *jobs* da mesma instância do Jenkins como dependência, ou clique na **seta** ao lado do botão para selecionar uma instância específica do Jenkins. Será exibido o modal ***Jenkins Server***, no qual será possível selecionar todos os *jobs* que serão dependência do *job* que está sendo criado. 
-- Caso os *jobs* do Jenkins possuam *upstream jobs*, marque a opção ***Import Jenkins upstream project?*** para que a relação de dependências representadas pelo upstream jobs do Jenkins seja replicada para o mecanismo de dependências do Hanger. 
+- Caso os *jobs* do Jenkins possuam *upstream jobs*, marque a opção ***Import upstream project*** para que a relação de dependências representadas pelo upstream jobs do Jenkins seja replicada para o mecanismo de dependências do Hanger. 
 	- Clique no botão ***Add***.
 	- Será criada uma nova seção denominada ***Parent***, onde será possível gerenciar os parents do job.
 	- Para remover uma dependência, clique no botão ***Remove***. 
@@ -309,10 +406,13 @@ Uma dependência pode ter os seguintes escopos:
 **OPTIONAL:** Identifica que a dependência é opcional, ou seja, sendo atendida ou não o *job* será executado normalmente. Caso todas as dependências do *job* sejam OPTIONAL, o *job* será executado assim que a primeira dependência for atendida. 
 
 
-- Caso seja necessário realizar a validação dos dados resultantes da execução de um job, especificamente em um processo de [https://pt.wikipedia.org/wiki/Extract,_transform,_load](ETL), clique no botão ***Add checkup***. Será criada uma nova seção denominada ***Checkups***, na qual será possível definir uma instrução SQL para validação. Para criar um *checkup*:
+- Caso seja necessário realizar a validação dos dados resultantes da execução de um job, especificamente em um processo de [https://pt.wikipedia.org/wiki/Extract,_transform,_load](ETL), clique no botão ***Add checkup***. Será criada uma nova seção denominada ***Checkup***, na qual será possível definir uma instrução SQL para validação. Para criar um *checkup*:
 	- Informe a descrição do *checkup* no campo ***Description***.
 	- Selecione em qual conexão a validação será executada no combo ***Connection***.
 	- Defina em qual escopo a validação será realizada, selecionando uma das opções do combo ***Scope***. 
+		> **FULL:** o checkup do ***job*** só será executado quando todas as dependências com escopo **FULL** e **PARTIAL** foram atendidas.
+		> **PARTIAL:** o checkup do ***job*** só será executado quando as dependências com o escopo **PARTIAL** foram atendidas.
+		> **ONYONE:** o checkup do ***job*** será executado sempre que as depêndencias com escopo **PARTIAL** ou **FULL** foram atendidas.
 	- Defina a instrução SQL de validação no campo ***SQL Select Statement***, o *resultset* deve retornar apenas um valor inteiro. 
 	- Defina o teste que será feito para comparação entre o resultset e o threshold, selecionando uma das opções disponíveis no combo ***Test***.
 	- Defina o resultado esperado no campo ***Threshold***.
@@ -361,7 +461,7 @@ Permite excluir um *job*.
 
 ##### HEATMAP
 Permite a distribuição do trabalho em um período de tempo específico.
-- Selecione a data que será analisada no campo ***Date***.
+- Selecione a data que será analisada no campo ***Period***.
 - Selecione o intervalo que será analisado no campo ***Interval***.
 - Clique no botão ***Filter***, será exibido o modal ***Job Filter*** no qual será possível escolher quais *jobs* serão analisados. 
 
@@ -376,12 +476,13 @@ Permite analisar a carga de trabalho durante um intervalo de tempo.
 Permite atualizar a lista de *jobs* do Hanger. Por questões de performance o Hanger mantém o máximo possível de informação em memória, sincronizando os dados com o banco de dados somente quando necessário; por meio da opção ***Refresh*** é possível forçar a sincronização imediata destes dados.
 
 ## Log
-Logs são registros das atividades dos usuários no sistema e expões as seguintes informações:
+Logs são registros das atividades dos usuários no sistema e apresenta as seguintes informações:
 - ***Date:*** Data da ação.
 - ***Entity:*** Tipo de entidade na qual a ação foi executada.
-- ***Name:*** Nome da entidade na qual a ação foi executada.
+- ***Content:*** Nome da entidade na qual a ação foi executada.
 - ***User:*** Usuário que executou a ação.
 - ***Event:*** Ação executada pelo usuário.
+- No campo de filtro, defina um período e clique no botão ***Filter*** para encontrar um log específico.
 
 ## User
 Users são os usuários do Hanger. 
@@ -403,6 +504,7 @@ Adiciona um novo usuário.
 **USER:** Este usuário tem permissão de efetuar build em um *job* e aprovar *jobs* que estão em seu nome na seção Approval.
 
 - É possível definir se este usuário estará ou não ativo no sistema através do campo ***Enabled***.
+- Clique no botão ***Privileges*** para determinar os privilégios do usuário.
 - Clique no botão ***Save***.
 
 ##### EDIT
@@ -428,4 +530,9 @@ Permite ao usuário alterar a própria senha.
 - Digite a senha no campo ***Password***.
 - No campo ***Log Retention*** é possível definir em dias a limpeza do *log* de validação de dados e de aprovações. 
 - Defina qual é o canal padrão utilizado pelo Slack no campo ***Default channel***.
+- Defina o número máximo de entidades permitidas no workbench no campo ***Maximum entity number allowed***.
+- Defina os domínios permitidos para o envio de e-mails no campo ***E-mail filter (RegExp)***. Se vazio, é permitido qualquer domínio.  
+- Defina o número máximo de linhas por query no campo ***Max rows per query***.
 - Clique no botão ***Upload Logo*** para alterar o logo da ferramenta por qualquer arquivo do tipo imagem.
+- Clique no botão ***Update cache*** para atualizar o cache.
+- Clique no botão ***Update plugin*** para atualizar o plugin de notificação.

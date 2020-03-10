@@ -24,8 +24,9 @@
 package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.model.Connection;
-import br.com.dafiti.hanger.model.ConnectionQueryStore;
+import br.com.dafiti.hanger.model.WorkbenchQuery;
 import br.com.dafiti.hanger.model.JobCheckup;
+import br.com.dafiti.hanger.service.ConfigurationService;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.WorkbenchService;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
@@ -52,13 +53,16 @@ public class WorkbenchController {
 
     private final ConnectionService connectionService;
     private final WorkbenchService workbenchService;
+    private final ConfigurationService configurationService;
 
     @Autowired
     public WorkbenchController(
             ConnectionService connectionService,
-            WorkbenchService workbenchService) {
+            WorkbenchService workbenchService,
+            ConfigurationService configurationService) {
         this.connectionService = connectionService;
         this.workbenchService = workbenchService;
+        this.configurationService = configurationService;
     }
 
     /**
@@ -98,6 +102,7 @@ public class WorkbenchController {
             model.addAttribute("errorMessage", queryResultSet.getError());
         } else {
             model.addAttribute("resultset", queryResultSet);
+            model.addAttribute("maxRows", configurationService.getMaxRows());
         }
 
         return "workbench/fragmentQueryResultSet::resultSet";
@@ -106,20 +111,20 @@ public class WorkbenchController {
     /**
      * Show SQL workbench
      *
-     * @param connectionQueryStore
+     * @param workbenchQuery
      * @param model Model
      * @return SQL workbench template.
      */
     @GetMapping(path = "/workbench/{id}")
     public String workbench(
-            @PathVariable(name = "id") ConnectionQueryStore connectionQueryStore,
+            @PathVariable(name = "id") WorkbenchQuery workbenchQuery,
             Model model) {
-        model.addAttribute("connectionQueryStore", connectionQueryStore);
+        model.addAttribute("workbenchQuery", workbenchQuery);
         model.addAttribute("connections", connectionService.list());
 
         return "workbench/workbench";
     }
-    
+
     /**
      * Job checkup query on workbench
      *
@@ -135,7 +140,7 @@ public class WorkbenchController {
         model.addAttribute("connections", connectionService.list());
 
         return "workbench/workbench";
-    }    
+    }
 
     /**
      * Workbench tree list.
@@ -153,5 +158,36 @@ public class WorkbenchController {
             @RequestParam(value = "schema") String schema) {
 
         return workbenchService.JSTreeExchange(connection, catalog, schema);
+    }
+
+    /**
+     * Add fields to workbench.
+     *
+     * @param connection
+     * @param fields
+     * @param catalog
+     * @param schema
+     * @param table
+     * @param model Model
+     * @return Query result set fragment.
+     */
+    @PostMapping(path = "/fields")
+    public String addFields(
+            @RequestParam(value = "id", required = false) Connection connection,
+            @RequestParam(value = "fields", required = false) List<String> fields,
+            @RequestParam(name = "catalog", required = false) String catalog,
+            @RequestParam(name = "schema", required = false) String schema,
+            @RequestParam(name = "table", required = false) String table,
+            Model model) {
+
+        if (fields != null && fields.size() > 0) {
+            WorkbenchQuery workbenchQuery = new WorkbenchQuery();
+            workbenchQuery.setConnection(connection);
+            workbenchQuery.setQuery(this.workbenchService.doQuery(fields, catalog, schema, table));
+
+            model.addAttribute("workbenchQuery", workbenchQuery);
+        }
+
+        return this.workbench(model);
     }
 }

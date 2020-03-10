@@ -117,7 +117,8 @@
                                 </a>
                             </td>
                             <td>
-                                <div class="form-group">
+                                <div class="form-group"
+                                     th:if="${#authorization.expression('hasRole(''HERO'')')}">
                                     <button class="btn btn-xs btn-delete" th:attr="onclick='modalDelete(' + ${job.id} + ',\'' + ${job.name} + '\');'" ><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete</button>
                                 </div>
                             </td>

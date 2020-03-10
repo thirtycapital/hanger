@@ -97,20 +97,9 @@
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <div class="col-sm-1">
-                                <label>
-                                    <input  
-                                        id="rebuild" 
-                                        name="rebuild"
-                                        type="checkbox" 
-                                        th:checked="*{rebuild}"
-                                        disabled="true"/> Rebuildable                                    
-                                </label>          
-                            </div>
-
-                            <div class="col-sm-9">
-                                <label title="Minutes beetwen rebuild">Interval</label>
+                        <div class="form-group">   
+                            <div class="col-sm-10">
+                                <label title="Minutes beetwen rebuild">Rebuild interval</label>
                                 <input type="number" min="0" max="59" class="form-control" maxlength="1" th:field="*{wait}" disabled="true"/>
                                 <span th:if="${#fields.hasErrors('wait')}" class="help-block" th:errors="*{wait}"></span>
                             </div>
@@ -160,23 +149,16 @@
                                 <table class="table">
                                     <tr>
                                         <th style="width:5%">#</th>
+                                        <th style="width:5%">Blocker</th>
                                         <th style="width:10%">Server</th>
                                         <th style="width:52.5%">Name</th>                               
-                                        <th style="width:5%">History</th>
-                                        <th style="width:5%">Blocker</th>
+                                        <th style="width:5%">History</th>                                        
                                         <th style="width:5%">Scope</th>
                                         <th></th>
                                     </tr>
                                     <tr th:each="parent, stat : ${job.parent}">
                                         <td> 
                                             <span th:text="*{parent[__${stat.index}__].parent.id}"></span>
-                                        </td>
-                                        <td th:text="*{parent[__${stat.index}__].parent.server.name}"></td>
-                                        <td><a class="link" th:text="*{parent[__${stat.index}__].parent.name}" th:href="@{'/job/view/' + *{parent[__${stat.index}__].parent.id}}" target="_blank"></a></td>
-                                        <td>
-                                            <a href="javascript:;" class="build-history" th:id="*{parent[__${stat.index}__].parent.id}">
-                                                +
-                                            </a>                          
                                         </td>
                                         <td>
                                             <input  
@@ -185,6 +167,13 @@
                                                 type="checkbox" 
                                                 th:checked="*{parent[__${stat.index}__].blocker}"
                                                 disabled="true"/>  
+                                        </td>
+                                        <td th:text="*{parent[__${stat.index}__].parent.server.name}"></td>
+                                        <td><a class="link" th:text="*{parent[__${stat.index}__].parent.name}" th:href="@{'/job/view/' + *{parent[__${stat.index}__].parent.id}}" target="_blank"></a></td>
+                                        <td>
+                                            <a href="javascript:;" class="build-history" th:id="*{parent[__${stat.index}__].parent.id}">
+                                                +
+                                            </a>                          
                                         </td>
                                         <td>
                                             <span th:text="*{parent[__${stat.index}__].scope}"></span>
@@ -198,23 +187,16 @@
                                 <table class="table">
                                     <tr>
                                         <th style="width:5%">#</th>
+                                        <th style="width:5%">Blocker</th>
                                         <th style="width:10%">Server</th>
                                         <th style="width:52.5%">Name</th>
                                         <th style="width:5%">History</th>
-                                        <th style="width:5%">Blocker</th>
                                         <th style="width:5%">Scope</th>
                                         <th></th>
                                     </tr>
                                     <tr th:each="child, childStat : ${children}">
                                         <td> 
                                             <span th:text="${child.job.id}"></span>
-                                        </td>
-                                        <td th:text="${child.job.server.name}"></td>
-                                        <td><a class="link" th:text="${child.job.name}" th:href="@{'/job/view/' + ${child.job.id}}" target="_blank"></a></td>
-                                        <td>
-                                            <a href="javascript:;" class="build-history" th:id="${child.job.id}">
-                                                +
-                                            </a>                         
                                         </td>
                                         <td>
                                             <input  
@@ -223,6 +205,13 @@
                                                 type="checkbox" 
                                                 th:checked="${child.blocker}"
                                                 disabled="true"/>
+                                        </td>
+                                        <td th:text="${child.job.server.name}"></td>
+                                        <td><a class="link" th:text="${child.job.name}" th:href="@{'/job/view/' + ${child.job.id}}" target="_blank"></a></td>
+                                        <td>
+                                            <a href="javascript:;" class="build-history" th:id="${child.job.id}">
+                                                +
+                                            </a>                         
                                         </td>
                                         <td>
                                             <span th:text="${child.scope}"></span>
@@ -251,8 +240,7 @@
                                         data-parent="#accordion" 
                                         th:href="'#check' + ${stat.index}"
                                         class="link">
-
-                                        <span th:text="*{checkup[__${stat.index}__].name}" 
+                                        <span th:text="*{checkup[__${stat.index}__].name + ' > ' + ( checkup[__${stat.index}__].prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION' ) + ' > ' +  checkup[__${stat.index}__].action}" 
                                               th:classappend="*{checkup[__${stat.index}__].enabled ? '':'panel-heading-add-checkup'}"></span>
                                         <span th:text="*{checkup[__${stat.index}__].enabled ? '':'[Disabled]'}" 
                                               class="panel-heading-add-checkup"></span>
@@ -337,33 +325,31 @@
                                             </div>
                                         </div> 
 
-                                        <div class="form-group">
+                                        <div class="form-group">  
                                             <div class="col-sm-10">
-                                                <div th:if="${not #lists.isEmpty(job.parent)}">  
+                                                <div class="btn-group btn-space">
                                                     <label>
-                                                        <input                                     
+                                                        <input  
+                                                            id="jobEnabled" 
+                                                            name="jobEnabled"
                                                             type="checkbox" 
-                                                            th:field="*{checkup[__${stat.index}__].prevalidation}" 
-                                                            th:checked="*{checkup[__${stat.index}__].prevalidation}"
-                                                            th:disabled="true"/> Pre-validation
+                                                            disabled="true"
+                                                            th:field="*{checkup[__${stat.index}__].enabled}" 
+                                                            th:checked="*{checkup[__${stat.index}__].enabled}"/> Enabled
                                                     </label>
                                                 </div>
-                                            </div>
-                                        </div>   
 
-                                        <div class="form-group">
-                                            <div class="col-sm-10">                                               
-                                                <input                                     
-                                                    type="checkbox" 
-                                                    data-toggle="toggle" 
-                                                    data-on="Enabled" 
-                                                    data-off="Disabled" 
-                                                    data-size="small"
-                                                    data-onstyle="default" 
-                                                    th:field="*{checkup[__${stat.index}__].enabled}" 
-                                                    th:checked="*{checkup[__${stat.index}__].enabled}"
-                                                    th:disabled="true"
-                                                    />                                                
+                                                <div class="btn-group btn-space" th:if="${not #lists.isEmpty(job.parent)}">  
+                                                    <label>
+                                                        <input     
+                                                            id="prevalidation" 
+                                                            name="prevalidationEnabled"
+                                                            type="checkbox" 
+                                                            data-onstyle="default" 
+                                                            th:field="*{checkup[__${stat.index}__].prevalidation}" 
+                                                            th:checked="*{checkup[__${stat.index}__].prevalidation}"/> Prevalidate
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -428,45 +414,59 @@
                         </div>
                     </div> 
 
-                    <div class="form-group">
-                        <div class="col-sm-10">
-                            <div class="form-check pull-right">
-                                <input  
-                                    id="jobEnabled" 
-                                    name="jobEnabled"
-                                    type="checkbox" 
-                                    data-toggle="toggle" 
-                                    data-on="Enabled" 
-                                    data-off="Disabled" 
-                                    data-size="small"
-                                    data-onstyle="default" 
-                                    th:field="*{enabled}" 
-                                    th:checked="*{enabled}"
-                                    disabled="true"/>
+                    <!--Options-->
+                    <div th:if="${ job.server != null }">
+                        <fieldset>
+                            <legend>
+                                Options
+                            </legend>
+                        </fieldset>   
+
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <div class="btn-group btn-space">
+                                    <label>
+                                        <input  
+                                            id="jobEnabled" 
+                                            name="jobEnabled"
+                                            type="checkbox" 
+                                            disabled="true"
+                                            th:field="*{enabled}" 
+                                            th:checked="*{enabled}"/> Enabled
+                                    </label>
+                                </div>
+
+                                <div class="btn-group btn-space">
+                                    <label>
+                                        <input  
+                                            id="rebuild" 
+                                            name="rebuild"
+                                            type="checkbox" 
+                                            disabled="true"
+                                            th:field="*{rebuild}" 
+                                            th:checked="*{rebuild}"/> Rebuildable
+                                    </label>
+                                </div>
+
+                                <div class="btn-group btn-space">
+                                    <label th:inline="text">
+                                        <input  
+                                            id="slack" 
+                                            name="slack"
+                                            type="checkbox" 
+                                            th:checked="*{notify}"
+                                            disabled="true"/>  
+                                        Slack notification on
+                                        <b>
+                                            [[*{ #lists.isEmpty(channel) ? 'default channel' : #strings.arrayJoin(channel, ', ') }]]
+                                        </b> 
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <hr/>
-
-                    <div class="form-group">
-                        <div class="col-sm-10">
-                            <div class="pull-right">
-                                <label th:inline="text">
-                                    <input  
-                                        id="slack" 
-                                        name="slack"
-                                        type="checkbox" 
-                                        th:checked="*{notify}"
-                                        disabled="true"/>  
-                                    Slack notification on
-                                    <b>
-                                        [[*{ #lists.isEmpty(channel) ? 'default channel' : #strings.arrayJoin(channel, ', ') }]]
-                                    </b> 
-                                </label>
-                            </div>
-                        </div>
-                    </div>                    
 
                     <!--Buttons-->
                     <div class="form-group">

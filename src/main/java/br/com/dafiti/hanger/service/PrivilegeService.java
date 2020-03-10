@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Dafiti Group
+ * Copyright (c) 2020 Dafiti Group
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -23,10 +23,8 @@
  */
 package br.com.dafiti.hanger.service;
 
-import br.com.dafiti.hanger.model.ConnectionQueryStore;
-import br.com.dafiti.hanger.model.User;
-import br.com.dafiti.hanger.repository.ConnectionQueryStoreRepository;
-import java.util.List;
+import br.com.dafiti.hanger.model.Privilege;
+import br.com.dafiti.hanger.repository.PrivilegeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,38 +33,54 @@ import org.springframework.stereotype.Service;
  * @author Helio Leal
  */
 @Service
-public class ConnectionQueryStoreService {
+public class PrivilegeService {
 
-    private final ConnectionQueryStoreRepository connectionQueryStoreRepository;
+    private final PrivilegeRepository privilegeRepository;
 
     @Autowired
-    public ConnectionQueryStoreService(
-            ConnectionQueryStoreRepository connectionRepository) {
-
-        this.connectionQueryStoreRepository = connectionRepository;
+    public PrivilegeService(PrivilegeRepository privilegeRepository) {
+        this.privilegeRepository = privilegeRepository;
     }
 
-    public Iterable<ConnectionQueryStore> list() {
-        return connectionQueryStoreRepository.findAll();
+    public Iterable<Privilege> list() {
+        return privilegeRepository.findAll();
     }
 
-    public List<ConnectionQueryStore> findByUser(User user) {
-        return connectionQueryStoreRepository.findByUser(user);
-    }
-    
-    public List<ConnectionQueryStore> findBySharedTrue() {
-        return connectionQueryStoreRepository.findBySharedTrue();
-    }
-
-    public ConnectionQueryStore load(Long id) {
-        return connectionQueryStoreRepository.findOne(id);
+    /**
+     * Save a privilege
+     *
+     * @param privilege Privilege
+     * @return Privilege
+     */
+    public Privilege save(Privilege privilege) {
+        return privilegeRepository.save(privilege);
     }
 
-    public void save(ConnectionQueryStore connectionQueryStore) {
-        connectionQueryStoreRepository.save(connectionQueryStore);
+    /**
+     * Find a privilege by name
+     *
+     * @param name Privilege name
+     * @return Privilege
+     */
+    public Privilege findByName(String name) {
+        return privilegeRepository.findByName(name);
     }
 
-    public void delete(Long id) {
-        connectionQueryStoreRepository.delete(id);
+    /**
+     * Create a privilege if not exists one
+     *
+     * @param name Privilege name
+     * @return Privilege
+     */
+    public Privilege createPrivilegeIfNotExists(String name) {
+        Privilege privilege = this.findByName(name);
+
+        if (privilege == null) {
+            Privilege newPrivilege = new Privilege();
+            newPrivilege.setName(name);
+            privilege = this.save(newPrivilege);
+        }
+
+        return privilege;
     }
 }

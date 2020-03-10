@@ -24,8 +24,10 @@
 package br.com.dafiti.hanger.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,6 +65,7 @@ public class User extends Tracker implements Serializable, UserDetails {
     private String email;
     private String resetCode;
     private Set<Role> roles = new HashSet();
+    private List<Privilege> privileges = new ArrayList();
     private int avatar;
     private boolean enabled = true;
 
@@ -164,6 +167,24 @@ public class User extends Tracker implements Serializable, UserDetails {
 
     public void addRole(Role role) {
         this.roles.add(role);
+    }
+    
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_privilege",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "privilege_id"))
+    public List<Privilege> getPrivileges() {
+        return this.privileges;
+    }
+
+    public void setPrivileges(List<Privilege> privileges) {
+        this.privileges = privileges;
+    }
+
+    public void addPrivilege(Privilege privilege) {
+        if (!this.getPrivileges().contains(privilege)) {
+            this.privileges.add(privilege);
+        }
     }
 
     public int getAvatar() {

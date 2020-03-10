@@ -14,9 +14,9 @@
                 </div> 
 
                 <div th:if="${ errorMessage == null }">    
-                    <div th:if="${#lists.size(resultset.row) >= 100}">
+                    <div th:if="${#lists.size(resultset.row) >= maxRows}">
                         <div class="alert alert-info" role="alert">
-                            <span>Results are limited to 100 rows ;)</span>
+                            <span th:text="${'Results are limited to ' + maxRows + ' rows'}"></span>
                         </div>  
                     </div>                
 

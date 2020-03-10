@@ -715,15 +715,15 @@ h3.page-title {
 }
 
 .btn-delete {
-    color: #d65549;
-    border: 1px solid #D8D8D8;    
+    color: #337ab7;
+    border: 1px solid #D8D8D8;
     background-color: transparent;
 }
 
 .btn-delete:hover {
-    color: #ffffff;
+    color: #fff;
     border: 1px solid #D8D8D8;
-    background-color: #d65549;
+    background-color: #337ab7;
 }
 
 .btn-generic {
@@ -739,27 +739,27 @@ h3.page-title {
 }
 
 .btn-approval {
-    color: #E57E00;
-    border: 1px solid #D8D8D8;
+    color: #d65549;
+    border: 1px solid #D8D8D8;    
     background-color: transparent;
 }
 
 .btn-approval:hover {
-    color: #fff;
+    color: #ffffff;
     border: 1px solid #D8D8D8;
-    background-color: #E57E00;
+    background-color: #d65549;
 }
 
 .table-user tbody td {
     vertical-align: middle !important;
 }
 
-.login_logout {
+.wrapper-bottom {
     position: absolute;
     bottom: 0;
     font-size: 14px;
     padding-top: 20px;
-    padding-bottom: 40px;
+    padding-bottom: 20px;
     width: 199px;
     background-color: #fff;
 }
@@ -907,12 +907,6 @@ input[type='file'] {
     margin-bottom: 10px;
 }
 
-.icon-workbench-option {
-    padding: 4px 0 2px 6px;
-    font-size: 20px;
-    color: #3d3d3d;
-}
-
 .icon-copy {
     margin-left: 6px;
     color: #7f8c8d;
@@ -925,11 +919,50 @@ input[type='file'] {
 .btn-copy {
     display: none;
 }
-                               
+
 .query-row:hover .btn-copy { 
     display: inline;
 }
 
 .checkup-row:hover .btn-copy {
     display: inline;
+}
+
+.link-version:link, 
+.link-version:active, 
+.link-version:visited, 
+.link-version:hover {
+    color: #898989;
+}
+
+.nav-pills>li.active>a, 
+.nav-pills>li.active>a:focus, 
+.nav-pills>li.active>a:hover{
+    color: #337ab7;
+    background-color: #F4F5F7;
+}
+
+.nav>li>a {
+    padding: 10px 10px;
+    color: #373e46;
+}
+
+.nav>li>a:hover{    
+    color: #007BFF;
+    background-color: #F4F5F7
+}
+
+.hanger-version {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.context-menu-option,
+.context-menu-disabled,
+.context-menu-submenu {
+    font-size: inherit !important;
+}
+
+.span-field {
+    font-weight: normal;
 }

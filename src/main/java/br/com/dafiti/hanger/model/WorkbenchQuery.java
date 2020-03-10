@@ -37,7 +37,7 @@ import javax.persistence.ManyToOne;
  * @author Helio Leal
  */
 @Entity
-public class ConnectionQueryStore extends Tracker implements Serializable {
+public class WorkbenchQuery extends Tracker implements Serializable {
 
     private Long id;
     private String name;
@@ -46,10 +46,10 @@ public class ConnectionQueryStore extends Tracker implements Serializable {
     private Connection connection;
     private User user;
 
-    public ConnectionQueryStore() {
+    public WorkbenchQuery() {
     }
 
-    public ConnectionQueryStore(Connection connection, User user) {
+    public WorkbenchQuery(Connection connection, User user) {
         this.connection = connection;
         this.user = user;
         this.shared = false;

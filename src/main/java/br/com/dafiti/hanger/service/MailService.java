@@ -81,7 +81,7 @@ public class MailService {
     /**
      * Send a mail with a HTML blueprint.
      *
-     * @param blueprint blueprint
+     * @param blueprint Blueprint
      * @param mail
      */
     public void send(Blueprint blueprint, HtmlEmail mail) {

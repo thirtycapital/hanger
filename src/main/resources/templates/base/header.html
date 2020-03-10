@@ -89,7 +89,7 @@
                         <li th:classappend="${#httpServletRequest.getRequestURI().contains('/configuration/') ? 'active':''}"><a th:href="@{/configuration/edit}" title="Configuration"><span class="sub_icon glyphicon glyphicon-cog"></span>Configuration</a></li>                        
                     </ul>
 
-                    <div class="login_logout">
+                    <div class="wrapper-bottom">
                         <span sec:authorize="isAuthenticated()">
                             <div>
                                 <div>
@@ -121,6 +121,9 @@
                                 </a>
                             </div>
                         </span>
+                        <div class="hanger-version">
+                            <a href="https://github.com/dafiti-group/hanger/releases" target="_blank" class="link-version">v0.10.1</a>
+                        </div>
                     </div>
                 </div>
                 <div id="page-content-wrapper">

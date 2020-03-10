@@ -8,8 +8,8 @@
             body {margin: 0; padding: 0; min-width: 100%!important;}
             img {height: auto;}
             .content {width: 100%; max-width: 850px;}
-            .header {padding: 40px 30px 20px 30px;}
-            .innerpadding {padding: 30px 30px 30px 30px;}
+            .header {padding: 20px 20px 20px 20px;}
+            .innerpadding {padding: 15px 15px 15px 15px;}
             .borderbottom {border-bottom: 1px solid #f2eeed;}
             .subhead {font-size: 15px; color: #ffffff; font-family: sans-serif; letter-spacing: 10px;}
             .h1, .h2, .bodycopy {color: #153643; font-family: sans-serif;}
@@ -41,8 +41,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="h1" style="padding: 5px 0 0 0;">
-                                                        Query export
+                                                    <td class="h1" style="padding: 5px 0 0 0;" th:text="${subject}">
                                                     </td>
                                                 </tr>
                                             </table>
@@ -51,31 +50,53 @@
                                 </table>
                             </td>
                         </tr>
-                        <tr >
+                        <tr>
                             <td class="innerpadding borderbottom">
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                         <td class="bodycopy">
-                                            <span th:text="${content}"></span>
+                                            <span th:text="${content}" style="color: gray; font-size: 12px; "></span>
                                         </td>
                                     </tr>
                                 </table>
                             </td>                            
+                        </tr>                        
+                        <tr>
+                            <center>
+                                <table class="innerpadding borderbottom" style="width:100%;border-spacing:0; font-family: arial">
+                                    <thead>
+                                        <tr>
+                                            <th th:each="header : ${queryResultSet.getHeader()}" align="center" style="border-bottom:1px solid #777777;padding:5px">
+                                                <span th:text="${header}"></span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="row,rowStatus : ${queryResultSet.getRow()}" th:unless="${rowStatus.index > 30}">
+                                            <td th:each="column : ${row.getColumn()}" align="center" style="border-bottom:1px solid #777777;padding:5px">                                            
+                                                <span th:text="${column}"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div th:if="${queryResultSet.getRow().size() > 30}">
+                                    <span style="font-size: 10px; color: gray">
+                                        Showing the first 30 lines, whole resultset attached to this email
+                                    </span>
+                                </div>
+                            </center>
                         </tr>
                         <tr>
                             <td class="innerpadding borderbottom">
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                     <tr>
                                         <td class="bodycopy">
-                                            <b>Connection: </b>                                            
-                                            <span th:text="${connection.name}"></span>      
+                                            <span th:text="${'Connection: ' + connection.name}" style="font-size: 10px; color: gray"></span>      
                                         </td>
                                     </tr>
-
-                                    <tr th:if="${queryContent}">
-                                        <td class="bodycopy">
-                                            <b>Query: </b>
-                                            <span th:text="${query}"></span>                                            
+                                    <tr>
+                                        <td>
+                                            <span th:text="${'Generated by: ' + user}" style="font-size: 10px; color: gray"></span>      
                                         </td>
                                     </tr>
                                 </table>

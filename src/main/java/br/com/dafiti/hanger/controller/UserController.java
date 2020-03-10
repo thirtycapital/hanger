@@ -464,7 +464,9 @@ public class UserController {
             Model model) {
 
         try {
-            user.setPrivileges(privilegesList);
+            privilegesList.forEach((privilege) -> {
+                user.addPrivilege(privilege);
+            });
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
         } finally {

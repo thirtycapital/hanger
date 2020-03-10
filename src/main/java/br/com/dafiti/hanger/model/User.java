@@ -182,7 +182,9 @@ public class User extends Tracker implements Serializable, UserDetails {
     }
 
     public void addPrivilege(Privilege privilege) {
-        this.privileges.add(privilege);
+        if (!this.getPrivileges().contains(privilege)) {
+            this.privileges.add(privilege);
+        }
     }
 
     public int getAvatar() {

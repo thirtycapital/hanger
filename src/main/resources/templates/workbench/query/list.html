@@ -159,7 +159,7 @@
             $(document).ready(function () {
 
                 $("[id^=edit_]").click(function () {
-                    var url = /*[[@{/query/load/modal/}]]*/ "/query/load/modal/";
+                    var url = /*[[@{/query/modal/}]]*/ "/query/modal/";
                     var query = $(this).val();
 
                     $.ajax({
@@ -169,7 +169,7 @@
                         timeout: 1000000,
                         success: function (result) {
                             $("#modalHolder").html(result);
-                            $("#modalQueryStore").modal({
+                            $("#modalQuery").modal({
                                 backdrop: 'static'
                             });
                         },

@@ -564,7 +564,7 @@ public class ConnectionService {
 
         if (!query.toLowerCase().contains("limit")) {
             if (query.endsWith(";")) {
-                query = query.toLowerCase().replaceAll(";", limit);
+                query = query.replaceAll(";", limit);
             } else {
                 query = query.concat(limit);
             }
@@ -575,14 +575,14 @@ public class ConnectionService {
             Matcher matcher = pattern.matcher(query.toLowerCase());
 
             while (matcher.find()) {
-                String found = query.toLowerCase().substring(
+                String found = query.substring(
                         matcher.start(),
                         matcher.end());
 
                 //Identifies if query limit exceeds configuration allowed
                 if (Integer.valueOf(found.substring(6))
                         > this.configurationService.getMaxRows()) {
-                    query = query.toLowerCase().replace(found, limit);
+                    query = query.replace(found, limit);
                 }
             }
         }

@@ -483,20 +483,26 @@
                     var url = /*[[@{/query/modal/}]]*/ "/query/modal/";
                     var query = window.editor.getValue();
 
-                    $.ajax({
-                        type: "POST",
-                        url: url + connection,
-                        data: query,
-                        contentType: "text/html",
-                        timeout: 1000000,
-                        success: function (result) {
-                            $("#modalHolder").html(result);
-                            $("#modalQuery").modal({backdrop: 'static'});
-                        },
-                        error: function (e) {
-                            alert("Fail loading query resultset: " + e.statusText);
-                        }
-                    });
+                    //Identify if query field is not empty.
+                    if (query.toString().trim() !== "") {
+                        $.ajax({
+                            type: "POST",
+                            url: url + connection,
+                            data: query,
+                            contentType: "text/html",
+                            timeout: 1000000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalQuery").modal({backdrop: 'static'});
+                            },
+                            error: function (e) {
+                                alert("Fail loading query resultset: " + e.statusText);
+                            }
+                        });
+                    } else {
+                        toastr.error('Query cannot be empty!');
+						window.editor.focus();
+                    }
                 }
 
                 /**

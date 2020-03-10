@@ -7,12 +7,12 @@
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
             <!--OPTION FRAGMENT BEGIN-->
-            <div class="modal fade" id="modalQueryStore" tabindex="-1" role="dialog" aria-labelledby="modalQueryStoreLabel" th:fragment="query">
+            <div class="modal fade" id="modalQuery" tabindex="-1" role="dialog" aria-labelledby="modalQueryLabel" th:fragment="query">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title" id="modalQueryStoreLabel">Query</h4>
+                            <h4 class="modal-title" id="modalQueryLabel">Query</h4>
                         </div>
                         <form class="form-horizontal" th:object="${workbenchQuery}" th:action="@{/query/save}" method="post">
                             <!--ID-->

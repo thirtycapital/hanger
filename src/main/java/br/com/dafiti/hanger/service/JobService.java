@@ -141,7 +141,8 @@ public class JobService {
         );
 
         //Identify if the time windows cron expression is valid. 
-        if (!job.getTimeRestriction().isEmpty()) {
+        if ((job.getTimeRestriction() != null)
+                && (!job.getTimeRestriction().isEmpty())) {
             new CronParser(
                     CronDefinitionBuilder.instanceDefinitionFor(QUARTZ))
                     .parse(job.getTimeRestriction()).validate();

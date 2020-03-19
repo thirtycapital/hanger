@@ -325,34 +325,6 @@
                                             </div>
                                         </div> 
 
-                                        <div class="form-group">  
-                                            <div class="col-sm-10">
-                                                <div class="btn-group btn-space">
-                                                    <label>
-                                                        <input  
-                                                            id="jobEnabled" 
-                                                            name="jobEnabled"
-                                                            type="checkbox" 
-                                                            disabled="true"
-                                                            th:field="*{checkup[__${stat.index}__].enabled}" 
-                                                            th:checked="*{checkup[__${stat.index}__].enabled}"/> Enabled
-                                                    </label>
-                                                </div>
-
-                                                <div class="btn-group btn-space" th:if="${not #lists.isEmpty(job.parent)}">  
-                                                    <label>
-                                                        <input     
-                                                            id="prevalidation" 
-                                                            name="prevalidationEnabled"
-                                                            type="checkbox" 
-                                                            data-onstyle="default" 
-                                                            th:field="*{checkup[__${stat.index}__].prevalidation}" 
-                                                            th:checked="*{checkup[__${stat.index}__].prevalidation}"/> Prevalidate
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-
                                         <div th:if="*{not #lists.isEmpty(checkup[__${stat.index}__].trigger)}">    
                                             <hr/>
                                             <!--Checkup trigger-->
@@ -392,7 +364,44 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>                                         
+                                        </div>   
+
+                                        <div>
+                                            <!--Options-->
+                                            <fieldset>
+                                                <legend>
+                                                    Options
+                                                </legend>
+                                            </fieldset> 
+
+                                            <div class="form-group">  
+                                                <div class="col-sm-10">
+                                                    <div class="btn-group btn-space">
+                                                        <label>
+                                                            <input  
+                                                                id="jobEnabled" 
+                                                                name="jobEnabled"
+                                                                type="checkbox" 
+                                                                disabled="true"
+                                                                th:field="*{checkup[__${stat.index}__].enabled}" 
+                                                                th:checked="*{checkup[__${stat.index}__].enabled}"/> Enabled
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="btn-group btn-space" th:if="${not #lists.isEmpty(job.parent)}">  
+                                                        <label>
+                                                            <input     
+                                                                id="prevalidation" 
+                                                                name="prevalidationEnabled"
+                                                                type="checkbox" 
+                                                                data-onstyle="default" 
+                                                                th:field="*{checkup[__${stat.index}__].prevalidation}" 
+                                                                th:checked="*{checkup[__${stat.index}__].prevalidation}"/> Prevalidation
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>                            

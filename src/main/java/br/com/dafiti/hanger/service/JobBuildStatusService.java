@@ -222,12 +222,10 @@ public class JobBuildStatusService {
     public static boolean isTimeRestrictionMatch(String cron) {
         boolean match = true;
 
-        if (!cron.equals(null)) {
-            if (!cron.isEmpty()) {
-                match = ExecutionTime.forCron(
-                        new CronParser(CronDefinitionBuilder.instanceDefinitionFor(QUARTZ))
-                                .parse(cron)).isMatch(ZonedDateTime.now());
-            }
+        if (cron != null && !cron.isEmpty()) {
+            match = ExecutionTime.forCron(
+                    new CronParser(CronDefinitionBuilder.instanceDefinitionFor(QUARTZ))
+                            .parse(cron)).isMatch(ZonedDateTime.now());
         }
 
         return match;

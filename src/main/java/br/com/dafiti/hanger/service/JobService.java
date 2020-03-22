@@ -546,6 +546,7 @@ public class JobService {
      * @param server Server
      * @param childrenJobList
      * @param parentUpstream ParentUpstream
+     * @param rebuildable Identify if should make a job rebuildable. 
      * @param error errors
      * @throws Exception
      */
@@ -554,6 +555,7 @@ public class JobService {
             Server server,
             List<String> childrenJobList,
             boolean parentUpstream,
+            boolean rebuildable,
             List<String> error) throws Exception {
 
         for (String child : childrenJobList) {
@@ -569,6 +571,10 @@ public class JobService {
                 ArrayList parentList = new ArrayList();
                 parentList.add(job.getName());
 
+                if(rebuildable){
+                   jobChild.setRebuild(rebuildable);
+                }
+                
                 this.addParent(jobChild, job.getServer(), parentList, false, error);
                 this.save(jobChild);
 

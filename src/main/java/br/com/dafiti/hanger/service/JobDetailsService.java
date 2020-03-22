@@ -223,9 +223,8 @@ public class JobDetailsService {
             //Identifi if the job scope. 
             scope
                     .append(jobStatus.getScope().toString())
-                    .append(job.isRebuild() ? " | REBUILD (" + (job.isRebuildBlocked() ? " if blockers are ready " : "") + (job.getWait() != 0 ? " once every " + job.getWait() + " min" : "") : "")
-                    .append((job.getTimeRestriction() == null || job.getTimeRestriction().isEmpty()) ? "" : " " + job.getTimeRestrictionDescription().toLowerCase())
-                    .append(job.isRebuild() ? " )" : "");
+                    .append(job.isRebuild() ? " | REBUILD " + (job.isRebuildBlocked() ? "after all blockers ready " : "") + (job.getWait() != 0 ? "once every " + job.getWait() + " min" : "") : "")
+                    .append((job.getTimeRestriction() == null || job.getTimeRestriction().isEmpty()) ? "" : " " + job.getTimeRestrictionDescription().toLowerCase());
 
             //Identify the number of build retries. 
             if (retryService.exists(job)

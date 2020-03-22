@@ -287,7 +287,7 @@ public class FlowService {
                             + "         scope: \""
                             + (scope == null
                                     ? (jobDetails.getScope() == null ? "" : jobDetails.getScope())
-                                    : (scope.toString() + (job.isRebuild() ? " | REBUILD ( " + (job.getWait() != 0 ? "once every " + job.getWait() + " min )" : " )") : ""))) + (parent.isRebuildBlocked() && isBlocker ? " | BLOCKER" : "") + "\", "
+                                    : (scope.toString() + (job.isRebuild() ? " | REBUILD " + (job.getWait() != 0 ? "once every " + job.getWait() + " min" : "") : ""))) + (parent.isRebuildBlocked() && isBlocker ? " | BLOCKER" : "") + "\", "
                             + "     }, "
                             + "     image: \"../../images/" + jobDetails.getStatus() + ".png\","
                             + "collapsed: " + (job.getParent().isEmpty() || reverse || expanded ? "false" : "true") + ","

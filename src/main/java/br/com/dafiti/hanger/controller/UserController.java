@@ -276,12 +276,14 @@ public class UserController {
     /**
      * Recovery confirmation.
      *
+     * @param redirectAttributes
      * @param model
      * @param username
      * @return
      */
     @PostMapping("/confirmation/{username}")
     public String recoveryConfirmation(
+            RedirectAttributes redirectAttributes,
             Model model,
             @PathVariable(value = "username") String username) {
 
@@ -289,7 +291,12 @@ public class UserController {
         username = username.replace("_", ".");
         User user = userService.findByUsername(username);
 
-        if (user == null) {
+        if (user == null || !user.isEnabled()) {
+            if (user != null && !user.isEnabled()) {
+                redirectAttributes.addFlashAttribute("errorMessage", 
+                        "The user '".concat(username).concat("' is disabled!"));
+            }
+            
             model.addAttribute("user", new User());
             return "redirect:/login";
         }

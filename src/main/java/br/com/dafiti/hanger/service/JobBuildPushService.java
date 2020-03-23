@@ -90,23 +90,22 @@ public class JobBuildPushService {
             if (push.isReady()) {
                 JobStatus childJobStatus = childJob.getStatus();
 
-                //Define the job status.
-                if (childJobStatus == null) {
-                    childJobStatus = new JobStatus();
-                    childJobStatus.setScope(push.getScope());
-                    childJobStatus.setDate(new Date());
-
-                    //Defines a relation between a job and it status.
-                    childJobStatus = jobStatusService.save(childJobStatus);
-                    childJob.setStatus(childJobStatus);
-                    jobService.save(childJob);
-                } else {
-                    childJobStatus.setScope(push.getScope());
-                    childJobStatus.setDate(new Date());
-                }
-
-                //Build the job child. 
                 try {
+                    //Define the job status.
+                    if (childJobStatus == null) {
+                        childJobStatus = new JobStatus();
+                        childJobStatus.setScope(push.getScope());
+                        childJobStatus.setDate(new Date());
+
+                        //Defines a relation between a job and it status.
+                        childJobStatus = jobStatusService.save(childJobStatus);
+                        childJob.setStatus(childJobStatus);
+                        jobService.save(childJob);
+                    } else {
+                        childJobStatus.setScope(push.getScope());
+                        childJobStatus.setDate(new Date());
+                    }
+
                     //Set child job as rebuilding.
                     childJobStatus.setFlow(Flow.REBUILD);
                     jobStatusService.save(childJobStatus);

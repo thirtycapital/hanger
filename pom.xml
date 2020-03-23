@@ -231,7 +231,7 @@
         <dependency>
             <groupId>com.atlassian.commonmark</groupId>
             <artifactId>commonmark</artifactId>
-            <version>0.13.0</version>
+            <version>0.14.0</version>
         </dependency>
         
         <!-- Hana --> 
@@ -239,7 +239,7 @@
         <dependency>
             <groupId>com.sap.cloud.db.jdbc</groupId>
             <artifactId>ngdbc</artifactId>
-            <version>2.4.64</version>
+            <version>2.4.70</version>
         </dependency>
         
         <!-- Univocity -->
@@ -247,7 +247,7 @@
         <dependency>
             <groupId>com.univocity</groupId>
             <artifactId>univocity-parsers</artifactId>
-            <version>2.8.3</version>
+            <version>2.8.4</version>
         </dependency>
         
         <!-- Cron-utils -->
@@ -255,7 +255,7 @@
         <dependency>
             <groupId>com.cronutils</groupId>
             <artifactId>cron-utils</artifactId>
-            <version>9.0.1</version>
+            <version>9.0.2</version>
         </dependency>
         
     </dependencies>

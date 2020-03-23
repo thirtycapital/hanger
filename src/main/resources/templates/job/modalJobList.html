@@ -18,6 +18,7 @@
                             <input type="hidden" name="parentServer" id="parentServer" th:value="${server.id}"/> 
                             <div class="form-group">
                                 <div class="col-sm-12">
+                                    <label>Jobs</label>
                                     <select 
                                         id="jobParentSelector"
                                         class="selectpicker form-control col-xs-6" 
@@ -35,13 +36,18 @@
 
                             <div class="form-group">
                                 <div class="col-sm-12">
-                                    <label>Jobs</label>
-                                    <textarea name="parentJobList" id="parentJobList" class="form-control" rows="10" placeholder="Comma-separated job list"></textarea>
+                                    <textarea name="parentJobList" id="parentJobList" class="form-control" rows="5" placeholder="Comma-separated job list"></textarea>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <div class="col-sm-12">
+                                    <fieldset>
+                                        <legend>
+                                            Options
+                                        </legend>
+                                    </fieldset> 
+
                                     <label>
                                         <input  
                                             id="parentUpstream" 

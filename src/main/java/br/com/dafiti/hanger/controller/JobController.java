@@ -775,7 +775,7 @@ public class JobController {
      *
      * @param job Job
      * @param server Server
-     * @param reverse Identify propagation or flow.
+     * @param children Identify propagation or flow.
      * @param model Model
      *
      * @return Job add parent Modal
@@ -784,13 +784,13 @@ public class JobController {
     public String updateJobChainModal(
             @PathVariable(value = "jobID") Job job,
             @PathVariable(value = "serverID") Server server,
-            @PathVariable(value = "flow") boolean reverse,
+            @PathVariable(value = "flow") boolean children,
             Model model) {
 
         if (server != null) {
             try {
                 model.addAttribute("server", server);
-                model.addAttribute("reverse", reverse);
+                model.addAttribute("children", children);
                 model.addAttribute("job", job);
                 model.addAttribute("jobs", jenkinsService.listJob(server));
             } catch (URISyntaxException | IOException ex) {
@@ -807,7 +807,8 @@ public class JobController {
      * @param job Job
      * @param server Server
      * @param jobList Parent or Children Job List
-     * @param reverse Identify if propagation or flow
+     * @param children Identify if propagation or flow
+     * @param rebuildable Identify if should make all childs rebuildable.
      * @param principal Logged User.
      * @param model model
      * @param request
@@ -820,7 +821,8 @@ public class JobController {
             @RequestParam(value = "jobID", required = true) Job job,
             @RequestParam(value = "serverID", required = true) Server server,
             @RequestParam(value = "jobList", required = false) List<String> jobList,
-            @RequestParam(value = "reverse", required = false) boolean reverse,
+            @RequestParam(value = "children", required = false) boolean children,
+            @RequestParam(value = "rebuildable", required = false) boolean rebuildable,
             Principal principal,
             Model model,
             HttpServletRequest request,
@@ -829,8 +831,8 @@ public class JobController {
         List<String> errors = new ArrayList();
 
         try {
-            if (reverse) {
-                jobService.addChildren(job, server, jobList, false, errors);
+            if (children) {
+                jobService.addChildren(job, server, jobList, false, rebuildable, errors);
             } else {
                 jobService.addParent(job, server, jobList, false, errors);
                 jobService.save(job);
@@ -844,7 +846,7 @@ public class JobController {
 
             model.addAttribute("job", job);
             model.addAttribute("warnings", flowService.getFlowWarning(job));
-            model.addAttribute("chart", flowService.getJobFlow(job, reverse, true));
+            model.addAttribute("chart", flowService.getJobFlow(job, children, true));
             model.addAttribute("approval", this.jobApprovalService.hasApproval(job, principal));
             model.addAttribute("servers", this.serverService.list());
 

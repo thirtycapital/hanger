@@ -137,7 +137,7 @@ public class Watchdog {
                                 .concat(" exists on Hanger, but not on Jenkins!")
                         );
 
-                slackService.send(":doge: The job *"
+                slackService.send(":ghost: The job *"
                         .concat(job.getDisplayName())
                         .concat("*")
                         .concat(" exists on Hanger, but not on Jenkins!"));

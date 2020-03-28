@@ -114,8 +114,9 @@ public class JobDetailsService {
                 if (!jobBuildStatusService.isTimeRestrictionMatch(job.getTimeRestriction())) {
                     status = Status.RESTRICTED;
                     phase = Phase.NONE;
-                    building
-                            .append("RESTRICTED, last " + jobStatus.getFlow() + " build at ")
+                    building.append("RESTRICTED, last ")
+                            .append(jobStatus.getFlow())
+                            .append(" build at ")
                             .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobBuild.getDate()));
                     //Identifies if is a current day build.  
                 } else if (today || (yesterday && eagerness)) {

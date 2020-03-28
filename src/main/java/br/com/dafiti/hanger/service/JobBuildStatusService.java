@@ -219,7 +219,7 @@ public class JobBuildStatusService {
      * @param cron Cron expression.
      * @return Instant is matched by the cron expression.
      */
-    public static boolean isTimeRestrictionMatch(String cron) {
+    public boolean isTimeRestrictionMatch(String cron) {
         boolean match = true;
 
         if (cron != null && !cron.isEmpty()) {

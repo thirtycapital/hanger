@@ -49,23 +49,26 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class JobDetailsService {
-    
+
     private final JobNotificationService jobNotificationService;
     private final JobBuildService jobBuildService;
     private final RetryService retryService;
     private final JobApprovalService jobApprovalService;
-    
+    private final JobBuildStatusService jobBuildStatusService;
+
     @Autowired
     public JobDetailsService(
             JobBuildService jobBuildService,
             JobNotificationService jobNotificationService,
             RetryService retryService,
-            JobApprovalService jobApprovalService) {
-        
+            JobApprovalService jobApprovalService,
+            JobBuildStatusService jobBuildStatusService) {
+
         this.jobBuildService = jobBuildService;
         this.jobNotificationService = jobNotificationService;
         this.retryService = retryService;
         this.jobApprovalService = jobApprovalService;
+        this.jobBuildStatusService = jobBuildStatusService;
     }
 
     /**
@@ -82,21 +85,21 @@ public class JobDetailsService {
         StringBuilder scope = new StringBuilder();
         StringBuilder building = new StringBuilder();
         List<Job> notice = jobNotificationService.getNotice(job);
-        
+
         JobStatus jobStatus = job.getStatus();
-        
+
         if (jobStatus != null) {
             JobBuild jobBuild = jobStatus.getBuild();
-            
+
             if (jobBuild != null) {
                 int tolerance = job.getTolerance();
                 int days = Days.daysBetween(new LocalDate(jobBuild.getDate()), new LocalDate()).getDays();
                 boolean today = (days == 0);
                 boolean yesterday = (days == 1);
                 boolean eagerness = false;
-                
+
                 number = jobBuild.getNumber();
-                
+
                 if (!today) {
                     //Identify if has tolerance. 
                     if (tolerance != 0) {
@@ -107,19 +110,26 @@ public class JobDetailsService {
                     }
                 }
 
-                //Identify if is a current day build.  
-                if (today || (yesterday && eagerness)) {
+                //Identifies if the job match a time restriction. 
+                if (!jobBuildStatusService.isTimeRestrictionMatch(job.getTimeRestriction())) {
+                    status = Status.RESTRICTED;
+                    phase = Phase.NONE;
+                    building
+                            .append("RESTRICTED, last " + jobStatus.getFlow() + " build at ")
+                            .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobBuild.getDate()));
+                    //Identifies if is a current day build.  
+                } else if (today || (yesterday && eagerness)) {
                     switch (jobStatus.getFlow()) {
                         case REBUILD:
                             status = Status.REBUILD;
                             phase = Phase.NONE;
                             building
-                                    .append("Building, last build ")
+                                    .append("BUILDING, last build ")
                                     .append((yesterday ? "( - " + tolerance + " hours) yesterday" : "today"))
                                     .append(" at ")
                                     .append(new SimpleDateFormat("HH:mm:ss").format(jobBuild.getDate()));
                             break;
-                        
+
                         case UNHEALTHY:
                         case BLOCKED:
                         case APPROVED:
@@ -132,14 +142,14 @@ public class JobDetailsService {
                                     .append(" at ")
                                     .append(new SimpleDateFormat("HH:mm:ss").format(jobBuild.getDate()));
                             break;
-                        
+
                         default:
                             //Identify if the build is running. 
                             if (jobBuild.getPhase().equals(Phase.FINALIZED)
                                     || (jobBuild.getStatus().equals(Status.FAILURE) || jobBuild.getStatus().equals(Status.ABORTED))) {
-                                
+
                                 status = jobBuild.getStatus();
-                                
+
                                 if (jobBuild.getStatus().equals(Status.SUCCESS)) {
                                     if (jobStatus.getFailureTimestamp() != null) {
                                         if (Days.daysBetween(new LocalDate(jobStatus.getFailureTimestamp()), new LocalDate()).getDays() == 0) {
@@ -150,9 +160,9 @@ public class JobDetailsService {
                             } else {
                                 status = Status.RUNNING;
                             }
-                            
+
                             phase = jobBuild.getPhase();
-                            
+
                             building
                                     .append((yesterday ? "( - " + tolerance + " hours ) Yesterday" : "Today"))
                                     .append(" at ")
@@ -163,13 +173,13 @@ public class JobDetailsService {
                     status = Status.REBUILD;
                     phase = Phase.NONE;
                     building
-                            .append("Building, last build at ")
+                            .append("BUILDING, last build at ")
                             .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobBuild.getDate()));
                 } else {
                     //Identify the last build flow. 
                     if (!jobStatus.getFlow().equals(Flow.NORMAL)
                             && !jobStatus.getFlow().equals(Flow.TRANSIENT)) {
-                        
+
                         status = Status.valueOf(jobStatus.getFlow().toString());
                     }
 
@@ -183,9 +193,9 @@ public class JobDetailsService {
                 //Identify the duration of a running build. 
                 if (jobBuild.getPhase().equals(Phase.STARTED)
                         && (jobBuild.getDate() != null)) {
-                    
+
                     Period period = new Period(new DateTime(jobBuild.getDate()), new DateTime(new Date()));
-                    
+
                     building
                             .append(" running for ")
                             .append(StringUtils.leftPad(String.valueOf(period.getHours()), 2, "0"))
@@ -230,7 +240,7 @@ public class JobDetailsService {
             if (retryService.exists(job)
                     && (job.getRetry() != 0)
                     && (retryService.get(job) >= job.getRetry())) {
-                
+
                 building
                         .append(" ( ")
                         .append(job.getRetry())
@@ -248,7 +258,7 @@ public class JobDetailsService {
             building
                     .append("Never build");
         }
-        
+
         return new JobDetails(
                 job,
                 status,
@@ -279,17 +289,17 @@ public class JobDetailsService {
      */
     public List<JobDetails> getDetailsOf(List<Job> jobs, Principal principal) {
         List<JobDetails> jobDetails = new ArrayList<>();
-        
+
         jobs.stream().forEach((job) -> {
             JobDetails details = this.getDetailsOf(job);
-            
+
             if (principal != null) {
                 details.setApproval(this.jobApprovalService.hasApproval(job, principal));
             }
-            
+
             jobDetails.add(details);
         });
-        
+
         return jobDetails;
     }
 }

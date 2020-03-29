@@ -23,6 +23,7 @@
  */
 package br.com.dafiti.hanger.service;
 
+import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.model.EventLog;
 import br.com.dafiti.hanger.option.Database;
@@ -33,12 +34,15 @@ import br.com.dafiti.hanger.repository.ConnectionRepository;
 import br.com.dafiti.hanger.security.PasswordCryptor;
 import java.security.Principal;
 import java.sql.Driver;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,6 +57,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
@@ -69,6 +74,7 @@ public class ConnectionService {
     private final JdbcTemplate jdbcTemplate;
     private final EventLogService eventLogService;
     private final ConfigurationService configurationService;
+    private final Map<String, PreparedStatement> inflight;
 
     @Autowired
     public ConnectionService(
@@ -83,6 +89,7 @@ public class ConnectionService {
         this.jdbcTemplate = jdbcTemplate;
         this.eventLogService = eventLogService;
         this.configurationService = configurationService;
+        this.inflight = new HashMap();
     }
 
     @Cacheable(value = "connections")
@@ -441,12 +448,12 @@ public class ConnectionService {
     }
 
     /**
-     * Get query resultset.
+     * Executes a query and returns a QueryResultSet instance.
      *
      * @param connection Connection.
      * @param query Query.
-     * @param principal
-     * @return Query resultset.
+     * @param principal Principal.
+     * @return QueryResultSet instance.
      */
     public QueryResultSet getQueryResultSet(
             Connection connection,
@@ -457,49 +464,66 @@ public class ConnectionService {
         DataSource datasource = this.getDataSource(connection);
 
         try {
-            //Set a connection to target.
+            //Sets a connection to target.
             jdbcTemplate.setDataSource(datasource);
             jdbcTemplate.setMaxRows(this.configurationService.getMaxRows());
 
+            //Sets default security behavior. 
             if (connection.getTarget().equals(Database.POSTGRES)
                     || connection.getTarget().equals(Database.ATHENA)) {
                 query = this.evaluate(query);
             }
 
-            //Execute a query. 
+            //Executes a query. 
             StopWatch watch = new StopWatch();
+
+            //Starts the query
             watch.start();
-            SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(query);
-            watch.stop();
 
-            //Get query elapsed time.
-            queryResultSet.setElapsedTime(watch.getTotalTimeMillis());
+            //Defines a final statement to be excecuted. 
+            final String statement = query;
 
-            //Get query header.
-            String[] columnNames = sqlRowSet.getMetaData().getColumnNames();
+            jdbcTemplate.query((java.sql.Connection conn) -> {
+                //Creates a prepared statement.
+                PreparedStatement preparedStatement = conn.prepareStatement(statement);
 
-            queryResultSet.setHeader(
-                    Arrays.asList(
-                            sqlRowSet
-                                    .getMetaData()
-                                    .getColumnNames())
-            );
+                //Salves the statement being executed.
+                inflight.put(principal.getName(), preparedStatement);
 
-            //Get query data.
-            while (sqlRowSet.next()) {
-                QueryResultSetRow queryResultSetRow = new QueryResultSetRow();
+                return preparedStatement;
+            }, (ResultSet resultSet) -> {
+                SqlRowSet sqlRowSet = new ResultSetWrappingSqlRowSet(resultSet);
 
-                for (String columnName : columnNames) {
-                    queryResultSetRow
-                            .getColumn()
-                            .add(
-                                    sqlRowSet
-                                            .getObject(columnName)
-                            );
+                //Identifies the columns name in the resultset.
+                List<String> queryResultSetColumns = Arrays.asList(sqlRowSet.getMetaData().getColumnNames());
+
+                //Gets query elapsed time.
+                queryResultSet.setElapsedTime(watch.getTotalTimeMillis());
+
+                //Gets query header.
+                queryResultSet.setHeader(queryResultSetColumns);
+
+                //Moves the coursor to the fthe resultset begin.
+                sqlRowSet.beforeFirst();
+
+                //Gets query data.
+                while (sqlRowSet.next()) {
+                    QueryResultSetRow queryResultSetRow = new QueryResultSetRow();
+
+                    queryResultSetColumns.forEach((columnName) -> {
+                        queryResultSetRow
+                                .getColumn()
+                                .add(sqlRowSet.getObject(columnName));
+                    });
+
+                    queryResultSet.getRow().add(queryResultSetRow);
                 }
 
-                queryResultSet.getRow().add(queryResultSetRow);
-            }
+                //Removes the statement from inflight when a query finishes.
+                inflight.remove(principal.getName());
+            });
+
+            watch.stop();
 
             //Log. 
             String content = "[" + connection.getName() + "] " + query;
@@ -513,7 +537,7 @@ public class ConnectionService {
 
             eventLogService.save(eventLog);
         } catch (DataAccessException ex) {
-            queryResultSet.setError(ex.getMessage());
+            queryResultSet.setError(new Message().getErrorMessage(ex));
         } finally {
             try {
                 //Close the connection. 
@@ -526,6 +550,36 @@ public class ConnectionService {
         }
 
         return queryResultSet;
+    }
+
+    /**
+     * Cancels a query being executed.
+     *
+     * @param principal Principal
+     * @return Identifies if a query was canceled.
+     */
+    public boolean queryCancel(Principal principal) {
+        boolean canceled = false;
+        PreparedStatement preparedStatement = inflight.get(principal.getName());
+
+        if (preparedStatement != null) {
+            try {
+                //Try cancel a query.
+                preparedStatement.cancel();
+
+                //Identifies that the cancel command was sent sucessfully.
+                canceled = true;
+
+                //Removes the statements from inflight when a cancel commend is sent.
+                inflight.remove(principal.getName());
+            } catch (SQLException ex) {
+                Logger.getLogger(
+                        ConnectionService.class.getName())
+                        .log(Level.SEVERE, "Fail aborting query ", ex);
+            }
+        }
+
+        return canceled;
     }
 
     /**

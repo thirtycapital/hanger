@@ -33,6 +33,8 @@ import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
 import java.security.Principal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -106,6 +108,29 @@ public class WorkbenchController {
         }
 
         return "workbench/fragmentQueryResultSet::resultSet";
+    }
+
+    /**
+     * Cancel
+     *
+     * @param principal
+     * @param model
+     * @return
+     */
+    @PostMapping(path = "/query")
+    public ResponseEntity cancel(
+            Principal principal,
+            Model model) {
+
+        ResponseEntity responseEntity;
+
+        if (connectionService.queryCancel(principal)) {
+            responseEntity = new ResponseEntity(HttpStatus.OK);
+        } else {
+            responseEntity = new ResponseEntity(HttpStatus.PRECONDITION_FAILED);
+        }
+
+        return responseEntity;
     }
 
     /**

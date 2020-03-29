@@ -80,6 +80,16 @@
 
                         <div class="row">
                             <button 
+                                id="cancel-button" 
+                                class="btn-approval btn-sm pull-right btn-space" 
+                                type="button"
+                                style="display:none;">
+
+                                <span class="glyphicon glyphicon-stop" 
+                                      aria-hidden="true"></span> Cancel
+                            </button>
+
+                            <button 
                                 id="play-button" 
                                 class="btn-generic btn-sm pull-right btn-space" 
                                 type="button">
@@ -224,6 +234,7 @@
                  */
                 $(document).ajaxStart(function () {
                     $("#wait").css("display", "inline");
+                    $("#cancel-button").css("display", "inline");
                     $("#query").prop("disabled", true);
                     $("#play-button").prop("disabled", true);
                 });
@@ -234,6 +245,7 @@
                  */
                 $(document).ajaxComplete(function () {
                     $("#wait").css("display", "none");
+                    $("#cancel-button").css("display", "none");
                     $("#query").prop("disabled", false);
                     $("#play-button").prop("disabled", false);
                 });
@@ -253,6 +265,13 @@
                 $("[id^=query_]").click(function () {
                     $("#fragmentQueryResultSetHolder").show();
                     query();
+                });
+
+                /**
+                 * Cancel a query. 
+                 */
+                $("#cancel-button").click(function () {
+                    cancel();
                 });
 
                 /**
@@ -318,7 +337,7 @@
                 });
 
                 /**
-                 * Search for job that match the search input value. 
+                 * Execute a query. 
                  * @returns {undefined}
                  */
                 function query() {
@@ -354,11 +373,30 @@
                                         });
                             },
                             error: function (e) {
-                                alert("Fail loading query resultset: "
-                                        + e.statusText);
+                                alert("Fail loading query resultset: " + e.statusText);
                             }
                         });
                     }
+                }
+
+                /**
+                 * Cancel a query. 
+                 * @returns {undefined}
+                 */
+                function cancel() {
+                    var url = /*[[@{/workbench/query/}]]*/ "/workbench/cancel/";
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        contentType: "text/html",
+                        success: function (result) {
+                            toastr.success('Cancel sent successfully');
+                        },
+                        error: function (e) {
+                            toastr.error('Cancel fail ' + e.statusText);
+                        }
+                    });
                 }
 
                 /**
@@ -501,7 +539,7 @@
                         });
                     } else {
                         toastr.error('Query cannot be empty!');
-						window.editor.focus();
+                        window.editor.focus();
                     }
                 }
 
@@ -536,7 +574,7 @@
                         });
                     } else {
                         toastr.error('Query cannot be empty!');
-						window.editor.focus();
+                        window.editor.focus();
                     }
                 }
 
@@ -568,7 +606,7 @@
                         });
                     } else {
                         toastr.error('Query cannot be empty!');
-						window.editor.focus();
+                        window.editor.focus();
                     }
                 }
             });

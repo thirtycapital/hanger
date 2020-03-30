@@ -24,6 +24,8 @@
 package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.EventLog;
+import br.com.dafiti.hanger.option.EntityType;
+import br.com.dafiti.hanger.option.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.dafiti.hanger.repository.EventLogRepository;
@@ -60,6 +62,23 @@ public class EventLogService {
         eventLogRepository.save(logger);
     }
 
+    public void log(
+            EntityType entityType,
+            Event event,
+            String userName,
+            String description) {
+
+        EventLog logger = new EventLog();
+
+        logger.setDate(new Date());
+        logger.setType(entityType);
+        logger.setEvent(event);
+        logger.setUsername(userName);
+        logger.setTypeName(description.length() > 255 ? description.substring(0, 250) + "..." : description);
+
+        eventLogRepository.save(logger);
+    }
+
     public void delete(Long id) {
         eventLogRepository.delete(id);
     }
@@ -67,8 +86,8 @@ public class EventLogService {
     public void cleaneup(Date expiration) {
         eventLogRepository.deleteByDateBefore(expiration);
     }
-    
+
     public List<EventLog> listDateBetween(Date dateFrom, Date dateTo) {
         return eventLogRepository.findByDateBetweenOrderByDateDesc(dateFrom, dateTo);
-    }    
+    }
 }

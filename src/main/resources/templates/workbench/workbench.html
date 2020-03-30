@@ -538,7 +538,7 @@
                             }
                         });
                     } else {
-                        toastr.error('Query cannot be empty!');
+                        toastr.error('Query cannot be empty');
                         window.editor.focus();
                     }
                 }
@@ -565,7 +565,7 @@
                                     url = /*[[@{/export/download/}]]*/ "/export/download/";
                                     window.location.href = url + result;
                                 } else {
-                                    toastr.error('Fail exporting query!');
+                                    toastr.error('Fail exporting query :/');
                                 }
                             },
                             error: function (e) {
@@ -573,7 +573,7 @@
                             }
                         });
                     } else {
-                        toastr.error('Query cannot be empty!');
+                        toastr.error('Query cannot be empty');
                         window.editor.focus();
                     }
                 }
@@ -605,7 +605,7 @@
                             }
                         });
                     } else {
-                        toastr.error('Query cannot be empty!');
+                        toastr.error('Query cannot be empty');
                         window.editor.focus();
                     }
                 }

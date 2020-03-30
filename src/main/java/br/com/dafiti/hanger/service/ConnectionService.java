@@ -25,7 +25,6 @@ package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Connection;
-import br.com.dafiti.hanger.model.EventLog;
 import br.com.dafiti.hanger.option.Database;
 import br.com.dafiti.hanger.option.EntityType;
 import br.com.dafiti.hanger.option.Event;
@@ -39,7 +38,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -477,15 +475,18 @@ public class ConnectionService {
             //Executes a query. 
             StopWatch watch = new StopWatch();
 
-            //Starts the query
+            //Starts the query metter.
             watch.start();
 
             //Defines a final statement to be excecuted. 
             final String statement = query;
 
             jdbcTemplate.query((java.sql.Connection conn) -> {
-                //Creates a prepared statement.
-                PreparedStatement preparedStatement = conn.prepareStatement(statement);
+                //Creates READ_ONLY and SCROLL_INSENSITIVE prepared statement.
+                PreparedStatement preparedStatement = conn.prepareStatement(
+                        statement,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_READ_ONLY);
 
                 //Salves the statement being executed.
                 inflight.put(principal.getName(), preparedStatement);
@@ -495,27 +496,29 @@ public class ConnectionService {
                 SqlRowSet sqlRowSet = new ResultSetWrappingSqlRowSet(resultSet);
 
                 //Identifies the columns name in the resultset.
-                List<String> queryResultSetColumns = Arrays.asList(sqlRowSet.getMetaData().getColumnNames());
+                List<String> columns = Arrays.asList(sqlRowSet.getMetaData().getColumnNames());
 
                 //Gets query elapsed time.
                 queryResultSet.setElapsedTime(watch.getTotalTimeMillis());
 
-                //Gets query header.
-                queryResultSet.setHeader(queryResultSetColumns);
+                //Identifies the query resultset header.
+                queryResultSet.setHeader(columns);
 
-                //Moves the coursor to the fthe resultset begin.
+                //Moves the coursor to the the resultset begin.
                 sqlRowSet.beforeFirst();
 
                 //Gets query data.
                 while (sqlRowSet.next()) {
                     QueryResultSetRow queryResultSetRow = new QueryResultSetRow();
 
-                    queryResultSetColumns.forEach((columnName) -> {
+                    //Set the values of each column in a row. 
+                    columns.forEach((columnName) -> {
                         queryResultSetRow
                                 .getColumn()
                                 .add(sqlRowSet.getObject(columnName));
                     });
 
+                    //Sets the row to the resultset. 
                     queryResultSet.getRow().add(queryResultSetRow);
                 }
 
@@ -523,21 +526,21 @@ public class ConnectionService {
                 inflight.remove(principal.getName());
             });
 
+            //Logs
+            eventLogService.log(
+                    EntityType.CONNECTION,
+                    Event.QUERY,
+                    principal.getName(),
+                    "[" + connection.getName() + "] " + query);
+
+            //Stops the query metter.
             watch.stop();
-
-            //Log. 
-            String content = "[" + connection.getName() + "] " + query;
-
-            EventLog eventLog = new EventLog();
-            eventLog.setUsername(principal.getName());
-            eventLog.setDate(new Date());
-            eventLog.setType(EntityType.CONNECTION);
-            eventLog.setTypeName(content.length() > 255 ? content.substring(0, 250) + "..." : content);
-            eventLog.setEvent(Event.QUERY);
-
-            eventLogService.save(eventLog);
         } catch (DataAccessException ex) {
             queryResultSet.setError(new Message().getErrorMessage(ex));
+
+            Logger.getLogger(
+                    ConnectionService.class.getName())
+                    .log(Level.SEVERE, "Query error: ", ex);
         } finally {
             try {
                 //Close the connection. 
@@ -545,7 +548,7 @@ public class ConnectionService {
             } catch (SQLException ex) {
                 Logger.getLogger(
                         ConnectionService.class.getName())
-                        .log(Level.SEVERE, "Fail closing connection ", ex);
+                        .log(Level.SEVERE, "Fail closing connection: ", ex);
             }
         }
 

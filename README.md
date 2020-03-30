@@ -1,3 +1,4 @@
+
 # Hanger [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ### O Hanger é uma ferramenta gráfica de orquestração de processos e qualidade de dados, responsável pela execução dos processos de [ETL](https://pt.wikipedia.org/wiki/Extract,_transform,_load), controle de dependências e validação dos dados.
 
@@ -10,11 +11,6 @@
 - Java 8 +
 - Jenkins ( [https://jenkins.io/](https://jenkins.io/) )
 - Jenkins Notification Plugin ( [https://wiki.jenkins.io/display/JENKINS/Notification+Plugin](https://wiki.jenkins.io/display/JENKINS/Notification+Plugin) )
-
-> Caso haja problemas de permissão entre Hanger e o Jenkins (Erro 403), verifique se a opção *Prevenir site contra invasões* está marcada e a desmarque:
-> - Acesse o Jenkins e vá no menu Gerenciar Jenkins
-> - Clique no menu em Configurar segurança global
-> - Na seção CSRF Protection, desmarque a opção *Prevenir site contra invasões*.
 
 ##### CONSTRUÇÃO
 Utilizando o [Maven](https://maven.apache.org/):
@@ -63,6 +59,18 @@ spring.jackson.time-zone=America/Sao_Paulo
 Utilizando o [Apache Tomcat](http://tomcat.apache.org/):
 
 - Copie o arquivo hanger.war para o diretório webapps do Apache Tomcat.
+
+##### TROUBLESHOOTING
+
+> Caso haja problema para executar um job pelo Hanger, verifique se o campo *URL do Jenkins* está definida corretamente no Jenkins:
+> - Acesse o Jenkins e vá no menu Gerenciar Jenkins
+> - Clique no menu em Configurar o sistema
+> - Localize o campo *URL do Jenkins* na seção *Jenkins Location* e defina o valor corretamente. 
+
+> Caso haja problemas de permissão entre Hanger e o Jenkins (Erro 403), verifique se a opção *Prevenir site contra invasões* está marcada e a desmarque:
+> - Acesse o Jenkins e vá no menu Gerenciar Jenkins
+> - Clique no menu em Configurar segurança global
+> - Na seção CSRF Protection, desmarque a opção *Prevenir site contra invasões*.
 
 ## Monitor
 O *Monitor* é onde a carga de trabalho do Hanger é monitorada. O *dashboard* é organizado da seguinte forma:

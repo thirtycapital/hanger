@@ -101,7 +101,7 @@
                         </thead>
 
                         <tbody>
-                            <tr class="checkup-row" th:each="checkupLog, checkupLogStat : ${checkup.log}">
+                            <tr class="checkup-row" th:each="checkupLog, checkupLogStat : ${checkup.log}" th:unless="${checkupLogStat.index > 49}">
                                 <td><img class="status" th:src="@{'/images/' + ${ checkupLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="title=${ checkupLog.success ? 'SUCCESS' : 'FAILURE' }"></img></td>                                 
                                 <td th:text="${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}"></td>        
                                 <td th:text="${checkupLog.scope}"></td>  

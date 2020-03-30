@@ -135,9 +135,14 @@ public class JobApprovalController {
             @Valid @ModelAttribute JobApproval jobApproval,
             @PathVariable("job_id") Job job) {
 
+        //Identifies the job flow.
+        Flow flow = job.getStatus().getFlow();
+        
+        //Runs the approbation process.
         this.jobApprovalService.approve(jobApproval, job, true);
 
-        if (this.jobApprovalService.push(job, job.getStatus().getFlow())) {
+        //Identifies if should build itself or push other job.
+        if (this.jobApprovalService.push(job, flow)) {
             redirectAttributes.addFlashAttribute("successMessage", "Job " + job.getName() + " approved!");
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "Fail building job " + job.getName() + " dependencies!");

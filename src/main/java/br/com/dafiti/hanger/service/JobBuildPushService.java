@@ -79,7 +79,7 @@ public class JobBuildPushService {
         HashSet<JobParent> childs = jobParentService.findByParent(job);
 
         //For each child.
-        childs.forEach((child) -> {
+        childs.forEach((JobParent child) -> {
             //Get the  child.
             Job childJob = child.getJob();
 
@@ -106,10 +106,6 @@ public class JobBuildPushService {
                         childJobStatus.setDate(new Date());
                     }
 
-                    //Set child job as rebuilding.
-                    childJobStatus.setFlow(Flow.REBUILD);
-                    jobStatusService.save(childJobStatus);
-
                     //Build the job.
                     BuildInfo buildInfo = jobBuildService.build(childJob);
 
@@ -122,7 +118,8 @@ public class JobBuildPushService {
                         //Publish a job notification.
                         jobNotificationService.notify(childJob, true);
                     } else {
-                        childJobStatus.setFlow(Flow.NORMAL);
+                        //Set child job as rebuilding.
+                        childJobStatus.setFlow(Flow.REBUILD);
                         jobStatusService.save(childJobStatus);
                     }
                 } catch (Exception ex) {

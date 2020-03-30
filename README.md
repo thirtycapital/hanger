@@ -1,3 +1,4 @@
+
 # Hanger [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ### O Hanger é uma ferramenta gráfica de orquestração de processos e qualidade de dados, responsável pela execução dos processos de [ETL](https://pt.wikipedia.org/wiki/Extract,_transform,_load), controle de dependências e validação dos dados.
 
@@ -10,11 +11,6 @@
 - Java 8 +
 - Jenkins ( [https://jenkins.io/](https://jenkins.io/) )
 - Jenkins Notification Plugin ( [https://wiki.jenkins.io/display/JENKINS/Notification+Plugin](https://wiki.jenkins.io/display/JENKINS/Notification+Plugin) )
-
-> Caso haja problemas de permissão entre Hanger e o Jenkins (Erro 403), verifique se a opção *Prevenir site contra invasões* está marcada e a desmarque:
-> - Acesse o Jenkins e vá no menu Gerenciar Jenkins
-> - Clique no menu em Configurar segurança global
-> - Na seção CSRF Protection, desmarque a opção *Prevenir site contra invasões*.
 
 ##### CONSTRUÇÃO
 Utilizando o [Maven](https://maven.apache.org/):
@@ -63,6 +59,18 @@ spring.jackson.time-zone=America/Sao_Paulo
 Utilizando o [Apache Tomcat](http://tomcat.apache.org/):
 
 - Copie o arquivo hanger.war para o diretório webapps do Apache Tomcat.
+
+##### TROUBLESHOOTING
+
+> Caso haja problema para executar um job pelo Hanger, verifique se o campo *URL do Jenkins* está definida corretamente no Jenkins:
+> - Acesse o Jenkins e vá no menu Gerenciar Jenkins
+> - Clique no menu em Configurar o sistema
+> - Localize o campo *URL do Jenkins* na seção *Jenkins Location* e defina o valor corretamente. 
+
+> Caso haja problemas de permissão entre Hanger e o Jenkins (Erro 403), verifique se a opção *Prevenir site contra invasões* está marcada e a desmarque:
+> - Acesse o Jenkins e vá no menu Gerenciar Jenkins
+> - Clique no menu em Configurar segurança global
+> - Na seção CSRF Protection, desmarque a opção *Prevenir site contra invasões*.
 
 ## Monitor
 O *Monitor* é onde a carga de trabalho do Hanger é monitorada. O *dashboard* é organizado da seguinte forma:
@@ -377,7 +385,7 @@ Permite adicionar um novo *job*.
 - Caso o *job* possa ser executado mais de uma vez ao dia, marque o checkbox ***Rebuild along the day***. Por padrão, um *job* pode ser executado apenas uma vez ao dia. Quando esta opção estiver selecionada, o *job* será executado a primeira vez quando todas as dependências forem atendidas e voltará a ser executado sempre que qualquer uma das dependências for executada com sucesso no decorrer do dia. Caso necessite que o *job* somente seja reexecutado quando todas as dependências forem atendidas novamente, selecione quais dependências serão ***blockers*** na lista de ***parents***.
 - Caso deseje definir um intervalo mínimo para que o *job* seja reexecutado, digite a quantidade de minutos no campo ***Rebuild interval in minutes***.
 - Defina o conteúdo do campo **Eagerness** do job entre 0 e 12 horas. Para que uma dependência de um *job* seja considerada atendida, ela precisa ser executada com sucesso ao menos uma vez no dia. Caso alguma dependência precise ser executada antes da meia noite, o campo ***Eagerness*** deve ser preenchido com o número de horas, antes da meia noite, em que caso o job seja executado com sucesso, a dependência seja considerada como atendida. 
-- Defina, em formato cron, o período permitido para a execução do job no campo ***Time restriction***.
+- Defina, em formato cron (http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html), o período permitido para a execução do job no campo ***Time restriction***.
 - Defina o conteúdo do campo ***Eagerness*** do job entre 0 e 12 horas. Para que uma dependência de um *job* seja considerada atendida, ela precisa ser executada com sucesso ao menos uma vez no dia. Caso alguma dependência precise ser executada antes da meia noite, o campo ***Eagerness*** deve ser preenchido com o número de horas, antes da meia noite, em que caso o job seja executado com sucesso, a dependência seja considerada como atendida.
 - Caso deseje definir um intervalo mínimo para que o *job* seja reexecutado, digite a quantidade de minutos no campo ***Rebuild interval***.
 - Marque o checkbox ***Enabled*** para habilitar o job ou desmarque para desabilitá-lo. 

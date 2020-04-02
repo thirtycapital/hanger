@@ -90,22 +90,22 @@ public class JobBuildPushService {
             if (push.isReady()) {
                 JobStatus childJobStatus = childJob.getStatus();
 
+                //Define the job status.
+                if (childJobStatus == null) {
+                    childJobStatus = new JobStatus();
+                    childJobStatus.setScope(push.getScope());
+                    childJobStatus.setDate(new Date());
+
+                    //Defines a relation between a job and it status.
+                    childJobStatus = jobStatusService.save(childJobStatus);
+                    childJob.setStatus(childJobStatus);
+                    jobService.save(childJob);
+                } else {
+                    childJobStatus.setScope(push.getScope());
+                    childJobStatus.setDate(new Date());
+                }
+
                 try {
-                    //Define the job status.
-                    if (childJobStatus == null) {
-                        childJobStatus = new JobStatus();
-                        childJobStatus.setScope(push.getScope());
-                        childJobStatus.setDate(new Date());
-
-                        //Defines a relation between a job and it status.
-                        childJobStatus = jobStatusService.save(childJobStatus);
-                        childJob.setStatus(childJobStatus);
-                        jobService.save(childJob);
-                    } else {
-                        childJobStatus.setScope(push.getScope());
-                        childJobStatus.setDate(new Date());
-                    }
-
                     //Build the job.
                     BuildInfo buildInfo = jobBuildService.build(childJob);
 
@@ -199,7 +199,7 @@ public class JobBuildPushService {
                 }
 
                 //Log the full dependencies status.
-                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "Job {0} push: Path FULL, Scope {1}, Parent {2}", new Object[]{job.getName(), scope, all});
+                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "FULL -> Job={0}, scope={1}, ready={2}, dependencies={3}", new Object[]{job.getName(), scope, ready, all});
             } else {
                 //Identify if all dependencies was built successfully.
                 for (Map.Entry<Job, Boolean> entry : all.entrySet()) {
@@ -225,12 +225,19 @@ public class JobBuildPushService {
 
                     //Identify the scope.
                     if (ready) {
+                        JobStatus jobStatus = job.getStatus();
+
+                        //Identifies if the job are already in a partial scope.
+                        if (jobStatus != null) {
+                            ready = (jobStatus.getScope() != Scope.PARTIAL);
+                        }
+
                         scope = Scope.PARTIAL;
                     }
                 }
 
                 //Log the partial dependencies status.
-                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "Job {0} push: Path PARTIAL, Scope {1}, Parent {2}, Partial Parent {3}", new Object[]{job.getName(), scope, all, partial});
+                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "PARTIAL -> job={0}, scope={1}, ready={2}, partials={3}, dependencies={4}", new Object[]{job.getName(), scope, ready, partial, all});
             }
         } else {
             Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "Job {0} is not buildable", new Object[]{job.getName()});

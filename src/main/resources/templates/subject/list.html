@@ -39,12 +39,13 @@
             <table id="table" class="table table-hover">
                 <thead>
                     <tr>
-                        <th style="width:5%">#</th>
-                        <th style="width:80%">Subject</th>
-                        <th style="width:1%"><span class="glyphicon glyphicon-bell" title="Notification"></span></th>
-                        <th style="width:1%"><span class="glyphicon glyphicon-thumbs-up" title="Subscription"></span></th>
-                        <th style="width:1%" class="no-sort"></th>
-                        <th style="width:1%" class="no-sort"></th>
+                        <th>#</th>
+                        <th style="width:30%">Subject</th>
+                        <th style="width:70%">Subscribers</th>
+                        <th><span class="glyphicon glyphicon-bell" title="Notification"></span></th>
+                        <th><span class="glyphicon glyphicon-thumbs-up" title="Subscription"></span></th>
+                        <th class="no-sort"></th>
+                        <th class="no-sort"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,6 +61,15 @@
                             </button>
                         </td>
                         <td>
+                            <div class="column" th:each="user : ${subject.user}">
+                                <p th:attr="data-letters=${user.firstName.substring(0, 1) + user.lastName.substring(0, 1)}" 
+                                   th:title="${user.firstName + ' ' + user.lastName}" 
+                                   class="text-center profile-icon profile-icon-sm" 
+                                   th:classappend="'profile-icon-color-' + ${ T(Math).abs( user.id % 5 ) }">
+                                </p>
+                            </div>
+                        </td>
+                        <td>
                             <div th:if="${subject.notified}">
                                 <span th:attr="title=${ not #lists.isEmpty(subject.channel) ?  '[' + subject.channel + ']' : 'Default channel' }"  
                                       class="glyphicon glyphicon-bell">
@@ -71,7 +81,7 @@
                                 <div th:case="true">
                                 </div>
                                 <div th:case="false">
-                                    <label th:attr="title=${#lists.size(subject.user) + ' subscriptions'}">
+                                    <label>
                                         <input  
                                             name="subscribe"
                                             type="checkbox" 

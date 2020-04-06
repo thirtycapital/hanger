@@ -301,13 +301,19 @@ public class JenkinsService {
                         JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
 
                         if (jobWithDetails != null) {
-                            Build build = jobWithDetails.getBuildByNumber(buildNumber);
+                            //Identifies if the job is already in queue.
+                            isBuilding = jobWithDetails.isInQueue();
 
-                            if (build != null) {
-                                BuildWithDetails buildWithDetails = build.details();
+                            if (!isBuilding) {
+                                Build build = jobWithDetails.getBuildByNumber(buildNumber);
 
-                                if (buildWithDetails != null) {
-                                    isBuilding = buildWithDetails.isBuilding();
+                                if (build != null) {
+                                    BuildWithDetails buildWithDetails = build.details();
+
+                                    if (buildWithDetails != null) {
+                                        //Identifies if the job is building.
+                                        isBuilding = buildWithDetails.isBuilding();
+                                    }
                                 }
                             }
                         }

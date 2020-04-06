@@ -64,7 +64,7 @@
                             <div class="column" th:each="user : ${subject.user}">
                                 <p th:attr="data-letters=${user.firstName.substring(0, 1) + user.lastName.substring(0, 1)}" 
                                    th:title="${user.firstName + ' ' + user.lastName}" 
-                                   class="text-center profile-icon profile-icon-sm" 
+                                   class="text-center profile-icon profile-icon-indoor-sm" 
                                    th:classappend="'profile-icon-color-' + ${ T(Math).abs( user.id % 5 ) }">
                                 </p>
                             </div>

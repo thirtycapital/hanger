@@ -77,9 +77,13 @@ public class Watchdog {
     public void patrol() {
         Logger.getLogger(
                 Watchdog.class.getName())
-                .log(Level.INFO, "The watchdog is patrolling!");
+                .log(Level.INFO, "The watchdog is patrolling jobs!");
 
         jobPatrol();
+
+        Logger.getLogger(
+                Watchdog.class.getName())
+                .log(Level.INFO, "The watchdog is patrolling connections!");
 
         connectionPatrol();
 
@@ -127,20 +131,6 @@ public class Watchdog {
                         }
                     }
                 }
-            }
-
-            //Identify job existence on Jenkins.
-            if (!jenkinsServive.exists(job)) {
-                Logger.getLogger(Watchdog.class.getName())
-                        .log(Level.INFO, "The job "
-                                .concat(job.getDisplayName())
-                                .concat(" exists on Hanger, but not on Jenkins!")
-                        );
-
-                slackService.send(":ghost: The job *"
-                        .concat(job.getDisplayName())
-                        .concat("*")
-                        .concat(" exists on Hanger, but not on Jenkins!"));
             }
         }
     }

@@ -49,18 +49,16 @@ public class ExportService {
     ConnectionService connectionService;
     MailService mailService;
     UserService userService;
-    private final ConfigurationService configurationService;
 
     @Autowired
     public ExportService(
             ConnectionService connectionService,
             MailService mailService,
-            UserService userService,
-            ConfigurationService configurationService) {
+            UserService userService) {
+
         this.connectionService = connectionService;
         this.mailService = mailService;
         this.userService = userService;
-        this.configurationService = configurationService;
     }
 
     /**

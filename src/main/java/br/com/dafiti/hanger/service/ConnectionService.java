@@ -256,8 +256,9 @@ public class ConnectionService {
                 String catalogName = schemas.getString("TABLE_CATALOG");
                 String schemaName = schemas.getString("TABLE_SCHEM");
 
-                if (!catalogName.isEmpty()
-                        && !schemaName.isEmpty()) {
+                if ((catalogName != null && !catalogName.isEmpty())
+                        || (schemaName != null && !schemaName.isEmpty())) {
+
                     schema.add(
                             new Entity(
                                     catalogName,

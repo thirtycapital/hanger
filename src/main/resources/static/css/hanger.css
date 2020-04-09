@@ -792,6 +792,10 @@ h3.page-title {
     font-size:10px !important;
 }
 
+p.profile-icon-indoor-sm{
+    margin: 0px !important;
+}
+
 .profile-icon-color-0:before{
     background:#cd5c5c;
 }

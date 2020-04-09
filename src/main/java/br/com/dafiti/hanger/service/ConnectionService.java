@@ -253,12 +253,18 @@ public class ConnectionService {
                     .getSchemas();
 
             while (schemas.next()) {
-                schema.add(
-                        new Entity(
-                                schemas.getString("TABLE_CATALOG"),
-                                schemas.getString("TABLE_SCHEM"),
-                                "",
-                                connection.getTarget()));
+                String catalogName = schemas.getString("TABLE_CATALOG");
+                String schemaName = schemas.getString("TABLE_SCHEM");
+
+                if (!catalogName.isEmpty()
+                        && !schemaName.isEmpty()) {
+                    schema.add(
+                            new Entity(
+                                    catalogName,
+                                    schemaName,
+                                    "",
+                                    connection.getTarget()));
+                }
             }
 
             if (schema.isEmpty()) {

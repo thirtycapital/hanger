@@ -285,10 +285,10 @@ public class JenkinsService {
      * Identify if a job is building.
      *
      * @param job Job
-     * @param buildNumber Job build number
+     * @param number Job build number
      * @return Identify if a job is building
      */
-    public boolean isBuilding(Job job, int buildNumber) {
+    public boolean isBuilding(Job job, int number) {
         JenkinsServer jenkins;
         boolean isBuilding = false;
 
@@ -301,17 +301,17 @@ public class JenkinsService {
                         JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
 
                         if (jobWithDetails != null) {
-                            //Identifies if the job is already in queue.
+                            //Identifies if the job is in queue. 
                             isBuilding = jobWithDetails.isInQueue();
 
                             if (!isBuilding) {
-                                Build build = jobWithDetails.getBuildByNumber(buildNumber);
+                                Build build = jobWithDetails.getBuildByNumber(number);
 
                                 if (build != null) {
                                     BuildWithDetails buildWithDetails = build.details();
 
                                     if (buildWithDetails != null) {
-                                        //Identifies if the job is building.
+                                        //Identifies if the job is running. 
                                         isBuilding = buildWithDetails.isBuilding();
                                     }
                                 }

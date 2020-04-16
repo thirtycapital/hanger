@@ -118,8 +118,12 @@ public class Watchdog {
                 }
             }
 
+            Status status = jobDetailsService.getDetailsOf(job).getStatus();
+
             //Identify job running forever.
-            if (jobDetailsService.getDetailsOf(job).getStatus().equals(Status.RUNNING)) {
+            if (status.equals(Status.REBUILD)
+                    || status.equals(Status.RUNNING)) {
+
                 JobStatus jobStatus = job.getStatus();
 
                 if (jobStatus != null) {
@@ -128,6 +132,10 @@ public class Watchdog {
                     if (jobBuild != null) {
                         if (!jenkinsServive.isBuilding(job, jobBuild.getNumber())) {
                             this.catcher(job);
+                        } else {
+                            Logger.getLogger(
+                                    Watchdog.class.getName())
+                                    .log(Level.INFO, "The watchdog just sniffed the job {0} with build number {1}", new Object[]{job.getName(), jobBuild.getNumber()});
                         }
                     }
                 }

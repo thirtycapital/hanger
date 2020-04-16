@@ -1,6 +1,8 @@
 $(document).ready(function () {
 
     $('.tbList').toggleClass("dispDef");
+    
+    $('[data-toggle="tooltip"]').tooltip();
 
     $('#table').DataTable({
         "paging": false,

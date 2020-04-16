@@ -63,7 +63,7 @@
                 </form>
                 <div th:each="checkup, checkupStat : ${job.checkup}" th:remove="tag">
                     <fieldset th:if="${not #lists.isEmpty(checkup.log)}" >
-                        <legend class="space-top" th:inline="text">[[${ checkup.description + '  >  ' + ( checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION' ) + '  >  ' + checkup.action}]]</legend>
+                        <legend class="space-top" th:inline="text">[[${ checkup.name + '  |  ' + ( checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION' ) + '  |  ' + checkup.action}]]</legend>
                         <table th:id="'table_clean' + ${checkup.id}" class="table table-hover">
                             <thead>
                                 <tr>

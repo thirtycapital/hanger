@@ -234,6 +234,7 @@ public class JobDetailsService {
             //Identifi if the job scope. 
             scope
                     .append(jobStatus.getScope().toString())
+                    .append(job.isAnyScope() ? " | Any parent scope ": "")
                     .append(job.isRebuild() ? " | REBUILD " + (job.isRebuildBlocked() ? "after all blockers ready " : "") + (job.getWait() != 0 ? "once every " + job.getWait() + " min" : "") : "")
                     .append((job.getTimeRestriction() == null || job.getTimeRestriction().isEmpty()) ? "" : " " + job.getTimeRestrictionDescription().toLowerCase());
 

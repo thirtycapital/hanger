@@ -96,7 +96,7 @@ public class JobCheckup implements Serializable {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.toUpperCase();
     }
 
     @Column(columnDefinition = "text")

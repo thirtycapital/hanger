@@ -52,13 +52,24 @@ import org.springframework.stereotype.Service;
 public class JobBuildStatusService {
 
     /**
+     * Identifies if a job is partially or fully built.
+     *
+     * @param job Job job
+     * @param anyScope Identify whether the job was built partially or fully
+     * @return Identify if a job parent is built
+     */
+    public boolean isBuilt(Job job, boolean anyScope) {
+        return isBuilt(job, null, anyScope);
+    }
+
+    /**
      * Identifies if a job is built.
      *
      * @param job Job job
      * @return Identify if a job parent is built
      */
     public boolean isBuilt(Job job) {
-        return isBuilt(job, null);
+        return isBuilt(job, null, false);
     }
 
     /**
@@ -66,9 +77,10 @@ public class JobBuildStatusService {
      *
      * @param job Job job
      * @param basedate Date base
+     * @param anyScope Identify whether the job was built partially or fully
      * @return Identify if a job parent is built
      */
-    public boolean isBuilt(Job job, Date basedate) {
+    public boolean isBuilt(Job job, Date basedate, boolean anyScope) {
         boolean built;
 
         //Get the status of each parent.
@@ -110,8 +122,14 @@ public class JobBuildStatusService {
                     //Identify if the job build is finalized and successfully. 
                     built = (jobBuild.getPhase().equals(Phase.FINALIZED)
                             && jobBuild.getStatus().equals(Status.SUCCESS)
-                            && jobStatus.getScope() == Scope.FULL
                             && (jobStatus.getFlow().equals(Flow.NORMAL) || jobStatus.getFlow().equals(Flow.APPROVED)));
+                    
+                    if (built) {
+                        //Idenfity if any scope can push a job build.
+                        if (!anyScope) {
+                            built = jobStatus.getScope() == Scope.FULL;
+                        }
+                    }
                 }
             }
         }
@@ -179,7 +197,7 @@ public class JobBuildStatusService {
                                     for (JobParent parent : parents) {
                                         //Identify if a parent is a rebuild blocker. 
                                         if (parent.isBlocker()) {
-                                            blocked = this.isBuilt(parent.getParent(), jobBuild.getDate());
+                                            blocked = this.isBuilt(parent.getParent(), jobBuild.getDate(), false);
 
                                             if (!blocked) {
                                                 buildable = false;

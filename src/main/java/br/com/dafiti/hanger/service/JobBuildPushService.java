@@ -163,7 +163,7 @@ public class JobBuildPushService {
 
                 //Identify if the parent is built.
                 if (!built) {
-                    built = jobBuildStatusService.isBuilt(parent.getParent());
+                    built = jobBuildStatusService.isBuilt(parent.getParent(), job.isAnyScope());
 
                     if (!built) {
                         //Identify if the parent is disabled.

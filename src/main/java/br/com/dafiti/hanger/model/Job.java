@@ -89,6 +89,7 @@ public class Job extends Tracker implements Serializable {
     private boolean rebuild;
     private boolean rebuildBlocked;
     private String timeRestriction;
+    private boolean anyScope;
 
     public Job() {
     }
@@ -350,6 +351,14 @@ public class Job extends Tracker implements Serializable {
         }
 
         return verbose;
+    }
+    
+    public boolean isAnyScope() {
+        return anyScope;
+    }
+
+    public void setAnyScope(boolean anyScope) {
+        this.anyScope = anyScope;
     }
 
     @Override

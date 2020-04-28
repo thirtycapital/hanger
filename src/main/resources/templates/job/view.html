@@ -466,6 +466,18 @@
                                             th:checked="*{rebuild}"/> Rebuildable
                                     </label>
                                 </div>
+                                
+                                <div class="btn-group btn-space">
+                                    <label>
+                                        <input  
+                                            id="rebuild" 
+                                            name="rebuild"
+                                            type="checkbox" 
+                                            disabled="true"
+                                            th:field="*{anyScope}" 
+                                            th:checked="*{anyScope}"/> Build on any parent scope
+                                    </label>
+                                </div>
 
                                 <div class="btn-group btn-space">
                                     <label th:inline="text">

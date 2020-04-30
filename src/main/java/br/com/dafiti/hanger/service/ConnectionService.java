@@ -504,7 +504,7 @@ public class ConnectionService {
             }, (ResultSet resultSet) -> {
                 QueryResultSetRow resultSetRow = new QueryResultSetRow();
 
-                //Identifies if should retrieve the metadata. 
+                //Identifies if should retrieve metadata. 
                 if (queryResultSet.getHeader().isEmpty()) {
                     //Retrives the metadata. 
                     ResultSetMetaData metaData = resultSet.getMetaData();
@@ -517,6 +517,7 @@ public class ConnectionService {
                     }
                 }
 
+                //Sets columns value to the row. 
                 for (String column : queryResultSet.getHeader()) {
                     resultSetRow
                             .getColumn()

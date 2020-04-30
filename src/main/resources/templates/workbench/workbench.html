@@ -511,7 +511,12 @@
 
                     $.ajax({
                         type: "GET",
-                        url: url + connection + "/table/column/" + node.a_attr.catalog + "/" + node.a_attr.schema + "/" + node.a_attr.table,
+                        url: url + connection + "/table/column",
+                        data: {
+                            catalog: node.a_attr.catalog,
+                            schema: node.a_attr.schema,
+                            table: node.a_attr.table
+                        },
                         success: function (result) {
                             $("#modalHolder").html(result);
                             $("#modalTableMetadata").modal({backdrop: 'static'});

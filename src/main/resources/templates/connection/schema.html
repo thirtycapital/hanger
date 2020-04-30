@@ -42,7 +42,7 @@
                         <td th:text="${metadata.catalog}"></td>
                         <td th:text="${metadata.schema}"></td>
                         <td>
-                            <a th:href="@{'/connection/' + ${connection.id} + '/table/' + ${metadata.catalog} + '/' + ${metadata.schema} }" class="btn btn-generic btn-xs">
+                            <a th:href="@{'/connection/' + ${connection.id} + '/table'(catalog=${metadata.catalog},schema=${metadata.schema})}" class="btn btn-generic btn-xs">
                                 <span class="glyphicon glyphicon-th-large" aria-hidden="true"></span> Table
                             </a>
                         </td>

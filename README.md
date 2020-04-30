@@ -242,6 +242,7 @@ Os bancos de dados suportados e as respectivas JDBC Urls são as seguintes:
     ATHENA: jdbc:awsathena://AwsRegion=<region>;S3OutputLocation=<bucket>
     MSSQL: jdbc:sqlserver://<url>:<porta>;DataBaseName=<database>
     HANA: jdbc:sap://<url>:<porta>/<database>
+    JTDS: Para Sybase: jdbc:jtds:sybase://<server>:<port5000>;DatabaseName=<database> ou, para MSSQL, jdbc:jtds:sqlserver://<server>:<port1433>;DatabaseName=<database> ou 
     GENERIC: Para utilização de conexão do tipo genérico, o driver URL correspondente deve ser colocado no diretório ${CATALINA_HOME}/lib do servidor e informado o class name do driver.
 
 ##### TEST CONNECTIONS

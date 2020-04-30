@@ -35,9 +35,9 @@ import java.security.Principal;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,8 +55,6 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import org.springframework.jdbc.support.rowset.ResultSetWrappingSqlRowSet;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
@@ -172,6 +170,10 @@ public class ConnectionService {
                         driver = new com.sap.db.jdbc.Driver();
                         properties.setProperty("loginTimeout", "5000");
                         properties.setProperty("connectTimeout", "5000");
+                        break;
+                    case JTDS:
+                        driver = new net.sourceforge.jtds.jdbc.Driver();
+                        properties.setProperty("loginTimeout", "5");
                         break;
                     case GENERIC:
                         driver = (Driver) Class.forName(connection.getClassName()).newInstance();
@@ -489,10 +491,10 @@ public class ConnectionService {
             final String statement = query;
 
             jdbcTemplate.query((java.sql.Connection conn) -> {
-                //Creates READ_ONLY and SCROLL_INSENSITIVE prepared statement.
+                //Creates READ_ONLY and TYPE_FORWARD_ONLY prepared statement.
                 PreparedStatement preparedStatement = conn.prepareStatement(
                         statement,
-                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.TYPE_FORWARD_ONLY,
                         ResultSet.CONCUR_READ_ONLY);
 
                 //Salves the statement being executed.
@@ -500,34 +502,31 @@ public class ConnectionService {
 
                 return preparedStatement;
             }, (ResultSet resultSet) -> {
-                SqlRowSet sqlRowSet = new ResultSetWrappingSqlRowSet(resultSet);
+                QueryResultSetRow resultSetRow = new QueryResultSetRow();
 
-                //Identifies the columns name in the resultset.
-                List<String> columns = Arrays.asList(sqlRowSet.getMetaData().getColumnNames());
+                //Identifies if should retrieve the metadata. 
+                if (queryResultSet.getHeader().isEmpty()) {
+                    //Retrives the metadata. 
+                    ResultSetMetaData metaData = resultSet.getMetaData();
 
-                //Gets query elapsed time.
-                queryResultSet.setElapsedTime(watch.getTotalTimeMillis());
-
-                //Identifies the query resultset header.
-                queryResultSet.setHeader(columns);
-
-                //Moves the coursor to the the resultset begin.
-                sqlRowSet.beforeFirst();
-
-                //Gets query data.
-                while (sqlRowSet.next()) {
-                    QueryResultSetRow queryResultSetRow = new QueryResultSetRow();
-
-                    //Set the values of each column in a row. 
-                    columns.forEach((columnName) -> {
-                        queryResultSetRow
-                                .getColumn()
-                                .add(sqlRowSet.getObject(columnName));
-                    });
-
-                    //Sets the row to the resultset. 
-                    queryResultSet.getRow().add(queryResultSetRow);
+                    //Identifies the metadata columns. 
+                    for (int i = 1; i < metaData.getColumnCount(); i++) {
+                        queryResultSet
+                                .getHeader()
+                                .add(metaData.getColumnName(i));
+                    }
                 }
+
+                for (String column : queryResultSet.getHeader()) {
+                    resultSetRow
+                            .getColumn()
+                            .add(resultSet.getObject(column));
+                }
+
+                //Sets the row to the resultset. 
+                queryResultSet
+                        .getRow()
+                        .add(resultSetRow);
 
                 //Removes the statement from inflight when a query finishes.
                 inflight.remove(principal.getName());
@@ -539,6 +538,9 @@ public class ConnectionService {
                     Event.QUERY,
                     principal.getName(),
                     "[" + connection.getName() + "] " + query);
+
+            //Gets query elapsed time.
+            queryResultSet.setElapsedTime(watch.getTotalTimeMillis());
 
             //Stops the query metter.
             watch.stop();

@@ -189,14 +189,6 @@
             <artifactId>jersey-client</artifactId>
         </dependency>
         
-        <!-- spring security -->
-        
-        <dependency>
-            <groupId>org.thymeleaf.extras</groupId>
-            <artifactId>thymeleaf-extras-springsecurity3</artifactId>
-            <version>3.0.4.RELEASE</version>
-        </dependency> 
-        
         <!-- jasypt -->
         
         <dependency>

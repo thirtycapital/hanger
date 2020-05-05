@@ -24,6 +24,7 @@
 package br.com.dafiti.hanger.security;
 
 import br.com.dafiti.hanger.model.User;
+import java.util.Optional;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,16 +37,16 @@ public class SpringSecurityAuditorAware implements AuditorAware<String> {
      * @return Username
      */
     @Override
-    public String getCurrentAuditor() {
+    public Optional<String> getCurrentAuditor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null
                 || !authentication.isAuthenticated()
                 || authentication.getPrincipal().equals("anonymousUser")) {
 
-            return "anonymousUser";
+            return Optional.of("anonymousUser");
         }
 
-        return ((User) authentication.getPrincipal()).getUsername();
+        return Optional.of(((User) authentication.getPrincipal()).getUsername());
     }
 }

@@ -36,8 +36,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
+import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
 
 /**
  *
@@ -122,7 +121,7 @@ public class MailService {
      */
     private String getTemplateHTMLOf(String path, String template, HashMap<String, Object> variables) {
         //Define the template resolver. 
-        TemplateResolver resolver = new ClassLoaderTemplateResolver();
+        SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
         resolver.setPrefix(path + (!path.endsWith("/") ? '/' : ""));
         resolver.setSuffix(".html");
         resolver.setTemplateMode("HTML5");

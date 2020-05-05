@@ -158,15 +158,15 @@ public class WorkbenchService {
 
         List<String> catalogSchema = new ArrayList();
 
-        if (catalog != null && !"null".equals(catalog)) {
+        if (catalog != null && !"null".equals(catalog) && !catalog.isEmpty()) {
             catalogSchema.add(catalog);
         }
 
-        if (schema != null && !"null".equals(schema)) {
+        if (schema != null && !"null".equals(schema) && !schema.isEmpty()) {
             catalogSchema.add(schema);
         }
 
-        if (table != null && !"null".equals(table)) {
+        if (table != null && !"null".equals(table) && !table.isEmpty()) {
             catalogSchema.add(table);
         }
 

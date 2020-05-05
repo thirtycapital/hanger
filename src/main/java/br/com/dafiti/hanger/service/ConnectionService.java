@@ -130,7 +130,7 @@ public class ConnectionService {
     @Caching(evict = {
         @CacheEvict(value = "connections", allEntries = true)})
     public void delete(Long id) {
-        connectionRepository.delete(id);
+        connectionRepository.deleteById(id);
     }
 
     /**

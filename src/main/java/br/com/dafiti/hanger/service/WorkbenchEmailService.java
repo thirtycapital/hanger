@@ -33,11 +33,11 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.HtmlEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.dafiti.hanger.repository.WorkbenchEmailRepository;
+import org.apache.commons.lang.StringUtils;
 
 /**
  *
@@ -105,7 +105,7 @@ public class WorkbenchEmailService {
      * @param id Long
      */
     public void delete(Long id) {
-        workbenchEmailRepository.delete(id);
+        workbenchEmailRepository.deleteById(id);
     }
 
     /**

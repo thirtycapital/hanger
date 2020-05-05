@@ -63,6 +63,6 @@ public class ServerService {
     @Caching(evict = {
         @CacheEvict(value = "servers", allEntries = true)})
     public void delete(Long id) {
-        serverRepository.delete(id);
+        serverRepository.deleteById(id);
     }
 }

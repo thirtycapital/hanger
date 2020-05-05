@@ -31,6 +31,8 @@ import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 public interface JobRepository extends CrudRepository<Job, Long> {
+    
+    Job findOne(Long id);
 
     Job findByName(String name);
 

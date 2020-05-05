@@ -35,5 +35,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface WorkbenchQueryRepository
         extends CrudRepository<WorkbenchQuery, Long> {
     
+    WorkbenchQuery findOne(Long id);
+    
     public List<WorkbenchQuery> findByUserOrSharedTrue(User user);
 }

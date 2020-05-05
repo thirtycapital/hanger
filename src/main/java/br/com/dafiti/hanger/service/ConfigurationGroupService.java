@@ -69,6 +69,6 @@ public class ConfigurationGroupService {
     }
 
     public void delete(Long id) {
-        configurationGroupRepository.delete(id);
+        configurationGroupRepository.deleteById(id);
     }
 }

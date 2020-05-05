@@ -29,4 +29,6 @@ import org.springframework.data.repository.CrudRepository;
 public interface ConfigurationGroupRepository extends CrudRepository<ConfigurationGroup, Long> {
 
     ConfigurationGroup findByName(String name);
+    
+    ConfigurationGroup findOne(Long id);
 }

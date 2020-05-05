@@ -28,6 +28,8 @@ import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 public interface SubjectRepository extends CrudRepository<Subject, Long> {
+    
+    Subject findOne(Long id);
 
     public List<Subject> findAllByOrderByName();
 }

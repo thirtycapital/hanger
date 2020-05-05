@@ -56,7 +56,7 @@ public class JobCheckupLogService {
     }
 
     public void delete(Long id) {
-        jobCheckupLogRepository.delete(id);
+        jobCheckupLogRepository.deleteById(id);
     }
 
     public void cleaneup(Date expiration) {

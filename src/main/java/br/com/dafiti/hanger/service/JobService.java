@@ -41,7 +41,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -180,7 +180,7 @@ public class JobService {
         @CacheEvict(value = "job_count_by_subject", allEntries = true),
         @CacheEvict(value = "propagation", allEntries = true)})
     public void delete(Long id) {
-        jobRepository.delete(id);
+        jobRepository.deleteById(id);
     }
 
     @Caching(evict = {

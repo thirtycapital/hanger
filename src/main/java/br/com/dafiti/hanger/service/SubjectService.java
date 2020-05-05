@@ -63,7 +63,7 @@ public class SubjectService {
     }
 
     public void delete(Long id) {
-        subjectRepository.delete(id);
+        subjectRepository.deleteById(id);
     }
 
     /**

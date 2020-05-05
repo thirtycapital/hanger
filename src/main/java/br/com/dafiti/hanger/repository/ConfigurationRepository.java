@@ -29,4 +29,6 @@ import org.springframework.data.repository.CrudRepository;
 public interface ConfigurationRepository extends CrudRepository<Configuration, Long> {
 
     Configuration findByParameter(String parameter);
+    
+    Configuration findOne(Long id);
 }

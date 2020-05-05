@@ -80,7 +80,7 @@ public class EventLogService {
     }
 
     public void delete(Long id) {
-        eventLogRepository.delete(id);
+        eventLogRepository.deleteById(id);
     }
 
     public void cleaneup(Date expiration) {

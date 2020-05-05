@@ -63,6 +63,6 @@ public class WorkbenchQueryService {
     }
 
     public void delete(Long id) {
-        workbenchQueryRepository.delete(id);
+        workbenchQueryRepository.deleteById(id);
     }
 }

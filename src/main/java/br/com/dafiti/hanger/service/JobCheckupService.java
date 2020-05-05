@@ -137,7 +137,7 @@ public class JobCheckupService {
      * @param id JobCheckup ID.
      */
     public void delete(Long id) {
-        jobCheckupRepository.delete(id);
+        jobCheckupRepository.deleteById(id);
     }
 
     /**

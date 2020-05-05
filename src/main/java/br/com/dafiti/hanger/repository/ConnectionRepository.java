@@ -27,4 +27,7 @@ import br.com.dafiti.hanger.model.Connection;
 import org.springframework.data.repository.CrudRepository;
 
 public interface ConnectionRepository extends CrudRepository<Connection, Long> {
+    
+    Connection findOne(Long id);
+    
 }

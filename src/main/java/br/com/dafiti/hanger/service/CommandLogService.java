@@ -55,6 +55,6 @@ public class CommandLogService {
     }
 
     public void delete(Long id) {
-        commandLogRepository.delete(id);
+        commandLogRepository.deleteById(id);
     }
 }

@@ -33,5 +33,6 @@ public enum Database {
     POSTGRES,
     ATHENA,
     HANA,
-    GENERIC;
+    GENERIC,
+    JTDS;
 }

@@ -30,6 +30,7 @@ import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -215,11 +217,11 @@ public class ConnectionController {
      * @param model Model
      * @return Render connectionTables template.
      */
-    @GetMapping(path = "/{id}/table/{catalog}/{schema}")
+    @GetMapping(path = "/{id}/table")
     public String connectionTables(
             @PathVariable(name = "id") Connection connection,
-            @PathVariable(name = "catalog") String catalog,
-            @PathVariable(name = "schema") String schema,
+            @RequestParam(name = "catalog", defaultValue = "") String catalog,
+            @RequestParam(name = "schema", defaultValue = "") String schema,
             Model model) {
 
         try {
@@ -247,12 +249,12 @@ public class ConnectionController {
      * @param model Model
      * @return Render column template.
      */
-    @GetMapping(path = "/{id}/table/column/{catalog}/{schema}/{table}")
+    @GetMapping(path = "/{id}/table/column")
     public String connectionTableColumns(
             @PathVariable(name = "id") Connection connection,
-            @PathVariable(name = "catalog") String catalog,
-            @PathVariable(name = "schema") String schema,
-            @PathVariable(name = "table") String table,
+            @RequestParam(name = "catalog", defaultValue = "") String catalog,
+            @RequestParam(name = "schema", defaultValue = "") String schema,
+            @RequestParam(name = "table", defaultValue = "") String table,
             Model model) {
 
         try {
@@ -268,6 +270,40 @@ public class ConnectionController {
         }
 
         return "connection/column";
+    }
+
+    /**
+     * Connection table columns modal.
+     *
+     * @param connection Connection
+     * @param catalog Catalog
+     * @param schema Schema
+     * @param table Table
+     * @param model Model
+     * @return Test connections modal
+     */
+    @GetMapping(path = "/modal/{id}/table/column")
+    public String getTableMetadataModal(
+            @PathVariable(name = "id") Connection connection,
+            @RequestParam(name = "catalog", defaultValue = "") String catalog,
+            @RequestParam(name = "schema", defaultValue = "") String schema,
+            @RequestParam(name = "table", defaultValue = "") String table,
+            Model model) {
+
+        try {
+            model.addAttribute("table", table);
+            model.addAttribute("pk", connectionService.getPrimaryKey(connection, catalog, schema, table));
+            model.addAttribute("column", connectionService.getColumns(connection, catalog, schema, table));
+            model.addAttribute("indexes", connectionService.getIndexes(connection, catalog, schema, table));
+            model.addAttribute("connection", connection);
+            model.addAttribute("catalog", catalog);
+            model.addAttribute("schema", schema);
+            model.addAttribute("table", table);
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", "Fail listing columns " + new Message().getErrorMessage(ex));
+        }
+
+        return "connection/modalTableMetadata::metadata";
     }
 
     /**
@@ -320,39 +356,5 @@ public class ConnectionController {
             @PathVariable(name = "id") Connection connection) {
 
         connectionService.evictConnection(connection);
-    }
-
-    /**
-     * Test connections modal.
-     *
-     * @param connection
-     * @param catalog
-     * @param schema
-     * @param table
-     * @param model Model
-     * @return Test connections modal
-     */
-    @GetMapping(path = "/modal/{id}/table/column/{catalog}/{schema}/{table}")
-    public String getTableMetadataModal(
-            @PathVariable(name = "id") Connection connection,
-            @PathVariable(name = "catalog") String catalog,
-            @PathVariable(name = "schema") String schema,
-            @PathVariable(name = "table") String table,
-            Model model) {
-
-        try {
-            model.addAttribute("table", table);
-            model.addAttribute("pk", connectionService.getPrimaryKey(connection, catalog, schema, table));
-            model.addAttribute("column", connectionService.getColumns(connection, catalog, schema, table));
-            model.addAttribute("indexes", connectionService.getIndexes(connection, catalog, schema, table));
-            model.addAttribute("connection", connection);
-            model.addAttribute("catalog", catalog);
-            model.addAttribute("schema", schema);
-            model.addAttribute("table", table);
-        } catch (Exception ex) {
-            model.addAttribute("errorMessage", "Fail listing columns " + new Message().getErrorMessage(ex));
-        }
-
-        return "connection/modalTableMetadata::metadata";
     }
 }

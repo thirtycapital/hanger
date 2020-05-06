@@ -510,7 +510,7 @@ public class ConnectionService {
                     ResultSetMetaData metaData = resultSet.getMetaData();
 
                     //Identifies the metadata columns. 
-                    for (int i = 1; i < metaData.getColumnCount(); i++) {
+                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
                         queryResultSet
                                 .getHeader()
                                 .add(metaData.getColumnName(i));

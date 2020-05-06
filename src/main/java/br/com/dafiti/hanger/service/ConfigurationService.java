@@ -60,7 +60,7 @@ public class ConfigurationService {
     }
 
     public Configuration load(Long id) {
-        return configurationRepository.findOne(id);
+        return configurationRepository.findById(id).get();
     }
 
     /**

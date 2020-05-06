@@ -55,7 +55,7 @@ public class WorkbenchQueryService {
     }
 
     public WorkbenchQuery load(Long id) {
-        return workbenchQueryRepository.findOne(id);
+        return workbenchQueryRepository.findById(id).get();
     }
 
     public void save(WorkbenchQuery workbenchQuery) {

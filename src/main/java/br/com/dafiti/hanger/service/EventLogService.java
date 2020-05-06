@@ -55,7 +55,7 @@ public class EventLogService {
     }
 
     public EventLog load(Long id) {
-        return eventLogRepository.findOne(id);
+        return eventLogRepository.findById(id).get();
     }
 
     public void save(EventLog logger) {

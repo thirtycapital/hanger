@@ -51,7 +51,7 @@ public class ServerService {
     }
 
     public Server load(Long id) {
-        return serverRepository.findOne(id);
+        return serverRepository.findById(id).get();
     }
 
     @Caching(evict = {

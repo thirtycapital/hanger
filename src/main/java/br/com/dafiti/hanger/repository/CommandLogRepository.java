@@ -27,5 +27,4 @@ import br.com.dafiti.hanger.model.CommandLog;
 import org.springframework.data.repository.CrudRepository;
 
 public interface CommandLogRepository extends CrudRepository<CommandLog, Long> {
-    CommandLog findOne(Long id);
 }

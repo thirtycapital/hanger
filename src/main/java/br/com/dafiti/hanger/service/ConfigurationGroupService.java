@@ -47,7 +47,7 @@ public class ConfigurationGroupService {
     }
 
     public ConfigurationGroup load(Long id) {
-        return configurationGroupRepository.findOne(id);
+        return configurationGroupRepository.findById(id).get();
     }
 
     public void save(ConfigurationGroup configurationGroup) {

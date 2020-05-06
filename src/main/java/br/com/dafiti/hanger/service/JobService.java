@@ -83,7 +83,7 @@ public class JobService {
     }
 
     public Job load(Long id) {
-        return jobRepository.findOne(id);
+        return jobRepository.findById(id).get();
     }
 
     public List<Job> findBySubjectOrderByName(Subject subject) {

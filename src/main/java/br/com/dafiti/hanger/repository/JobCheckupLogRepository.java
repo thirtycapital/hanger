@@ -31,8 +31,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface JobCheckupLogRepository extends CrudRepository<JobCheckupLog, Long> {
     
-    JobCheckupLog findOne(Long id);
-
     @Modifying
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void deleteByDateBefore(Date date);

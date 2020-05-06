@@ -30,5 +30,4 @@ public interface ConfigurationGroupRepository extends CrudRepository<Configurati
 
     ConfigurationGroup findByName(String name);
     
-    ConfigurationGroup findOne(Long id);
 }

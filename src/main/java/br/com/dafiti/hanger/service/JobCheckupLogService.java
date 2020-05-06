@@ -48,7 +48,7 @@ public class JobCheckupLogService {
     }
 
     public JobCheckupLog load(Long id) {
-        return jobCheckupLogRepository.findOne(id);
+        return jobCheckupLogRepository.findById(id).get();
     }
 
     public JobCheckupLog save(JobCheckupLog jobCheckupLog) {

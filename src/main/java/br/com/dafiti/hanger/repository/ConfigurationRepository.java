@@ -30,5 +30,4 @@ public interface ConfigurationRepository extends CrudRepository<Configuration, L
 
     Configuration findByParameter(String parameter);
     
-    Configuration findOne(Long id);
 }

@@ -27,7 +27,4 @@ import br.com.dafiti.hanger.model.JobCheckup;
 import org.springframework.data.repository.CrudRepository;
 
 public interface JobCheckupRepository extends CrudRepository<JobCheckup, Long> {
-    
-    JobCheckup findOne(Long id);
-    
 }

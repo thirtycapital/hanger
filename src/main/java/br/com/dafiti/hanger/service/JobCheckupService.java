@@ -119,7 +119,7 @@ public class JobCheckupService {
      * @return JobCheckup.
      */
     public JobCheckup load(Long id) {
-        return jobCheckupRepository.findOne(id);
+        return jobCheckupRepository.findById(id).get();
     }
 
     /**

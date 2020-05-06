@@ -27,7 +27,4 @@ import br.com.dafiti.hanger.model.Server;
 import org.springframework.data.repository.CrudRepository;
 
 public interface ServerRepository extends CrudRepository<Server, Long> {
-    
-    Server findOne(Long id);
-    
 }

@@ -31,8 +31,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.CrudRepository;
 
 public interface EventLogRepository extends CrudRepository<EventLog, Long> {
-
-    EventLog findOne(Long id);
     
     public List<EventLog> findAllByOrderByDateDesc();
     

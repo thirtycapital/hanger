@@ -47,7 +47,7 @@ public class CommandLogService {
     }
 
     public CommandLog load(Long id) {
-        return commandLogRepository.findOne(id);
+        return commandLogRepository.findById(id).get();
     }
 
     public CommandLog save(CommandLog commandLog) {

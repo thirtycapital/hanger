@@ -655,6 +655,38 @@
                     <div th:if="${ job.server != null }">
                         <fieldset>
                             <legend>
+                                Slack notification
+                            </legend>
+                        </fieldset> 
+
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <div class="btn-group btn-space">
+                                    <label>
+                                        <input  
+                                            id="slackJobNotification" 
+                                            name="slackJobNotification"
+                                            type="checkbox" 
+                                            th:field="*{notify}" 
+                                            th:checked="*{notify}"/> Build status  
+                                    </label>
+                                </div>
+
+                                <div class="btn-group btn-space">
+                                    <label>
+                                        <input  
+                                            id="slackCheckupNotification" 
+                                            name="slackCheckupNotification"
+                                            type="checkbox" 
+                                            th:field="*{checkupNotified}" 
+                                            th:checked="*{checkupNotified}"/> Checkup status
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <fieldset>
+                            <legend>
                                 Options
                             </legend>
                         </fieldset>   
@@ -691,38 +723,6 @@
                                             type="checkbox" 
                                             th:field="*{anyScope}" 
                                             th:checked="*{anyScope}"/> Build on any parent scope
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <fieldset>
-                            <legend>
-                                Slack notification
-                            </legend>
-                        </fieldset> 
-
-                        <div class="form-group">
-                            <div class="col-sm-10">
-                                <div class="btn-group btn-space">
-                                    <label>
-                                        <input  
-                                            id="slackJobNotification" 
-                                            name="slackJobNotification"
-                                            type="checkbox" 
-                                            th:field="*{notify}" 
-                                            th:checked="*{notify}"/> Job status  
-                                    </label>
-                                </div>
-
-                                <div class="btn-group btn-space">
-                                    <label>
-                                        <input  
-                                            id="slackCheckupNotification" 
-                                            name="slackCheckupNotification"
-                                            type="checkbox" 
-                                            th:field="*{checkupNotified}" 
-                                            th:checked="*{checkupNotified}"/> Checkup status
                                     </label>
                                 </div>
                             </div>

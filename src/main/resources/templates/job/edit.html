@@ -670,17 +670,19 @@
                                             th:field="*{notify}" 
                                             th:checked="*{notify}"/> Build status  
                                     </label>
-                                    
-                                    <br/>
 
-                                    <label>
-                                        <input  
-                                            id="slackCheckupNotification" 
-                                            name="slackCheckupNotification"
-                                            type="checkbox" 
-                                            th:field="*{checkupNotified}" 
-                                            th:checked="*{checkupNotified}"/> Checkup status
-                                    </label>
+                                    <div th:if="${not #lists.isEmpty(job.checkup)}">
+                                        <br/>
+
+                                        <label>
+                                            <input  
+                                                id="slackCheckupNotification" 
+                                                name="slackCheckupNotification"
+                                                type="checkbox" 
+                                                th:field="*{checkupNotified}" 
+                                                th:checked="*{checkupNotified}"/> Checkup status
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

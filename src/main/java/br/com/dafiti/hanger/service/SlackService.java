@@ -92,13 +92,6 @@ public class SlackService {
                     this.slackSession = SlackSessionFactory.createWebSocketSlackSession(this.token);
                     this.slackSession.connect();
                     connected = this.slackSession.isConnected();
-
-                    if (connected) {
-                        SlackMessagePostedListener listener = (SlackMessagePosted event, SlackSession session) -> {
-                            String content = event.getMessageContent();
-                        };
-                        this.slackSession.addMessagePostedListener(listener);
-                    }
                 }
             } catch (IOException ex) {
                 Logger.getLogger(MailService.class.getName()).log(Level.SEVERE, "Fail connecting to slack", ex);

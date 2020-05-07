@@ -642,8 +642,8 @@ public class JobCheckupService {
             mailService.send(blueprint);
         }
 
-        //Identify if the job has notification enabled.
-        if (job.isNotify()) {
+        //Identifies if checkup notification is enabled.
+        if (job.isCheckupNotified()) {
             StringBuilder message = new StringBuilder();
 
             message

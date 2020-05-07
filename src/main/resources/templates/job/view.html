@@ -457,19 +457,17 @@
                                             disabled="true"/>  Build status  
                                     </label>
 
-                                    <div th:if="${not #lists.isEmpty(job.checkup)}">
-                                        <br/>
-                                        
-                                        <label>
-                                            <input  
-                                                id="slackCheckupNotification" 
-                                                name="slackCheckupNotification"
-                                                type="checkbox" 
-                                                th:field="*{checkupNotified}" 
-                                                th:checked="*{checkupNotified}"
-                                                disabled="true"/> Checkup status
-                                        </label>
-                                    </div>
+                                    <br/>
+
+                                    <label th:if="${not #lists.isEmpty(job.checkup)}">
+                                        <input  
+                                            id="slackCheckupNotification" 
+                                            name="slackCheckupNotification"
+                                            type="checkbox" 
+                                            th:field="*{checkupNotified}" 
+                                            th:checked="*{checkupNotified}"
+                                            disabled="true"/> Checkup status
+                                    </label>
                                 </div>
                             </div>
                         </div>

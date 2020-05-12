@@ -145,14 +145,12 @@
                                         <table  class="table borderless">
                                             <tbody>
                                                 <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}" th:remove="tag"> 
-                                                    <tr>
-                                                        <td style="width:5%"><img class="hanger-img-sm" th:src="@{'/images/' + ${ commandLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="alt=${ commandLog.success }"></img></td>
-                                                        <td>
-                                                            <a th:inline="text" th:href="@{'/checkup/log/' + ${commandLog.id}}">
-                                                                [[${ (commandLogStat.index + 1) + '. ' + commandLog.commandType}]]
-                                                            </a>
-                                                        </td>
-                                                    </tr>
+                                                    <td style="width:5%"><img class="hanger-img-sm" th:src="@{'/images/' + ${ commandLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="alt=${ commandLog.success }"></img></td>
+                                                    <td>
+                                                        <a th:inline="text" th:href="@{'/checkup/log/' + ${commandLog.id}}">
+                                                            [[${ (commandLogStat.index + 1) + '. ' + commandLog.commandType}]]
+                                                        </a>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>

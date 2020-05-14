@@ -123,6 +123,7 @@ public class JobNotificationService {
                     }
 
                     if (slack) {
+                        //Identifies if job notification is enabled.
                         if (job.isNotify()) {
                             if (job.getParent().isEmpty()) {
                                 message
@@ -161,14 +162,11 @@ public class JobNotificationService {
                                             .append(warning.get(job).size())
                                             .append(" warning(s) in the job flow!)");
                                 }
-
-                                slackService.send(message.toString(), job.getChannel());
                             }
+                            slackService.send(message.toString(), job.getChannel());
                         }
                     }
                 } else if (jobStatus.getFlow().equals(Flow.ERROR)
-                        || jobStatus.getFlow().equals(Flow.UNHEALTHY)
-                        || jobStatus.getFlow().equals(Flow.BLOCKED)
                         || (jobBuild.getPhase().equals(Phase.FINALIZED) && (jobBuild.getStatus().equals(Status.FAILURE) || jobBuild.getStatus().equals(Status.ABORTED)))) {
 
                     //Put a warnig in case of error. 
@@ -178,6 +176,7 @@ public class JobNotificationService {
                     });
 
                     if (slack) {
+                        //Identifies if job notification is enabled.
                         if (job.isNotify()) {
                             message
                                     .append(":fire: Something wrong happened to the job *")

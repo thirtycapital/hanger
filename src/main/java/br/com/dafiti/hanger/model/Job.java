@@ -74,6 +74,7 @@ public class Job extends Tracker implements Serializable {
     private String name;
     private String alias;
     private String description;
+    private String timeRestriction;
     private int retry;
     private int tolerance;
     private int wait;
@@ -88,8 +89,8 @@ public class Job extends Tracker implements Serializable {
     private boolean notify;
     private boolean rebuild;
     private boolean rebuildBlocked;
-    private String timeRestriction;
     private boolean anyScope;
+    private boolean checkupNotified;
 
     public Job() {
     }
@@ -352,13 +353,21 @@ public class Job extends Tracker implements Serializable {
 
         return verbose;
     }
-    
+
     public boolean isAnyScope() {
         return anyScope;
     }
 
     public void setAnyScope(boolean anyScope) {
         this.anyScope = anyScope;
+    }
+
+    public boolean isCheckupNotified() {
+        return checkupNotified;
+    }
+
+    public void setCheckupNotified(boolean checkupNotified) {
+        this.checkupNotified = checkupNotified;
     }
 
     @Override

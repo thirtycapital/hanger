@@ -119,7 +119,7 @@ public class JobCheckupService {
      * @return JobCheckup.
      */
     public JobCheckup load(Long id) {
-        return jobCheckupRepository.findOne(id);
+        return jobCheckupRepository.findById(id).get();
     }
 
     /**
@@ -137,7 +137,7 @@ public class JobCheckupService {
      * @param id JobCheckup ID.
      */
     public void delete(Long id) {
-        jobCheckupRepository.delete(id);
+        jobCheckupRepository.deleteById(id);
     }
 
     /**

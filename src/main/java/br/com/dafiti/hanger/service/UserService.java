@@ -69,7 +69,7 @@ public class UserService implements UserDetailsService {
      * @return User.
      */
     public User load(long id) {
-        return userRepository.findOne(id);
+        return userRepository.findById(id).get();
     }
 
     /**
@@ -197,7 +197,7 @@ public class UserService implements UserDetailsService {
      * @param id User ID.
      */
     public void delete(Long id) {
-        userRepository.delete(id);
+        userRepository.deleteById(id);
     }
 
     /**

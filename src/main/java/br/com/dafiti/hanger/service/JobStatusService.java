@@ -72,7 +72,7 @@ public class JobStatusService {
     }
 
     public void delete(Long id) {
-        jobStatusRepository.delete(id);
+        jobStatusRepository.deleteById(id);
     }
 
     public JobStatus updateFlow(JobStatus jobStatus, Flow flow) {

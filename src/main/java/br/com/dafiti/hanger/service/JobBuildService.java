@@ -77,7 +77,7 @@ public class JobBuildService {
      * @param id Build ID.
      */
     public void delete(Long id) {
-        jobBuildRepository.delete(id);
+        jobBuildRepository.deleteById(id);
     }
 
     /**

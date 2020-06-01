@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
     <head lang="en" th:replace="base/header :: head">
         <title>Hanger</title>
     </head>
@@ -34,7 +34,7 @@
             </div> 
 
             <!--AJAX Parent modal --> 
-            <div id="modalHolder"/>
+            <div id="modalHolder"></div>
 
             <table id="table" class="table table-hover">
                 <thead>
@@ -227,7 +227,7 @@
                         url: url + subject,
                         success: function (result) {
                             $("#modalHolder").html(result);
-                            $("#modalJobDetails").modal({backdrop: 'static', keyboard: false});
+                            $("#modalJobDetails").modal({backdrop: 'static', keyboard: true});
                         },
                         error: function (e) {
                             alert("Error loading subject details: " + e);

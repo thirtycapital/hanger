@@ -55,7 +55,7 @@ public class SubjectService {
     }
 
     public Subject load(Long id) {
-        return subjectRepository.findOne(id);
+        return subjectRepository.findById(id).get();
     }
 
     public void save(Subject subject) {
@@ -63,7 +63,7 @@ public class SubjectService {
     }
 
     public void delete(Long id) {
-        subjectRepository.delete(id);
+        subjectRepository.deleteById(id);
     }
 
     /**

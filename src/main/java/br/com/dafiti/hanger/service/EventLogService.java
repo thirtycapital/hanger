@@ -55,7 +55,7 @@ public class EventLogService {
     }
 
     public EventLog load(Long id) {
-        return eventLogRepository.findOne(id);
+        return eventLogRepository.findById(id).get();
     }
 
     public void save(EventLog logger) {
@@ -80,7 +80,7 @@ public class EventLogService {
     }
 
     public void delete(Long id) {
-        eventLogRepository.delete(id);
+        eventLogRepository.deleteById(id);
     }
 
     public void cleaneup(Date expiration) {

@@ -112,7 +112,7 @@ public class ConnectionService {
     }
 
     public Connection load(Long id) {
-        return connectionRepository.findOne(id);
+        return connectionRepository.findById(id).get();
     }
 
     @Caching(evict = {
@@ -128,7 +128,7 @@ public class ConnectionService {
     @Caching(evict = {
         @CacheEvict(value = "connections", allEntries = true)})
     public void delete(Long id) {
-        connectionRepository.delete(id);
+        connectionRepository.deleteById(id);
     }
 
     /**

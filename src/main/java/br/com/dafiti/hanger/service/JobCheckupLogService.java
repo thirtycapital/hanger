@@ -48,7 +48,7 @@ public class JobCheckupLogService {
     }
 
     public JobCheckupLog load(Long id) {
-        return jobCheckupLogRepository.findOne(id);
+        return jobCheckupLogRepository.findById(id).get();
     }
 
     public JobCheckupLog save(JobCheckupLog jobCheckupLog) {
@@ -56,7 +56,7 @@ public class JobCheckupLogService {
     }
 
     public void delete(Long id) {
-        jobCheckupLogRepository.delete(id);
+        jobCheckupLogRepository.deleteById(id);
     }
 
     public void cleaneup(Date expiration) {

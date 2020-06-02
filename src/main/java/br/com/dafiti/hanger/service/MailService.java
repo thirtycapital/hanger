@@ -34,6 +34,7 @@ import org.apache.commons.mail.HtmlEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.context.ApplicationContext;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
@@ -48,10 +49,12 @@ import org.thymeleaf.templatemode.TemplateMode;
 public class MailService {
 
     private final ConfigurationService configurationService;
+    private final ApplicationContext applicationContext;
 
     @Autowired
-    public MailService(ConfigurationService configurationService) {
+    public MailService(ConfigurationService configurationService, ApplicationContext applicationContext) {
         this.configurationService = configurationService;
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -123,7 +126,8 @@ public class MailService {
     private String getTemplateHTMLOf(String path, String template, HashMap<String, Object> variables) {
         //Define the template resolver. 
         SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
-        resolver.setPrefix(path + (!path.endsWith("/") ? '/' : ""));
+        resolver.setApplicationContext(applicationContext);
+        resolver.setPrefix("classpath:" + path + (!path.endsWith("/") ? '/' : ""));
         resolver.setSuffix(".html");
         resolver.setTemplateMode(TemplateMode.HTML);
 

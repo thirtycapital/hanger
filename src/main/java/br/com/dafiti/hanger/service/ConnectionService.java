@@ -147,7 +147,7 @@ public class ConnectionService {
 
                 switch (connection.getTarget()) {
                     case MYSQL:
-                        driver = new com.mysql.jdbc.Driver();
+                        driver = new com.mysql.cj.jdbc.Driver();
                         properties.setProperty("loginTimeout", "5000");
                         properties.setProperty("connectTimeout", "5000");
                         break;

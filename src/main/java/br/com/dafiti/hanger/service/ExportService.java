@@ -140,8 +140,12 @@ public class ExportService {
      * @return
      * @throws IOException
      */
-    public HttpEntity<?> dowload(String file) throws IOException {
-        String fileName = file.concat(".csv");
+    public HttpEntity<?> download(String file) throws IOException {
+        String fileName = file;
+        
+        if (!file.endsWith(".csv")) {
+            fileName = file.concat(".csv");
+        }
 
         Path path = new File(System.getProperty("java.io.tmpdir")
                 .concat("/")

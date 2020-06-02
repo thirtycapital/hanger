@@ -53,7 +53,7 @@ public class EventLog implements Serializable {
     private Date date = new Date();
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }

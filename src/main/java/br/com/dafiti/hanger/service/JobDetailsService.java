@@ -234,19 +234,21 @@ public class JobDetailsService {
             //Identifi if the job scope. 
             scope
                     .append(jobStatus.getScope().toString())
-                    .append(job.isAnyScope() ? " | FREE SCOPE ": "")
+                    .append(job.isAnyScope() ? " | FREE SCOPE " : "")
                     .append(job.isRebuild() ? " | REBUILD " + (job.isRebuildBlocked() ? "after all blockers ready " : "") + (job.getWait() != 0 ? "once every " + job.getWait() + " min" : "") : "")
                     .append((job.getTimeRestriction() == null || job.getTimeRestriction().isEmpty()) ? "" : " " + job.getTimeRestrictionDescription().toLowerCase());
 
             //Identify the number of build retries. 
             if (retryService.exists(job)
-                    && (job.getRetry() != 0)
-                    && (retryService.get(job) >= job.getRetry())) {
+                    && retryService.get(job) != 0
+                    && job.getRetry() != 0) {
 
                 building
-                        .append(" ( ")
+                        .append(" (")
+                        .append(retryService.get(job))
+                        .append(" of ")
                         .append(job.getRetry())
-                        .append("x )");
+                        .append(" tries)");
             }
         }
 

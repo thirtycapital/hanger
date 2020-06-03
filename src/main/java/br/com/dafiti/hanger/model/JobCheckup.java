@@ -72,7 +72,7 @@ public class JobCheckup implements Serializable {
     private boolean prevalidation = false;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }

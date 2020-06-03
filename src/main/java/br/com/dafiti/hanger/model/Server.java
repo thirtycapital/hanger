@@ -48,7 +48,7 @@ public class Server extends Tracker implements Serializable {
     private String token;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }

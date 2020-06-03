@@ -70,7 +70,7 @@ public class User extends Tracker implements Serializable, UserDetails {
     private boolean enabled = true;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     public Long getId() {
         return this.id;

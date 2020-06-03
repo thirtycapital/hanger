@@ -43,7 +43,7 @@ public class Privilege implements Serializable {
     private List<User> users;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }

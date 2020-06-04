@@ -212,7 +212,7 @@ public class JobCheckupService {
                         log = checkup.getAction().equals(Action.LOG_AND_CONTINUE);
 
                         //Identifies if should execute something. 
-                        if (!validated && !log) {
+                        if (!validated) {
                             boolean commandResult = false;
 
                             //Executes the checkup command.

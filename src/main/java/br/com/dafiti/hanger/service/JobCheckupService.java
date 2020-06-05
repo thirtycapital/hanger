@@ -292,14 +292,14 @@ public class JobCheckupService {
         switch (checkup.getAction()) {
             case REBUILD:
                 try {
-                //Rebuild the job.
-                jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
-                jenkinsService.build(job);
-            } catch (Exception ex) {
-                Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building job: " + job.getName(), ex);
-            }
+                    //Rebuild the job.
+                    jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
+                    jenkinsService.build(job);
+                } catch (Exception ex) {
+                    Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building job: " + job.getName(), ex);
+                }
 
-            break;
+                break;
             case REBUILD_MESH:
                 HashSet<Job> parent = jobService.getMeshParent(job);
                 jobService.rebuildMesh(job);

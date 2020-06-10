@@ -47,10 +47,12 @@ import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.Privilege;
 import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.service.JobService;
+import br.com.dafiti.hanger.service.JwtService;
 import br.com.dafiti.hanger.service.MailService;
 import br.com.dafiti.hanger.service.PrivilegeService;
 import br.com.dafiti.hanger.service.RoleService;
 import br.com.dafiti.hanger.service.UserService;
+import java.util.Date;
 import java.util.List;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -67,7 +69,8 @@ public class UserController {
     private final MailService mailService;
     private final JobService jobService;
     private final PrivilegeService privilegeService;
-
+    private final JwtService jwtService;
+    
     @Autowired
     public UserController(
             UserService userService,
@@ -75,13 +78,15 @@ public class UserController {
             MailService mailService,
             JobService jobService,
             SessionRegistry sessionRegistry,
-            PrivilegeService privilegeService) {
+            PrivilegeService privilegeService,
+            JwtService jwtService) {
 
         this.userService = userService;
         this.roleService = roleService;
         this.mailService = mailService;
         this.jobService = jobService;
         this.privilegeService = privilegeService;
+        this.jwtService = jwtService;
     }
 
     /**
@@ -125,7 +130,7 @@ public class UserController {
             @PathVariable(value = "id") User user) {
 
         model.addAttribute("user", user);
-        model.addAttribute("roles", roleService.list());
+        model.addAttribute("roles", roleService.list());   
         return "user/edit";
     }
 
@@ -505,5 +510,53 @@ public class UserController {
         model.addAttribute("roles", roleService.list());
 
         return "user/edit";
+    }
+    
+    /**
+     * Api token modal.
+     *
+     * @param model Model
+     * @param principal
+     * @return User edit
+     */
+    @GetMapping(path = "/modal/token/")
+    public String modal(Model model, Principal principal) {
+        if (principal != null) {
+            User user = userService.findByUsername(principal.getName());
+
+            if (user != null) {
+                if (user.getTokenCreatedAt() == null) {
+                    user.setTokenCreatedAt(new Date());
+                    userService.save(user);
+                }
+
+                model.addAttribute("user", user);
+                model.addAttribute("token", jwtService.generateToken(user.getId().toString(), user.getTokenCreatedAt()));
+
+                return "user/modalAPIToken::apiToken";
+            }
+        }
+
+        return "user/list";
+    }
+
+    /**
+     * Generate a new token.
+     *
+     * @param principal
+     * @return Redirect to list template.
+     */
+    @PostMapping(path = "/refreshToken")
+    public String refresh(Principal principal) {
+
+        if (principal != null) {
+            User user = userService.findByUsername(principal.getName());
+
+            if (user != null) {
+                user.setTokenCreatedAt(new Date());
+                userService.save(user);
+            }
+        }
+        return "redirect:/user/list";
     }
 }

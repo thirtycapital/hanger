@@ -65,7 +65,7 @@ public class BuildInterceptor implements HandlerInterceptor {
         try {
             Map variables = (HashMap) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
             String path = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-            Job job = jobService.load(Long.parseLong((String) variables.get("name")));
+            Job job = jobService.load(Long.parseLong((String) variables.get("id")));
 
             if (job != null) {
                 EventLog eventLog = new EventLog();

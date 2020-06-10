@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Dafiti Group
+ * Copyright (c) 2020 Dafiti Group
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -23,7 +23,6 @@
  */
 package br.com.dafiti.hanger.service;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -51,13 +50,13 @@ public class JwtService {
 
     /**
      *
-     * @param creation
+     * @param date
      * @param subject
      * @return
      */
-    public String generateToken(String subject, Date creation) {
+    public String generateToken(String subject, Date date) {
         return Jwts.builder()
-                .setIssuedAt(creation)
+                .setIssuedAt(date)
                 .setSubject(subject)
                 .signWith(SignatureAlgorithm.HS256, encryptKey)
                 .compact();

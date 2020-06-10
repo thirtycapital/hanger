@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Dafiti Group
+ * Copyright (c) 2020 Dafiti Group
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -27,6 +27,7 @@ import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.service.JwtService;
 import br.com.dafiti.hanger.service.UserService;
 import java.io.IOException;
+import java.util.Date;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -80,16 +81,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                         )
                 );
 
-                //Identifies if it is the current token. 
                 if (user != null) {
-                    //    if (user.getTokenCreatedAt() == jwtService.getCreatedAt(token)) {
-                    SecurityContextHolder.getContext().setAuthentication(
-                            new UsernamePasswordAuthenticationToken(
-                                    user,
-                                    null,
-                                    user.getAuthorities())
-                    );
-                    //    }
+                    //Identifies if it is the current token.
+                    if (new Date(user.getTokenCreatedAt().getTime()).equals(jwtService.getCreatedAt(token))) {
+                        SecurityContextHolder.getContext().setAuthentication(
+                                new UsernamePasswordAuthenticationToken(
+                                        user,
+                                        null,
+                                        user.getAuthorities())
+                        );
+                    }
                 }
             }
 

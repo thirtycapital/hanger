@@ -246,14 +246,14 @@ public class JobController {
      */
     @PostMapping(path = "/api/build/{id}")
     @ResponseBody
-    public ResponseEntity<String> build(
+    public ResponseEntity build(
             Model model,
             @PathVariable(value = "id") Job job) {
         
         if (jobBuild(job)) {
-            return ResponseEntity.ok().body("ssss");
+            return ResponseEntity.status(HttpStatus.OK).body("ok");
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+            return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("fail");
         }
     }
 

@@ -102,7 +102,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         @Override
         public void configure(WebSecurity web) throws Exception {
             web
-                    .ignoring()
+                    .expressionHandler(permissionHandler(web))
+                    .ignoring()                    
                     .antMatchers(
                             "/observer",
                             "/webjars/**",
@@ -195,6 +196,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     public DefaultWebSecurityExpressionHandler permissionHandler() {
         final DefaultWebSecurityExpressionHandler webSecurityExpressionHandler = new DefaultWebSecurityExpressionHandler();
         webSecurityExpressionHandler.setPermissionEvaluator(customPermissionEvaluator);
+        return webSecurityExpressionHandler;
+    }
+    
+    @Bean
+    public DefaultWebSecurityExpressionHandler permissionHandler(WebSecurity web) {
+        final DefaultWebSecurityExpressionHandler webSecurityExpressionHandler = new DefaultWebSecurityExpressionHandler();
+        webSecurityExpressionHandler.setPermissionEvaluator(customPermissionEvaluator);
+        web.expressionHandler(webSecurityExpressionHandler);
         return webSecurityExpressionHandler;
     }
 }

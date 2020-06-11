@@ -256,7 +256,7 @@
 
                 // Build a Job.
                 var build = function () {
-                    var url = /*[[@{/job/build/silently/}]]*/ "/job/api/build/";
+                    var url = /*[[@{/job/build/silently/}]]*/ "/job/build/silently/";
                     buildJob(job, url);
                 };
 
@@ -430,7 +430,7 @@
                         type: "GET",
                         url: url + id,
                         timeout: 30000,
-                        success: function () {
+                        success: function (result) {
                             if (result) {
                                 toastr.success('Started successfully.');
 

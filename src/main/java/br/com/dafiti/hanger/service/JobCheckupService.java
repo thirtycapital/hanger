@@ -176,7 +176,6 @@ public class JobCheckupService {
      */
     public boolean evaluate(Job job, boolean prevalidation, Scope scope) {
         boolean log;
-        boolean stop = false;
         boolean validated = true;
 
         //Identifies if the job has checkup.
@@ -184,76 +183,75 @@ public class JobCheckupService {
             //Log the job status before checkup evaluation.
             Logger.getLogger(JobCheckupService.class.getName()).log(Level.INFO, "{0} status before checkup evaluation", new Object[]{job.getName()});
 
-            //Filter checkup by scope.
+            //Filters checkup by scope.
             List<JobCheckup> checkups = job.getCheckup()
                     .stream()
                     .filter(x -> (x.getScope().equals(scope) || x.getScope().equals(Scope.ANYONE)))
                     .filter(x -> (x.isPrevalidation() == prevalidation))
                     .collect(Collectors.toList());
 
-            //Identify if the job has checkups.
+            //Identifies if the job has checkups.
             if (!checkups.isEmpty()) {
                 int retry = retryService.get(job);
 
-                //Change the job flow to checkup.
+                //Changes the job flow to checkup.
                 jobStatusService.updateFlow(job.getStatus(), Flow.CHECKUP);
 
                 for (JobCheckup checkup : checkups) {
-                    //Identify the query scope and if it is enabled. 
-                    if (checkup.isEnabled() && !stop) {
-                        //Run the query. 
+                    //Identifies the query scope and if it is enabled. 
+                    if (checkup.isEnabled()) {
+                        JobCheckupLog jobCheckupLog = new JobCheckupLog(checkup);
+
+                        //Runs the query. 
                         String value = this.executeQuery(checkup);
 
-                        //Compare value and threshold. 
+                        //Compares value and threshold. 
                         validated = this.check(checkup, value);
 
-                        //Identify if is just a log. 
+                        //Identifies if is just a log. 
                         log = checkup.getAction().equals(Action.LOG_AND_CONTINUE);
 
-                        //Identify if should retry.
-                        if (retry <= job.getRetry() || (retry == 1 && job.getRetry() == 0)) {
-                            JobCheckupLog jobCheckupLog = new JobCheckupLog(checkup);
+                        //Identifies if should execute something. 
+                        if (!validated) {
+                            boolean commandResult = false;
 
-                            //Identify if should execute something. 
-                            if (!validated && !log) {
-                                boolean commandResult = false;
+                            //Executes the checkup command.
+                            for (Command command : checkup.getCommand()) {
+                                commandResult = this.executeCommand(checkup, command, jobCheckupLog);
 
-                                //Execute the checkup command.
-                                for (Command command : checkup.getCommand()) {
-                                    commandResult = this.executeCommand(checkup, command, jobCheckupLog);
-
-                                    if (!commandResult) {
-                                        break;
-                                    }
+                                if (!commandResult) {
+                                    break;
                                 }
-
-                                //Identify if should revalidate the checkup.
-                                if (commandResult) {
-                                    value = this.executeQuery(checkup);
-                                    validated = this.check(checkup, value);
-                                }
-
-                                //Increase the retry counter.
-                                retryService.increase(job);
                             }
 
-                            //Define the checkup status. 
-                            jobCheckupLog.setValue(value);
-                            jobCheckupLog.setSuccess(validated);
+                            //Identifies if should revalidate the checkup.
+                            if (commandResult) {
+                                value = this.executeQuery(checkup);
+                                validated = this.check(checkup, value);
+                            }
+                        }
 
-                            //Add the log to the checkup.
-                            checkup.addLog(jobCheckupLog);
-                            this.save(checkup);
+                        //Defines the checkup status. 
+                        jobCheckupLog.setValue(value);
+                        jobCheckupLog.setSuccess(validated);
 
-                            //Identify if should execute an action.
+                        //Adds the log to the checkup.
+                        checkup.addLog(jobCheckupLog);
+                        this.save(checkup);
+
+                        //Identifies if should retry.
+                        if (retry < job.getRetry()
+                                || job.getRetry() == 0) {
+
                             if (!validated && !log) {
+                                //Increases the retry counter.
+                                retryService.increase(job);
+
+                                //Executes the checkup related action. 
                                 this.executeAction(job, checkup);
-                                retryService.remove(job);
-                                stop = true;
                             }
                         } else {
                             retryService.remove(job);
-                            stop = true;
                         }
 
                         //Verify if this check failed. 
@@ -271,7 +269,7 @@ public class JobCheckupService {
                 if (validated) {
                     retryService.remove(job);
                 } else {
-                    //Change the job flow to checkup.
+                    //Changes the job flow to checkup.
                     jobStatusService.updateFlow(job.getStatus(), Flow.UNHEALTHY);
                 }
             }
@@ -294,14 +292,14 @@ public class JobCheckupService {
         switch (checkup.getAction()) {
             case REBUILD:
                 try {
-                //Rebuild the job.
-                jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
-                jenkinsService.build(job);
-            } catch (Exception ex) {
-                Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building job: " + job.getName(), ex);
-            }
+                    //Rebuild the job.
+                    jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
+                    jenkinsService.build(job);
+                } catch (Exception ex) {
+                    Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building job: " + job.getName(), ex);
+                }
 
-            break;
+                break;
             case REBUILD_MESH:
                 HashSet<Job> parent = jobService.getMeshParent(job);
                 jobService.rebuildMesh(job);

@@ -70,7 +70,7 @@ public class UserController {
     private final JobService jobService;
     private final PrivilegeService privilegeService;
     private final JwtService jwtService;
-    
+
     @Autowired
     public UserController(
             UserService userService,
@@ -130,7 +130,7 @@ public class UserController {
             @PathVariable(value = "id") User user) {
 
         model.addAttribute("user", user);
-        model.addAttribute("roles", roleService.list());   
+        model.addAttribute("roles", roleService.list());
         return "user/edit";
     }
 
@@ -298,10 +298,10 @@ public class UserController {
 
         if (user == null || !user.isEnabled()) {
             if (user != null && !user.isEnabled()) {
-                redirectAttributes.addFlashAttribute("errorMessage", 
+                redirectAttributes.addFlashAttribute("errorMessage",
                         "The user '".concat(username).concat("' is disabled!"));
             }
-            
+
             model.addAttribute("user", new User());
             return "redirect:/login";
         }
@@ -511,16 +511,16 @@ public class UserController {
 
         return "user/edit";
     }
-    
+
     /**
      * Api token modal.
      *
      * @param model Model
-     * @param principal
-     * @return User edit
+     * @param principal Principal
+     * @return Redirect to API token modal.
      */
-    @GetMapping(path = "/modal/token/")
-    public String modal(Model model, Principal principal) {
+    @GetMapping(path = "/modal/apiToken/")
+    public String APITokenModal(Model model, Principal principal) {
         if (principal != null) {
             User user = userService.findByUsername(principal.getName());
 
@@ -541,13 +541,13 @@ public class UserController {
     }
 
     /**
-     * Generate a new token.
+     * Refresh user api token.
      *
-     * @param principal
-     * @return Redirect to list template.
+     * @param principal Principal
+     * @return Redirect to user list.
      */
-    @PostMapping(path = "/refreshToken")
-    public String refresh(Principal principal) {
+    @PostMapping(path = "/refresh/apiToken")
+    public String refreshAPIToken(Principal principal) {
 
         if (principal != null) {
             User user = userService.findByUsername(principal.getName());

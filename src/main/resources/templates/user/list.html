@@ -98,7 +98,7 @@
                      * @returns {undefined}
                      */
                     $("#modal_api_token").click(function () {
-                        var url = /*[[@{/user/modal/token/}]]*/ "/user/modal/token";
+                        var url = /*[[@{/user/modal/apiToken/}]]*/ "/user/modal/apiToken/";
 
                         $.ajax({
                             type: "GET",
@@ -108,7 +108,7 @@
                                 $("#modalAPIToken").modal({backdrop: 'static', keyboard: false});
                             },
                             error: function (e) {
-                                alert("Error getting api token: " + e);
+                                alert("Error getting api token: " + e.responseText);
                             }
                         });
                     });

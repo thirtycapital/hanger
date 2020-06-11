@@ -253,11 +253,11 @@ public class JobController {
         if (jobBuild(job)) {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(job.getName() + " built sucessfully");
+                    .body("[" + job.getName() + "] SUCCESS");
         } else {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body("Build failed");
+                    .body("BAD_REQUEST");
         }
     }
 

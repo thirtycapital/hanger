@@ -79,19 +79,16 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-
-            http.sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                    .addFilterBefore(
-                            new JwtTokenFilter(jwtService, userService),
-                            UsernamePasswordAuthenticationFilter.class);
-
             http.antMatcher("/**/api/**")
                     .authorizeRequests()
                     .anyRequest().authenticated()
                     .and()
                     .csrf().disable();
+
+            http.sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
+                    .addFilterBefore(new JwtTokenFilter(jwtService, userService), UsernamePasswordAuthenticationFilter.class);
         }
     }
 
@@ -103,7 +100,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         public void configure(WebSecurity web) throws Exception {
             web
                     .expressionHandler(permissionHandler(web))
-                    .ignoring()                    
+                    .ignoring()
                     .antMatchers(
                             "/observer",
                             "/webjars/**",
@@ -198,7 +195,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         webSecurityExpressionHandler.setPermissionEvaluator(customPermissionEvaluator);
         return webSecurityExpressionHandler;
     }
-    
+
     @Bean
     public DefaultWebSecurityExpressionHandler permissionHandler(WebSecurity web) {
         final DefaultWebSecurityExpressionHandler webSecurityExpressionHandler = new DefaultWebSecurityExpressionHandler();

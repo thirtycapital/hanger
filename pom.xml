@@ -5,6 +5,7 @@
     <groupId>org.springframework</groupId>
     <artifactId>hanger</artifactId>
     <version>1.0</version>
+    <packaging>war</packaging>
 
 
     <parent>
@@ -51,7 +52,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-
+            <scope>provided</scope>
         </dependency>
         
         <dependency>

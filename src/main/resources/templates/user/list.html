@@ -20,20 +20,22 @@
                         </a>
                     </th>
 
+                    <!-- Identifies if user is authenticated -->
                     <div sec:authorize="isAuthenticated()">
                         <th class="btn-action">
                             <a th:href="@{'/user/password/'}" title="Change password">
                                 <span class="glyphicon glyphicon-lock"></span>
                             </a>
                         </th>
-                    </div>
-                    <!-- Identifies if user has API access -->
-                    <div sec:authorize="hasPermission('API','read')">                        
-                        <th class="btn-action"> 
-                            <a href="#" title="API Token" th:id="modal_api_token">
-                                <span class="glyphicon glyphicon-cloud"></span>
-                            </a>
-                        </th>                        
+
+                        <!-- Identifies if user has API access -->
+                        <div sec:authorize="hasRole('HERO') or hasPermission('API','read')">                        
+                            <th class="btn-action"> 
+                                <a href="#" title="API Token" th:id="modal_api_token">
+                                    <span class="glyphicon glyphicon-log-in"></span>
+                                </a>
+                            </th>                        
+                        </div>
                     </div>
                 </tr>            
             </table>
@@ -94,7 +96,7 @@
                     });
 
                     /**
-                     * Show api access modal. 
+                     * Show api token modal. 
                      * @returns {undefined}
                      */
                     $("#modal_api_token").click(function () {

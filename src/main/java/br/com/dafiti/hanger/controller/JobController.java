@@ -253,7 +253,7 @@ public class JobController {
         if (jobBuild(job)) {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body("[" + job.getName() + "] SUCCESS");
+                    .body("OK");
         } else {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

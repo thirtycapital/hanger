@@ -82,7 +82,7 @@ public class WorkbenchService {
                             schemaEntity.getCatalogSchema(),
                             schemaEntity.getCatalogSchema(),
                             "#",
-                            "glyphicon glyphicon-th-list",
+                            "glyphicon glyphicon-book",
                             true,
                             new TreeAttribute(
                                     schemaEntity.getCatalog(),

@@ -55,7 +55,9 @@ public class SpringMvcConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(buildInterceptor).addPathPatterns(
+                "/job/api/build/**",
                 "/job/build/**",
+                "/job/api/rebuild/**",
                 "/job/rebuild/**");
         registry.addInterceptor(editInterceptor).addPathPatterns(
                 "/job/save/**",

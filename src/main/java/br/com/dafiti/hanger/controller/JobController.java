@@ -58,6 +58,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -224,15 +226,39 @@ public class JobController {
     }
 
     /**
-     * Build a job silently.
+     * Build a job.
      *
      * @param job Job
-     * @return flow
+     * @return Identifies if the job was buit sucessfully.
      */
     @GetMapping(path = "/build/silently/{id}")
     @ResponseBody
     public boolean build(@PathVariable(value = "id") Job job) {
         return jobBuild(job);
+    }
+
+    /**
+     * Build a job.
+     *
+     * @param model
+     * @param job
+     * @return Identifies if the job was buit sucessfully.
+     */
+    @PostMapping(path = "/api/build/{id}")
+    @ResponseBody
+    public ResponseEntity build(
+            Model model,
+            @PathVariable(value = "id") Job job) {
+
+        if (jobBuild(job)) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("OK");
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("BAD_REQUEST");
+        }
     }
 
     /**
@@ -420,7 +446,8 @@ public class JobController {
             @RequestParam(value = "parentServer", required = true) Server parentServer,
             @RequestParam(value = "parentJobList", required = false) List<String> parentJobList,
             @RequestParam(value = "parentUpstream", required = false) boolean parentUpstream,
-            BindingResult bindingResult, Model model) {
+            BindingResult bindingResult,
+            Model model) {
 
         List<String> errors = new ArrayList();
 
@@ -474,7 +501,8 @@ public class JobController {
     public String addSlackChannel(
             @Valid @ModelAttribute Job job,
             @RequestParam(value = "slackChannelList", required = false) Set<String> slackChannelList,
-            BindingResult bindingResult, Model model) {
+            BindingResult bindingResult,
+            Model model) {
 
         try {
             job.getChannel().addAll(slackChannelList);

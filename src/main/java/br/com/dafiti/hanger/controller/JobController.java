@@ -58,9 +58,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -154,7 +155,10 @@ public class JobController {
      * @return job edit
      */
     @GetMapping(path = "/edit/{id}")
-    public String edit(Model model, @PathVariable(value = "id") Job job) {
+    public String edit(
+            Model model, 
+            @PathVariable(value = "id") Job job) {
+        
         model.addAttribute("children", jobService.getChildrenlist(job));
         this.modelDefault(model, job);
         return "job/edit";
@@ -224,15 +228,39 @@ public class JobController {
     }
 
     /**
-     * Build a job silently.
+     * Build a job.
      *
      * @param job Job
-     * @return flow
+     * @return Identifies if the job was buit sucessfully.
      */
     @GetMapping(path = "/build/silently/{id}")
     @ResponseBody
     public boolean build(@PathVariable(value = "id") Job job) {
         return jobBuild(job);
+    }
+
+    /**
+     * Build a job.
+     *
+     * @param model
+     * @param job
+     * @return Identifies if the job was buit sucessfully.
+     */
+    @PostMapping(path = "/api/build/{id}")
+    @ResponseBody
+    public ResponseEntity build(
+            Model model,
+            @PathVariable(value = "id") Job job) {
+
+        if (jobBuild(job)) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("OK");
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("BAD_REQUEST");
+        }
     }
 
     /**
@@ -302,14 +330,12 @@ public class JobController {
      * Save a job.
      *
      * @param job Job
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job view
      */
     @PostMapping(path = "/save")
     public String save(
             @Valid @ModelAttribute Job job,
-            BindingResult bindingResult,
             Model model) {
 
         try {
@@ -327,14 +353,12 @@ public class JobController {
      * Save a job.
      *
      * @param job Job
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
     @PostMapping(path = "/save", params = {"partial_load_job"})
     public String loadJob(
             @Valid @ModelAttribute Job job,
-            BindingResult bindingResult,
             Model model) {
 
         try {
@@ -353,7 +377,6 @@ public class JobController {
      *
      * @param job Job
      * @param subjectsID Subject ID list
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -361,7 +384,6 @@ public class JobController {
     public String addSubject(
             @Valid @ModelAttribute Job job,
             @RequestParam(value = "subjects", required = false) String subjectsID,
-            BindingResult bindingResult,
             Model model) {
 
         if (subjectsID != null) {
@@ -386,7 +408,6 @@ public class JobController {
      *
      * @param job Job
      * @param index index
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -394,7 +415,6 @@ public class JobController {
     public String removeSubject(
             @ModelAttribute Job job,
             @RequestParam(value = "partial_remove_subject", required = false) int index,
-            BindingResult bindingResult,
             Model model) {
 
         job.getSubject().remove(index);
@@ -410,7 +430,6 @@ public class JobController {
      * @param parentServer Parent server
      * @param parentJobList Parent Job List
      * @param parentUpstream Parent Upstream
-     * @param bindingResult bindingResult
      * @param model model
      * @return Job edit
      */
@@ -420,7 +439,7 @@ public class JobController {
             @RequestParam(value = "parentServer", required = true) Server parentServer,
             @RequestParam(value = "parentJobList", required = false) List<String> parentJobList,
             @RequestParam(value = "parentUpstream", required = false) boolean parentUpstream,
-            BindingResult bindingResult, Model model) {
+            Model model) {
 
         List<String> errors = new ArrayList();
 
@@ -444,7 +463,6 @@ public class JobController {
      *
      * @param job Job
      * @param index Index
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -452,7 +470,6 @@ public class JobController {
     public String removeParent(
             @Valid @ModelAttribute Job job,
             @RequestParam("partial_remove_parent") int index,
-            BindingResult bindingResult,
             Model model) {
 
         job.getParent().remove(index);
@@ -466,7 +483,6 @@ public class JobController {
      *
      * @param job Job
      * @param slackChannelList Slack channel list.
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit.
      */
@@ -474,7 +490,7 @@ public class JobController {
     public String addSlackChannel(
             @Valid @ModelAttribute Job job,
             @RequestParam(value = "slackChannelList", required = false) Set<String> slackChannelList,
-            BindingResult bindingResult, Model model) {
+            Model model) {
 
         try {
             job.getChannel().addAll(slackChannelList);
@@ -492,7 +508,6 @@ public class JobController {
      *
      * @param job Job
      * @param slackChannel Slack channel
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -500,7 +515,6 @@ public class JobController {
     public String removeSlackChannel(
             @ModelAttribute Job job,
             @RequestParam(value = "partial_remove_slack_channel", required = false) String slackChannel,
-            BindingResult bindingResult,
             Model model) {
 
         job.getChannel().remove(slackChannel);
@@ -513,14 +527,12 @@ public class JobController {
      * Add a checkup.
      *
      * @param job Job
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
     @PostMapping(path = "/save", params = {"partial_add_job_checkup"})
     public String addCheckup(
             @Valid @ModelAttribute Job job,
-            BindingResult bindingResult,
             Model model) {
 
         job.addCheckup(new JobCheckup());
@@ -535,7 +547,6 @@ public class JobController {
      *
      * @param job Job
      * @param index Index
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -543,7 +554,6 @@ public class JobController {
     public String removeCheckup(
             @ModelAttribute Job job,
             @RequestParam("partial_remove_job_checkup") int index,
-            BindingResult bindingResult,
             Model model) {
 
         job.getCheckup().remove(index);
@@ -558,7 +568,6 @@ public class JobController {
      * @param job Job
      * @param checkupIndex Checkup
      * @param triggers Triggers
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -567,7 +576,6 @@ public class JobController {
             @Valid @ModelAttribute Job job,
             @RequestParam("partial_add_job_checkup_trigger") int checkupIndex,
             @RequestParam(value = "triggers", required = false) List<String> triggers,
-            BindingResult bindingResult,
             Model model) {
 
         try {
@@ -586,7 +594,6 @@ public class JobController {
      *
      * @param job Job
      * @param checkupTriggerIndex Index
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -594,7 +601,6 @@ public class JobController {
     public String removeTrigger(
             @Valid @ModelAttribute Job job,
             @RequestParam("partial_remove_job_checkup_trigger") List<Integer> checkupTriggerIndex,
-            BindingResult bindingResult,
             Model model) {
 
         if (checkupTriggerIndex.size() == 2) {
@@ -613,7 +619,6 @@ public class JobController {
      *
      * @param job Job
      * @param checkupIndex Index
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -621,7 +626,6 @@ public class JobController {
     public String addJobCheckupCommand(
             @Valid @ModelAttribute Job job,
             @RequestParam("partial_add_job_checkup_command") int checkupIndex,
-            BindingResult bindingResult,
             Model model) {
 
         job.getCheckup().get(checkupIndex).addCommand(new Command());
@@ -634,7 +638,6 @@ public class JobController {
      *
      * @param job Job
      * @param checkupCommandIndex
-     * @param bindingResult
      * @param model Model
      * @return Job edit
      */
@@ -642,7 +645,6 @@ public class JobController {
     public String removeJobCheckupCommand(
             @Valid @ModelAttribute Job job,
             @RequestParam("partial_remove_job_checkup_command") List<Integer> checkupCommandIndex,
-            BindingResult bindingResult,
             Model model) {
 
         if (checkupCommandIndex.size() == 2) {

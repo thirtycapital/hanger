@@ -23,15 +23,13 @@
  */
 package br.com.dafiti.hanger;
 
-import com.google.common.cache.CacheBuilder;
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.guava.GuavaCacheManager;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -39,6 +37,8 @@ import org.springframework.context.annotation.PropertySources;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -65,11 +65,12 @@ public class Application extends SpringBootServletInitializer {
      */
     @Bean
     public CacheManager cacheManager() {
-        GuavaCacheManager guavaCacheManager = new GuavaCacheManager();
-        guavaCacheManager.setCacheBuilder(CacheBuilder.newBuilder()
-                .expireAfterAccess(30, TimeUnit.MINUTES)
-                .maximumSize(1000));
-        return guavaCacheManager;
+        CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
+        caffeineCacheManager.setCaffeine(Caffeine.newBuilder()
+                .initialCapacity(100)
+                .maximumSize(1000)
+                .expireAfterAccess(30, TimeUnit.MINUTES));
+        return caffeineCacheManager;
     }
 
     /**

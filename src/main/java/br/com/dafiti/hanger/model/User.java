@@ -26,6 +26,7 @@ package br.com.dafiti.hanger.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -40,6 +41,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -68,6 +71,7 @@ public class User extends Tracker implements Serializable, UserDetails {
     private List<Privilege> privileges = new ArrayList();
     private int avatar;
     private boolean enabled = true;
+    private Date tokenCreatedAt;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -168,7 +172,7 @@ public class User extends Tracker implements Serializable, UserDetails {
     public void addRole(Role role) {
         this.roles.add(role);
     }
-    
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_privilege",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -229,6 +233,15 @@ public class User extends Tracker implements Serializable, UserDetails {
 
     public void setEnabled(boolean enable) {
         this.enabled = enable;
+    }
+
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date getTokenCreatedAt() {
+        return tokenCreatedAt;
+    }
+
+    public void setTokenCreatedAt(Date tokenCreatedAt) {
+        this.tokenCreatedAt = tokenCreatedAt;
     }
 
     @Transient

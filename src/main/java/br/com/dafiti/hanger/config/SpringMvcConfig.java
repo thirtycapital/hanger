@@ -29,14 +29,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  *
  * @author Valdiney V GOMES
  */
 @Configuration
-public class SpringMvcConfig extends WebMvcConfigurerAdapter {
+public class SpringMvcConfig implements WebMvcConfigurer {
 
     @Autowired
     BuildInterceptor buildInterceptor;
@@ -55,7 +55,9 @@ public class SpringMvcConfig extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(buildInterceptor).addPathPatterns(
+                "/job/api/build/**",
                 "/job/build/**",
+                "/job/api/rebuild/**",
                 "/job/rebuild/**");
         registry.addInterceptor(editInterceptor).addPathPatterns(
                 "/job/save/**",

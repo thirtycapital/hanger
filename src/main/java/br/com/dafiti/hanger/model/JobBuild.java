@@ -25,6 +25,7 @@ package br.com.dafiti.hanger.model;
 
 import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -73,6 +74,7 @@ public class JobBuild implements Serializable {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "job_id", referencedColumnName = "id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    @JsonIgnore
     public Job getJob() {
         return job;
     }

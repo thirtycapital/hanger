@@ -47,10 +47,12 @@ import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.Privilege;
 import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.service.JobService;
+import br.com.dafiti.hanger.service.JwtService;
 import br.com.dafiti.hanger.service.MailService;
 import br.com.dafiti.hanger.service.PrivilegeService;
 import br.com.dafiti.hanger.service.RoleService;
 import br.com.dafiti.hanger.service.UserService;
+import java.util.Date;
 import java.util.List;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -67,6 +69,7 @@ public class UserController {
     private final MailService mailService;
     private final JobService jobService;
     private final PrivilegeService privilegeService;
+    private final JwtService jwtService;
 
     @Autowired
     public UserController(
@@ -75,13 +78,15 @@ public class UserController {
             MailService mailService,
             JobService jobService,
             SessionRegistry sessionRegistry,
-            PrivilegeService privilegeService) {
+            PrivilegeService privilegeService,
+            JwtService jwtService) {
 
         this.userService = userService;
         this.roleService = roleService;
         this.mailService = mailService;
         this.jobService = jobService;
         this.privilegeService = privilegeService;
+        this.jwtService = jwtService;
     }
 
     /**
@@ -293,10 +298,10 @@ public class UserController {
 
         if (user == null || !user.isEnabled()) {
             if (user != null && !user.isEnabled()) {
-                redirectAttributes.addFlashAttribute("errorMessage", 
+                redirectAttributes.addFlashAttribute("errorMessage",
                         "The user '".concat(username).concat("' is disabled!"));
             }
-            
+
             model.addAttribute("user", new User());
             return "redirect:/login";
         }
@@ -505,5 +510,56 @@ public class UserController {
         model.addAttribute("roles", roleService.list());
 
         return "user/edit";
+    }
+
+    /**
+     * Api token modal.
+     *
+     * @param model Model
+     * @param principal Principal
+     * @return Redirect to API token modal.
+     */
+    @GetMapping(path = "/modal/apiToken/")
+    public String APITokenModal(
+            Model model, 
+            Principal principal) {
+        
+        if (principal != null) {
+            User user = userService.findByUsername(principal.getName());
+
+            if (user != null) {
+                if (user.getTokenCreatedAt() == null) {
+                    user.setTokenCreatedAt(new Date());
+                    userService.save(user);
+                }
+
+                model.addAttribute("user", user);
+                model.addAttribute("token", jwtService.generateToken(user.getId().toString(), user.getTokenCreatedAt()));
+
+                return "user/modalAPIToken::apiToken";
+            }
+        }
+
+        return "user/list";
+    }
+
+    /**
+     * Refresh user api token.
+     *
+     * @param principal Principal
+     * @return Redirect to user list.
+     */
+    @PostMapping(path = "/refresh/apiToken")
+    public String refreshAPIToken(Principal principal) {
+
+        if (principal != null) {
+            User user = userService.findByUsername(principal.getName());
+
+            if (user != null) {
+                user.setTokenCreatedAt(new Date());
+                userService.save(user);
+            }
+        }
+        return "redirect:/user/list";
     }
 }

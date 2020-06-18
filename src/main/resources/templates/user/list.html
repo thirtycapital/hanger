@@ -20,12 +20,22 @@
                         </a>
                     </th>
 
+                    <!-- Identifies if user is authenticated -->
                     <div sec:authorize="isAuthenticated()">
                         <th class="btn-action">
                             <a th:href="@{'/user/password/'}" title="Change password">
                                 <span class="glyphicon glyphicon-lock"></span>
                             </a>
                         </th>
+
+                        <!-- Identifies if user has API access -->
+                        <div sec:authorize="hasRole('HERO') or hasPermission('API','read')">                        
+                            <th class="btn-action"> 
+                                <a href="#" title="API Token" th:id="modal_api_token">
+                                    <span class="glyphicon glyphicon-log-in"></span>
+                                </a>
+                            </th>                        
+                        </div>
                     </div>
                 </tr>            
             </table>
@@ -42,9 +52,10 @@
                 </div>
             </div>
 
-            <div id="alert">
+            <div id="alert"></div>
 
-            </div>
+            <!--AJAX Parent modal --> 
+            <div id="modalHolder"/>
 
             <script th:inline="javascript">
                 function modalDelete(id, username) {
@@ -80,6 +91,26 @@
                                 }
                             },
                             error: function (e) {
+                            }
+                        });
+                    });
+
+                    /**
+                     * Show api token modal. 
+                     * @returns {undefined}
+                     */
+                    $("#modal_api_token").click(function () {
+                        var url = /*[[@{/user/modal/apiToken/}]]*/ "/user/modal/apiToken/";
+
+                        $.ajax({
+                            type: "GET",
+                            url: url,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalAPIToken").modal({backdrop: 'static', keyboard: false});
+                            },
+                            error: function (e) {
+                                alert("Error getting api token: " + e.responseText);
                             }
                         });
                     });

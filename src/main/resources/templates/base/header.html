@@ -122,9 +122,12 @@
                             </div>
                         </span>
                         <div class="hanger-version">
-                            <a href="https://github.com/dafiti-group/hanger/releases" target="_blank" class="link-version">
+                            <a href="https://github.com/dafiti-group/hanger/releases" 
+                               target="_blank" 
+                               class="link-version"
+                               th:inline="text">
                                 <!--Picks the version from pom.xml-->
-                                [[${@environment.getProperty('application-version')}]]
+                                v[[${@environment.getProperty('application-version')}]]
                             </a>
                         </div>
                     </div>

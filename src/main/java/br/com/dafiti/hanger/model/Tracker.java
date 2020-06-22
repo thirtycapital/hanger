@@ -27,10 +27,6 @@ import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.PostPersist;
-import javax.persistence.PostUpdate;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
@@ -86,25 +82,5 @@ public abstract class Tracker {
 
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
-    }
-
-    @PrePersist
-    private void prePersistFunction() {
-        System.out.println("PrePersist method called");
-    }
-
-    @PreUpdate
-    public void preUpdateFunction() {
-        System.out.println("PreUpdate method called");
-    }
-
-    @PostPersist
-    public void postPersistFunction() {
-        System.out.println("PostPersist method called");
-    }
-
-    @PostUpdate
-    public void postUpdateFunction() {
-        System.out.println("PostUpdate method called");
     }
 }

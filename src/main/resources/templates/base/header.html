@@ -30,12 +30,12 @@
         <link rel="stylesheet" th:href="@{/css/dhtmlxgantt.css}"/>   
         <link rel="stylesheet" th:href="@{/css/codemirror.css}"/>  
         <link rel="stylesheet" th:href="@{/css/context-menu.min.css}"/>
-        
+
         <!-- Plugin jsTree -->
         <link rel="stylesheet" th:href="@{/css/themes/default/style.min.css}"/>
 
         <!--JS-->
-        <script th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"></script>
+        <script th:src="@{/webjars/jquery/3.5.1/jquery.min.js}"></script>
         <script th:src="@{/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js}"></script>
         <script th:src="@{/webjars/bootstrap-select/1.12.4/js/bootstrap-select.min.js}"></script>
         <script th:src="@{/webjars/datatables/1.10.19/js/jquery.dataTables.min.js}"></script>
@@ -122,7 +122,10 @@
                             </div>
                         </span>
                         <div class="hanger-version">
-                            <a href="https://github.com/dafiti-group/hanger/releases" target="_blank" class="link-version">v0.10.5</a>
+                            <a href="https://github.com/dafiti-group/hanger/releases" target="_blank" class="link-version">
+                                <!--Picks the version from pom.xml-->
+                                [[${@environment.getProperty('application-version')}]]
+                            </a>
                         </div>
                     </div>
                 </div>

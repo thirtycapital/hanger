@@ -221,14 +221,22 @@
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>2.8.4</version>
         </dependency> 
         
         <!-- JWT -->
+        
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt</artifactId>
             <version>0.9.1</version>
+        </dependency>
+        
+        <!-- OGNL -->
+        
+        <dependency>
+            <groupId>ognl</groupId>
+            <artifactId>ognl</artifactId>
+            <version>3.2.14</version>
         </dependency>
     </dependencies>
 

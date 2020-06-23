@@ -372,28 +372,7 @@ public class Job extends Tracker implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder job = new StringBuilder();
-        StringBuilder jobParent = new StringBuilder();
-
-        for (JobParent parents : this.parent) {
-            if (jobParent.length() != 0) {
-                jobParent.append(",");
-            }
-
-            jobParent.append("{");
-            jobParent.append("\"name\":").append(parents.getParent().getName()).append("\",");
-            jobParent.append("\"scope\":").append(parents.getScope()).append("\"");
-            jobParent.append("}");
-        }
-
-        job.append("{\n");
-        job.append("    \"job\": {\n");
-        job.append("        \"name\":").append("\"").append(this.name).append("\"\n");
-        job.append("        \"parent\":").append("[").append(jobParent.toString()).append("]\n");
-        job.append("    }\n");
-        job.append("}");
-
-        return job.toString();
+        return "Job{" + "id=" + id + ", server=" + server + ", name=" + name + ", alias=" + alias + ", enabled=" + enabled + '}';
     }
 
     @Override

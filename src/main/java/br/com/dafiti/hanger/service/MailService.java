@@ -52,7 +52,10 @@ public class MailService {
     private final ApplicationContext applicationContext;
 
     @Autowired
-    public MailService(ConfigurationService configurationService, ApplicationContext applicationContext) {
+    public MailService(
+            ConfigurationService configurationService, 
+            ApplicationContext applicationContext) {
+        
         this.configurationService = configurationService;
         this.applicationContext = applicationContext;
     }

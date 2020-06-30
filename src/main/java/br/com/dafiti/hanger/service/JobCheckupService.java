@@ -649,12 +649,16 @@ public class JobCheckupService {
             StringBuilder message = new StringBuilder();
 
             message
-                    .append(":broken_heart: ")
-                    .append("*")
+                    .append(":syringe: *")
                     .append(job.getDisplayName())
-                    .append("*’s checkup *")
+                    .append("* > *")
                     .append(checkup.getDescription())
-                    .append("* failed because the result was *")
+                    .append("* > ")
+                    .append(checkup.isPrevalidation() ? "PRE_VALIDATION" : "POST_VALIDATION")
+                    .append(" > ")
+                    .append(checkup.getAction())
+                    .append(" > ")
+                    .append("failed because the result was *")
                     .append(value)
                     .append("* but the expected is ")
                     .append(checkup.getConditional())

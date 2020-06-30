@@ -254,15 +254,18 @@ public class JobCheckupService {
                             retryService.remove(job);
                         }
 
+                        //Verify if this check failed. 
+                        if (!validated) {
+                            this.notify(checkup, value);
+
+                            if (!log) {
+                                break;
+                            }
+                        }
+
                         //Checked will be always true when is LOG_AND_CONTINUE.
                         if (log) {
                             validated = true;
-                        }
-
-                        //Verify if this check failed. 
-                        if (!validated || (!validated && log)) {
-                            this.notify(checkup, value);
-                            break;
                         }
                     }
                 }

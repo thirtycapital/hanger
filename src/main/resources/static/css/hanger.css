@@ -974,3 +974,8 @@ input[type='file'] {
 .span-field {
     font-weight: normal;
 }
+
+/* Hide the duration parents in the gantt */
+.row-gantt-parent > .gantt_last_cell > .gantt_tree_content {
+    display: none;
+}

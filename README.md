@@ -530,6 +530,12 @@ Permite excluir um usuário.
 ##### CHANGE PASSWORD
 Permite ao usuário alterar a própria senha.
 
+##### API TOKEN
+Permite ao usuário obter a sua chave de acesso à API do glove. O token gerado não tem validade determinada e por ser usado até que o próprio usuário opte por renová-lo.
+Para renovar o Token e invalidar o token gerado anteriormente:
+- Clique no botão ***Refresh Token***.
+- Um novo token será gerado, para visualizá-lo acesse novamente a opção de menu ***API Token***
+
 ## Configuration
 *Configuration* contém as configurações globais do Hanger. 
 

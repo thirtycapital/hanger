@@ -153,19 +153,19 @@ public class WorkbenchEmailController {
     /**
      * Send query resultset in e-mail.
      *
-     * @param redirectAttributes RedirectAttributes
+     * @param model Model
      * @param workbenchEmail WorkbenchEmail
      * @param principal Principal
-     * @return
+     * @return boolean
      * @throws java.io.IOException
      */
     @GetMapping(path = "/email/{id}")
-    public String sendEmail(
-            RedirectAttributes redirectAttributes,
+    @ResponseBody
+    public boolean send(
+            Model model,
             @PathVariable(name = "id") WorkbenchEmail workbenchEmail,
-            Principal principal) throws IOException {
-        this.send(redirectAttributes, workbenchEmail, principal);
-        return "redirect:/email/list/";
+            Principal principal) throws IOException, Exception {
+        return workbenchEmailService.toEmail(workbenchEmail, principal);
     }
 
     /**

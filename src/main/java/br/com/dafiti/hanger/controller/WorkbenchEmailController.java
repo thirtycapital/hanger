@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.security.Principal;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -164,6 +166,30 @@ public class WorkbenchEmailController {
             Principal principal) throws IOException {
         this.send(redirectAttributes, workbenchEmail, principal);
         return "redirect:/email/list/";
+    }
+
+    /**
+     * Send query resultset in e-mail by API.
+     *
+     * @param workbenchEmail WorkbenchEmail
+     * @param principal Principal
+     * @return
+     * @throws java.io.IOException
+     */
+    @PostMapping(path = "api/send/{id}")
+    public ResponseEntity send(
+            @PathVariable(name = "id") WorkbenchEmail workbenchEmail,
+            Principal principal) throws IOException, Exception {
+
+        if (workbenchEmailService.toEmail(workbenchEmail, principal)) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("OK");
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("BAD_REQUEST");
+        }
     }
 
     /**

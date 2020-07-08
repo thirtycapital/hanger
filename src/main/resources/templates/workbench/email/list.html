@@ -198,7 +198,7 @@
                 });
 
                 $(".btn-send").click(function () {
-                    var url = /*[[@{/email/email/}]]*/ "/email/email/";
+                    var url = /*[[@{/email/send/}]]*/ "/email/send/";
                     var btnSend = $(this);
                     var id = btnSend.val();
 
@@ -213,8 +213,7 @@
                         success: function (result) {
                             if (result) {
                                 toastr.success('Email sent successfully!');
-                            }
-                            else {
+                            } else {
                                 toastr.error('Error sending email');
                             }
                             

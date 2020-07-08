@@ -111,13 +111,13 @@ public class WorkbenchEmailController {
     }
 
     /**
-     * Save e-mail template.
+     * Save e-mail template by modal.
      *
      * @param workbenchEmail WorkbenchEmail
      * @return
      * @throws java.io.IOException
      */
-    @PostMapping(path = "/email", params = {"save"})
+    @PostMapping(path = "/modal", params = {"save"})
     public String save(@Valid @ModelAttribute WorkbenchEmail workbenchEmail)
             throws IOException {
         workbenchEmailService.save(workbenchEmail);
@@ -125,7 +125,7 @@ public class WorkbenchEmailController {
     }
 
     /**
-     * Send query resultset in e-mail.
+     * Send query resultset in e-mail by modal.
      *
      * @param redirectAttributes RedirectAttributes
      * @param workbenchEmail WorkbenchEmail
@@ -133,16 +133,17 @@ public class WorkbenchEmailController {
      * @return
      * @throws java.io.IOException
      */
-    @PostMapping(path = "/email", params = {"send"})
+    @PostMapping(path = "/modal", params = {"send"})
     public String send(
             RedirectAttributes redirectAttributes,
             @Valid @ModelAttribute WorkbenchEmail workbenchEmail,
             Principal principal) throws IOException {
         try {
-            workbenchEmailService.toEmail(workbenchEmail, principal);
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Email successfully sent!");
-
+            if (workbenchEmailService.toEmail(workbenchEmail, principal)) {
+                redirectAttributes.addFlashAttribute("successMessage", "Email successfully sent!");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Error sending email");
+            }
         } catch (Exception exception) {
             redirectAttributes.addFlashAttribute("errorMessage",
                     new Message().getErrorMessage(exception));
@@ -159,7 +160,7 @@ public class WorkbenchEmailController {
      * @return boolean
      * @throws java.io.IOException
      */
-    @GetMapping(path = "/email/{id}")
+    @GetMapping(path = "/send/{id}")
     @ResponseBody
     public boolean send(
             Model model,

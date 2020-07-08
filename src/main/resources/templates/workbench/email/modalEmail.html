@@ -27,7 +27,7 @@
                         </div>   
 
                         <form class="form-horizontal" 
-                              th:action="@{/email/email}" 
+                              th:action="@{/email/modal}" 
                               th:object="${email}"
                               method="post">
 
@@ -55,7 +55,7 @@
                                 <div class="form-group">
                                     <div class="col-sm-12">
                                         <select 
-											id="recipient"
+                                            id="recipient"
                                             class="selectpicker form-control col-xs-6" 
                                             data-live-search="true" 
                                             multiple="true"
@@ -74,7 +74,7 @@
                                     <div class="col-sm-12">
                                         <input 
                                             type="text" 
-											id="externalRecipient"
+                                            id="externalRecipient"
                                             class="form-control" 
                                             maxlength="255"                                            
                                             placeholder="E-mail list separated by semicolon or comma"

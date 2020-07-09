@@ -17,8 +17,8 @@
                         [[${connection.name}]]
                     </a>
                 </li>
-                <li th:inline="text" th:if="${catalog != 'null'}">[[${catalog}]]</li>
-                <li th:inline="text" th:if="${schema != 'null'}">[[${schema}]]</li>
+                <li th:inline="text" th:if="${catalog != 'null' and catalog != ''}">[[${catalog}]]</li>
+                <li th:inline="text" th:if="${schema != 'null' and schema != ''}">[[${schema}]]</li>
             </ol>
 
             <div th:if="${ errorMessage != null }" class="form-group">

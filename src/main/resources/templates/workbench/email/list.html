@@ -198,21 +198,25 @@
                 });
 
                 $(".btn-send").click(function () {
-                    var url = /*[[@{/email/email/}]]*/ "/email/email/";
+                    var url = /*[[@{/email/send/}]]*/ "/email/send/";
                     var btnSend = $(this);
                     var id = btnSend.val();
 
                     $.ajax({
                         type: "GET",
                         url: url + id,
-                        contentType: "text/html",
                         timeout: 1000000,
                         beforeSend: function () {
                             btnSend.prop("disabled", true);
                             toastr.info('Sending ...');
                         },
-                        success: function () {
-                            toastr.success('Email sent successfully!');
+                        success: function (result) {
+                            if (result) {
+                                toastr.success('Email sent successfully!');
+                            } else {
+                                toastr.error('Error sending email');
+                            }
+                            
                             btnSend.prop("disabled", false);
                         },
                         error: function (e) {

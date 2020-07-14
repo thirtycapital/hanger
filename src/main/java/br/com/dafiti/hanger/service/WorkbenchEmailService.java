@@ -113,10 +113,12 @@ public class WorkbenchEmailService {
      *
      * @param email WorkbenchEmail
      * @param principal Principal
+     * @return 
      * @throws java.io.IOException
      */
-    public void toEmail(WorkbenchEmail email, Principal principal)
+    public boolean toEmail(WorkbenchEmail email, Principal principal)
             throws IOException, Exception {
+        boolean sent = false;
         ConnectionService.QueryResultSet queryResultSet = this.connectionService
                 .getQueryResultSet(
                         email.getConnection(),
@@ -146,11 +148,13 @@ public class WorkbenchEmailService {
                     mail.addBcc(recipient);
                 }
             }
-            this.mailService.send(blueprint, mail);
+            sent = this.mailService.send(blueprint, mail);
 
             //Delete temp file.
             Files.deleteIfExists(file.toPath());
         }
+        
+        return sent;
     }
 
     /**

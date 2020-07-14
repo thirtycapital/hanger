@@ -89,9 +89,11 @@ public class MailService {
      *
      * @param blueprint Blueprint
      * @param mail
+     * @return 
      */
-    public void send(Blueprint blueprint, HtmlEmail mail) {
-
+    public boolean send(Blueprint blueprint, HtmlEmail mail) {
+        
+        boolean sent = true;
         String host = configurationService.getValue("EMAIL_HOST");
         int port = Integer.valueOf(configurationService.getValue("EMAIL_PORT"));
         String email = configurationService.getValue("EMAIL_ADDRESS");
@@ -115,7 +117,10 @@ public class MailService {
             mail.send();
         } catch (EmailException ex) {
             Logger.getLogger(MailService.class.getName()).log(Level.SEVERE, "Fail sending e-mail", ex);
+            sent = false;
         }
+        
+        return sent;
     }
 
     /**

@@ -444,7 +444,8 @@ Uma dependência pode ter os seguintes escopos:
 		- Informe no campo ***Script*** a ação a ser executada.
 		- Para remover uma ação, clique no botão ***Remove***. 
 	- Um checkup pode ser executado como uma pré-validação ou uma pós validação. Pré-validações ocorrem quando todas as dependências foram atendidas e imediatamente antes da execução do *job*, enquanto pós-validações ocorrem após a execução do *job*. Para definir o tipo de um checkup, clique no toggle e escolha entre ***Pre-validation*** e ***Post-validation***. 
-- Defina o número de tentativa de execução do *job* no campo ***Retries***. 
+- Defina o número de tentativas de execução do *job* no campo ***Retries***.
+> Para ações NOTHING e LOG_AND_CONTINUE não há número de tentativas.
 - Caso necessário, selecione um aprovador para o checkup no combo ***Approver***.
 - Clique no botão ***Save***.
 
@@ -528,6 +529,12 @@ Permite excluir um usuário.
 
 ##### CHANGE PASSWORD
 Permite ao usuário alterar a própria senha.
+
+##### API TOKEN
+Permite ao usuário obter a sua chave de acesso à API do glove. O token gerado não tem validade determinada e por ser usado até que o próprio usuário opte por renová-lo.
+Para renovar o Token e invalidar o token gerado anteriormente:
+- Clique no botão ***Refresh Token***.
+- Um novo token será gerado, para visualizá-lo acesse novamente a opção de menu ***API Token***
 
 ## Configuration
 *Configuration* contém as configurações globais do Hanger. 

@@ -520,10 +520,7 @@ public class UserController {
      * @return Redirect to API token modal.
      */
     @GetMapping(path = "/modal/apiToken/")
-    public String APITokenModal(
-            Model model, 
-            Principal principal) {
-        
+    public String APITokenModal(Model model, Principal principal) {
         if (principal != null) {
             User user = userService.findByUsername(principal.getName());
 

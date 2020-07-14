@@ -169,65 +169,56 @@ public class JobBuildGraphService {
     /**
      * Get the gantt graph data.
      *
-     * @param job Job
+     * @param jobs Job
      * @param dateFrom Date from
      * @param dateTo Date to
      * @return Gantt
      */
     public List getDHTMLXGanttData(
-            List<Job> job,
+            List<Job> jobs,
             Date dateFrom,
             Date dateTo) {
 
         Long surrogateID = 0L;
-        Long currentJobBuildMetricDuration = 0L;
-        JobBuildMetric currentJobBuildMetric = null;
         List<DHTMLXGantt> data = new ArrayList();
-        List<JobBuildMetric> metrics = this.findBuildHistory(job, dateFrom, dateTo);
+        List<JobBuildMetric> metrics = this.findBuildHistory(jobs, dateFrom, dateTo);
 
+        //Add all parents to gantt.
+        for (Job job : jobs) {
+            for (JobBuildMetric metric : metrics) {
+                if (job.getId().equals(metric.getJob().getId())) {
+                    data.add(new DHTMLXGantt(
+                            metric.getJob().getId().toString(),
+                            metric.getJob().getDisplayName(),
+                            metric.getQueueDate().toString(),
+                            0L,
+                            1.0,
+                            true,
+                            "",
+                            "#D6DBE1",
+                            ""
+                    ));
+                    
+                    break;
+                }
+            }
+        }
+
+        //Add all children in the gantt.
         for (JobBuildMetric metric : metrics) {
             surrogateID++;
 
-            Long duration = metric.getDurationTimeInMinutes();
-            Double queuePercentage = metric.getQueuePercentage();
-
-            //Add all build to the gantt. 
             data.add(new DHTMLXGantt(
                     surrogateID + "_",
                     metric.getQueueDate().toString().substring(0, 16) + " - " + metric.getFinishDate().toString().substring(0, 16),
-                    metric.getStartDate().toString(),
-                    duration,
-                    queuePercentage,
+                    metric.getQueueDate().toString(),
+                    metric.getDurationTimeInMinutes(),
+                    metric.getQueuePercentage(),
                     true,
                     metric.getJob().getId().toString(),
                     "",
                     "#E5E8EC"
             ));
-
-            //Identify if is the last build of a specific job. 
-            if (currentJobBuildMetric == null) {
-                currentJobBuildMetric = metric;
-            }
-
-            //Add a folder to organize all job builds with a summarized job duration. 
-            if (!Objects.equals(currentJobBuildMetric.getJob().getId(), metric.getJob().getId()) || surrogateID == metrics.size()) {
-                data.add(new DHTMLXGantt(
-                        currentJobBuildMetric.getJob().getId().toString(),
-                        currentJobBuildMetric.getJob().getDisplayName(),
-                        currentJobBuildMetric.getStartDate().toString(),
-                        currentJobBuildMetricDuration,
-                        1.0,
-                        true,
-                        "",
-                        "#D6DBE1",
-                        ""
-                ));
-
-                currentJobBuildMetric = metric;
-                currentJobBuildMetricDuration = duration;
-            } else {
-                currentJobBuildMetricDuration += duration;
-            }
         }
 
         return data;

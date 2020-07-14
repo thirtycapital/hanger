@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.security.Principal;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -109,13 +111,13 @@ public class WorkbenchEmailController {
     }
 
     /**
-     * Save e-mail template.
+     * Save e-mail template by modal.
      *
      * @param workbenchEmail WorkbenchEmail
      * @return
      * @throws java.io.IOException
      */
-    @PostMapping(path = "/email", params = {"save"})
+    @PostMapping(path = "/modal", params = {"save"})
     public String save(@Valid @ModelAttribute WorkbenchEmail workbenchEmail)
             throws IOException {
         workbenchEmailService.save(workbenchEmail);
@@ -123,7 +125,7 @@ public class WorkbenchEmailController {
     }
 
     /**
-     * Send query resultset in e-mail.
+     * Send query resultset in e-mail by modal.
      *
      * @param redirectAttributes RedirectAttributes
      * @param workbenchEmail WorkbenchEmail
@@ -131,16 +133,17 @@ public class WorkbenchEmailController {
      * @return
      * @throws java.io.IOException
      */
-    @PostMapping(path = "/email", params = {"send"})
+    @PostMapping(path = "/modal", params = {"send"})
     public String send(
             RedirectAttributes redirectAttributes,
             @Valid @ModelAttribute WorkbenchEmail workbenchEmail,
             Principal principal) throws IOException {
         try {
-            workbenchEmailService.toEmail(workbenchEmail, principal);
-            redirectAttributes.addFlashAttribute("successMessage",
-                    "Email successfully sent!");
-
+            if (workbenchEmailService.toEmail(workbenchEmail, principal)) {
+                redirectAttributes.addFlashAttribute("successMessage", "Email successfully sent!");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Error sending email");
+            }
         } catch (Exception exception) {
             redirectAttributes.addFlashAttribute("errorMessage",
                     new Message().getErrorMessage(exception));
@@ -151,19 +154,43 @@ public class WorkbenchEmailController {
     /**
      * Send query resultset in e-mail.
      *
-     * @param redirectAttributes RedirectAttributes
+     * @param model Model
+     * @param workbenchEmail WorkbenchEmail
+     * @param principal Principal
+     * @return boolean
+     * @throws java.io.IOException
+     */
+    @GetMapping(path = "/send/{id}")
+    @ResponseBody
+    public boolean send(
+            Model model,
+            @PathVariable(name = "id") WorkbenchEmail workbenchEmail,
+            Principal principal) throws IOException, Exception {
+        return workbenchEmailService.toEmail(workbenchEmail, principal);
+    }
+
+    /**
+     * Send query resultset in e-mail by API.
+     *
      * @param workbenchEmail WorkbenchEmail
      * @param principal Principal
      * @return
      * @throws java.io.IOException
      */
-    @GetMapping(path = "/email/{id}")
-    public String sendEmail(
-            RedirectAttributes redirectAttributes,
+    @PostMapping(path = "api/send/{id}")
+    public ResponseEntity send(
             @PathVariable(name = "id") WorkbenchEmail workbenchEmail,
-            Principal principal) throws IOException {
-        this.send(redirectAttributes, workbenchEmail, principal);
-        return "redirect:/email/list/";
+            Principal principal) throws IOException, Exception {
+
+        if (workbenchEmailService.toEmail(workbenchEmail, principal)) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("OK");
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("BAD_REQUEST");
+        }
     }
 
     /**

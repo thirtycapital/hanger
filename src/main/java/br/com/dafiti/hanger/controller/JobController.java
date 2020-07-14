@@ -62,6 +62,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -430,6 +431,7 @@ public class JobController {
      * @param parentServer Parent server
      * @param parentJobList Parent Job List
      * @param parentUpstream Parent Upstream
+     * @param bindingResult
      * @param model model
      * @return Job edit
      */
@@ -439,6 +441,7 @@ public class JobController {
             @RequestParam(value = "parentServer", required = true) Server parentServer,
             @RequestParam(value = "parentJobList", required = false) List<String> parentJobList,
             @RequestParam(value = "parentUpstream", required = false) boolean parentUpstream,
+            BindingResult bindingResult,
             Model model) {
 
         List<String> errors = new ArrayList();
@@ -483,6 +486,7 @@ public class JobController {
      *
      * @param job Job
      * @param slackChannelList Slack channel list.
+     * @param bindingResult
      * @param model Model
      * @return Job edit.
      */
@@ -490,6 +494,7 @@ public class JobController {
     public String addSlackChannel(
             @Valid @ModelAttribute Job job,
             @RequestParam(value = "slackChannelList", required = false) Set<String> slackChannelList,
+            BindingResult bindingResult,
             Model model) {
 
         try {

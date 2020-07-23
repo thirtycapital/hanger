@@ -101,12 +101,11 @@ public class Watchdog {
         for (Job job : jobs) {
             //Identify if job is enabled.
             if (job.isEnabled()) {
-                Status status = jobDetailsService.getDetailsOf(job).getStatus();
+                Job updatedJob = jobService.load(job.getId());
+                Status status = jobDetailsService.getDetailsOf(updatedJob).getStatus();
 
                 //Identify job waiting forever. 
                 if (status.equals(Status.WAITING)) {
-                    Job updatedJob = jobService.load(job.getId());
-
                     if (updatedJob != null) {
                         PushInfo push = jobBuildPushService.getPushInfo(updatedJob);
 
@@ -128,8 +127,6 @@ public class Watchdog {
                 //Identify job running forever.
                 if (status.equals(Status.REBUILD)
                         || status.equals(Status.RUNNING)) {
-                    Job updatedJob = jobService.load(job.getId());
-
                     if (updatedJob != null) {
                         JobStatus jobStatus = updatedJob.getStatus();
 

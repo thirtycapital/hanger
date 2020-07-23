@@ -106,18 +106,21 @@ public class Watchdog {
                 //Identify job waiting forever. 
                 if (status.equals(Status.WAITING)) {
                     Job updatedJob = jobService.load(job.getId());
-                    PushInfo push = jobBuildPushService.getPushInfo(updatedJob);
 
-                    if (push.isReady()) {
-                        boolean onlyOptionalorDisabled = updatedJob
-                                .getParent()
-                                .stream()
-                                .filter(jobParent -> !jobParent.getScope().equals(Scope.OPTIONAL) && jobParent.getJob().isEnabled())
-                                .collect(Collectors.toList())
-                                .isEmpty();
+                    if (updatedJob != null) {
+                        PushInfo push = jobBuildPushService.getPushInfo(updatedJob);
 
-                        if (!onlyOptionalorDisabled) {
-                            this.catcher(updatedJob);
+                        if (push.isReady()) {
+                            boolean onlyOptionalorDisabled = updatedJob
+                                    .getParent()
+                                    .stream()
+                                    .filter(jobParent -> !jobParent.getScope().equals(Scope.OPTIONAL) && jobParent.getJob().isEnabled())
+                                    .collect(Collectors.toList())
+                                    .isEmpty();
+
+                            if (!onlyOptionalorDisabled) {
+                                this.catcher(updatedJob);
+                            }
                         }
                     }
                 }
@@ -126,18 +129,21 @@ public class Watchdog {
                 if (status.equals(Status.REBUILD)
                         || status.equals(Status.RUNNING)) {
                     Job updatedJob = jobService.load(job.getId());
-                    JobStatus jobStatus = updatedJob.getStatus();
 
-                    if (jobStatus != null) {
-                        JobBuild jobBuild = jobStatus.getBuild();
+                    if (updatedJob != null) {
+                        JobStatus jobStatus = updatedJob.getStatus();
 
-                        if (jobBuild != null) {
-                            if (!jenkinsServive.isBuilding(updatedJob, jobBuild.getNumber())) {
-                                this.catcher(updatedJob);
-                            } else {
-                                Logger.getLogger(
-                                        Watchdog.class.getName())
-                                        .log(Level.INFO, "The watchdog just sniffed the job {0} with build number {1}", new Object[]{updatedJob.getName(), jobBuild.getNumber()});
+                        if (jobStatus != null) {
+                            JobBuild jobBuild = jobStatus.getBuild();
+
+                            if (jobBuild != null) {
+                                if (!jenkinsServive.isBuilding(updatedJob, jobBuild.getNumber())) {
+                                    this.catcher(updatedJob);
+                                } else {
+                                    Logger.getLogger(
+                                            Watchdog.class.getName())
+                                            .log(Level.INFO, "The watchdog just sniffed the job {0} with build number {1}", new Object[]{updatedJob.getName(), jobBuild.getNumber()});
+                                }
                             }
                         }
                     }

@@ -73,7 +73,7 @@ public class Watchdog {
     /**
      * Watchdog patrols at every minute past every 30th hour.
      */
-    @Scheduled(cron = "5 */30 * * * *")
+    @Scheduled(cron = "1 20 5-20/1 * * *")
     public void patrol() {
         Logger.getLogger(
                 Watchdog.class.getName())
@@ -99,43 +99,46 @@ public class Watchdog {
         Iterable<Job> jobs = jobService.list();
 
         for (Job job : jobs) {
+            //Identify if job is enabled.
+            if (job.isEnabled()) {
+                Status status = jobDetailsService.getDetailsOf(job).getStatus();
 
-            //Identify job waiting forever. 
-            if (jobDetailsService.getDetailsOf(job).getStatus().equals(Status.WAITING)) {
-                PushInfo push = jobBuildPushService.getPushInfo(job);
+                //Identify job waiting forever. 
+                if (status.equals(Status.WAITING)) {
+                    Job updatedJob = jobService.load(job.getId());
+                    PushInfo push = jobBuildPushService.getPushInfo(updatedJob);
 
-                if (push.isReady()) {
-                    boolean onlyOptionalorDisabled = job
-                            .getParent()
-                            .stream()
-                            .filter(jobParent -> !jobParent.getScope().equals(Scope.OPTIONAL) && jobParent.getJob().isEnabled())
-                            .collect(Collectors.toList())
-                            .isEmpty();
+                    if (push.isReady()) {
+                        boolean onlyOptionalorDisabled = updatedJob
+                                .getParent()
+                                .stream()
+                                .filter(jobParent -> !jobParent.getScope().equals(Scope.OPTIONAL) && jobParent.getJob().isEnabled())
+                                .collect(Collectors.toList())
+                                .isEmpty();
 
-                    if (!onlyOptionalorDisabled) {
-                        this.catcher(job);
+                        if (!onlyOptionalorDisabled) {
+                            this.catcher(updatedJob);
+                        }
                     }
                 }
-            }
 
-            Status status = jobDetailsService.getDetailsOf(job).getStatus();
+                //Identify job running forever.
+                if (status.equals(Status.REBUILD)
+                        || status.equals(Status.RUNNING)) {
+                    Job updatedJob = jobService.load(job.getId());
+                    JobStatus jobStatus = updatedJob.getStatus();
 
-            //Identify job running forever.
-            if (status.equals(Status.REBUILD)
-                    || status.equals(Status.RUNNING)) {
+                    if (jobStatus != null) {
+                        JobBuild jobBuild = jobStatus.getBuild();
 
-                JobStatus jobStatus = job.getStatus();
-
-                if (jobStatus != null) {
-                    JobBuild jobBuild = jobStatus.getBuild();
-
-                    if (jobBuild != null) {
-                        if (!jenkinsServive.isBuilding(job, jobBuild.getNumber())) {
-                            this.catcher(job);
-                        } else {
-                            Logger.getLogger(
-                                    Watchdog.class.getName())
-                                    .log(Level.INFO, "The watchdog just sniffed the job {0} with build number {1}", new Object[]{job.getName(), jobBuild.getNumber()});
+                        if (jobBuild != null) {
+                            if (!jenkinsServive.isBuilding(updatedJob, jobBuild.getNumber())) {
+                                this.catcher(updatedJob);
+                            } else {
+                                Logger.getLogger(
+                                        Watchdog.class.getName())
+                                        .log(Level.INFO, "The watchdog just sniffed the job {0} with build number {1}", new Object[]{updatedJob.getName(), jobBuild.getNumber()});
+                            }
                         }
                     }
                 }

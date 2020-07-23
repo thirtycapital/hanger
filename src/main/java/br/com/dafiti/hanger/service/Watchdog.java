@@ -73,7 +73,7 @@ public class Watchdog {
     /**
      * Watchdog patrols at every minute past every 30th hour.
      */
-    @Scheduled(cron = "1 20 5-20/1 * * *")
+    @Scheduled(cron = "0 0 0-23 * * *")
     public void patrol() {
         Logger.getLogger(
                 Watchdog.class.getName())
@@ -101,25 +101,22 @@ public class Watchdog {
         for (Job job : jobs) {
             //Identify if job is enabled.
             if (job.isEnabled()) {
-                Job updatedJob = jobService.load(job.getId());
-                Status status = jobDetailsService.getDetailsOf(updatedJob).getStatus();
+                Status status = jobDetailsService.getDetailsOf(job).getStatus();
 
                 //Identify job waiting forever. 
                 if (status.equals(Status.WAITING)) {
-                    if (updatedJob != null) {
-                        PushInfo push = jobBuildPushService.getPushInfo(updatedJob);
+                    PushInfo push = jobBuildPushService.getPushInfo(job);
 
-                        if (push.isReady()) {
-                            boolean onlyOptionalorDisabled = updatedJob
-                                    .getParent()
-                                    .stream()
-                                    .filter(jobParent -> !jobParent.getScope().equals(Scope.OPTIONAL) && jobParent.getJob().isEnabled())
-                                    .collect(Collectors.toList())
-                                    .isEmpty();
+                    if (push.isReady()) {
+                        boolean onlyOptionalorDisabled = job
+                                .getParent()
+                                .stream()
+                                .filter(jobParent -> !jobParent.getScope().equals(Scope.OPTIONAL) && jobParent.getJob().isEnabled())
+                                .collect(Collectors.toList())
+                                .isEmpty();
 
-                            if (!onlyOptionalorDisabled) {
-                                this.catcher(updatedJob);
-                            }
+                        if (!onlyOptionalorDisabled) {
+                            this.catcher(job);
                         }
                     }
                 }
@@ -127,20 +124,18 @@ public class Watchdog {
                 //Identify job running forever.
                 if (status.equals(Status.REBUILD)
                         || status.equals(Status.RUNNING)) {
-                    if (updatedJob != null) {
-                        JobStatus jobStatus = updatedJob.getStatus();
+                    JobStatus jobStatus = job.getStatus();
 
-                        if (jobStatus != null) {
-                            JobBuild jobBuild = jobStatus.getBuild();
+                    if (jobStatus != null) {
+                        JobBuild jobBuild = jobStatus.getBuild();
 
-                            if (jobBuild != null) {
-                                if (!jenkinsServive.isBuilding(updatedJob, jobBuild.getNumber())) {
-                                    this.catcher(updatedJob);
-                                } else {
-                                    Logger.getLogger(
-                                            Watchdog.class.getName())
-                                            .log(Level.INFO, "The watchdog just sniffed the job {0} with build number {1}", new Object[]{updatedJob.getName(), jobBuild.getNumber()});
-                                }
+                        if (jobBuild != null) {
+                            if (!jenkinsServive.isBuilding(job, jobBuild.getNumber())) {
+                                this.catcher(job);
+                            } else {
+                                Logger.getLogger(
+                                        Watchdog.class.getName())
+                                        .log(Level.INFO, "The watchdog just sniffed the job {0} with build number {1}", new Object[]{job.getName(), jobBuild.getNumber()});
                             }
                         }
                     }

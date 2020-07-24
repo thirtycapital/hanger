@@ -84,6 +84,7 @@ public class Job extends Tracker implements Serializable {
     private List<Subject> subject = new ArrayList();
     private List<JobCheckup> checkup = new ArrayList();
     private List<JobApproval> approval = new ArrayList();
+    private List<WorkbenchEmail> email = new ArrayList();
     private Set<String> channel = new HashSet();
     private boolean enabled = true;
     private boolean notify;
@@ -243,6 +244,24 @@ public class Job extends Tracker implements Serializable {
 
     public void addApproval(JobApproval approval) {
         this.approval.add(approval);
+    }
+
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @JoinTable(name = "job_workbench_email",
+            joinColumns = {
+                @JoinColumn(name = "job_id", referencedColumnName = "id")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "workbench_email_id", referencedColumnName = "id")})
+    public List<WorkbenchEmail> getEmail() {
+        return email;
+    }
+
+    public void setEmail(List<WorkbenchEmail> email) {
+        this.email = email;
+    }
+
+    public void addEmail(WorkbenchEmail email) {
+        this.email.add(email);
     }
 
     public boolean isRebuild() {

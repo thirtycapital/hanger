@@ -30,6 +30,7 @@ import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.Server;
 import br.com.dafiti.hanger.model.Subject;
+import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.service.ConnectionService;
@@ -45,6 +46,7 @@ import br.com.dafiti.hanger.service.ServerService;
 import br.com.dafiti.hanger.service.SlackService;
 import br.com.dafiti.hanger.service.SubjectService;
 import br.com.dafiti.hanger.service.UserService;
+import br.com.dafiti.hanger.service.WorkbenchEmailService;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -93,6 +95,7 @@ public class JobController {
     private final FlowService flowService;
     private final JobApprovalService jobApprovalService;
     private final JobDetailsService jobDetailsService;
+    private final WorkbenchEmailService workbenchEmailService;
 
     @Autowired
     public JobController(JobService jobService,
@@ -107,7 +110,8 @@ public class JobController {
             SlackService slackService,
             FlowService flowService,
             JobApprovalService jobApprovalService,
-            JobDetailsService jobDetailsService) {
+            JobDetailsService jobDetailsService,
+            WorkbenchEmailService workbenchEmailService) {
 
         this.jobService = jobService;
         this.serverService = serverService;
@@ -122,6 +126,7 @@ public class JobController {
         this.flowService = flowService;
         this.jobApprovalService = jobApprovalService;
         this.jobDetailsService = jobDetailsService;
+        this.workbenchEmailService = workbenchEmailService;
     }
 
     /**
@@ -685,6 +690,34 @@ public class JobController {
     }
 
     /**
+     * Add e-mail list.
+     *
+     * @param job
+     * @param emailList
+     * @param bindingResult BindingResult
+     * @param model Model
+     * @return Subject edit
+     */
+    @PostMapping(path = "/save", params = {"partial_add_email"})
+    public String addEmailList(
+            @Valid @ModelAttribute Job job,
+            @RequestParam(value = "emailList", required = false) List<WorkbenchEmail> emailList,
+            BindingResult bindingResult,
+            Model model) {
+
+        try {
+            job.setEmail(emailList);
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+        } finally {
+            this.modelDefault(model, job);
+        }
+
+        return "job/edit";
+
+    }
+
+    /**
      * Job list modal.
      *
      * @param server Server
@@ -718,6 +751,18 @@ public class JobController {
     public String slackChannelListModal(Model model) {
         model.addAttribute("channels", slackService.getChannels());
         return "job/modalSlackChannel::channel";
+    }
+
+    /**
+     * E-mail list modal.
+     *
+     * @param model Model
+     * @return E-mail list modal
+     */
+    @GetMapping(path = "/modal/email")
+    public String emailListModal(Model model) {
+        model.addAttribute("emails", workbenchEmailService.list());
+        return "job/modalEmailList::email";
     }
 
     /**

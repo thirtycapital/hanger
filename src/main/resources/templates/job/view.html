@@ -122,7 +122,27 @@
                                 </td>
                             </tr>
                         </table>
-                    </div> 
+                    </div>
+
+                    <div th:if="${not #lists.isEmpty(job.email)}">
+                        <label>Post Build</label>
+                        <table class="table">
+                            <tr>
+                                <th style="width:5%">#</th>
+                                <th style="width:75%">E-mail</th>
+                            </tr>
+                            <tr th:each="email, emailStat : ${job.email}">
+                                <input type="hidden" th:field="*{email[__${emailStat.index}__]}"/> 
+
+                                <td> 
+                                    <span th:text="*{email[__${emailStat.index}__].id}"></span>
+                                </td>
+                                <td>
+                                    <span th:text="*{email[__${emailStat.index}__].subject}"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
 
                     <div th:if="${not #lists.isEmpty(job.parent) || not #lists.isEmpty(children)}"> 
                         <fieldset>

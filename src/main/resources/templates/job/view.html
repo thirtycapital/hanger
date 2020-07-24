@@ -122,27 +122,7 @@
                                 </td>
                             </tr>
                         </table>
-                    </div>
-
-                    <div th:if="${not #lists.isEmpty(job.email)}">
-                        <label>Post Build</label>
-                        <table class="table">
-                            <tr>
-                                <th style="width:5%">#</th>
-                                <th style="width:75%">E-mail</th>
-                            </tr>
-                            <tr th:each="email, emailStat : ${job.email}">
-                                <input type="hidden" th:field="*{email[__${emailStat.index}__]}"/> 
-
-                                <td> 
-                                    <span th:text="*{email[__${emailStat.index}__].id}"></span>
-                                </td>
-                                <td>
-                                    <span th:text="*{email[__${emailStat.index}__].subject}"></span>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
+                    </div>                    
 
                     <div th:if="${not #lists.isEmpty(job.parent) || not #lists.isEmpty(children)}"> 
                         <fieldset>
@@ -453,41 +433,76 @@
                         </div>
                     </div> 
 
+                    <div th:if="${not #lists.isEmpty(job.email)}">
+                        <fieldset>
+                            <legend>
+                                E-mail
+                            </legend>
+                        </fieldset>
+
+                        <div class="alert alert-link" role="alert">
+                            <span>If job runs successfully, send e-mails bellow with resultset</span>
+                        </div>  
+
+                        <table class="table">
+                            <tr>
+                                <th style="width:5%">#</th>
+                                <th style="width:75%">E-mail</th>
+                            </tr>
+                            <tr th:each="email, emailStat : ${job.email}">
+                                <input type="hidden" th:field="*{email[__${emailStat.index}__]}"/> 
+
+                                <td> 
+                                    <span th:text="*{email[__${emailStat.index}__].id}"></span>
+                                </td>
+                                <td>
+                                    <span th:text="*{email[__${emailStat.index}__].subject}"></span>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
                     <!--Options-->
                     <div th:if="${ job.server != null }">
-                        <fieldset>
-                            <legend th:inline="text">
-                                Slack notification on 
-                                <b>
-                                    [[*{ #lists.isEmpty(channel) ? 'default channel' : #strings.arrayJoin(channel, ', ') }]]
-                                </b>
-                            </legend>
-                        </fieldset>   
+                        <div th:if="${not #lists.isEmpty(job.channel)}">
+                            <fieldset>
+                                <legend th:inline="text">
+                                    Slack notification on 
+                                    <b>
+                                        [[*{ #lists.isEmpty(channel) ? 'default channel' : #strings.arrayJoin(channel, ', ') }]]
+                                    </b>
+                                </legend>
+                            </fieldset>
 
-                        <div class="form-group">
-                            <div class="col-sm-10">
-                                <div class="btn-group btn-space">
-                                    <label>
-                                        <input  
-                                            id="slackJobNotification" 
-                                            name="slackJobNotification"
-                                            type="checkbox" 
-                                            th:field="*{notify}" 
-                                            th:checked="*{notify}"
-                                            disabled="true"/>  Build status  
-                                    </label>
+                            <div class="alert alert-link" role="alert">
+                                <span>Job status and checkup failure notification on slack</span>
+                            </div>
 
-                                    <br/>
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <div class="btn-group btn-space">
+                                        <label>
+                                            <input  
+                                                id="slackJobNotification" 
+                                                name="slackJobNotification"
+                                                type="checkbox" 
+                                                th:field="*{notify}" 
+                                                th:checked="*{notify}"
+                                                disabled="true"/>  Build status  
+                                        </label>
 
-                                    <label th:if="${not #lists.isEmpty(job.checkup)}">
-                                        <input  
-                                            id="slackCheckupNotification" 
-                                            name="slackCheckupNotification"
-                                            type="checkbox" 
-                                            th:field="*{checkupNotified}" 
-                                            th:checked="*{checkupNotified}"
-                                            disabled="true"/> Checkup failure
-                                    </label>
+                                        <br/>
+
+                                        <label th:if="${not #lists.isEmpty(job.checkup)}">
+                                            <input  
+                                                id="slackCheckupNotification" 
+                                                name="slackCheckupNotification"
+                                                type="checkbox" 
+                                                th:field="*{checkupNotified}" 
+                                                th:checked="*{checkupNotified}"
+                                                disabled="true"/> Checkup failure
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

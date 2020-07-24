@@ -718,6 +718,28 @@ public class JobController {
     }
 
     /**
+     * Remove an e-mail.
+     *
+     * @param job Job
+     * @param index index
+     * @param bindingResult BindingResult
+     * @param model Model
+     * @return Job edit
+     */
+    @PostMapping(path = "/save", params = {"partial_remove_email"})
+    public String removeEmail(
+            @ModelAttribute Job job,
+            @RequestParam(value = "partial_remove_email", required = false) int index,
+            BindingResult bindingResult,
+            Model model) {
+
+        job.getEmail().remove(index);
+        this.modelDefault(model, job);
+
+        return "job/edit";
+    }
+
+    /**
      * Job list modal.
      *
      * @param server Server

@@ -706,7 +706,9 @@ public class JobController {
             Model model) {
 
         try {
-            job.setEmail(emailList);
+            emailList.forEach((email) -> {
+                job.addEmail(email);
+            });
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
         } finally {

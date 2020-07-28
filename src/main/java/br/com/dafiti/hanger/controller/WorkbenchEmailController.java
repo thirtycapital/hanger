@@ -37,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -256,5 +257,52 @@ public class WorkbenchEmailController {
     private void modelDefault(Model model, WorkbenchEmail workbenchEmail) {
         model.addAttribute("users", userService.list());
         model.addAttribute("email", workbenchEmail);
+    }
+
+    /**
+     * Edit a WorkbenchEmail.
+     *
+     * @param model
+     * @param id
+     * @return
+     */
+    @GetMapping(path = "/edit/{id}")
+    public String edit(
+            Model model,
+            @PathVariable(value = "id") Long id) {
+        WorkbenchEmail workbenchEmail = workbenchEmailService.load(id);
+        model.addAttribute("workbenchEmail", workbenchEmail);
+        modelDefault(model, workbenchEmail);
+        return "workbench/email/edit";
+    }
+
+    /**
+     * Save a server.
+     *
+     * @param workbenchEmail WorkbenchEmail
+     * @param bindingResult BindingResult
+     * @param model Model
+     * @return Server edit template.
+     */
+    @PostMapping(path = "/save")
+    public String saveEmail(
+            @Valid @ModelAttribute WorkbenchEmail workbenchEmail,
+            BindingResult bindingResult, Model model) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("workbenchEmail", workbenchEmail);
+            modelDefault(model, workbenchEmail);
+            return "server/edit";
+        }
+
+        try {
+            workbenchEmailService.save(workbenchEmail);
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+        } finally {
+            modelDefault(model, workbenchEmail);
+        }
+
+        return "redirect:/email/list/";
     }
 }

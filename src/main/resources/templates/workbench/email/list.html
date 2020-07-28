@@ -94,14 +94,9 @@
                                 </button>
                             </td>
                             <td>
-                                <button 
-                                    type="button" 
-                                    class="btn btn-generic btn-xs btn-edit" 
-                                    th:id="'edit_' + ${workbenchEmail.id}" 
-                                    th:value="${workbenchEmail.id}">
-                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 
-                                    Edit
-                                </button>
+                                <a th:href="@{'/email/edit/' + ${workbenchEmail.id}}" class="btn btn-generic btn-xs">
+                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                                </a>
                             </td>
                             <td>
                                 <a class="btn btn-xs btn-delete" 
@@ -216,7 +211,7 @@
                             } else {
                                 toastr.error('Error sending email');
                             }
-                            
+
                             btnSend.prop("disabled", false);
                         },
                         error: function (e) {

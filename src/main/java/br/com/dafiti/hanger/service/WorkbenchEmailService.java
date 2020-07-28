@@ -84,6 +84,15 @@ public class WorkbenchEmailService {
     public Iterable<WorkbenchEmail> list() {
         return workbenchEmailRepository.findAll();
     }
+    
+    /**
+     * 
+     * @param id
+     * @return 
+     */        
+    public WorkbenchEmail load(Long id) {
+        return workbenchEmailRepository.findOne(id);
+    }
 
     /**
      * Find user's e-mails.

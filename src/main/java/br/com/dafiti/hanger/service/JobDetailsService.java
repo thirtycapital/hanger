@@ -42,6 +42,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.apache.commons.lang3.EnumUtils;
 
 /**
  *
@@ -219,6 +220,10 @@ public class JobDetailsService {
                 phase = Phase.NONE;
                 building
                         .append("Building now");
+            } else {
+                if (EnumUtils.isValidEnum(Status.class, jobStatus.getFlow().toString())) {
+                    status = Status.valueOf(jobStatus.getFlow().toString());
+                }
             }
 
             //The QUEUED and COMPLETED phases should be ignored. 

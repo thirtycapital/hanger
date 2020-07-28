@@ -33,8 +33,8 @@ import br.com.dafiti.hanger.service.SubjectService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -95,7 +95,7 @@ public class JobSearchController {
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(MonitorController.class.getName()).log(Level.SEVERE, "Fail reading cookies", ex);
+            LogManager.getLogger(MonitorController.class).log(Level.ERROR, "Fail reading cookies", ex);
         }
 
         model.addAttribute("searches", searches);
@@ -147,7 +147,7 @@ public class JobSearchController {
                 response.addCookie(cookie);
 
             } catch (Exception ex) {
-                Logger.getLogger(JobSearchController.class.getName()).log(Level.SEVERE, "Fail managing cookies", ex);
+                LogManager.getLogger(JobSearchController.class).log(Level.ERROR, "Fail managing cookies", ex);
             }
         }
 

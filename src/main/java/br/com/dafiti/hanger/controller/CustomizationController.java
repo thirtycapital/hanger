@@ -26,8 +26,8 @@ package br.com.dafiti.hanger.controller;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -87,8 +87,8 @@ public class CustomizationController {
             } else {
                 file.transferTo(convFile);
             }
-        } catch (IOException | IllegalStateException ex) {
-            Logger.getLogger(CustomizationController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException | IllegalStateException ex) {           
+            LogManager.getLogger(CustomizationController.class).log(Level.ERROR, ex);
         }
 
         return "redirect:/configuration/edit";

@@ -26,8 +26,8 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.Blueprint;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -79,8 +79,8 @@ public class MailService {
 
             this.send(blueprint, mail);
         } catch (EmailException ex) {
-            Logger.getLogger(MailService.class.getName())
-                    .log(Level.SEVERE, "Fail sending e-mail", ex);
+            LogManager.getLogger(MailService.class.getName())
+                    .log(Level.ERROR, "Fail sending e-mail", ex);
         }
     }
 
@@ -116,7 +116,7 @@ public class MailService {
 
             mail.send();
         } catch (EmailException ex) {
-            Logger.getLogger(MailService.class.getName()).log(Level.SEVERE, "Fail sending e-mail", ex);
+            LogManager.getLogger(MailService.class).log(Level.ERROR, "Fail sending e-mail", ex);
             sent = false;
         }
         

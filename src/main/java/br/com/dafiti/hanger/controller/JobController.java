@@ -52,8 +52,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -285,7 +285,7 @@ public class JobController {
                 jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
             }
         } catch (Exception ex) {
-            Logger.getLogger(JobController.class.getName()).log(Level.SEVERE, "Fail building job " + job.getName() + " manually", ex);
+            LogManager.getLogger(JobController.class).log(Level.ERROR, "Fail building job " + job.getName() + " manually", ex);
         }
 
         return built;
@@ -725,7 +725,7 @@ public class JobController {
         List<Job> jobs = (List) jobService.list();
 
         for (Job job : jobs) {
-            Logger.getLogger(
+            LogManager.getLogger(
                     JobController.class.getName())
                     .log(Level.INFO, "Updating plugin for: {0}", job.getName());
             jenkinsService.updateJob(job);

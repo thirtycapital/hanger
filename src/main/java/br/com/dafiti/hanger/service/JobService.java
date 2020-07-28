@@ -39,8 +39,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -526,7 +526,7 @@ public class JobService {
         if (!childs.isEmpty()) {
             for (JobParent child : childs) {
                 if (!propagation.contains(job)) {
-                    Logger.getLogger(
+                    LogManager.getLogger(
                             JobService.class.getName())
                             .log(Level.INFO, "{0} {1}", new Object[]{StringUtils.repeat(".", level), child.getJob().getName()});
 

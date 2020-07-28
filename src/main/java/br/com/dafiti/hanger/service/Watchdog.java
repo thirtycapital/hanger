@@ -23,8 +23,8 @@
  */
 package br.com.dafiti.hanger.service;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -75,20 +75,20 @@ public class Watchdog {
      */
     @Scheduled(cron = "5 */30 * * * *")
     public void patrol() {
-        Logger.getLogger(
-                Watchdog.class.getName())
+        LogManager.getLogger(
+                Watchdog.class)
                 .log(Level.INFO, "The watchdog is patrolling jobs!");
 
         jobPatrol();
 
-        Logger.getLogger(
-                Watchdog.class.getName())
+        LogManager.getLogger(
+                Watchdog.class)
                 .log(Level.INFO, "The watchdog is patrolling connections!");
 
         connectionPatrol();
 
-        Logger.getLogger(
-                Watchdog.class.getName())
+        LogManager.getLogger(
+                Watchdog.class)
                 .log(Level.INFO, "The watchdog patrol is finished!");
     }
 
@@ -133,8 +133,8 @@ public class Watchdog {
                         if (!jenkinsServive.isBuilding(job, jobBuild.getNumber())) {
                             this.catcher(job);
                         } else {
-                            Logger.getLogger(
-                                    Watchdog.class.getName())
+                            LogManager.getLogger(
+                                    Watchdog.class)
                                     .log(Level.INFO, "The watchdog just sniffed the job {0} with build number {1}", new Object[]{job.getName(), jobBuild.getNumber()});
                         }
                     }
@@ -154,7 +154,7 @@ public class Watchdog {
         try {
             jobBuildService.build(job);
 
-            Logger.getLogger(
+            LogManager.getLogger(
                     Watchdog.class.getName())
                     .log(Level.INFO, "The watchdog catched job ".concat(job.getName()));
             message
@@ -163,9 +163,9 @@ public class Watchdog {
                     .append(job.getDisplayName())
                     .append("*");
         } catch (Exception ex) {
-            Logger.getLogger(
+            LogManager.getLogger(
                     Watchdog.class.getName())
-                    .log(Level.SEVERE, "The watchdog fail building " + job.getName(), ex);
+                    .log(Level.ERROR, "The watchdog fail building " + job.getName(), ex);
 
             message
                     .append(":hotdog: The watchdog fail building ")

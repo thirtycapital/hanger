@@ -32,8 +32,8 @@ import br.com.dafiti.hanger.service.JobService;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +79,7 @@ public class BuildInterceptor implements HandlerInterceptor {
                 eventLogService.save(eventLog);
             }
         } catch (Exception exception) {
-            Logger.getLogger(BuildInterceptor.class.getName()).log(Level.SEVERE, "Fail recording build log!", exception);
+            LogManager.getLogger(BuildInterceptor.class).log(Level.ERROR, "Fail recording build log!", exception);
         }
     }
 

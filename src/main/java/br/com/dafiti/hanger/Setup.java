@@ -33,8 +33,8 @@ import br.com.dafiti.hanger.service.PrivilegeService;
 import br.com.dafiti.hanger.service.RoleService;
 import br.com.dafiti.hanger.service.UserService;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -118,10 +118,7 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
 
         //Flow notification.
         jobService.list().forEach((job) -> {
-            Logger.getLogger(
-                    Setup.class.getName())
-                    .log(Level.INFO, "{0}", job.getName());
-
+            LogManager.getLogger(Setup.class).log(Level.INFO, job.getName());
             jobNotificationService.notify(job, false, true);
         });
 

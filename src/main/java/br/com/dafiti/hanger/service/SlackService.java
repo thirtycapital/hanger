@@ -31,8 +31,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.springframework.stereotype.Service;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -92,7 +92,7 @@ public class SlackService {
                     connected = this.slackSession.isConnected();
                 }
             } catch (IOException ex) {
-                Logger.getLogger(MailService.class.getName()).log(Level.SEVERE, "Fail connecting to slack", ex);
+                LogManager.getLogger(MailService.class).log(Level.ERROR, "Fail connecting to slack", ex);
             }
         }
 

@@ -80,7 +80,10 @@ public class ExportService {
         switch (exportType) {
             case CSV:
                 QueryResultSet queryResultSet = this.connectionService
-                        .getQueryResultSet(connection, query, principal);
+                        .getQueryResultSet(
+                                connection,
+                                query,
+                                userService.findByUsername(principal.getName()));
 
                 //Identify if query ran successfully.
                 if (!queryResultSet.hasError()) {

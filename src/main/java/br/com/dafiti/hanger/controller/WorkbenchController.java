@@ -30,6 +30,7 @@ import br.com.dafiti.hanger.service.ConfigurationService;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.WorkbenchService;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
+import br.com.dafiti.hanger.service.UserService;
 import java.security.Principal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,15 +57,18 @@ public class WorkbenchController {
     private final ConnectionService connectionService;
     private final WorkbenchService workbenchService;
     private final ConfigurationService configurationService;
+    private final UserService userService;
 
     @Autowired
     public WorkbenchController(
             ConnectionService connectionService,
             WorkbenchService workbenchService,
-            ConfigurationService configurationService) {
+            ConfigurationService configurationService,
+            UserService userService) {
         this.connectionService = connectionService;
         this.workbenchService = workbenchService;
         this.configurationService = configurationService;
+        this.userService = userService;
     }
 
     /**
@@ -98,7 +102,7 @@ public class WorkbenchController {
         QueryResultSet queryResultSet = connectionService.getQueryResultSet(
                 connection,
                 query,
-                principal);
+                userService.findByUsername(principal.getName()));
 
         if (queryResultSet.hasError()) {
             model.addAttribute("errorMessage", queryResultSet.getError());

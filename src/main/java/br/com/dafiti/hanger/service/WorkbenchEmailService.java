@@ -24,6 +24,7 @@
 package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.Blueprint;
+import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.model.User;
 import java.io.File;
@@ -38,6 +39,9 @@ import org.apache.commons.mail.HtmlEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.dafiti.hanger.repository.WorkbenchEmailRepository;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  *
@@ -113,17 +117,21 @@ public class WorkbenchEmailService {
      *
      * @param email WorkbenchEmail
      * @param principal Principal
-     * @return 
+     * @return
      * @throws java.io.IOException
      */
     public boolean toEmail(WorkbenchEmail email, Principal principal)
             throws IOException, Exception {
         boolean sent = false;
+
+        //Get User object from logged user.
+        User user = userService.findByUsername(principal.getName());
+
         ConnectionService.QueryResultSet queryResultSet = this.connectionService
                 .getQueryResultSet(
                         email.getConnection(),
                         email.getQuery(),
-                        principal);
+                        user);
 
         if (!queryResultSet.hasError()) {
             String fileName = exportService.toCSV(queryResultSet, email.getConnection());
@@ -139,7 +147,7 @@ public class WorkbenchEmailService {
             blueprint.addVariable("content", email.getContent());
             blueprint.addVariable("queryResultSet", queryResultSet);
             blueprint.addVariable("subject", email.getSubject());
-            blueprint.addVariable("user", userService.findByUsername(principal.getName()).getEmail());
+            blueprint.addVariable("user", user.getEmail());
 
             HtmlEmail mail = new HtmlEmail();
 
@@ -153,7 +161,7 @@ public class WorkbenchEmailService {
             //Delete temp file.
             Files.deleteIfExists(file.toPath());
         }
-        
+
         return sent;
     }
 

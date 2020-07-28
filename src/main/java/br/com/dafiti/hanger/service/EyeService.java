@@ -187,7 +187,7 @@ public class EyeService {
                 if (jobStatus.getFlow().equals(Flow.NORMAL)
                         && jobBuild.getPhase().equals(Phase.FINALIZED)
                         && jobBuild.getStatus().equals(Status.SUCCESS)) {
-
+                    
                     //Log the job children build push.
                     Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job children build pushed", new Object[]{uuid});
 

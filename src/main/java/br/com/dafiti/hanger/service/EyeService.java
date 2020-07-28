@@ -190,9 +190,12 @@ public class EyeService {
                 if (jobStatus.getFlow().equals(Flow.NORMAL)
                         && jobBuild.getPhase().equals(Phase.FINALIZED)
                         && jobBuild.getStatus().equals(Status.SUCCESS)) {
-                    
+
                     //If job ran sucessfully send e-mails linked to it.
                     workbenchEmailService.toEmail(job);
+
+                    //Log the e-mail send.
+                    Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job e-mails sent sucessfully", new Object[]{uuid});
 
                     //Log the job children build push.
                     Logger.getLogger(EyeService.class.getName()).log(Level.INFO, "[{0}] Job children build pushed", new Object[]{uuid});

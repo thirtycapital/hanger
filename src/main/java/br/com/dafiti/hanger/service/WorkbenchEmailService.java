@@ -113,20 +113,32 @@ public class WorkbenchEmailService {
     }
 
     /**
+     * Export a resultset to e-mail
+     *
+     * @param email
+     * @param principal Pquemrincipal
+     * @return
+     * @throws java.lang.Exception
+     */
+    public boolean toEmail(WorkbenchEmail email, Principal principal)
+            throws Exception {
+        return toEmail(email, userService.findByUsername(principal.getName()));
+    }
+
+    /**
      * Export a resultset to e-mail.
      *
      * @param email WorkbenchEmail
-     * @param principal Principal
+     * @param user User
      * @return
      * @throws java.io.IOException
      */
-    public boolean toEmail(WorkbenchEmail email, Principal principal)
+    public boolean toEmail(WorkbenchEmail email, User user)
             throws IOException, Exception {
         boolean sent = false;
 
         //Get User object from logged user.
-        User user = userService.findByUsername(principal.getName());
-
+        //User user = userService.findByUsername(principal.getName());
         ConnectionService.QueryResultSet queryResultSet = this.connectionService
                 .getQueryResultSet(
                         email.getConnection(),
@@ -163,6 +175,34 @@ public class WorkbenchEmailService {
         }
 
         return sent;
+    }
+
+    /**
+     * Send e-mails linked to a job.
+     *
+     * @param job Job
+     */
+    public void toEmail(Job job) {
+
+        //Identifies if job has e-mail linked to him.
+        if (job.getEmail().size() > 0) {
+            try {
+                String email = configurationService.getValue("EMAIL_ADDRESS");
+
+                //Identifies if e-mail is set
+                if (!email.isEmpty()) {
+                    User user = userService.findByEmail(email);
+                    if (user != null) {
+                        for (WorkbenchEmail workBenchEmail : job.getEmail()) {
+                            this.toEmail(workBenchEmail, user);
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(WorkbenchEmailService.class.getName())
+                        .log(Level.SEVERE, "Fail sending e-mail", ex);
+            }
+        }
     }
 
     /**

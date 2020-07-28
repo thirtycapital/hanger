@@ -41,6 +41,7 @@ import org.springframework.stereotype.Service;
 import br.com.dafiti.hanger.repository.WorkbenchEmailRepository;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
@@ -182,8 +183,8 @@ public class WorkbenchEmailService {
      *
      * @param job Job
      */
+    @Async
     public void toEmail(Job job) {
-
         //Identifies if job has e-mail linked to him.
         if (job.getEmail().size() > 0) {
             try {

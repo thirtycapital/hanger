@@ -284,6 +284,7 @@ public class WorkbenchEmailController {
      *
      * @param workbenchEmail WorkbenchEmail
      * @param bindingResult BindingResult
+     * @param principal
      * @param model Model
      * @return Server edit template.
      */
@@ -291,20 +292,19 @@ public class WorkbenchEmailController {
     public String saveEmail(
             @Valid @ModelAttribute WorkbenchEmail workbenchEmail,
             BindingResult bindingResult,
-            Model model) {
+            Model model,
+            Principal principal) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("workbenchEmail", workbenchEmail);
             modelDefault(model, workbenchEmail);
-            return "server/edit";
+            return "workbench/email/edit";
         }
 
         try {
+            modelDefault(model, workbenchEmail);
             workbenchEmailService.save(workbenchEmail);
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
-        } finally {
-            modelDefault(model, workbenchEmail);
         }
 
         return "redirect:/email/list/";

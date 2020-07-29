@@ -47,6 +47,7 @@
                                 data-live-search="true" 
                                 multiple="true"
                                 th:field="*{recipient}" 
+                                required="true" 
                                 data-selected-text-format="count > 5">
 
                                 <option th:each="user: ${users}" 
@@ -74,8 +75,16 @@
                     <label>Subject</label> 
                     <div class="form-group">
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" maxlength="50" th:field="*{subject}" placeholder="Subject"/>
-                            <span th:if="${#fields.hasErrors('subject')}" class="help-block" th:errors="*{subject}"></span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   maxlength="50" 
+                                   th:field="*{subject}" 
+                                   required="true" 
+                                   placeholder="Subject"/>
+                            <span
+                                th:if="${#fields.hasErrors('subject')}" 
+                                class="help-block alertErr"
+                                th:errors="*{subject}"></span>
                         </div>
                     </div>
 
@@ -116,6 +125,7 @@
                                 class="form-control" 
                                 th:field="*{query}"
                                 rows="5" 
+                                required="true" 
                                 maxlength="10000"></textarea>
                         </div>
                     </div>

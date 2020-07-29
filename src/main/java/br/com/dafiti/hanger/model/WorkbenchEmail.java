@@ -39,6 +39,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  *
@@ -105,7 +106,8 @@ public class WorkbenchEmail extends Tracker implements Serializable {
     public void setQuery(String query) {
         this.query = query.trim();
     }
-
+    
+    @NotEmpty
     public String getSubject() {
         return subject;
     }

@@ -29,6 +29,7 @@ import br.com.dafiti.hanger.model.WorkbenchQuery;
 import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.service.WorkbenchQueryService;
 import br.com.dafiti.hanger.service.UserService;
+import br.com.dafiti.hanger.service.ConnectionService;
 import java.security.Principal;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,14 +53,17 @@ public class WorkbenchQueryController {
 
     private final WorkbenchQueryService workbenchQueryService;
     private final UserService userService;
+    private final ConnectionService connectionService;
 
     @Autowired
     public WorkbenchQueryController(
             WorkbenchQueryService workbenchQueryService,
-            UserService userService) {
+            UserService userService,
+            ConnectionService connectionService) {
 
         this.workbenchQueryService = workbenchQueryService;
         this.userService = userService;
+        this.connectionService = connectionService;
     }
 
     /**
@@ -200,5 +204,22 @@ public class WorkbenchQueryController {
         }
 
         return this.list(model, principal);
+    }
+
+    /**
+     * Edit a query store.
+     *
+     * @param model Model
+     * @param workbenchQuery WorkbenchQuery
+     * @return String edit
+     */
+    @GetMapping(path = "/edit/{id}")
+    public String edit(
+            Model model,
+            @PathVariable(value = "id") WorkbenchQuery workbenchQuery) {
+
+        model.addAttribute("workbenchQuery", workbenchQuery);
+        model.addAttribute("connections", connectionService.list());
+        return "workbench/query/edit";
     }
 }

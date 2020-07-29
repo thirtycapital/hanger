@@ -9,7 +9,7 @@
             <table>
                 <tr>
                     <th>
-                        <h3 class="page-title">Queries</h3>
+                        <h3 class="page-title">Query</h3>
                     </th>
                     <th class="btn-action"> 
                         <a th:href="@{'/workbench/workbench/'}" title="Workbench">
@@ -80,15 +80,13 @@
                                 </a>                                
                             </td>
                             <td>
-                                <div th:if="*{#authorization.expression('hasRole(''HERO'')') or workbenchQuery.user.username == #httpServletRequest.remoteUser}">
-                                    <button 
-                                        type="button" 
-                                        class="btn btn-generic btn-xs" 
-                                        th:id="'edit_' + ${workbenchQuery.id}" 
-                                        th:value="${workbenchQuery.id}">
-                                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 
-                                        Edit
-                                    </button>
+                                <div 
+                                    class="form-group" 
+                                    th:if="*{#authorization.expression('hasRole(''HERO'')') or workbenchQuery.user.username == #httpServletRequest.remoteUser}">
+
+                                    <a th:href="@{'/query/edit/' + ${workbenchQuery.id}}" class="btn btn-generic btn-xs">
+                                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                                    </a>
                                 </div>
                             </td>
                             <td>
@@ -145,41 +143,6 @@
                     </tbody>
                 </table>
             </fieldset>
-
-            <!--AJAX Parent modal --> 
-            <div id="modalHolder"/>
-
-            <center>
-                <button id="modal_wait" type="button" class="btn btn-default btn-sm" style="display:none;">
-                    <img th:src="@{'/images/ajax-loader.gif'}"></img>
-                </button>
-            </center>
         </div>
-        <script th:inline="javascript">
-            $(document).ready(function () {
-
-                $("[id^=edit_]").click(function () {
-                    var url = /*[[@{/query/modal/}]]*/ "/query/modal/";
-                    var query = $(this).val();
-
-                    $.ajax({
-                        type: "GET",
-                        url: url + query,
-                        contentType: "text/html",
-                        timeout: 1000000,
-                        success: function (result) {
-                            $("#modalHolder").html(result);
-                            $("#modalQuery").modal({
-                                backdrop: 'static'
-                            });
-                        },
-                        error: function (e) {
-                            alert("Fail loading query resultset: "
-                                    + e.statusText);
-                        }
-                    });
-                });
-            });
-        </script>
     </body>
 </html> 

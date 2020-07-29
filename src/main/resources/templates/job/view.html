@@ -456,7 +456,10 @@
                                     <span th:text="*{email[__${emailStat.index}__].id}"></span>
                                 </td>
                                 <td>
-                                    <span th:text="*{email[__${emailStat.index}__].subject}"></span>
+                                    <a class="link" 
+                                       th:text="*{email[__${emailStat.index}__].subject}" 
+                                       th:href="@{'/email/edit/' + *{email[__${emailStat.index}__].id}}" 
+                                       target="_blank"></a>  
                                 </td>
                             </tr>
                         </table>

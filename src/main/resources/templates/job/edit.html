@@ -666,8 +666,11 @@
                                     <span th:text="*{email[__${emailStat.index}__].id}"></span>
                                 </td>
                                 <td>
-                                    <span th:text="*{email[__${emailStat.index}__].subject}"></span>
-                                </td>
+                                    <a class="link" 
+                                       th:text="*{email[__${emailStat.index}__].subject}" 
+                                       th:href="@{'/email/edit/' + *{email[__${emailStat.index}__].id}}" 
+                                       target="_blank"></a>                                    
+                                </td>                                
                                 <td>
                                     <button type="submit" name="partial_remove_email" th:value="${emailStat.index}" class="btn btn-delete btn-xs">
                                         <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove

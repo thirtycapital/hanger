@@ -309,4 +309,24 @@ public class WorkbenchEmailController {
 
         return "redirect:/email/list/";
     }
+
+    /**
+     * Add a WorkbenchEmail.
+     *
+     * @param model Model
+     * @param principal Principal
+     * @return
+     */
+    @GetMapping(path = "/add")
+    public String add(Model model, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+
+        if (user != null) {
+            WorkbenchEmail workbenchEmail = new WorkbenchEmail();
+            workbenchEmail.setUser(user);
+            modelDefault(model, workbenchEmail);
+        }
+
+        return "workbench/email/edit";
+    }
 }

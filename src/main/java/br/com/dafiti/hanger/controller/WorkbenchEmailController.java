@@ -27,6 +27,7 @@ import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.model.User;
+import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.WorkbenchEmailService;
 import br.com.dafiti.hanger.service.UserService;
 import java.io.IOException;
@@ -58,13 +59,16 @@ public class WorkbenchEmailController {
 
     private final UserService userService;
     private final WorkbenchEmailService workbenchEmailService;
+    private final ConnectionService connectionService;
 
     @Autowired
     public WorkbenchEmailController(
             UserService userService,
-            WorkbenchEmailService workbenchEmailService) {
+            WorkbenchEmailService workbenchEmailService,
+            ConnectionService connectionService) {
         this.userService = userService;
         this.workbenchEmailService = workbenchEmailService;
+        this.connectionService = connectionService;
     }
 
     /**
@@ -257,6 +261,7 @@ public class WorkbenchEmailController {
     private void modelDefault(Model model, WorkbenchEmail workbenchEmail) {
         model.addAttribute("users", userService.list());
         model.addAttribute("email", workbenchEmail);
+        model.addAttribute("connections", connectionService.list());
     }
 
     /**
@@ -270,9 +275,7 @@ public class WorkbenchEmailController {
     public String edit(
             Model model,
             @PathVariable(value = "id") Long id) {
-        WorkbenchEmail workbenchEmail = workbenchEmailService.load(id);
-        model.addAttribute("workbenchEmail", workbenchEmail);
-        modelDefault(model, workbenchEmail);
+        modelDefault(model, workbenchEmailService.load(id));
         return "workbench/email/edit";
     }
 
@@ -287,7 +290,8 @@ public class WorkbenchEmailController {
     @PostMapping(path = "/save")
     public String saveEmail(
             @Valid @ModelAttribute WorkbenchEmail workbenchEmail,
-            BindingResult bindingResult, Model model) {
+            BindingResult bindingResult,
+            Model model) {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("workbenchEmail", workbenchEmail);

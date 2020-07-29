@@ -6,17 +6,24 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <h3 class="page-title">E-mail</h3>
-            <div>           
-                <form class="form-horizontal" th:object="${workbenchEmail}" th:action="@{/email/save}" method="post">
+            <table>
+                <tr>
+                    <th>
+                        <h3 class="page-title">E-mail</h3>
+                    </th>
+                    <th class="btn-action">
+                        <a th:href="@{'/email/list/'}" title="Query list">
+                            <span class="glyphicon glyphicon-envelope"></span>
+                        </a>
+                    </th>
+                </tr>
+            </table>
+            <div>
+                <form class="form-horizontal" th:object="${email}" th:action="@{/email/save}" method="post">
                     <div class="form-group">
                         <div class="col-sm-10">                            
                             <!--ID-->
                             <input type="hidden" th:field="*{id}"/>
-                            <!--Query-->
-                            <input type="hidden" th:field="*{query}"/>                            
-                            <!--Connection-->
-                            <input type="hidden" th:field="*{connection}"/>
                             <!--User-->
                             <input type="hidden" th:field="*{user}"/>
                         </div>
@@ -40,7 +47,7 @@
                                 data-live-search="true" 
                                 multiple="true"
                                 th:field="*{recipient}" 
-                                data-selected-text-format="count > 1">
+                                data-selected-text-format="count > 5">
 
                                 <option th:each="user: ${users}" 
                                         th:value="${user.email}" 
@@ -83,7 +90,24 @@
                                 maxlength="10000"></textarea>
                         </div>
                     </div>
-                    
+
+                    <label>Connection</label>
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <select 
+                                id="connection"
+                                class="selectpicker form-control col-xs-6" 
+                                data-live-search="true" 
+                                th:field="*{connection.id}">
+
+                                <option th:each="connection: ${connections}" 
+                                        th:value="${connection.id}" 
+                                        th:text="${connection.name}">
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
                     <label>Query</label> 
                     <div class="form-group">
                         <div class="col-sm-10">                                        

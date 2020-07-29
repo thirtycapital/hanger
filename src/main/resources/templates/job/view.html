@@ -438,16 +438,15 @@
                             <legend>
                                 E-mail
                             </legend>
-                        </fieldset>
-
-                        <div class="alert alert-link" role="alert">
                             <span>If job runs successfully, send e-mails bellow with resultset</span>
-                        </div>  
+                        </fieldset>
+                        <br/>
 
                         <table class="table">
                             <tr>
                                 <th style="width:5%">#</th>
-                                <th style="width:75%">E-mail</th>
+                                <th style="width:50%">E-mail</th>
+                                <th style="width:32.5%">Owner</th>
                             </tr>
                             <tr th:each="email, emailStat : ${job.email}">
                                 <input type="hidden" th:field="*{email[__${emailStat.index}__]}"/> 
@@ -461,6 +460,9 @@
                                        th:href="@{'/email/edit/' + *{email[__${emailStat.index}__].id}}" 
                                        target="_blank"></a>  
                                 </td>
+                                <td>
+                                    <span th:text="*{email[__${emailStat.index}__].user.username}"></span>
+                                </td>                                
                             </tr>
                         </table>
                     </div>

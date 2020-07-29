@@ -27,7 +27,8 @@
                                         th:checked="${emails}">
 
                                         <option th:each="email : ${emails}" 
-                                                th:value="${email.id}" 
+                                                th:value="${email.id}"
+                                                th:attr="data-subtext=${email.user.username}" 
                                                 th:text="${email.subject}">
                                         </option>
                                     </select>

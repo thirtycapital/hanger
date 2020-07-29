@@ -30,13 +30,8 @@
                     <thead>
                         <tr>
                             <th style="width:3%">#</th>
-                            <th>Recipient</th>
-                            <th>External Recipient</th>
-                            <th>Subject</th>
-                            <th>Query</th>
+                            <th style="width:37%">Subject</th>
                             <th>Connection</th>
-                            <th>Created at</th>
-
                             <th style="width:1%" class="no-sort"></th>
                             <th style="width:1%" class="no-sort"></th>
                             <th style="width:1%" class="no-sort"></th>
@@ -45,44 +40,8 @@
                     <tbody>
                         <tr class="query-row" th:each="workbenchEmail : ${workbenchEmailList}">
                             <td th:text="${workbenchEmail.id}">#</td>
-                            <td th:text="*{ #lists.isEmpty(workbenchEmail.recipient) ? '' : #strings.arrayJoin(workbenchEmail.recipient, '; ') }"></td>
-                            <td>
-                                <span th:text="${#strings.length(workbenchEmail.externalRecipient) > 35 ? #strings.substring(workbenchEmail.externalRecipient,0,35) : workbenchEmail.externalRecipient}"></span>                                
-                                <div class="btn-group" th:if="${#strings.length(workbenchEmail.externalRecipient) > 35}">
-                                    <button class="dropdown-toggle close" data-toggle="dropdown">...</button>
-                                    <ul class="dropdown-menu">                                                
-                                        <li>
-                                            <pre class="line-numbers">
-                                                    <code class="language-none" th:text="${workbenchEmail.externalRecipient}"></code>
-                                            </pre>
-                                        </li>  
-                                    </ul>
-                                </div>
-                                <a class="btn-copy" 
-                                   href="javascript:;" 
-                                   th:if="${not #lists.isEmpty(workbenchEmail.externalRecipient)}" 
-                                   th:attr="data-clipboard-text=${workbenchEmail.externalRecipient}">
-                                    <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="copy"></span>
-                                </a>                                
-                            </td>
                             <td th:text="${workbenchEmail.subject}"></td>
-                            <td>
-                                <div class="btn-group" th:if="${not #lists.isEmpty(workbenchEmail.query)}">
-                                    <button class="dropdown-toggle close" data-toggle="dropdown"><span class="caret"></span></button>
-                                    <ul class="dropdown-menu">                                                
-                                        <li>
-                                            <pre class="line-numbers">
-                                                    <code class="language-sql" th:text="${workbenchEmail.query}"></code>
-                                            </pre>
-                                        </li>  
-                                    </ul>
-                                </div>
-                                <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${workbenchEmail.query}">
-                                    <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="copy"></span>
-                                </a>
-                            </td>
                             <td th:text="${workbenchEmail.connection.name}"></td>
-                            <td th:text="${#dates.format(workbenchEmail.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
                             <td>
                                 <button 
                                     type="button" 

@@ -329,4 +329,19 @@ public class WorkbenchEmailController {
 
         return "workbench/email/edit";
     }
+    
+    /**
+     * View a WorkbenchEmail.
+     *
+     * @param model Model
+     * @param id Long workbenchemail id
+     * @return
+     */
+    @GetMapping(path = "/view/{id}")
+    public String view(
+            Model model,
+            @PathVariable(value = "id") Long id) {
+        modelDefault(model, workbenchEmailService.load(id));
+        return "workbench/email/view";
+    }
 }

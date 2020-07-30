@@ -40,6 +40,7 @@
                             <th style="width:1%" class="no-sort"></th>
                             <th style="width:1%" class="no-sort"></th>
                             <th style="width:1%" class="no-sort"></th>
+                            <th style="width:1%" class="no-sort"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -56,6 +57,11 @@
                                     <span class="glyphicon glyphicon-send" aria-hidden="true"></span> 
                                     Send
                                 </button>
+                            </td>
+                            <td>
+                                <a th:href="@{'/email/view/' + ${workbenchEmail.id}}" class="btn btn-generic btn-xs">
+                                    <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> See
+                                </a>
                             </td>
                             <td>
                                 <a th:href="@{'/email/edit/' + ${workbenchEmail.id}}" class="btn btn-generic btn-xs">

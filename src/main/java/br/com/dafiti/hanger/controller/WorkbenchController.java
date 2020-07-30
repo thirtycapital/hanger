@@ -26,6 +26,7 @@ package br.com.dafiti.hanger.controller;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.model.WorkbenchQuery;
 import br.com.dafiti.hanger.model.JobCheckup;
+import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.service.ConfigurationService;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.WorkbenchService;
@@ -140,35 +141,58 @@ public class WorkbenchController {
     /**
      * Show SQL workbench
      *
-     * @param workbenchQuery
+     * @param query WorkbenchQuery
      * @param model Model
      * @return SQL workbench template.
      */
     @GetMapping(path = "/workbench/{id}")
     public String workbench(
-            @PathVariable(name = "id") WorkbenchQuery workbenchQuery,
+            @PathVariable(name = "id") WorkbenchQuery query,
             Model model) {
-        model.addAttribute("workbenchQuery", workbenchQuery);
-        model.addAttribute("connections", connectionService.list());
-
+        modelDefault(model, query.getQuery(), query.getConnection());
         return "workbench/workbench";
     }
 
     /**
      * Job checkup query on workbench
      *
-     * @param jobCheckup
+     * @param checkup JobCheckup
      * @param model Model
      * @return SQL workbench template.
      */
     @GetMapping(path = "/job/checkup/{id}")
     public String workbench(
-            @PathVariable(name = "id") JobCheckup jobCheckup,
+            @PathVariable(name = "id") JobCheckup checkup,
             Model model) {
-        model.addAttribute("jobCheckup", jobCheckup);
-        model.addAttribute("connections", connectionService.list());
-
+        modelDefault(model, checkup.getQuery(), checkup.getConnection());
         return "workbench/workbench";
+    }
+
+    /**
+     * Job checkup query on workbench
+     *
+     * @param email WorkbenchEmail
+     * @param model Model
+     * @return SQL workbench template.
+     */
+    @GetMapping(path = "/workbench/email/{id}")
+    public String workbench(
+            @PathVariable(name = "id") WorkbenchEmail email,
+            Model model) {
+        modelDefault(model, email.getQuery(), email.getConnection());
+        return "workbench/workbench";
+    }
+
+    /**
+     *
+     * @param model
+     * @param query
+     * @param connection
+     */
+    private void modelDefault(Model model, String query, Connection connection) {
+        model.addAttribute("query", query);
+        model.addAttribute("connection", connection);
+        model.addAttribute("connections", connectionService.list());
     }
 
     /**

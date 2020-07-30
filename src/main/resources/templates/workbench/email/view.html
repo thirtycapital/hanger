@@ -12,7 +12,12 @@
                         <h3 class="page-title">E-mail</h3>
                     </th>
                     <th class="btn-action">
-                        <a th:href="@{'/email/list/'}" title="Query list">
+                        <a th:href="@{'/email/add/'}" title="Add e-mail">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                    </th>                    
+                    <th class="btn-action">
+                        <a th:href="@{'/email/list/'}" title="E-mails">
                             <span class="glyphicon glyphicon-envelope"></span>
                         </a>
                     </th>
@@ -57,8 +62,7 @@
                                 type="text" 
                                 id="externalRecipient"
                                 class="form-control" 
-                                maxlength="255"                                            
-                                placeholder="E-mail list separated by semicolon or comma"
+                                maxlength="255"
                                 th:field="*{externalRecipient}"
                                 readonly="true"/>
                         </div>
@@ -71,9 +75,7 @@
                             <input type="text" 
                                    class="form-control" 
                                    maxlength="50" 
-                                   th:field="*{subject}" 
-                                   required="true" 
-                                   placeholder="Subject"
+                                   th:field="*{subject}"
                                    readonly="true"/>
                             <span
                                 th:if="${#fields.hasErrors('subject')}" 
@@ -107,7 +109,12 @@
                         </div>
                     </div>
 
-                    <label>Query</label> 
+                    <label>
+                        Query
+                        <a th:href="@{'/workbench/workbench/email/' + *{id}}" title="Open the query in Workbench" target="_blank">
+                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                        </a>                        
+                    </label> 
                     <div class="form-group">
                         <div class="col-sm-10">                                        
                             <pre class="line-numbers">

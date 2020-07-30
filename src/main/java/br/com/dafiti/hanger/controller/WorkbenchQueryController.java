@@ -115,14 +115,21 @@ public class WorkbenchQueryController {
             @Valid @ModelAttribute WorkbenchQuery workbenchQuery,
             Model model,
             Principal principal) {
+        boolean update = workbenchQuery.getId() != null;
+        String redirect = "redirect:/query/list/";
+
         try {
             workbenchQueryService.save(workbenchQuery);
+
+            if (update) {
+                redirect = "redirect:/query/view/" + workbenchQuery.getId();
+            }
         } catch (Exception ex) {
             model.addAttribute("workbenchQuery", workbenchQuery);
             redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(ex));
         }
 
-        return "redirect:/query/list/";
+        return redirect;
     }
 
     /**
@@ -229,6 +236,22 @@ public class WorkbenchQueryController {
         }
 
         return "workbench/query/edit";
+    }
+
+    /**
+     * View a WorkbenchQuery.
+     *
+     * @param model Model
+     * @param workbenchQuery WorkbenchQuery
+     * @return String view
+     */
+    @GetMapping(path = "/view/{id}")
+    public String view(
+            Model model,
+            @PathVariable(value = "id") WorkbenchQuery workbenchQuery) {
+
+        modelDefault(model, workbenchQuery);
+        return "workbench/query/view";
     }
 
     /**

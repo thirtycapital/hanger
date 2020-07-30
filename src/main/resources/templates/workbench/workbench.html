@@ -41,10 +41,10 @@
                                         data-live-search="true" 
                                         required="true" 
                                         placeholder="Connection">
-                                        <option th:each="connection : ${connections}" 
-                                                th:value="${connection.id}" 
-                                                th:text="${connection.name}"
-                                                th:selected="${workbenchQuery != null ? connection == workbenchQuery.connection : jobCheckup != null ? connection == jobCheckup.connection : 0}">
+                                        <option th:each="conn : ${connections}" 
+                                                th:value="${conn.id}" 
+                                                th:text="${conn.name}"
+                                                th:selected="${connection != null ? conn == connection : 0}">
                                         </option>
                                     </select>
                                 </div>
@@ -68,12 +68,13 @@
                                 <div class="form-group">
                                     <textarea 
                                         class="form-control" 
-                                        id="query" 
+                                        id="cm" 
                                         required="true" 
                                         rows="10" 
                                         minlength="1" 
                                         maxlength="5000"
-                                        th:text="${workbenchQuery != null ? workbenchQuery.query : jobCheckup != null ? jobCheckup.query : ''}"></textarea>
+                                        th:text="${query != null ? query : ''}">
+                                    </textarea>
                                 </div>
                             </div>
                         </div>
@@ -207,7 +208,7 @@
                     createJSTree(connection);
                 });
 
-                window.editor = CodeMirror.fromTextArea(document.getElementById('query'), {
+                window.editor = CodeMirror.fromTextArea(document.getElementById('cm'), {
                     mode: 'text/x-sql',
                     indentWithTabs: true,
                     smartIndent: true,
@@ -235,7 +236,7 @@
                 $(document).ajaxStart(function () {
                     $("#wait").css("display", "inline");
                     $("#cancel-button").css("display", "inline");
-                    $("#query").prop("disabled", true);
+                    $("#cm").prop("disabled", true);
                     $("#play-button").prop("disabled", true);
                 });
 
@@ -246,7 +247,7 @@
                 $(document).ajaxComplete(function () {
                     $("#wait").css("display", "none");
                     $("#cancel-button").css("display", "none");
-                    $("#query").prop("disabled", false);
+                    $("#cm").prop("disabled", false);
                     $("#play-button").prop("disabled", false);
                 });
 

@@ -110,16 +110,11 @@
                     <label>Query</label> 
                     <div class="form-group">
                         <div class="col-sm-10">                                        
-                            <textarea 
-                                id="query" 
-                                class="form-control" 
-                                th:field="*{query}"
-                                rows="5" 
-                                required="true" 
-                                maxlength="10000"
-                                readonly="true"></textarea>
-                        </div>
-                    </div>
+                            <pre class="line-numbers">
+                                <code class="language-sql" th:text="*{query}"></code>
+                            </pre>
+                        </div>                        
+                    </div>                    
                     <hr/>
                     <!--Buttons--> 
                     <div class="form-group">

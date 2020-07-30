@@ -42,7 +42,6 @@ import br.com.dafiti.hanger.repository.WorkbenchEmailRepository;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  *

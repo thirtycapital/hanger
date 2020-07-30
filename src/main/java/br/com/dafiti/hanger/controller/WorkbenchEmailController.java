@@ -307,7 +307,7 @@ public class WorkbenchEmailController {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
         }
 
-        return "redirect:/email/list/";
+        return "redirect:/job/view/" + workbenchEmail.getId();
     }
 
     /**
@@ -329,7 +329,7 @@ public class WorkbenchEmailController {
 
         return "workbench/email/edit";
     }
-    
+
     /**
      * View a WorkbenchEmail.
      *

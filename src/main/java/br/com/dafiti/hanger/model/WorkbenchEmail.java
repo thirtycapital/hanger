@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Objects;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -47,7 +48,7 @@ import javax.persistence.Transient;
  * @author Fernando Saga
  */
 @Entity
-public class WorkbenchEmail extends Tracker implements Serializable {
+public class WorkbenchEmail extends Tracker<WorkbenchEmail> implements Serializable {
 
     private Long id;
     private String query;
@@ -162,5 +163,45 @@ public class WorkbenchEmail extends Tracker implements Serializable {
         });
 
         return recipients;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final WorkbenchEmail other = (WorkbenchEmail) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("WorkbenchEmail{id=").append(id);
+        sb.append(", query=").append(query);
+        sb.append(", subject=").append(subject);
+        sb.append(", content=").append(content);
+        sb.append(", externalRecipient=").append(externalRecipient);
+        sb.append(", recipient=").append(recipient);
+        sb.append(", connection=").append(connection);
+        sb.append(", user=").append(user);
+        sb.append('}');
+        return sb.toString();
     }
 }

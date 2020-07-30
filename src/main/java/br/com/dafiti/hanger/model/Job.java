@@ -67,7 +67,7 @@ import org.hibernate.annotations.OrderBy;
 @Entity
 @Table(indexes = {
     @Index(name = "IDX_name", columnList = "name", unique = false)})
-public class Job extends Tracker implements Serializable {
+public class Job extends Tracker<Job> implements Serializable {
 
     private Long id;
     private Server server;
@@ -371,11 +371,6 @@ public class Job extends Tracker implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "Job{" + "id=" + id + ", server=" + server + ", name=" + name + ", alias=" + alias + ", enabled=" + enabled + '}';
-    }
-
-    @Override
     public int hashCode() {
         int hash = 3;
         hash = 53 * hash + Objects.hashCode(this.id);
@@ -398,5 +393,31 @@ public class Job extends Tracker implements Serializable {
         }
 
         return Objects.equals(this.id, other.id);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Job{id=").append(id);
+        sb.append(", server=").append(server);
+        sb.append(", name=").append(name);
+        sb.append(", alias=").append(alias);
+        sb.append(", description=").append(description);
+        sb.append(", timeRestriction=").append(timeRestriction);
+        sb.append(", retry=").append(retry);
+        sb.append(", tolerance=").append(tolerance);
+        sb.append(", wait=").append(wait);
+        sb.append(", approver=").append(approver);
+        sb.append(", parent=").append(parent);
+        sb.append(", subject=").append(subject);
+        sb.append(", checkup=").append(checkup);
+        sb.append(", approval=").append(approval);
+        sb.append(", channel=").append(channel);
+        sb.append(", enabled=").append(enabled);
+        sb.append(", rebuild=").append(rebuild);
+        sb.append(", rebuildBlocked=").append(rebuildBlocked);
+        sb.append(", anyScope=").append(anyScope);
+        sb.append('}');
+        return sb.toString();
     }
 }

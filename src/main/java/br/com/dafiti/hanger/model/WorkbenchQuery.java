@@ -24,6 +24,7 @@
 package br.com.dafiti.hanger.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -37,7 +38,7 @@ import javax.persistence.ManyToOne;
  * @author Helio Leal
  */
 @Entity
-public class WorkbenchQuery extends Tracker implements Serializable {
+public class WorkbenchQuery extends Tracker<WorkbenchQuery> implements Serializable {
 
     private Long id;
     private String name;
@@ -108,5 +109,43 @@ public class WorkbenchQuery extends Tracker implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final WorkbenchQuery other = (WorkbenchQuery) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("WorkbenchQuery{id=").append(id);
+        sb.append(", name=").append(name);
+        sb.append(", query=").append(query);
+        sb.append(", shared=").append(shared);
+        sb.append(", connection=").append(connection);
+        sb.append(", user=").append(user);
+        sb.append('}');
+        return sb.toString();
     }
 }

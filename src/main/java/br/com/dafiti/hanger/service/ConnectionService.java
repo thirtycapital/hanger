@@ -49,9 +49,12 @@ import java.util.regex.Pattern;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -68,22 +71,22 @@ public class ConnectionService {
     private final ConnectionRepository connectionRepository;
     private final PasswordCryptor passwordCryptor;
     private final JdbcTemplate jdbcTemplate;
-    private final EventLogService eventLogService;
     private final ConfigurationService configurationService;
     private final Map<String, PreparedStatement> inflight;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     public ConnectionService(
             ConnectionRepository connectionRepository,
             PasswordCryptor passwordCryptor,
             JdbcTemplate jdbcTemplate,
-            EventLogService eventLogService,
+            ApplicationEventPublisher applicationEventPublisher,
             ConfigurationService configurationService) {
 
         this.connectionRepository = connectionRepository;
         this.passwordCryptor = passwordCryptor;
         this.jdbcTemplate = jdbcTemplate;
-        this.eventLogService = eventLogService;
+        this.applicationEventPublisher = applicationEventPublisher;
         this.configurationService = configurationService;
         this.inflight = new HashMap();
     }
@@ -533,12 +536,17 @@ public class ConnectionService {
                 inflight.remove(principal.getName());
             });
 
-            //Logs
-            eventLogService.log(
-                    EntityType.CONNECTION,
-                    Event.QUERY,
-                    principal.getName(),
-                    "[" + connection.getName() + "] " + query);
+            //Logs.
+            Map<String, Object> data = new HashMap<>();
+            data.put("connection", connection.getName());
+            data.put("sql", query);
+            
+
+            applicationEventPublisher.publishEvent(
+                    new AuditApplicationEvent(
+                            new AuditEvent(principal.getName(), "QUERY", data)
+                    )
+            );
 
             //Gets query elapsed time.
             queryResultSet.setElapsedTime(watch.getTotalTimeMillis());

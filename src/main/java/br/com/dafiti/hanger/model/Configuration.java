@@ -38,7 +38,7 @@ import javax.persistence.ManyToOne;
  * @author Helio Leal
  */
 @Entity
-public class Configuration extends Tracker implements Serializable {
+public class Configuration extends Tracker<Configuration> implements Serializable {
 
     private Long id;
     private String parameter;
@@ -171,5 +171,17 @@ public class Configuration extends Tracker implements Serializable {
         }
 
         return Objects.equals(this.id, other.id);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Configuration{id=").append(id);
+        sb.append(", parameter=").append(parameter);
+        sb.append(", value=").append(value);
+        sb.append(", name=").append(name);
+        sb.append(", group=").append(group);
+        sb.append('}');
+        return sb.toString();
     }
 }

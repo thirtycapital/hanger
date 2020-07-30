@@ -57,7 +57,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * @author Guilherme ALMEIDA
  */
 @Entity
-public class User extends Tracker implements Serializable, UserDetails {
+public class User extends Tracker<User> implements Serializable, UserDetails {
 
     private Long id;
     private String firstName;
@@ -272,5 +272,21 @@ public class User extends Tracker implements Serializable, UserDetails {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("User{id=").append(id);
+        sb.append(", firstName=").append(firstName);
+        sb.append(", lastName=").append(lastName);
+        sb.append(", username=").append(username);
+        sb.append(", email=").append(email);
+        sb.append(", roles=").append(roles);
+        sb.append(", privileges=").append(privileges);
+        sb.append(", enabled=").append(enabled);
+        sb.append(", tokenCreatedAt=").append(tokenCreatedAt);
+        sb.append('}');
+        return sb.toString();
     }
 }

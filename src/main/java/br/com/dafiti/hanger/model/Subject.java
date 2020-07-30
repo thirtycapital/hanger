@@ -53,7 +53,7 @@ import org.commonmark.renderer.html.HtmlRenderer;
  * @author Daniel D GOMES
  */
 @Entity
-public class Subject extends Tracker implements Serializable {
+public class Subject extends Tracker<Subject> implements Serializable {
 
     private Long id;
     private String name;
@@ -178,4 +178,18 @@ public class Subject extends Tracker implements Serializable {
 
         return Objects.equals(this.id, other.id);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Subject{id=").append(id);
+        sb.append(", name=").append(name);
+        sb.append(", description=").append(description);
+        sb.append(", notified=").append(notified);
+        sb.append(", mandatory=").append(mandatory);
+        sb.append(", channel=").append(channel);
+        sb.append(", user=").append(user);
+        sb.append('}');
+        return sb.toString();
+    }   
 }

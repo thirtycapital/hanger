@@ -39,7 +39,7 @@ import javax.validation.constraints.Size;
  * @author Valdiney V GOMES
  */
 @Entity
-public class Server extends Tracker implements Serializable {
+public class Server extends Tracker<Server> implements Serializable {
 
     private Long id;
     private String name;
@@ -105,11 +105,6 @@ public class Server extends Tracker implements Serializable {
     }
 
     @Override
-    public String toString() {
-        return "Server{" + "id=" + id + ", name=" + name + '}';
-    }
-
-    @Override
     public int hashCode() {
         int hash = 7;
         hash = 23 * hash + Objects.hashCode(this.id);
@@ -133,5 +128,16 @@ public class Server extends Tracker implements Serializable {
         }
 
         return Objects.equals(this.id, other.id);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Server{id=").append(id);
+        sb.append(", name=").append(name);
+        sb.append(", url=").append(url);
+        sb.append(", username=").append(username);
+        sb.append('}');
+        return sb.toString();
     }
 }

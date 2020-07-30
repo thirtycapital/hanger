@@ -24,27 +24,48 @@
 package br.com.dafiti.hanger.model;
 
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
+import javax.persistence.PreRemove;
+import javax.persistence.Transient;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
 /**
  *
  * @author Valdiney V GOMES
  */
+@Component
 @MappedSuperclass
 @EntityListeners({AuditingEntityListener.class})
-public abstract class Tracker {
+public class Tracker<T> {
 
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private String createdBy;
     private String modifiedBy;
+
+    private static ApplicationEventPublisher applicationEventPublisher;
+
+    @Autowired
+    public void setApplicationEventPublisher(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     @CreationTimestamp
     @Column(insertable = true, updatable = false)
@@ -82,5 +103,78 @@ public abstract class Tracker {
 
     public void setModifiedBy(String modifiedBy) {
         this.modifiedBy = modifiedBy;
+    }
+
+    /**
+     * Logs when a record is ADD.
+     */
+    @PostPersist
+    public void postPersist() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("entity", ((T) this).toString());
+
+        applicationEventPublisher.publishEvent(
+                new AuditApplicationEvent(
+                        new AuditEvent(
+                                this.getLoggedUserName(), "ADD_" + ((T) this).getClass().getSimpleName().toUpperCase(),
+                                data
+                        )
+                )
+        );
+    }
+
+    /**
+     * Logs when a record is UPDATED.
+     */
+    @PostUpdate
+    public void postUpdate() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("entity", ((T) this).toString());
+
+        applicationEventPublisher.publishEvent(
+                new AuditApplicationEvent(
+                        new AuditEvent(
+                                this.getLoggedUserName(), "UPDATE_" + ((T) this).getClass().getSimpleName().toUpperCase(),
+                                data
+                        )
+                )
+        );
+    }
+
+    /**
+     * Logs when a record is DELETED.
+     */
+    @PreRemove
+    public void PreRemove() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("entity", ((T) this).toString());
+
+        applicationEventPublisher.publishEvent(
+                new AuditApplicationEvent(
+                        new AuditEvent(
+                                this.getLoggedUserName(), "DELETE_" + ((T) this).getClass().getSimpleName().toUpperCase(),
+                                data
+                        )
+                )
+        );
+    }
+
+    /**
+     * Identifies the current user name.
+     *
+     * @return Current user name.
+     */
+    @Transient
+    private String getLoggedUserName() {
+        String userName = "AnonymousUser";
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        if (authentication != null) {
+            userName = authentication.getName();
+        }
+
+        return userName;
     }
 }

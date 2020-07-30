@@ -25,6 +25,7 @@ package br.com.dafiti.hanger.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -40,7 +41,7 @@ import javax.persistence.TemporalType;
  * @author guilherme.almeida
  */
 @Entity
-public class JobApproval extends Tracker implements Serializable {
+public class JobApproval extends Tracker<JobApproval> implements Serializable {
 
     private Long id;
     private Date date = new Date();
@@ -111,5 +112,43 @@ public class JobApproval extends Tracker implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 37 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final JobApproval other = (JobApproval) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("JobApproval{id=").append(id);
+        sb.append(", date=").append(date);
+        sb.append(", user=").append(user);
+        sb.append(", job=").append(job);
+        sb.append(", description=").append(description);
+        sb.append(", approved=").append(approved);
+        sb.append('}');
+        return sb.toString();
     }
 }

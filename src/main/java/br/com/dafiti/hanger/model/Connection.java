@@ -42,7 +42,7 @@ import javax.validation.constraints.Size;
  * @author Valdiney V GOMES
  */
 @Entity
-public class Connection extends Tracker implements Serializable {
+public class Connection extends Tracker<Connection> implements Serializable {
 
     private Long id;
     private String name;
@@ -145,5 +145,18 @@ public class Connection extends Tracker implements Serializable {
         }
 
         return Objects.equals(this.id, other.id);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Connection{id=").append(id);
+        sb.append(", name=").append(name);
+        sb.append(", target=").append(target);
+        sb.append(", url=").append(url);
+        sb.append(", username=").append(username);
+        sb.append(", className=").append(className);
+        sb.append('}');
+        return sb.toString();
     }
 }

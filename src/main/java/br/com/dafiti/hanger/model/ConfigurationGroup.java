@@ -104,4 +104,13 @@ public class ConfigurationGroup implements Serializable {
 
         return Objects.equals(this.id, other.id);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("ConfigurationGroup{id=").append(id);
+        sb.append(", name=").append(name);
+        sb.append('}');
+        return sb.toString();
+    }
 }

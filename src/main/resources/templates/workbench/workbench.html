@@ -9,7 +9,7 @@
 
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
-        <div class="container-fluid main-content">
+        <div class="container-fluid main-content p-0">
             <div class="tab-content">
                 <!--<table>
                     <tr>
@@ -33,7 +33,7 @@
                     <div id="workbench_top" class="collapse in">
                         <div class="row space-top">
                             <div class="col-sm-2 space-right">
-                                <div class="form-group">                                    
+                                <div class="form-group mb-2">                                    
                                     <select 
                                         id="connection" 
                                         class="selectpicker form-control" 
@@ -52,7 +52,7 @@
                                            id="jstree-search"
                                            class="form-control form-control-search" 
                                            maxlength="50" 
-                                           placeholder="Search: "/>
+                                           placeholder="Search:"/>
 
                                     <div class="div-jstree">
                                         <div id="jstree"></div>

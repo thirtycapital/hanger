@@ -893,14 +893,11 @@ input[type='file'] {
     height: 840px;
 }
 
-.col-div-jstree {
-    padding-right:3px;
-}
-
 .form-control-search {
-    border: 1px solid #f7f7f7;
+    border: 1px solid #ccc;
     box-shadow: inset 0px 0px 0px 0px;
     background-color: transparent;
+    margin-bottom: 5px;
 }
 
 .form-control-search::placeholder {
@@ -981,4 +978,12 @@ input[type='file'] {
     overflow: hidden;
     resize: vertical;
     width: 100%;  
+}
+
+.p-0 {
+  padding: 0px !important;
+}
+
+.mb-2 {
+    margin-bottom: 5px !important;
 }

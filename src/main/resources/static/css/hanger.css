@@ -866,11 +866,8 @@ input[type='file'] {
 .table-workbench-result {
     display: block;
     overflow: auto;
+    height: 370px;
     max-height: 550px;
-}
-
-.CodeMirror-scroll {
-    height: 250px !important;
 }
 
 .panel-heading-height {
@@ -893,7 +890,7 @@ input[type='file'] {
     position: relative; 
     overflow: auto; 
     width: auto; 
-    height: 216px;    
+    height: 840px;
 }
 
 .col-div-jstree {
@@ -978,4 +975,10 @@ input[type='file'] {
 /* Hide the duration parents in the gantt */
 .row-gantt-parent > .gantt_last_cell > .gantt_tree_content {
     display: none;
+}
+
+.CodeMirror {
+    overflow: hidden;
+    resize: vertical;
+    width: 100%;  
 }

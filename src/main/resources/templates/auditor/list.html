@@ -6,14 +6,6 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <table>
-                <tr>
-                    <th>
-                        <h3 class="page-title">Log</h3>
-                    </th>
-                </tr>            
-            </table>
-
             <form th:action="@{/log/list/filter}" method="POST">
                 <div style="margin-top:10px">
                     <div class="form-group">

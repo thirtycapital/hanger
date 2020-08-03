@@ -150,7 +150,7 @@ public class Watchdog {
             jobBuildService.build(job);
 
             LOG.log(Level.INFO, "The watchdog catched job ".concat(job.getName()));
-            
+
             message
                     .append(":dog: The watchdog catched job ")
                     .append("*")

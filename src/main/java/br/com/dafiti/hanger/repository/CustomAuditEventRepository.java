@@ -28,13 +28,11 @@ import br.com.dafiti.hanger.service.AuditorService;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
-import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -84,13 +82,15 @@ public class CustomAuditEventRepository {
              */
             @Override
             public void add(AuditEvent auditEvent) {
-                Auditor auditor = new Auditor();
-                auditor.setUsername(auditEvent.getPrincipal());
-                auditor.setType(auditEvent.getType());
-                auditor.setDate(Date.from(auditEvent.getTimestamp()));
-                auditor.setData(auditEvent.getData());
+                if (!"anonymousUser".equals(auditEvent.getPrincipal())) {
+                    Auditor auditor = new Auditor();
+                    auditor.setUsername(auditEvent.getPrincipal());
+                    auditor.setType(auditEvent.getType());
+                    auditor.setDate(Date.from(auditEvent.getTimestamp()));
+                    auditor.setData(auditEvent.getData());
 
-                jmsTemplate.convertAndSend("queue.auditoring", auditor);
+                    jmsTemplate.convertAndSend("queue.auditoring", auditor);
+                }
             }
         };
     }

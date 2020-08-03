@@ -62,19 +62,34 @@
                             <td th:text="${event.id}">ID</td> 
                             <td th:text="${#dates.format(event.date, 'yyyy-MM-dd HH:mm:ss')}">Date</td>  
                             <td>
-                                <div th:if="${#strings.contains(event.type, 'DELETE_')}">
+                                <div th:if="${
+                                     #strings.contains(event.type, 'DELETE') 
+                                     or 
+                                     #strings.contains(event.type, 'FAILURE')}">
                                     <span class="label label-danger" th:text="${event.type}"></span>
                                 </div>
 
-                                <div th:if="${#strings.contains(event.type, 'UPDATE_')}">
+                                <div th:if="${#strings.contains(event.type, 'UPDATE')}">
                                     <span class="label label-warning" th:text="${event.type}"></span>
                                 </div>
 
-                                <div th:if="${#strings.contains(event.type, 'ADD_')}">
+                                <div th:if="${
+                                     #strings.contains(event.type, 'ADD') 
+                                     or 
+                                     #strings.contains(event.type, 'SUCCESS')}">
                                     <span class="label label-success" th:text="${event.type}"></span>
                                 </div>
 
-                                <div th:if="${not #strings.contains(event.type, 'ADD_') and not  #strings.contains(event.type, 'DELETE_') and not  #strings.contains(event.type, 'UPDATE_')}">
+                                <div th:if="${
+                                     not #strings.contains(event.type, 'ADD') 
+                                     and 
+                                     not #strings.contains(event.type, 'DELETE') 
+                                     and 
+                                     not #strings.contains(event.type, 'UPDATE')
+                                     and 
+                                     not #strings.contains(event.type, 'FAILURE')
+                                     and 
+                                     not #strings.contains(event.type, 'SUCCESS')}">
                                     <span class="label label-info" th:text="${event.type}"></span>
                                 </div>
                             </td>  

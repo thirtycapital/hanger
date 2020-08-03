@@ -245,9 +245,9 @@ code[class*="language-free"] {
 }
 
 .sidebar-nav {
-    display: block;
+    display: inline-block;
     float: left;
-    width: 150px;
+    width: 100%;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -291,7 +291,7 @@ code[class*="language-free"] {
 
 .sidebar-nav li a {
     color: #373e46;
-    display: block;
+    display: inline-block;
     text-decoration: none;
 }
 
@@ -328,6 +328,32 @@ code[class*="language-free"] {
 .sidebar-nav>.sidebar-brand a:hover {
     color: #fff;
     background: none;
+}
+
+.sub_icon_create {
+    float: right;
+    padding-top: 7px;
+    height: 35px;
+    width: 45px;
+    display: none;
+}
+
+#sidebar li:hover .sub_icon_create{
+    display: inline;
+}
+
+.sub_icon_create:hover{
+    height: 35px;
+    width: 45px;
+    color: darkblue;
+}
+
+#sidebar li .menu_link_option{
+    width: 85%;
+}
+
+#sidebar li .menu_link_create{
+    width: 15%;
 }
 
 .sub_icon {

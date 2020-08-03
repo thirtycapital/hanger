@@ -139,10 +139,6 @@ public class AuditorService {
                 data.put(entry.getKey(), entry.getValue());
             });
 
-            if (!data.containsKey("level")) {
-                data.put("level", "info");
-            }
-
             auditEvents.add(
                     new AuditEvent(
                             event.getDate().toInstant(),

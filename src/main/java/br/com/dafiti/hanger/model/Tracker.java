@@ -105,7 +105,6 @@ public class Tracker<T> {
                 "ADD_" + ((T) this).getClass().getSimpleName().toUpperCase(),
                 new AuditorData()
                         .addData("javascript", ((T) this).toString())
-                        .addData("level", "info")
                         .getData());
     }
 
@@ -115,17 +114,15 @@ public class Tracker<T> {
                 "UPDATE_" + ((T) this).getClass().getSimpleName().toUpperCase(),
                 new AuditorData()
                         .addData("javascript", ((T) this).toString())
-                        .addData("level", "warning")
                         .getData());
     }
 
     @PreRemove
     public void preRemove() {
         auditorService.publish(
-                "REMOVE_" + ((T) this).getClass().getSimpleName().toUpperCase(),
+                "DELETE_" + ((T) this).getClass().getSimpleName().toUpperCase(),
                 new AuditorData()
                         .addData("javascript", ((T) this).toString())
-                        .addData("level", "danger")
                         .getData());
     }
 }

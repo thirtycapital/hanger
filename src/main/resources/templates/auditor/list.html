@@ -62,7 +62,21 @@
                             <td th:text="${event.id}">ID</td> 
                             <td th:text="${#dates.format(event.date, 'yyyy-MM-dd HH:mm:ss')}">Date</td>  
                             <td>
-                                <span class="" th:classappend="${'label label-' + event.data.get('level')}" th:text="${event.type}">Info</span>
+                                <div th:if="${#strings.contains(event.type, 'DELETE_')}">
+                                    <span class="label label-danger" th:text="${event.type}"></span>
+                                </div>
+
+                                <div th:if="${#strings.contains(event.type, 'UPDATE_')}">
+                                    <span class="label label-warning" th:text="${event.type}"></span>
+                                </div>
+
+                                <div th:if="${#strings.contains(event.type, 'ADD_')}">
+                                    <span class="label label-success" th:text="${event.type}"></span>
+                                </div>
+
+                                <div th:if="${not #strings.contains(event.type, 'ADD_') and not  #strings.contains(event.type, 'DELETE_') and not  #strings.contains(event.type, 'UPDATE_')}">
+                                    <span class="label label-info" th:text="${event.type}"></span>
+                                </div>
                             </td>  
                             <td th:text="${event.username}">User</td> 
                             <td>

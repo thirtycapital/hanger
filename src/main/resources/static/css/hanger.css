@@ -188,7 +188,7 @@ code[class*="language-free"] {
 }
 
 .space-right {
-    padding-right: 20px;
+    padding-right: 30px;
 }
 
 .space-top {
@@ -1020,7 +1020,7 @@ input[type='file'] {
     resize: vertical;
     width: 100%;
     border: 1px solid #F4F5F7;
-    background-color: #faf8f5 !important;
+    background-color: #FFF !important;
 }
 
 .p-0 {

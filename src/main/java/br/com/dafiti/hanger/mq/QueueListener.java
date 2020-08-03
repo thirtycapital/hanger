@@ -39,7 +39,7 @@ public class QueueListener {
     @Autowired
     private AuditorService auditorService;
 
-    @JmsListener(destination = "queue.auditor")
+    @JmsListener(destination = "queue.auditoring")
     public void listener(Auditor auditor) {
         auditorService.save(auditor);
     }

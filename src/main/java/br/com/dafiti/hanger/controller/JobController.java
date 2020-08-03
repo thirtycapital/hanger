@@ -728,6 +728,8 @@ public class JobController {
      */
     @GetMapping(path = "/refresh/")
     public String refreshCache(Model model) {
+        auditorService.publish("REFRESH_CACHE");
+
         jobService.refresh();
         jenkinsService.refreshCache();
 

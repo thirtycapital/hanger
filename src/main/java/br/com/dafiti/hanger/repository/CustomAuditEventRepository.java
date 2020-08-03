@@ -90,7 +90,7 @@ public class CustomAuditEventRepository {
                 auditor.setDate(Date.from(auditEvent.getTimestamp()));
                 auditor.setData(auditEvent.getData());
 
-                jmsTemplate.convertAndSend("queue.auditor", auditor);
+                jmsTemplate.convertAndSend("queue.auditoring", auditor);
             }
         };
     }

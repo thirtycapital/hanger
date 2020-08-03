@@ -99,7 +99,7 @@ public class AuditorService {
      * @param type Event type
      */
     public void publish(String type) {
-        this.publish(type, null);
+        this.publish(type, new HashMap<>());
     }
 
     /**

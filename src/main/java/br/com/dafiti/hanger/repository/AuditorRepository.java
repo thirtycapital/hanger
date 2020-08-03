@@ -34,9 +34,9 @@ public interface AuditorRepository extends CrudRepository<Auditor, Long> {
 
     Iterable<Auditor> findByUsernameAndDate(String username, Date date);
 
-    Iterable<Auditor> findAllByDateBetween(Date dateFrom, Date dateTo);
+    Iterable<Auditor> findAllByDateBetweenOrderByDateDesc(Date dateFrom, Date dateTo);
 
-    Iterable<Auditor> findAllByDateBetweenAndType(Date dateFrom, Date dateTo, String type);
+    Iterable<Auditor> findAllByDateBetweenAndTypeOrderByDateDesc(Date dateFrom, Date dateTo, String type);
 
     @Query("SELECT DISTINCT type FROM Auditor a WHERE a.date BETWEEN :dateFrom AND :dateTo")
     Iterable<String> findDistinctTypesByDateBetween(Date dateFrom, Date dateTo);

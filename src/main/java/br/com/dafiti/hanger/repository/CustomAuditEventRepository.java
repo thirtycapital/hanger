@@ -40,7 +40,7 @@ import org.springframework.stereotype.Repository;
  * @author Valdiney V GOMES
  */
 @Repository
-public class MyAuditEventRepository {
+public class CustomAuditEventRepository {
 
     @Autowired
     private AuditorService eventAuditorRepository;

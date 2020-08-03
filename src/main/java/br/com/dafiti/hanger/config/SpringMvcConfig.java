@@ -23,11 +23,7 @@
  */
 package br.com.dafiti.hanger.config;
 
-import br.com.dafiti.hanger.log.BuildInterceptor;
-import br.com.dafiti.hanger.log.EditInterceptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -38,32 +34,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class SpringMvcConfig implements WebMvcConfigurer {
 
-    @Autowired
-    BuildInterceptor buildInterceptor;
-
-    @Autowired
-    EditInterceptor editInterceptor;
-
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("home");
         registry.addViewController("/home").setViewName("home");
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/403").setViewName("403");
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(buildInterceptor).addPathPatterns(
-                "/job/api/build/**",
-                "/job/build/**",
-                "/job/api/rebuild/**",
-                "/job/rebuild/**");
-        registry.addInterceptor(editInterceptor).addPathPatterns(
-                "/job/save/**",
-                "/server/save/**",
-                "/subject/save/**",
-                "/connection/save/**",
-                "/user/save/**");
     }
 }

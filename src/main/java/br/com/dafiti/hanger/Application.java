@@ -23,7 +23,6 @@
  */
 package br.com.dafiti.hanger;
 
-import br.com.dafiti.hanger.model.EventAuditor;
 import java.util.concurrent.Executor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -39,15 +38,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import java.time.Instant;
-import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import javax.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.AuditEventRepository;
-import br.com.dafiti.hanger.repository.EventAuditorRepository;
 
 /**
  *
@@ -106,46 +97,5 @@ public class Application extends SpringBootServletInitializer {
         executor.setThreadNamePrefix("hanger_");
         executor.initialize();
         return executor;
-    }
-
-    @Autowired
-    private EventAuditorRepository eventAuditorRepository;
-
-    /**
-     * Audit event
-     *
-     * @return
-     */
-    @Bean
-    public AuditEventRepository auditEventRepository() {
-        return new AuditEventRepository() {
-
-            @Override
-            public List<AuditEvent> find(String principal, Instant after, String type) {
-                Iterable<EventAuditor> eventAuditor;
-
-                if (principal == null && after == null) {
-                    eventAuditor = eventAuditorRepository.findAll();
-                } else if (after == null) {
-                    eventAuditor = eventAuditorRepository.findByUsername(principal);
-                } else {
-                    eventAuditor = eventAuditorRepository.findByUsernameAndDate(principal, Date.from(after));
-                }
-
-                return null;
-            }
-
-            @Override
-            @Transactional(Transactional.TxType.REQUIRES_NEW)
-            public void add(AuditEvent auditEvent) {
-                EventAuditor event = new EventAuditor();
-                event.setUsername(auditEvent.getPrincipal());
-                event.setType(auditEvent.getType());
-                event.setDate(Date.from(auditEvent.getTimestamp()));
-                event.setData(auditEvent.getData());
-
-                eventAuditorRepository.save(event);
-            }
-        };
     }
 }

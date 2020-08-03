@@ -47,6 +47,7 @@ import javax.validation.constraints.Size;
 import org.commonmark.node.*;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
+import org.json.JSONObject;
 
 /**
  *
@@ -181,15 +182,10 @@ public class Subject extends Tracker<Subject> implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Subject{id=").append(id);
-        sb.append(", name=").append(name);
-        sb.append(", description=").append(description);
-        sb.append(", notified=").append(notified);
-        sb.append(", mandatory=").append(mandatory);
-        sb.append(", channel=").append(channel);
-        sb.append(", user=").append(user);
-        sb.append('}');
-        return sb.toString();
-    }   
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("name", name);
+        object.put("description", description);
+        return object.toString(4);
+    }
 }

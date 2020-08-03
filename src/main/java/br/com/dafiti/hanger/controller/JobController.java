@@ -25,6 +25,7 @@ package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Command;
+import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.JobCheckup;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
@@ -33,6 +34,7 @@ import br.com.dafiti.hanger.model.Subject;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.service.ConnectionService;
+import br.com.dafiti.hanger.service.AuditorService;
 import br.com.dafiti.hanger.service.FlowService;
 import br.com.dafiti.hanger.service.JenkinsService;
 import br.com.dafiti.hanger.service.JobApprovalService;
@@ -49,8 +51,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -93,6 +97,7 @@ public class JobController {
     private final FlowService flowService;
     private final JobApprovalService jobApprovalService;
     private final JobDetailsService jobDetailsService;
+    private final AuditorService auditorService;
 
     @Autowired
     public JobController(JobService jobService,
@@ -107,7 +112,8 @@ public class JobController {
             SlackService slackService,
             FlowService flowService,
             JobApprovalService jobApprovalService,
-            JobDetailsService jobDetailsService) {
+            JobDetailsService jobDetailsService,
+            AuditorService auditorService) {
 
         this.jobService = jobService;
         this.serverService = serverService;
@@ -122,6 +128,7 @@ public class JobController {
         this.flowService = flowService;
         this.jobApprovalService = jobApprovalService;
         this.jobDetailsService = jobDetailsService;
+        this.auditorService = auditorService;
     }
 
     /**
@@ -157,9 +164,9 @@ public class JobController {
      */
     @GetMapping(path = "/edit/{id}")
     public String edit(
-            Model model, 
+            Model model,
             @PathVariable(value = "id") Job job) {
-        
+
         model.addAttribute("children", jobService.getChildrenlist(job));
         this.modelDefault(model, job);
         return "job/edit";
@@ -273,6 +280,12 @@ public class JobController {
     private boolean jobBuild(Job job) {
         boolean built = false;
 
+        auditorService.publish("BUILD_JOB",
+                new AuditorData()
+                        .addData("name", job.getName())
+                        .addData("status", built)
+                        .getData());
+
         retryService.remove(job);
 
         try {
@@ -284,6 +297,7 @@ public class JobController {
             } else {
                 jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
             }
+
         } catch (Exception ex) {
             LogManager.getLogger(JobController.class).log(Level.ERROR, "Fail building job " + job.getName() + " manually", ex);
         }
@@ -304,9 +318,15 @@ public class JobController {
             @PathVariable(value = "id") Job job) {
 
         try {
-            HashSet<Job> parent = jobService.getMeshParent(job);
+            auditorService.publish("BUILD_MESH",
+                    new AuditorData()
+                            .addData("name", job.getName())
+                            .getData());
+
             retryService.remove(job);
             jobService.rebuildMesh(job);
+
+            HashSet<Job> parent = jobService.getMeshParent(job);
 
             for (Job meshParent : parent) {
                 retryService.remove(meshParent);
@@ -723,6 +743,8 @@ public class JobController {
     @ResponseBody
     public boolean pluginMaintenance() {
         List<Job> jobs = (List) jobService.list();
+
+        auditorService.publish("PLUGIN_MAINTENANCE");
 
         for (Job job : jobs) {
             LogManager.getLogger(

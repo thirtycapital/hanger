@@ -528,7 +528,7 @@ public class JobService {
                 if (!propagation.contains(job)) {
                     LogManager.getLogger(
                             JobService.class.getName())
-                            .log(Level.INFO, "{0} {1}", new Object[]{StringUtils.repeat(".", level), child.getJob().getName()});
+                            .log(Level.INFO, StringUtils.repeat(".", level) + child.getJob().getName());
 
                     this.getPropagation(child.getJob(), propagation, level);
                 }
@@ -546,7 +546,7 @@ public class JobService {
      * @param server Server
      * @param childrenJobList
      * @param parentUpstream ParentUpstream
-     * @param rebuildable Identify if should make a job rebuildable. 
+     * @param rebuildable Identify if should make a job rebuildable.
      * @param error errors
      * @throws Exception
      */
@@ -571,10 +571,10 @@ public class JobService {
                 ArrayList parentList = new ArrayList();
                 parentList.add(job.getName());
 
-                if(rebuildable){
-                   jobChild.setRebuild(rebuildable);
+                if (rebuildable) {
+                    jobChild.setRebuild(rebuildable);
                 }
-                
+
                 this.addParent(jobChild, job.getServer(), parentList, false, error);
                 this.save(jobChild);
 

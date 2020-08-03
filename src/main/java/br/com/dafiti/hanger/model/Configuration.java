@@ -31,6 +31,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import org.json.JSONObject;
 
 /**
  * Contains all generic parameters and its paramValues.
@@ -175,13 +176,11 @@ public class Configuration extends Tracker<Configuration> implements Serializabl
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Configuration{id=").append(id);
-        sb.append(", parameter=").append(parameter);
-        sb.append(", value=").append(value);
-        sb.append(", name=").append(name);
-        sb.append(", group=").append(group);
-        sb.append('}');
-        return sb.toString();
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("parameter", parameter);
+        object.put("value", value);
+        object.put("name", name);
+        return object.toString(4);
     }
 }

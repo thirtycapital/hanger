@@ -33,6 +33,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import org.json.JSONObject;
 
 /**
  *
@@ -132,12 +133,11 @@ public class Server extends Tracker<Server> implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Server{id=").append(id);
-        sb.append(", name=").append(name);
-        sb.append(", url=").append(url);
-        sb.append(", username=").append(username);
-        sb.append('}');
-        return sb.toString();
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("name", name);
+        object.put("url", url);
+        object.put("username", username);
+        return object.toString(4);
     }
 }

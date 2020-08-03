@@ -59,6 +59,7 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.OrderBy;
+import org.json.JSONObject;
 
 /**
  *
@@ -397,27 +398,18 @@ public class Job extends Tracker<Job> implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Job{id=").append(id);
-        sb.append(", server=").append(server);
-        sb.append(", name=").append(name);
-        sb.append(", alias=").append(alias);
-        sb.append(", description=").append(description);
-        sb.append(", timeRestriction=").append(timeRestriction);
-        sb.append(", retry=").append(retry);
-        sb.append(", tolerance=").append(tolerance);
-        sb.append(", wait=").append(wait);
-        sb.append(", approver=").append(approver);
-        sb.append(", parent=").append(parent);
-        sb.append(", subject=").append(subject);
-        sb.append(", checkup=").append(checkup);
-        sb.append(", approval=").append(approval);
-        sb.append(", channel=").append(channel);
-        sb.append(", enabled=").append(enabled);
-        sb.append(", rebuild=").append(rebuild);
-        sb.append(", rebuildBlocked=").append(rebuildBlocked);
-        sb.append(", anyScope=").append(anyScope);
-        sb.append('}');
-        return sb.toString();
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("server", server);
+        object.put("name", name);
+        object.put("alias", alias);
+        object.put("description", description);
+        object.put("enabled", enabled);
+
+        if (parent != null) {
+            object.put("parent", parent);
+        }
+
+        return object.toString(4);
     }
 }

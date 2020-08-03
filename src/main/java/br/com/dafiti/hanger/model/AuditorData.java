@@ -21,18 +21,33 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
-package br.com.dafiti.hanger.repository;
+package br.com.dafiti.hanger.model;
 
-import br.com.dafiti.hanger.model.EventAuditor;
-import java.util.Date;
-import java.util.List;
-import org.springframework.data.repository.CrudRepository;
+import java.util.HashMap;
+import java.util.Map;
 
-public interface EventAuditorRepository extends CrudRepository<EventAuditor, Long> {
+/**
+ *
+ * @author Valdiney V GOMES
+ */
+public class AuditorData {
 
-    List<EventAuditor> findByUsername(String username);
+    Map<String, Object> data;
 
-    List<EventAuditor> findByUsernameAndDate(String username, Date date);
+    public AuditorData() {
+        this.data = new HashMap<>();
+    }
 
-    List<EventAuditor> findAllByDateBetween(Date dateFrom, Date dateTo);
+    public Map<String, Object> getData() {
+        return data;
+    }
+
+    public void setData(Map<String, Object> data) {
+        this.data = data;
+    }
+
+    public AuditorData addData(String key, Object value) {
+        this.data.put(key, value);
+        return this;
+    }
 }

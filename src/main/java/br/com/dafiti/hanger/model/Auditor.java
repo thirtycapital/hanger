@@ -23,6 +23,7 @@
  */
 package br.com.dafiti.hanger.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +44,7 @@ import javax.persistence.TemporalType;
  * @author Valdiney V GOMES
  */
 @Entity
-public class EventAuditor {
+public class Auditor implements Serializable {
 
     private Long id;
     private String username;
@@ -88,7 +89,7 @@ public class EventAuditor {
 
     @ElementCollection
     @MapKeyColumn(name = "type")
-    @CollectionTable(name = "event_auditor_data", joinColumns = @JoinColumn(name = "id"))
+    @CollectionTable(name = "auditor_data", joinColumns = @JoinColumn(name = "id"))
     @Column(columnDefinition = "text")
     public Map<String, String> getData() {
         return data;
@@ -102,7 +103,9 @@ public class EventAuditor {
                 Object object = data.get(key);
 
                 if (object instanceof String) {
-                    content.put(key, object.toString());
+                    if (!object.toString().contains("org.springframework")) {
+                        content.put(key, object.toString());
+                    }
                 }
             });
         }

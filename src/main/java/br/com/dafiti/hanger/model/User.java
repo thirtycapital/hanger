@@ -47,6 +47,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import org.apache.commons.lang.WordUtils;
+import org.json.JSONObject;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -77,7 +78,7 @@ public class User extends Tracker<User> implements Serializable, UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     public Long getId() {
-        return this.id;
+        return id;
     }
 
     public void setId(Long id) {
@@ -88,7 +89,7 @@ public class User extends Tracker<User> implements Serializable, UserDetails {
     @Override
     @Column(unique = true)
     public String getUsername() {
-        return this.username;
+        return username;
     }
 
     public void setUsername(String username) {
@@ -98,7 +99,7 @@ public class User extends Tracker<User> implements Serializable, UserDetails {
     @Size(min = 4)
     @Override
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
     public void setPassword(String password) {
@@ -107,7 +108,7 @@ public class User extends Tracker<User> implements Serializable, UserDetails {
 
     @Transient
     public String getConfirmPassword() {
-        return this.confirmPassword;
+        return confirmPassword;
     }
 
     public void setConfirmPassword(String confirmPassword) {
@@ -136,13 +137,13 @@ public class User extends Tracker<User> implements Serializable, UserDetails {
             return "";
         }
 
-        return this.getFirstName() + " " + this.getLastName();
+        return getFirstName() + " " + this.getLastName();
     }
 
     @Column(name = "email", unique = true)
     @Pattern(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}$")
     public String getEmail() {
-        return this.email;
+        return email;
     }
 
     public void setEmail(String email) {
@@ -150,7 +151,7 @@ public class User extends Tracker<User> implements Serializable, UserDetails {
     }
 
     public String getResetCode() {
-        return this.resetCode;
+        return resetCode;
     }
 
     public void setResetCode(String resetCode) {
@@ -162,7 +163,7 @@ public class User extends Tracker<User> implements Serializable, UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     public Set<Role> getRoles() {
-        return this.roles;
+        return roles;
     }
 
     public void setRoles(Set<Role> roles) {
@@ -178,7 +179,7 @@ public class User extends Tracker<User> implements Serializable, UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id"))
     public List<Privilege> getPrivileges() {
-        return this.privileges;
+        return privileges;
     }
 
     public void setPrivileges(List<Privilege> privileges) {
@@ -276,17 +277,13 @@ public class User extends Tracker<User> implements Serializable, UserDetails {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("User{id=").append(id);
-        sb.append(", firstName=").append(firstName);
-        sb.append(", lastName=").append(lastName);
-        sb.append(", username=").append(username);
-        sb.append(", email=").append(email);
-        sb.append(", roles=").append(roles);
-        sb.append(", privileges=").append(privileges);
-        sb.append(", enabled=").append(enabled);
-        sb.append(", tokenCreatedAt=").append(tokenCreatedAt);
-        sb.append('}');
-        return sb.toString();
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("firstName", firstName);
+        object.put("lastName", lastName);
+        object.put("username", username);
+        object.put("email", email);
+        object.put("enabled", enabled);
+        return object.toString(4);
     }
 }

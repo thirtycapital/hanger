@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Dafiti Group
+ * Copyright (c) 2020 Dafiti Group
  * 
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -21,32 +21,23 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
-package br.com.dafiti.hanger.security;
+package br.com.dafiti.hanger.repository;
 
-import br.com.dafiti.hanger.model.User;
-import java.util.Optional;
-import org.springframework.data.domain.AuditorAware;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import br.com.dafiti.hanger.model.Auditor;
+import java.util.Date;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 
-public class SpringSecurityAuditorAware implements AuditorAware<String> {
+public interface AuditorRepository extends CrudRepository<Auditor, Long> {
 
-    /**
-     * Identify the user in action.
-     *
-     * @return Username
-     */
-    @Override
-    public Optional<String> getCurrentAuditor() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Iterable<Auditor> findByUsername(String username);
 
-        if (authentication == null
-                || !authentication.isAuthenticated()
-                || authentication.getPrincipal().equals("anonymousUser")) {
+    Iterable<Auditor> findByUsernameAndDate(String username, Date date);
 
-            return Optional.of("anonymousUser");
-        }
+    Iterable<Auditor> findAllByDateBetween(Date dateFrom, Date dateTo);
 
-        return Optional.of(((User) authentication.getPrincipal()).getUsername());
-    }
+    Iterable<Auditor> findAllByDateBetweenAndType(Date dateFrom, Date dateTo, String type);
+
+    @Query("SELECT DISTINCT type FROM Auditor a WHERE a.date BETWEEN :dateFrom AND :dateTo")
+    Iterable<String> findDistinctTypesByDateBetween(Date dateFrom, Date dateTo);
 }

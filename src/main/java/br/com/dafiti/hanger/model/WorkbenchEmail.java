@@ -40,6 +40,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import org.json.JSONObject;
 
 /**
  *
@@ -192,16 +193,14 @@ public class WorkbenchEmail extends Tracker<WorkbenchEmail> implements Serializa
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("WorkbenchEmail{id=").append(id);
-        sb.append(", query=").append(query);
-        sb.append(", subject=").append(subject);
-        sb.append(", content=").append(content);
-        sb.append(", externalRecipient=").append(externalRecipient);
-        sb.append(", recipient=").append(recipient);
-        sb.append(", connection=").append(connection);
-        sb.append(", user=").append(user);
-        sb.append('}');
-        return sb.toString();
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("query", query);
+        object.put("subject", subject);
+        object.put("content", content);
+        object.put("externalRecipient", externalRecipient);
+        object.put("recipient", recipient);
+        object.put("connection", connection);
+        return object.toString(4);
     }
 }

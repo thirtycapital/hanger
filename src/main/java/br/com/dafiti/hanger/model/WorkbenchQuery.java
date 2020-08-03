@@ -32,6 +32,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import org.json.JSONObject;
 
 /**
  *
@@ -138,14 +139,12 @@ public class WorkbenchQuery extends Tracker<WorkbenchQuery> implements Serializa
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("WorkbenchQuery{id=").append(id);
-        sb.append(", name=").append(name);
-        sb.append(", query=").append(query);
-        sb.append(", shared=").append(shared);
-        sb.append(", connection=").append(connection);
-        sb.append(", user=").append(user);
-        sb.append('}');
-        return sb.toString();
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("name", name);
+        object.put("query", query);
+        object.put("shared", shared);
+        object.put("connection", connection);
+        return object.toString(4);
     }
 }

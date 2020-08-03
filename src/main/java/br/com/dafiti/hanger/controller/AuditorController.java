@@ -23,7 +23,7 @@
  */
 package br.com.dafiti.hanger.controller;
 
-import br.com.dafiti.hanger.service.EventLogService;
+import br.com.dafiti.hanger.service.AuditorService;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,54 +42,55 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 @RequestMapping(path = "/log")
-public class EventLogController {
+public class AuditorController {
 
-    private final EventLogService eventLogService;
+    private final AuditorService auditorService;
 
     @Autowired
-    public EventLogController(EventLogService eventLogService) {
-        this.eventLogService = eventLogService;
+    public AuditorController(AuditorService auditorService) {
+        this.auditorService = auditorService;
     }
 
     /**
-     * List event log.
+     * Auditor log list.
      *
-     * @param model
-     * @return
+     * @param model Model
+     * @return Template render.
      * @throws java.text.ParseException
      */
     @GetMapping(path = {"/list", "/list/filter"})
     public String listServer(Model model) throws ParseException {
         this.modelDefault(model);
 
-        return "eventlog/list";
+        return "auditor/list";
     }
 
     /**
-     * List log with date filter.
+     * Auditor with date filter.
      *
-     * @param dateFrom
-     * @param dateTo
-     * @param model
+     * @param dateFrom Start Date
+     * @param dateTo End date
+     * @param type Event type
+     * @param model Model
      * @return
      */
     @PostMapping(path = "/list/filter")
     public String filter(
             @RequestParam("dateFrom") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date dateFrom,
             @RequestParam("dateTo") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date dateTo,
+            @RequestParam(value = "type", defaultValue = "ALL") String type,
             Model model) {
 
-        this.modelDefault(model, dateFrom, dateTo);
-        return "eventlog/list";
+        this.modelDefault(model, dateFrom, dateTo, type);
+        return "auditor/list";
     }
 
     /**
-     * Model default attribute.
+     * Model default.
      *
      * @param model Model
      */
     private void modelDefault(Model model) throws ParseException {
-
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
         String from = sdfDate.format(new Date()) + " 00:00:00";
         String to = sdfDate.format(new Date()) + " 23:59:59";
@@ -98,20 +99,32 @@ public class EventLogController {
         Date dateFrom = sdfDateTime.parse(from);
         Date dateTo = sdfDateTime.parse(to);
 
-        this.modelDefault(model, dateFrom, dateTo);
+        this.modelDefault(model, dateFrom, dateTo, null);
     }
 
     /**
-     * Model default attribute.
+     * Model default.
      *
      * @param model Model
-     * @param dateFrom start Date
-     * @param dateTo end date
+     * @param dateFrom Start Date
+     * @param dateTo End date
+     * @param type Event type
      */
-    private void modelDefault(Model model, Date dateFrom, Date dateTo) {
+    private void modelDefault(
+            Model model,
+            Date dateFrom,
+            Date dateTo,
+            String type) {
+
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        model.addAttribute("events", eventLogService.listDateBetween(dateFrom, dateTo));
+        if (type == null || "ALL".equals(type)) {
+            model.addAttribute("events", auditorService.listDateBetween(dateFrom, dateTo));
+        } else {
+            model.addAttribute("events", auditorService.listDateBetweenAndType(dateFrom, dateTo, type));
+        }
+
+        model.addAttribute("types", auditorService.listDistinctTypesByDateBetween(dateFrom, dateTo));
         model.addAttribute("dateFrom", simpleDateFormat.format(dateFrom));
         model.addAttribute("dateTo", simpleDateFormat.format(dateTo));
     }

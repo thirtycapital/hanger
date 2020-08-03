@@ -35,6 +35,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import org.json.JSONObject;
 
 /**
  *
@@ -141,14 +142,11 @@ public class JobApproval extends Tracker<JobApproval> implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("JobApproval{id=").append(id);
-        sb.append(", date=").append(date);
-        sb.append(", user=").append(user);
-        sb.append(", job=").append(job);
-        sb.append(", description=").append(description);
-        sb.append(", approved=").append(approved);
-        sb.append('}');
-        return sb.toString();
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("date", date);
+        object.put("description", description);
+        object.put("enabled", approved);
+        return object.toString(4);
     }
 }

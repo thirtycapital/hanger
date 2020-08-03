@@ -35,19 +35,13 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -58,15 +52,11 @@ import org.springframework.stereotype.Service;
 public class JenkinsService {
 
     private final HttpServletRequest request;
-    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
-    public JenkinsService(
-            HttpServletRequest request,
-            ApplicationEventPublisher applicationEventPublisher) {
+    public JenkinsService(HttpServletRequest request) {
 
         this.request = request;
-        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     /**
@@ -220,26 +210,6 @@ public class JenkinsService {
                 }
             }
         }
-
-        String userName = "";
-
-        Authentication authentication = SecurityContextHolder
-                .getContext()
-                .getAuthentication();
-
-        if (authentication != null) {
-            userName = authentication.getName();
-        }
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("job", job.getName());
-        data.put("status", String.valueOf(built));
-
-        applicationEventPublisher.publishEvent(
-                new AuditApplicationEvent(
-                        new AuditEvent(userName, "BUILD", data)
-                )
-        );
 
         return built;
     }

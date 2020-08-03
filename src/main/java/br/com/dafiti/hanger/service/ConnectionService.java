@@ -24,10 +24,9 @@
 package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.exception.Message;
+import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.option.Database;
-import br.com.dafiti.hanger.option.EntityType;
-import br.com.dafiti.hanger.option.Event;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.repository.ConnectionRepository;
 import br.com.dafiti.hanger.security.PasswordCryptor;
@@ -54,7 +53,6 @@ import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -73,20 +71,20 @@ public class ConnectionService {
     private final JdbcTemplate jdbcTemplate;
     private final ConfigurationService configurationService;
     private final Map<String, PreparedStatement> inflight;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final AuditorService eventAuditorService;
 
     @Autowired
     public ConnectionService(
             ConnectionRepository connectionRepository,
             PasswordCryptor passwordCryptor,
             JdbcTemplate jdbcTemplate,
-            ApplicationEventPublisher applicationEventPublisher,
+            AuditorService eventAuditorService,
             ConfigurationService configurationService) {
 
         this.connectionRepository = connectionRepository;
         this.passwordCryptor = passwordCryptor;
         this.jdbcTemplate = jdbcTemplate;
-        this.applicationEventPublisher = applicationEventPublisher;
+        this.eventAuditorService = eventAuditorService;
         this.configurationService = configurationService;
         this.inflight = new HashMap();
     }
@@ -536,17 +534,14 @@ public class ConnectionService {
                 inflight.remove(principal.getName());
             });
 
-            //Logs.
-            Map<String, Object> data = new HashMap<>();
-            data.put("connection", connection.getName());
-            data.put("sql", query);
-            
-
-            applicationEventPublisher.publishEvent(
-                    new AuditApplicationEvent(
-                            new AuditEvent(principal.getName(), "QUERY", data)
-                    )
-            );
+            //Log.
+            eventAuditorService.publish(
+                    "QUERY", 
+                    new AuditorData()
+                            .addData("connection", connection.getName())
+                            .addData("sql", query)
+                            .addData("elapsed", watch.getTotalTimeMillis())
+                            .getData());
 
             //Gets query elapsed time.
             queryResultSet.setElapsedTime(watch.getTotalTimeMillis());

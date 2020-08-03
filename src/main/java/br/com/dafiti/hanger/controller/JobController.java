@@ -51,15 +51,14 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -98,6 +97,8 @@ public class JobController {
     private final JobApprovalService jobApprovalService;
     private final JobDetailsService jobDetailsService;
     private final AuditorService auditorService;
+
+    private static final Logger LOG = LogManager.getLogger(JobController.class.getName());
 
     @Autowired
     public JobController(JobService jobService,
@@ -299,7 +300,7 @@ public class JobController {
             }
 
         } catch (Exception ex) {
-            LogManager.getLogger(JobController.class).log(Level.ERROR, "Fail building job " + job.getName() + " manually", ex);
+            LOG.log(Level.ERROR, "Fail building job " + job.getName() + " manually", ex);
         }
 
         return built;
@@ -746,12 +747,10 @@ public class JobController {
 
         auditorService.publish("PLUGIN_MAINTENANCE");
 
-        for (Job job : jobs) {
-            LogManager.getLogger(
-                    JobController.class.getName())
-                    .log(Level.INFO, "Updating plugin for: {0}", job.getName());
+        jobs.forEach(job -> {
+            LOG.log(Level.INFO, "Updating plugin for: " + job.getName());
             jenkinsService.updateJob(job);
-        }
+        });
 
         return true;
     }

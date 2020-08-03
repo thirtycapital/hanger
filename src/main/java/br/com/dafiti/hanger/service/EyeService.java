@@ -34,8 +34,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.UUID;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
 import org.json.JSONObject;
 import org.springframework.scheduling.annotation.Async;
 
@@ -52,6 +53,8 @@ public class EyeService {
     private final JobBuildPushService jobBuildPushService;
     private final JobCheckupService jobCheckupService;
     private final JobNotificationService jobNotificationService;
+
+    private static final Logger LOG = LogManager.getLogger(EyeService.class.getName());
 
     @Autowired
     public EyeService(
@@ -83,14 +86,14 @@ public class EyeService {
         JSONObject buildNotification = notification.getJSONObject("build");
 
         //Log the notification payload.
-        LogManager.getLogger(EyeService.class).log(Level.INFO, "[{0}] Received notification payload: {1}", new Object[]{uuid, notificationPayload});
+        LOG.log(Level.INFO, "[" + uuid + "] Received notification payload: " + notificationPayload);
 
         //Identify if the job is observed.
         Job job = jobService.findByName(notification.getString("name"));
 
         if (job != null) {
             //Log the job found. 
-            LogManager.getLogger(EyeService.class).log(Level.INFO, "[{0}] Job found {1}", new Object[]{uuid, job.getName()});
+            LOG.log(Level.INFO, "[" + uuid + "] Job found " + job.getName());
 
             //Define the job build.
             JobBuild jobBuild = new JobBuild();
@@ -116,7 +119,7 @@ public class EyeService {
             }
 
             //Log the job status.
-            LogManager.getLogger(EyeService.class).log(Level.INFO, "[{0}] Job status {1}", new Object[]{uuid, jobStatus.toString()});
+            LOG.log(Level.INFO, "[" + uuid + "] Job status " + jobStatus.toString());
 
             //Define the job status update rule.  
             boolean update;
@@ -133,7 +136,7 @@ public class EyeService {
                         update = jobStatus.getBuild().getNumber() != jobBuild.getNumber();
 
                         if (!update) {
-                            LogManager.getLogger(EyeService.class).log(Level.INFO, "[{0}] Status reversion attempt blocked", new Object[]{uuid});
+                            LOG.log(Level.INFO, "[" + uuid + "] Status reversion attempt blocked");
                         }
                     }
 
@@ -153,7 +156,7 @@ public class EyeService {
             jobBuild = jobBuildService.save(jobBuild);
 
             //Log the job build.
-            LogManager.getLogger(EyeService.class).log(Level.INFO, "[{0}] Job build {1}", new Object[]{uuid, jobBuild.toString()});
+            LOG.log(Level.INFO, "[" + uuid + "] Job build " + jobBuild.toString());
 
             //Add the trigger and status to the job. 
             if (update) {
@@ -175,13 +178,13 @@ public class EyeService {
                 jobStatus = jobStatusService.save(jobStatus);
 
                 //Log the job update.
-                LogManager.getLogger(EyeService.class).log(Level.INFO, "[{0}] Job updated {1}", new Object[]{uuid, jobStatus.toString()});
+                LOG.log(Level.INFO, "[" + uuid + "] Job updated " + jobBuild.toString());
 
                 //Publish a job notification.
                 jobNotificationService.notify(job, true);
 
                 //Log the job notification.
-                LogManager.getLogger(EyeService.class).log(Level.INFO, "[{0}] Job notification sent sucessfully", new Object[]{uuid});
+                LOG.log(Level.INFO, "[" + uuid + "] Job notification sent sucessfully");
 
                 //Identify if the job is finalized sucessfully. 
                 if (jobStatus.getFlow().equals(Flow.NORMAL)
@@ -189,14 +192,14 @@ public class EyeService {
                         && jobBuild.getStatus().equals(Status.SUCCESS)) {
 
                     //Log the job children build push.
-                    LogManager.getLogger(EyeService.class).log(Level.INFO, "[{0}] Job children build pushed", new Object[]{uuid});
+                    LOG.log(Level.INFO, "[" + uuid + "] Lob children build pushed");
 
                     //Push all jobs dependents on a job build. 
                     jobBuildPushService.push(job);
                 }
             }
         } else {
-            LogManager.getLogger(EyeService.class).log(Level.INFO, "[{0}] Rejected notification payload {1}", new Object[]{uuid, notificationPayload});
+            LOG.log(Level.INFO, "[" + uuid + "] Rejected notification payload " + notificationPayload);
         }
     }
 }

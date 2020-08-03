@@ -31,7 +31,9 @@ import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.context.annotation.Bean;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
@@ -43,38 +45,40 @@ import org.springframework.stereotype.Repository;
 public class CustomAuditEventRepository {
 
     @Autowired
-    private AuditorService eventAuditorRepository;
+    private AuditorService auditorService;
+
+    @Autowired
+    private JmsTemplate jmsTemplate;
 
     @Bean
-    public org.springframework.boot.actuate.audit.AuditEventRepository auditEventRepository() {
-        return new org.springframework.boot.actuate.audit.AuditEventRepository() {
+    public AuditEventRepository auditEventRepository() {
+        return new AuditEventRepository() {
 
             @Override
             public List<AuditEvent> find(String principal, Instant after, String type) {
                 Iterable<Auditor> eventAuditor;
 
                 if (principal == null && after == null) {
-                    eventAuditor = eventAuditorRepository.list();
+                    eventAuditor = auditorService.list();
                 } else if (after == null) {
-                    eventAuditor = eventAuditorRepository.listByUsername(principal);
+                    eventAuditor = auditorService.listByUsername(principal);
                 } else {
-                    eventAuditor = eventAuditorRepository.listByUsernameAndDate(principal, Date.from(after));
+                    eventAuditor = auditorService.listByUsernameAndDate(principal, Date.from(after));
                 }
 
-                return eventAuditorRepository.getAuditEvent(eventAuditor);
+                return auditorService.getAuditEvent(eventAuditor);
             }
 
-            @Async
             @Override
             @Transactional(Transactional.TxType.REQUIRES_NEW)
             public void add(AuditEvent auditEvent) {
-                Auditor event = new Auditor();
-                event.setUsername(auditEvent.getPrincipal());
-                event.setType(auditEvent.getType());
-                event.setDate(Date.from(auditEvent.getTimestamp()));
-                event.setData(auditEvent.getData());
+                Auditor auditor = new Auditor();
+                auditor.setUsername(auditEvent.getPrincipal());
+                auditor.setType(auditEvent.getType());
+                auditor.setDate(Date.from(auditEvent.getTimestamp()));
+                auditor.setData(auditEvent.getData());
 
-                eventAuditorRepository.save(event);
+                jmsTemplate.convertAndSend("queue.auditor", auditor);
             }
         };
     }

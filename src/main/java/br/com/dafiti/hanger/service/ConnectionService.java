@@ -23,6 +23,7 @@
  */
 package br.com.dafiti.hanger.service;
 
+import br.com.dafiti.hanger.Setup;
 import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.Connection;
@@ -47,6 +48,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
@@ -71,20 +73,22 @@ public class ConnectionService {
     private final JdbcTemplate jdbcTemplate;
     private final ConfigurationService configurationService;
     private final Map<String, PreparedStatement> inflight;
-    private final AuditorService eventAuditorService;
+    private final AuditorService auditorService;
+
+    private static final Logger LOG = LogManager.getLogger(ConnectionService.class.getName());
 
     @Autowired
     public ConnectionService(
             ConnectionRepository connectionRepository,
             PasswordCryptor passwordCryptor,
             JdbcTemplate jdbcTemplate,
-            AuditorService eventAuditorService,
+            AuditorService auditorService,
             ConfigurationService configurationService) {
 
         this.connectionRepository = connectionRepository;
         this.passwordCryptor = passwordCryptor;
         this.jdbcTemplate = jdbcTemplate;
-        this.eventAuditorService = eventAuditorService;
+        this.auditorService = auditorService;
         this.configurationService = configurationService;
         this.inflight = new HashMap();
     }
@@ -195,9 +199,7 @@ public class ConnectionService {
                     | InstantiationException
                     | IllegalAccessException ex) {
 
-                LogManager.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.ERROR, "Fail getting datasource " + connection.getName(), ex);
+                LOG.log(Level.ERROR, "Fail getting datasource " + connection.getName(), ex);
             }
         }
 
@@ -220,18 +222,14 @@ public class ConnectionService {
                     running = true;
                 }
             } catch (SQLException ex) {
-                LogManager.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.ERROR, "Fail testing connection to " + connection.getName(), ex);
+                LOG.log(Level.ERROR, "Fail testing connection to " + connection.getName(), ex);
             } finally {
                 try {
                     if (datasource.getConnection() != null) {
                         datasource.getConnection().close();
                     }
                 } catch (SQLException ex) {
-                    LogManager.getLogger(
-                            ConnectionService.class.getName())
-                            .log(Level.ERROR, "Fail closing connection", ex.getMessage());
+                    LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
                 }
             }
         }
@@ -287,16 +285,12 @@ public class ConnectionService {
                 }
             }
         } catch (SQLException ex) {
-            LogManager.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.ERROR, "Fail getting metadata of " + connection.getName(), ex);
+            LOG.log(Level.ERROR, "Fail getting metadata of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                LogManager.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.ERROR, "Fail closing connection", ex.getMessage());
+                LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -338,16 +332,12 @@ public class ConnectionService {
                 }
             }
         } catch (SQLException ex) {
-            LogManager.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.ERROR, "Fail getting tables of " + connection.getName(), ex);
+            LOG.log(Level.ERROR, "Fail getting tables of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                LogManager.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.ERROR, "Fail closing connection", ex.getMessage());
+               LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -393,16 +383,12 @@ public class ConnectionService {
                                 columns.getString("REMARKS")));
             }
         } catch (SQLException ex) {
-            LogManager.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.ERROR, "Fail getting columns of " + connection.getName(), ex);
+            LOG.log(Level.ERROR, "Fail getting columns of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                LogManager.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.ERROR, "Fail closing connection", ex.getMessage());
+                LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -439,16 +425,12 @@ public class ConnectionService {
                                 tables.getString("COLUMN_NAME")));
             }
         } catch (SQLException ex) {
-            LogManager.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.ERROR, "Fail getting primary key of " + connection.getName(), ex);
+            LOG.log(Level.ERROR, "Fail getting primary key of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                LogManager.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.ERROR, "Fail closing connection", ex.getMessage());
+                LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -535,8 +517,8 @@ public class ConnectionService {
             });
 
             //Log.
-            eventAuditorService.publish(
-                    "QUERY", 
+            auditorService.publish(
+                    "QUERY",
                     new AuditorData()
                             .addData("connection", connection.getName())
                             .addData("sql", query)
@@ -551,17 +533,13 @@ public class ConnectionService {
         } catch (DataAccessException ex) {
             queryResultSet.setError(new Message().getErrorMessage(ex));
 
-            LogManager.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.ERROR, "Query error: ", ex);
+            LOG.log(Level.ERROR, "Query error: ", ex);
         } finally {
             try {
                 //Close the connection. 
                 jdbcTemplate.getDataSource().getConnection().close();
             } catch (SQLException ex) {
-                LogManager.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.ERROR, "Fail closing connection: ", ex);
+                LOG.log(Level.ERROR, "Fail closing connection: ", ex);
             }
         }
 
@@ -589,9 +567,7 @@ public class ConnectionService {
                 //Removes the statements from inflight when a cancel commend is sent.
                 inflight.remove(principal.getName());
             } catch (SQLException ex) {
-                LogManager.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.ERROR, "Fail aborting query ", ex);
+                LOG.log(Level.ERROR, "Fail aborting query ", ex);
             }
         }
 
@@ -701,16 +677,12 @@ public class ConnectionService {
                                 indexes.getInt("CARDINALITY")));
             }
         } catch (SQLException ex) {
-            LogManager.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.ERROR, "Fail getting indexes of " + connection.getName(), ex);
+            LOG.log(Level.ERROR, "Fail getting indexes of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                LogManager.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.ERROR, "Fail closing connection", ex.getMessage());
+                LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
             }
         }
 

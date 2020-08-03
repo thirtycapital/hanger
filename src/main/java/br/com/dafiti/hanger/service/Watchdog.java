@@ -35,6 +35,7 @@ import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.service.JobBuildPushService.PushInfo;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -50,6 +51,8 @@ public class Watchdog {
     private final SlackService slackService;
     private final ConnectionService connectionService;
     private final JenkinsService jenkinsServive;
+
+    private static final Logger LOG = LogManager.getLogger(Watchdog.class.getName());
 
     @Autowired
     public Watchdog(
@@ -75,21 +78,15 @@ public class Watchdog {
      */
     @Scheduled(cron = "5 */30 * * * *")
     public void patrol() {
-        LogManager.getLogger(
-                Watchdog.class)
-                .log(Level.INFO, "The watchdog is patrolling jobs!");
+        LOG.log(Level.INFO, "The watchdog is patrolling jobs!");
 
         jobPatrol();
 
-        LogManager.getLogger(
-                Watchdog.class)
-                .log(Level.INFO, "The watchdog is patrolling connections!");
+        LOG.log(Level.INFO, "The watchdog is patrolling connections!");
 
         connectionPatrol();
 
-        LogManager.getLogger(
-                Watchdog.class)
-                .log(Level.INFO, "The watchdog patrol is finished!");
+        LOG.log(Level.INFO, "The watchdog patrol is finished!");
     }
 
     /**
@@ -133,9 +130,7 @@ public class Watchdog {
                         if (!jenkinsServive.isBuilding(job, jobBuild.getNumber())) {
                             this.catcher(job);
                         } else {
-                            LogManager.getLogger(
-                                    Watchdog.class)
-                                    .log(Level.INFO, "The watchdog just sniffed the job {0} with build number {1}", new Object[]{job.getName(), jobBuild.getNumber()});
+                            LOG.log(Level.INFO, "The watchdog just sniffed the job {0} with build number {1}", new Object[]{job.getName(), jobBuild.getNumber()});
                         }
                     }
                 }
@@ -154,18 +149,15 @@ public class Watchdog {
         try {
             jobBuildService.build(job);
 
-            LogManager.getLogger(
-                    Watchdog.class.getName())
-                    .log(Level.INFO, "The watchdog catched job ".concat(job.getName()));
+            LOG.log(Level.INFO, "The watchdog catched job ".concat(job.getName()));
+            
             message
                     .append(":dog: The watchdog catched job ")
                     .append("*")
                     .append(job.getDisplayName())
                     .append("*");
         } catch (Exception ex) {
-            LogManager.getLogger(
-                    Watchdog.class.getName())
-                    .log(Level.ERROR, "The watchdog fail building " + job.getName(), ex);
+            LOG.log(Level.ERROR, "The watchdog fail building " + job.getName(), ex);
 
             message
                     .append(":hotdog: The watchdog fail building ")

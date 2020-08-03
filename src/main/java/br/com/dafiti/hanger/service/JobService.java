@@ -42,6 +42,7 @@ import java.util.List;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -59,6 +60,8 @@ public class JobService {
     private final JobParentService jobParentService;
     private final JenkinsService jenkinsService;
     private final JobStatusService jobStatusService;
+
+    private static final Logger LOG = LogManager.getLogger(JobService.class.getName());
 
     @Autowired
     public JobService(
@@ -526,9 +529,7 @@ public class JobService {
         if (!childs.isEmpty()) {
             for (JobParent child : childs) {
                 if (!propagation.contains(job)) {
-                    LogManager.getLogger(
-                            JobService.class.getName())
-                            .log(Level.INFO, StringUtils.repeat(".", level) + child.getJob().getName());
+                    LOG.log(Level.INFO, StringUtils.repeat(".", level) + child.getJob().getName());
 
                     this.getPropagation(child.getJob(), propagation, level);
                 }

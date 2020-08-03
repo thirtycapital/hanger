@@ -31,6 +31,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -51,11 +52,13 @@ public class MailService {
     private final ConfigurationService configurationService;
     private final ApplicationContext applicationContext;
 
+    private static final Logger LOG = LogManager.getLogger(MailService.class.getName());
+
     @Autowired
     public MailService(
-            ConfigurationService configurationService, 
+            ConfigurationService configurationService,
             ApplicationContext applicationContext) {
-        
+
         this.configurationService = configurationService;
         this.applicationContext = applicationContext;
     }
@@ -79,8 +82,7 @@ public class MailService {
 
             this.send(blueprint, mail);
         } catch (EmailException ex) {
-            LogManager.getLogger(MailService.class.getName())
-                    .log(Level.ERROR, "Fail sending e-mail", ex);
+            LOG.log(Level.ERROR, "Fail sending e-mail", ex);
         }
     }
 
@@ -89,10 +91,10 @@ public class MailService {
      *
      * @param blueprint Blueprint
      * @param mail
-     * @return 
+     * @return
      */
     public boolean send(Blueprint blueprint, HtmlEmail mail) {
-        
+
         boolean sent = true;
         String host = configurationService.getValue("EMAIL_HOST");
         int port = Integer.valueOf(configurationService.getValue("EMAIL_PORT"));
@@ -119,7 +121,7 @@ public class MailService {
             LogManager.getLogger(MailService.class).log(Level.ERROR, "Fail sending e-mail", ex);
             sent = false;
         }
-        
+
         return sent;
     }
 

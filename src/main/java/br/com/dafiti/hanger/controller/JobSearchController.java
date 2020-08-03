@@ -23,6 +23,7 @@
  */
 package br.com.dafiti.hanger.controller;
 
+import br.com.dafiti.hanger.Setup;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.Subject;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,8 +59,9 @@ public class JobSearchController {
 
     private final JobService jobService;
     private final JobDetailsService jobDetailsService;
-
     private final String SEARCH_COOKIE = "a212aa8752164cfa1bde02b00c6af44a";
+
+    private static final Logger LOG = LogManager.getLogger(JobSearchController.class.getName());
 
     @Autowired
     public JobSearchController(
@@ -95,7 +98,7 @@ public class JobSearchController {
                 }
             }
         } catch (Exception ex) {
-            LogManager.getLogger(MonitorController.class).log(Level.ERROR, "Fail reading cookies", ex);
+            LOG.log(Level.ERROR, "Fail reading cookies", ex);
         }
 
         model.addAttribute("searches", searches);
@@ -147,7 +150,7 @@ public class JobSearchController {
                 response.addCookie(cookie);
 
             } catch (Exception ex) {
-                LogManager.getLogger(JobSearchController.class).log(Level.ERROR, "Fail managing cookies", ex);
+                LOG.log(Level.ERROR, "Fail managing cookies", ex);
             }
         }
 

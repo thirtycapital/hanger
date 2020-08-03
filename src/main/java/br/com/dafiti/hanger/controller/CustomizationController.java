@@ -23,11 +23,13 @@
  */
 package br.com.dafiti.hanger.controller;
 
+import br.com.dafiti.hanger.Setup;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -48,6 +50,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 @RequestMapping(path = {"/customization"})
 public class CustomizationController {
+
+    private static final Logger LOG = LogManager.getLogger(CustomizationController.class.getName());
 
     /**
      * Get the logo image.
@@ -87,8 +91,8 @@ public class CustomizationController {
             } else {
                 file.transferTo(convFile);
             }
-        } catch (IOException | IllegalStateException ex) {           
-            LogManager.getLogger(CustomizationController.class).log(Level.ERROR, ex);
+        } catch (IOException | IllegalStateException ex) {
+            LOG.log(Level.ERROR, ex);
         }
 
         return "redirect:/configuration/edit";

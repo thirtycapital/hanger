@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -53,9 +54,10 @@ public class JenkinsService {
 
     private final HttpServletRequest request;
 
+    private static final Logger LOG = LogManager.getLogger(JenkinsService.class.getName());
+
     @Autowired
     public JenkinsService(HttpServletRequest request) {
-
         this.request = request;
     }
 
@@ -97,7 +99,7 @@ public class JenkinsService {
                 jenkins.close();
             }
         } catch (URISyntaxException ex) {
-            LogManager.getLogger(JenkinsService.class).log(Level.ERROR, "Fail checking if a server is running!", ex);
+            LOG.log(Level.ERROR, "Fail checking if a server is running!", ex);
         }
 
         return running;
@@ -196,11 +198,11 @@ public class JenkinsService {
                         try {
                             built = (jobWithDetails.build(true) != null);
                         } catch (IOException ex) {
-                            LogManager.getLogger(JenkinsService.class).log(Level.ERROR, "Fail building job: " + job.getName(), ex);
+                            LOG.log(Level.ERROR, "Fail building job: " + job.getName(), ex);
                             try {
                                 built = (jobWithDetails.build(new HashMap(), true) != null);
                             } catch (IOException e) {
-                                LogManager.getLogger(JenkinsService.class).log(Level.ERROR, "Fail building parametrized job: " + job.getName(), ex);
+                                LOG.log(Level.ERROR, "Fail building parametrized job: " + job.getName(), ex);
                                 throw ex;
                             }
                         } finally {
@@ -242,7 +244,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (URISyntaxException | IOException ex) {
-                LogManager.getLogger(JenkinsService.class).log(Level.ERROR, "Fail getting upstream projects!", ex);
+                LOG.log(Level.ERROR, "Fail getting upstream projects!", ex);
             }
         }
 
@@ -275,7 +277,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                LogManager.getLogger(JenkinsService.class).log(Level.ERROR, "Fail identifying if a job is in queue!", ex);
+                LOG.log(Level.ERROR, "Fail identifying if a job is in queue!", ex);
             }
         }
 
@@ -323,7 +325,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                LogManager.getLogger(JenkinsService.class).log(Level.ERROR, "Fail identifying if a job is building!", ex);
+                LOG.log(Level.ERROR, "Fail identifying if a job is building!", ex);
             }
         }
 
@@ -352,7 +354,7 @@ public class JenkinsService {
                         jenkins.close();
                     }
                 } catch (URISyntaxException | IOException ex) {
-                    LogManager.getLogger(JenkinsService.class).log(Level.ERROR, "Fail renaming a job!", ex);
+                    LOG.log(Level.ERROR, "Fail renaming a job!", ex);
                 }
             }
         }
@@ -429,7 +431,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (URISyntaxException | IOException ex) {
-                LogManager.getLogger(JenkinsService.class).log(Level.WARN, "Fail updating Jenkins job!", ex);
+                LOG.log(Level.WARN, "Fail updating Jenkins job!", ex);
             }
         }
     }
@@ -459,7 +461,7 @@ public class JenkinsService {
                 jenkins.close();
             }
         } catch (URISyntaxException | IOException ex) {
-            LogManager.getLogger(JenkinsService.class).log(Level.ERROR, "Fail getting plugin list!", ex);
+            LOG.log(Level.ERROR, "Fail getting plugin list!", ex);
         }
 
         return notification;
@@ -499,7 +501,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                LogManager.getLogger(JenkinsService.class).log(Level.ERROR, "Fail identifying if a job exists!", ex);
+                LOG.log(Level.ERROR, "Fail identifying if a job exists!", ex);
             }
         }
 

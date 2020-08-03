@@ -33,6 +33,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,6 +55,8 @@ public class SlackService {
     private final String webHookUrl;
     private final ConfigurationService configurationService;
     private SlackSession slackSession;
+
+    private static final Logger LOG = LogManager.getLogger(SlackService.class.getName());
 
     @Autowired
     public SlackService(
@@ -92,7 +95,7 @@ public class SlackService {
                     connected = this.slackSession.isConnected();
                 }
             } catch (IOException ex) {
-                LogManager.getLogger(MailService.class).log(Level.ERROR, "Fail connecting to slack", ex);
+                LOG.log(Level.ERROR, "Fail connecting to slack", ex);
             }
         }
 

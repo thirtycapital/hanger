@@ -94,17 +94,19 @@ public class AuditorService {
     }
 
     /**
+     * Publishes an event.
      *
-     * @param type
+     * @param type Event type
      */
     public void publish(String type) {
         this.publish(type, null);
     }
 
     /**
+     * Publishes an event.
      *
-     * @param type
-     * @param data
+     * @param type Event type
+     * @param data Event payload
      */
     public void publish(String type, Map<String, Object> data) {
         Authentication authentication = SecurityContextHolder
@@ -125,29 +127,29 @@ public class AuditorService {
     }
 
     /**
+     * Cast an Auditor to AuditEvent.
      *
-     * @param eventAuditor
-     * @return
+     * @param auditor Auditor
+     * @return AuditEvent list
      */
-    public List<AuditEvent> getAuditEvent(Iterable<Auditor> eventAuditor) {
-        List<AuditEvent> auditEvents = new ArrayList();
+    public List<AuditEvent> getAuditEvent(Iterable<Auditor> auditor) {
+        List<AuditEvent> auditEvent = new ArrayList();
 
-        for (Auditor event : eventAuditor) {
+        for (Auditor event : auditor) {
             Map<String, Object> data = new HashMap();
 
             event.getData().entrySet().forEach(entry -> {
                 data.put(entry.getKey(), entry.getValue());
             });
 
-            auditEvents.add(
-                    new AuditEvent(
-                            event.getDate().toInstant(),
-                            event.getUsername(),
-                            event.getType(),
-                            data)
+            auditEvent.add(new AuditEvent(
+                    event.getDate().toInstant(),
+                    event.getUsername(),
+                    event.getType(),
+                    data)
             );
         }
 
-        return auditEvents;
+        return auditEvent;
     }
 }

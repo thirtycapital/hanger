@@ -25,6 +25,7 @@ package br.com.dafiti.hanger;
 
 import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.service.ConfigurationService;
+import br.com.dafiti.hanger.service.JenkinsService;
 import br.com.dafiti.hanger.service.JobApprovalService;
 import br.com.dafiti.hanger.service.JobCheckupLogService;
 import br.com.dafiti.hanger.service.JobNotificationService;
@@ -35,6 +36,7 @@ import br.com.dafiti.hanger.service.UserService;
 import java.util.Date;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -57,7 +59,9 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
     private final ConfigurationService configurationService;
     private final PrivilegeService privilegeService;
 
-    boolean setup = false;
+    private static final Logger LOG = LogManager.getLogger(Setup.class.getName());
+
+    private boolean setup = false;
 
     @Autowired
     public Setup(
@@ -118,7 +122,7 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
 
         //Flow notification.
         jobService.list().forEach((job) -> {
-            LogManager.getLogger(Setup.class).log(Level.INFO, job.getName());
+            LOG.log(Level.INFO, job.getName());
             jobNotificationService.notify(job, false, true);
         });
 

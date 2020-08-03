@@ -46,7 +46,7 @@ public class AuditorData {
         this.data = data;
     }
 
-    public AuditorData addData(String key, Object value) {
+    public AuditorData addData(String key, String value) {
         this.data.put(key, value);
         return this;
     }

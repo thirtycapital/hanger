@@ -284,7 +284,6 @@ public class JobController {
         auditorService.publish("BUILD_JOB",
                 new AuditorData()
                         .addData("name", job.getName())
-                        .addData("status", built)
                         .getData());
 
         retryService.remove(job);

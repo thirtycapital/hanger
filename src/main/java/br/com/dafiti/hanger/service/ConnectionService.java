@@ -521,8 +521,8 @@ public class ConnectionService {
                     "QUERY",
                     new AuditorData()
                             .addData("connection", connection.getName())
+                            .addData("elapsed", String.valueOf(watch.getTotalTimeMillis()) + "ms")
                             .addData("sql", query)
-                            .addData("elapsed", watch.getTotalTimeMillis())
                             .getData());
 
             //Gets query elapsed time.

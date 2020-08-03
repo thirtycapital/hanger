@@ -909,7 +909,6 @@ input[type='file'] {
     display: block;
     overflow: auto;
     height: 370px;
-    max-height: 550px;
 }
 
 .panel-heading-height {
@@ -1022,6 +1021,7 @@ input[type='file'] {
     width: 100%;
     border: 1px solid #F4F5F7;
     background-color: #faf8f5 !important;
+    height: 405px !important;
 }
 
 .p-0 {
@@ -1030,4 +1030,8 @@ input[type='file'] {
 
 .mb-2 {
     margin-bottom: 5px !important;
-} 
+}
+
+.hr-workbench-collapse {
+    margin: 0 0 10px 0;
+}

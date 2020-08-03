@@ -400,16 +400,10 @@ public class Job extends Tracker<Job> implements Serializable {
     public String toString() {
         JSONObject object = new JSONObject();
         object.put("id", id);
-        object.put("server", server);
         object.put("name", name);
         object.put("alias", alias);
         object.put("description", description);
         object.put("enabled", enabled);
-
-        if (parent != null) {
-            object.put("parent", parent);
-        }
-
         return object.toString(4);
     }
 }

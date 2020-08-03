@@ -146,7 +146,7 @@ public class JobApproval extends Tracker<JobApproval> implements Serializable {
         object.put("id", id);
         object.put("date", date);
         object.put("description", description);
-        object.put("enabled", approved);
+        object.put("approved", approved);
         return object.toString(4);
     }
 }

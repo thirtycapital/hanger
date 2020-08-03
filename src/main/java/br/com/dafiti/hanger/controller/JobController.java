@@ -318,15 +318,16 @@ public class JobController {
             @PathVariable(value = "id") Job job) {
 
         try {
-            auditorService.publish("BUILD_MESH",
-                    new AuditorData()
-                            .addData("name", job.getName())
-                            .getData());
-
             retryService.remove(job);
             jobService.rebuildMesh(job);
 
             HashSet<Job> parent = jobService.getMeshParent(job);
+
+            auditorService.publish("BUILD_MESH",
+                    new AuditorData()
+                            .addData("name", job.getName())
+                            .addData("javascript", parent.toString())
+                            .getData());
 
             for (Job meshParent : parent) {
                 retryService.remove(meshParent);

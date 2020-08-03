@@ -977,7 +977,9 @@ input[type='file'] {
 .CodeMirror {
     overflow: hidden;
     resize: vertical;
-    width: 100%;  
+    width: 100%;
+    border: 1px solid #F4F5F7;
+    background-color: #faf8f5 !important;
 }
 
 .p-0 {
@@ -986,4 +988,4 @@ input[type='file'] {
 
 .mb-2 {
     margin-bottom: 5px !important;
-}
+} 

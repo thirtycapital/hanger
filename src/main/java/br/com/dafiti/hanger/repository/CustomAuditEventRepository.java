@@ -83,7 +83,6 @@ public class CustomAuditEventRepository {
              * @param auditEvent AuditEvent
              */
             @Override
-            @Transactional(Transactional.TxType.REQUIRES_NEW)
             public void add(AuditEvent auditEvent) {
                 Auditor auditor = new Auditor();
                 auditor.setUsername(auditEvent.getPrincipal());

@@ -278,6 +278,18 @@ code[class*="language-free"] {
     transition: background .5s;
 }
 
+.sidebar-nav li {
+    float: left;
+    display: inline-block;
+    width: 100%;    
+}
+
+.sidebar-nav li:hover {
+    background-color: black;
+    background: #F4F5F7;
+}
+
+
 .sidebar_name {
     padding-top: 20px;
     color: #fff;
@@ -304,10 +316,14 @@ code[class*="language-free"] {
 .sidebar-nav li a:hover,
 .sidebar-nav li a:focus {
     color: #007bff;
-    background: #F4F5F7;
     text-decoration: none;
 }
 
+.sidebar-nav li.active {
+    color:#337ab7;
+    background:  #F4F5F7;
+    text-decoration: none;
+}
 
 .sidebar-nav li.active a {
     color:#337ab7;

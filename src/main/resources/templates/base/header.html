@@ -88,7 +88,7 @@
                                 <span class="sub_icon glyphicon glyphicon-tasks"></span>Server
                             </a>
                             <a class="menu_link_create" th:href="@{'/server/add/'}" title="Add Server">
-                                <span class="sub_icon_create glyphicon glyphicon-plus-sign"> </span>
+                                <span class="sub_icon_create glyphicon glyphicon-plus"> </span>
                             </a>    
                         </li>  
                         <li th:classappend="${#httpServletRequest.getRequestURI().contains('/connection/') ? 'active':''}">
@@ -96,7 +96,7 @@
                                 <span class="sub_icon glyphicon glyphicon-flash"></span>Connection
                             </a>
                             <a class="menu_link_create" th:href="@{'/connection/add/'}" title="Add Connection">
-                                <span class="sub_icon_create glyphicon glyphicon-plus-sign"> </span>
+                                <span class="sub_icon_create glyphicon glyphicon-plus"> </span>
                             </a>
                         </li>
                         <li th:classappend="${#httpServletRequest.getRequestURI().contains('/subject/') ? 'active':''}">
@@ -104,7 +104,7 @@
                                 <span class="sub_icon glyphicon glyphicon-tag"></span>Subject
                             </a>
                             <a class="menu_link_create" th:href="@{'/subject/add/'}" title="Add Subject">
-                                <span class="sub_icon_create glyphicon glyphicon-plus-sign"> </span>
+                                <span class="sub_icon_create glyphicon glyphicon-plus"> </span>
                             </a>
                         </li> 
                         <li th:classappend="${#httpServletRequest.getRequestURI().contains('/job/')
@@ -113,7 +113,7 @@
                                 <span class="sub_icon glyphicon glyphicon-file"></span>Job
                             </a>
                             <a class="menu_link_create" th:href="@{'/job/add/'}" title="Add Job">
-                                <span class="sub_icon_create glyphicon glyphicon-plus-sign"> </span>
+                                <span class="sub_icon_create glyphicon glyphicon-plus"> </span>
                             </a>
                         </li>  
                         <li th:classappend="${#httpServletRequest.getRequestURI().contains('/log/') ? 'active':''}"><a th:href="@{/log/list}" title="Log"><span class="sub_icon glyphicon glyphicon-sunglasses"></span>Log</a></li>
@@ -122,7 +122,7 @@
                                 <span class="sub_icon glyphicon glyphicon-user"></span>User
                             </a>
                             <a class="menu_link_create" th:href="@{'/user/add/'}" title="Add User">
-                                <span class="sub_icon_create glyphicon glyphicon-plus-sign"> </span>
+                                <span class="sub_icon_create glyphicon glyphicon-plus"> </span>
                             </a>
                         </li>
                         <li th:classappend="${#httpServletRequest.getRequestURI().contains('/configuration/') ? 'active':''}"><a th:href="@{/configuration/edit}" title="Configuration"><span class="sub_icon glyphicon glyphicon-cog"></span>Configuration</a></li>                        

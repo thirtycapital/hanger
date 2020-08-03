@@ -54,6 +54,14 @@ public class CustomAuditEventRepository {
     public AuditEventRepository auditEventRepository() {
         return new AuditEventRepository() {
 
+            /**
+             * Feed actuact events endpoint.
+             *
+             * @param principal Principal
+             * @param after Period
+             * @param type Type
+             * @return AuditEvent List
+             */
             @Override
             public List<AuditEvent> find(String principal, Instant after, String type) {
                 Iterable<Auditor> eventAuditor;
@@ -69,6 +77,11 @@ public class CustomAuditEventRepository {
                 return auditorService.getAuditEvent(eventAuditor);
             }
 
+            /**
+             * Send a new event message.
+             *
+             * @param auditEvent AuditEvent
+             */
             @Override
             @Transactional(Transactional.TxType.REQUIRES_NEW)
             public void add(AuditEvent auditEvent) {

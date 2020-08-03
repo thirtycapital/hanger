@@ -43,7 +43,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import static net.bytebuddy.implementation.FixedValue.value;
+import static org.apache.tomcat.jni.Lock.name;
 import org.joda.time.LocalDate;
+import org.json.JSONObject;
 
 /**
  *
@@ -156,11 +159,12 @@ public class JobBuild implements Serializable {
 
     @Override
     public String toString() {
-        return "JobBuild{"
-                + "id=" + id
-                + ", number=" + number
-                + ", phase=" + phase
-                + ", status=" + status
-                + ", date=" + date + '}';
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("number", number);
+        object.put("phase", phase);
+        object.put("status", status);
+        object.put("date", date);
+        return object.toString(4);
     }
 }

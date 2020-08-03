@@ -27,6 +27,7 @@ import br.com.dafiti.hanger.service.AuditorService;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -70,7 +71,7 @@ public class AuditorController {
      *
      * @param dateFrom Start Date
      * @param dateTo End date
-     * @param type Event type
+     * @param types Event type
      * @param model Model
      * @return
      */
@@ -78,10 +79,10 @@ public class AuditorController {
     public String filter(
             @RequestParam("dateFrom") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date dateFrom,
             @RequestParam("dateTo") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date dateTo,
-            @RequestParam(value = "type", defaultValue = "ALL") String type,
+            @RequestParam(value = "type", required = false) List<String> types,
             Model model) {
 
-        this.modelDefault(model, dateFrom, dateTo, type);
+        this.modelDefault(model, dateFrom, dateTo, types);
         return "auditor/list";
     }
 
@@ -114,14 +115,14 @@ public class AuditorController {
             Model model,
             Date dateFrom,
             Date dateTo,
-            String type) {
+            List<String> types) {
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        if (type == null || "ALL".equals(type)) {
+        if (types == null) {
             model.addAttribute("events", auditorService.listDateBetween(dateFrom, dateTo));
         } else {
-            model.addAttribute("events", auditorService.listDateBetweenAndType(dateFrom, dateTo, type));
+            model.addAttribute("events", auditorService.listDateBetweenAndTypeIn(dateFrom, dateTo, types));
         }
 
         model.addAttribute("types", auditorService.listDistinctTypesByDateBetween(dateFrom, dateTo));

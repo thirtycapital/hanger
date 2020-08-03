@@ -25,6 +25,7 @@ package br.com.dafiti.hanger.repository;
 
 import br.com.dafiti.hanger.model.Auditor;
 import java.util.Date;
+import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -36,7 +37,7 @@ public interface AuditorRepository extends CrudRepository<Auditor, Long> {
 
     Iterable<Auditor> findAllByDateBetweenOrderByDateDesc(Date dateFrom, Date dateTo);
 
-    Iterable<Auditor> findAllByDateBetweenAndTypeOrderByDateDesc(Date dateFrom, Date dateTo, String type);
+    Iterable<Auditor> findAllByDateBetweenAndTypeInOrderByDateDesc(Date dateFrom, Date dateTo, List<String> types);
 
     @Query("SELECT DISTINCT type FROM Auditor a WHERE a.date BETWEEN :dateFrom AND :dateTo")
     Iterable<String> findDistinctTypesByDateBetween(Date dateFrom, Date dateTo);

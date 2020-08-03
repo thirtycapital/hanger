@@ -69,8 +69,8 @@ public class AuditorService {
         return eventAuditorRepository.findAllByDateBetweenOrderByDateDesc(dateFrom, dateTo);
     }
 
-    public Iterable<Auditor> listDateBetweenAndType(Date dateFrom, Date dateTo, String type) {
-        return eventAuditorRepository.findAllByDateBetweenAndTypeOrderByDateDesc(dateFrom, dateTo, type);
+    public Iterable<Auditor> listDateBetweenAndTypeIn(Date dateFrom, Date dateTo, List<String> types) {
+        return eventAuditorRepository.findAllByDateBetweenAndTypeInOrderByDateDesc(dateFrom, dateTo, types);
     }
 
     public Iterable<Auditor> listByUsername(String username) {

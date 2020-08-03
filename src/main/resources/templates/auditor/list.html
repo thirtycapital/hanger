@@ -91,7 +91,7 @@
                                     <tr th:each="data : ${event.data}">
                                         <td> 
                                             <div th:if="${data.key == 'sql' or data.key == 'javascript'}">
-                                                <pre class="line-numbers no-border">
+                                                <pre class="no-border">
                                                     <code th:class="'language-' + ${data.key}" th:text="${data.value}"></code>
                                                 </pre>
                                             </div>

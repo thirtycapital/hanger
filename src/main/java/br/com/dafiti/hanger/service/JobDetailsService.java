@@ -219,6 +219,11 @@ public class JobDetailsService {
                 phase = Phase.NONE;
                 building
                         .append("Building now");
+            } else {
+                try {
+                    status = Status.valueOf(jobStatus.getFlow().toString());
+                } catch (Exception ex) {
+                }
             }
 
             //The QUEUED and COMPLETED phases should be ignored. 

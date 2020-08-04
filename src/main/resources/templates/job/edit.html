@@ -99,7 +99,7 @@
 
                         <div class="form-group">
                             <div class="col-sm-10">
-                                <label data-toggle="tooltip" title="Identifies that previous day executions, terminated within the tolerance period of hours, should be considered in the current day's data stream.">Eagerness</label>
+                                <label data-toggle="tooltip" data-placement="right" title="Identifies that previous day executions, terminated within the tolerance period of hours, should be considered in the current day's data stream.">Eagerness</label>
                                 <input type="number" min="0" max="12" class="form-control" maxlength="1" th:field="*{tolerance}" required="false" placeholder="Eagerness"/>
                                 <span th:if="${#fields.hasErrors('tolerance')}" class="help-block" th:errors="*{tolerance}"></span>
                             </div>

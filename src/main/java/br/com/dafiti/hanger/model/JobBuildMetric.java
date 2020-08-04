@@ -115,6 +115,12 @@ public class JobBuildMetric {
                 new DateTime(this.finishDate)).getStandardMinutes();
     }
 
+    public Long getBuildTimeInMinutes() {
+        return new Duration(
+                new DateTime(this.startDate),
+                new DateTime(this.finishDate)).getStandardMinutes();
+    }
+
     public Double getQueuePercentage() {
         Double progress = 0.0;
 

@@ -184,7 +184,7 @@ public class JobCheckupService {
         //Identifies if the job has checkup.
         if (!job.getCheckup().isEmpty()) {
             //Log the job status before checkup evaluation.
-            LOG.log(Level.INFO, "{0} status before checkup evaluation", new Object[]{job.getName()});
+            LOG.log(Level.INFO, "{} status before checkup evaluation", new Object[]{job.getName()});
 
             //Filters checkup by scope.
             List<JobCheckup> checkups = job.getCheckup()
@@ -282,7 +282,7 @@ public class JobCheckupService {
             }
 
             //Log the job status after checkup evaluation.
-            LOG.log(Level.INFO, job.getName() + "status after checkup evaluation");
+            LOG.log(Level.INFO, "{} status after checkup evaluation", new Object[]{job.getName()});
         }
 
         return validated;
@@ -565,7 +565,7 @@ public class JobCheckupService {
         }
 
         //Log the checkup value and threshold.
-        LOG.log(Level.INFO, "Checkup {0} evaluated with value {1} and threshold {2}", new Object[]{checkup.getName(), finalValue, finalThreshold});
+        LOG.log(Level.INFO, "Checkup {} evaluated with value {} and threshold {}", new Object[]{checkup.getName(), finalValue, finalThreshold});
 
         //Check if the threshold is numeric.
         if (finalValue != null && finalThreshold != null) {

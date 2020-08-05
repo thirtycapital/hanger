@@ -201,7 +201,7 @@ public class JobBuildPushService {
                 }
 
                 //Log the full dependencies status.
-                LOG.log(Level.INFO, "FULL -> Job={0}, scope={1}, ready={2}, dependencies={3}", new Object[]{job.getName(), scope, ready, all});
+                LOG.log(Level.INFO, "FULL -> Job={}, scope={}, ready={}, dependencies={}", new Object[]{job.getName(), scope, ready, all});
             } else {
                 //Identify if all dependencies was built successfully.
                 for (Map.Entry<Job, Boolean> entry : all.entrySet()) {
@@ -239,10 +239,10 @@ public class JobBuildPushService {
                 }
 
                 //Log the partial dependencies status.
-                LOG.log(Level.INFO, "PARTIAL -> job={0}, scope={1}, ready={2}, partials={3}, dependencies={4}", new Object[]{job.getName(), scope, ready, partial, all});
+                LOG.log(Level.INFO, "PARTIAL -> job={}, scope={}, ready={}, partials={}, dependencies={}", new Object[]{job.getName(), scope, ready, partial, all});
             }
         } else {
-            LOG.log(Level.INFO, "Job {0} is not buildable", new Object[]{job.getName()});
+            LOG.log(Level.INFO, "Job {} is not buildable", new Object[]{job.getName()});
         }
 
         return new PushInfo(ready, scope);

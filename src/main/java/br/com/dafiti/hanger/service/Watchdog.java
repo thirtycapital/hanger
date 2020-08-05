@@ -131,7 +131,7 @@ public class Watchdog {
                             if (!jenkinsServive.isBuilding(job, jobBuild.getNumber())) {
                                 this.catcher(job);
                             } else {
-                                LOG.log(Level.INFO, "The watchdog just sniffed the job {0} with build number {1}", new Object[]{job.getName(), jobBuild.getNumber()});
+                                LOG.log(Level.INFO, "The watchdog just sniffed the job {} with build number {}", new Object[]{job.getName(), jobBuild.getNumber()});
                             }
                         }
                     }

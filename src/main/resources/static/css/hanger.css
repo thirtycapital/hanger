@@ -932,11 +932,11 @@ input[type='file'] {
     overflow: auto; 
     width: auto; 
     height: 840px;
-    border: 1px solid #eee;
 }
 
 .form-control-search {
-    border: 1px solid #ccc;
+    border: none;
+    border-bottom: 1px solid #D8D8D8;
     box-shadow: inset 0px 0px 0px 0px;
     background-color: transparent;
     margin-bottom: 5px;
@@ -1035,4 +1035,23 @@ input[type='file'] {
 
 .hr-workbench-collapse {
     margin: 0 0 10px 0;
+}
+
+.col-div-query {
+    border-left: 1px solid #eee;
+    padding-left: 30px;
+}    
+
+#workbench_bottom {
+    height: 350px;
+}
+
+.CodeMirror-gutters {
+    border-right: 1px solid #eee !important;
+    background-color: #fff !important;
+    color: #337ab7;
+}
+
+.CodeMirror-linenumber {
+    color: #337ab7 !important;
 }

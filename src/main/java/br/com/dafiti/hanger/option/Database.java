@@ -34,5 +34,6 @@ public enum Database {
     ATHENA,
     HANA,
     GENERIC,
-    JTDS;
+    JTDS,
+    REDSHIFT;
 }

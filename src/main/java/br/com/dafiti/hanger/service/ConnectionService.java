@@ -165,6 +165,11 @@ public class ConnectionService {
                         properties.setProperty("loginTimeout", "5");
                         properties.setProperty("connectTimeout", "5");
                         break;
+                    case REDSHIFT:
+                        driver = new com.amazon.redshift.jdbc42.Driver();
+                        properties.setProperty("loginTimeout", "5");
+                        properties.setProperty("connectTimeout", "5");
+                        break;
                     case ATHENA:
                         driver = new com.simba.athena.jdbc42.Driver();
                         properties.setProperty("MaxErrorRetry", "10");

@@ -17,12 +17,12 @@
                         [[${connection.name}]]
                     </a>
                 </li>
-                <li th:inline="text" th:if="${catalog != 'null'}">
+                <li th:inline="text" th:if="${catalog != 'null' and catalog != ''}">
                     <a th:href="@{'/connection/' + ${connection.id} + '/table'(catalog=${catalog},schema=${schema})}">
                         [[${catalog}]]
                     </a>
                 </li>
-                <li th:inline="text" th:if="${schema != 'null'}">
+                <li th:inline="text" th:if="${schema != 'null' and schema != ''}">
                     <a th:href="@{'/connection/' + ${connection.id} + '/table'(catalog=${catalog},schema=${schema})}">
                         [[${schema}]]
                     </a>

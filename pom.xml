@@ -13,6 +13,13 @@
         <version>2.3.2.RELEASE</version>
     </parent>
 
+    <repositories>
+        <repository>
+            <id>redshift</id>
+            <url>https://s3.amazonaws.com/redshift-maven-repository/release</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         
         <!-- Spring boot -->
@@ -106,9 +113,17 @@
         <!-- PostgreSQL -->
         
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.1-901-1.jdbc4</version>
+            <version>42.2.14</version>
+        </dependency>
+        
+        <!-- Redshift -->
+        
+        <dependency>
+            <groupId>com.amazon.redshift</groupId>
+            <artifactId>redshift-jdbc42</artifactId>
+            <version>1.2.43.1067</version>
         </dependency>
         
         <!-- MSSQL --> 

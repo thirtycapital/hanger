@@ -23,6 +23,7 @@
  */
 package br.com.dafiti.hanger.controller;
 
+import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.model.WorkbenchQuery;
 import br.com.dafiti.hanger.model.JobCheckup;
@@ -34,6 +35,7 @@ import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
 import br.com.dafiti.hanger.service.UserService;
 import java.security.Principal;
 import java.util.List;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -89,6 +90,7 @@ public class WorkbenchController {
      *
      * @param connection Connection
      * @param query SQL Expression
+     * @param parameters
      * @param principal
      * @param model Model
      * @return Query result set fragment.
@@ -96,13 +98,14 @@ public class WorkbenchController {
     @PostMapping(path = "/query/{id}")
     public String query(
             @PathVariable(name = "id") Connection connection,
-            @RequestBody String query,
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "parameters", required = false) JSONArray parameters,
             Principal principal,
             Model model) {
 
         QueryResultSet queryResultSet = connectionService.getQueryResultSet(
                 connection,
-                query,
+                workbenchService.replaceParameters(query, parameters),
                 userService.findByUsername(principal.getName()));
 
         if (queryResultSet.hasError()) {
@@ -207,8 +210,8 @@ public class WorkbenchController {
     @ResponseBody
     public List<WorkbenchService.Tree> workbenchTree(
             @PathVariable(name = "id") Connection connection,
-            @RequestParam(value = "catalog") String catalog,
-            @RequestParam(value = "schema") String schema) {
+            @RequestParam(name = "catalog") String catalog,
+            @RequestParam(name = "schema") String schema) {
 
         return workbenchService.JSTreeExchange(connection, catalog, schema);
     }
@@ -226,8 +229,8 @@ public class WorkbenchController {
      */
     @PostMapping(path = "/fields")
     public String addFields(
-            @RequestParam(value = "id", required = false) Connection connection,
-            @RequestParam(value = "fields", required = false) List<String> fields,
+            @RequestParam(name = "id", required = false) Connection connection,
+            @RequestParam(name = "fields", required = false) List<String> fields,
             @RequestParam(name = "catalog", required = false) String catalog,
             @RequestParam(name = "schema", required = false) String schema,
             @RequestParam(name = "table", required = false) String table,
@@ -242,5 +245,29 @@ public class WorkbenchController {
         }
 
         return this.workbench(model);
+    }
+
+    /**
+     *
+     * @param connection
+     * @param query
+     * @param model
+     * @return
+     */
+    @PostMapping(path = "/parameter/modal")
+    public String parameterModal(
+            @RequestParam(name = "connection", required = false) int connection,
+            @RequestParam(name = "query", required = false) String query,
+            Model model) {
+
+        try {
+            model.addAttribute("connection", connection);
+            model.addAttribute("query", query);
+            model.addAttribute("parameters", workbenchService.extractParameters(query));
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", "Fail listing columns " + new Message().getErrorMessage(ex));
+        }
+
+        return "workbench/modalQueryParameter::metadata";
     }
 }

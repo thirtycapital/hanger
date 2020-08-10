@@ -24,7 +24,9 @@
 package br.com.dafiti.hanger.mq;
 
 import br.com.dafiti.hanger.model.Auditor;
+import br.com.dafiti.hanger.model.Blueprint;
 import br.com.dafiti.hanger.service.AuditorService;
+import br.com.dafiti.hanger.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
@@ -36,11 +38,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class QueueListener {
 
+    private final AuditorService auditorService;
+    private final MailService mailService;
+
     @Autowired
-    private AuditorService auditorService;
+    public QueueListener(
+            AuditorService auditorService,
+            MailService mailService) {
+
+        this.auditorService = auditorService;
+        this.mailService = mailService;
+    }
 
     @JmsListener(destination = "queue.auditoring")
-    public void listener(Auditor auditor) {
+    public void onMessage(Auditor auditor) {
         auditorService.save(auditor);
+    }
+
+    @JmsListener(destination = "queue.mailing")
+    public void onMessage(Blueprint blueprint) {
+        mailService.send(blueprint);
     }
 }

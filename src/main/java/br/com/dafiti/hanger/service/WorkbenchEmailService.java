@@ -180,6 +180,7 @@ public class WorkbenchEmailService {
                     mail.addBcc(recipient);
                 }
             }
+
             sent = this.mailService.send(blueprint, mail);
 
             //Delete temp file.

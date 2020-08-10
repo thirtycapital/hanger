@@ -145,7 +145,7 @@ public class ExportService {
      */
     public HttpEntity<?> download(String file) throws IOException {
         String fileName = file;
-        
+
         if (!file.endsWith(".csv")) {
             fileName = file.concat(".csv");
         }

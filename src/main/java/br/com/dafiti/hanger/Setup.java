@@ -25,7 +25,6 @@ package br.com.dafiti.hanger;
 
 import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.service.ConfigurationService;
-import br.com.dafiti.hanger.service.JenkinsService;
 import br.com.dafiti.hanger.service.JobApprovalService;
 import br.com.dafiti.hanger.service.JobCheckupLogService;
 import br.com.dafiti.hanger.service.JobNotificationService;

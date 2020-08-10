@@ -27,7 +27,13 @@ import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.option.Database;
 import br.com.dafiti.hanger.service.ConnectionService.Entity;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -152,9 +158,6 @@ public class WorkbenchService {
             String catalog,
             String schema,
             String table) {
-        StringBuilder query = new StringBuilder("SELECT ");
-        query.append(String.join(",", field));
-        query.append(" FROM ");
 
         List<String> catalogSchema = new ArrayList();
 
@@ -170,10 +173,60 @@ public class WorkbenchService {
             catalogSchema.add(table);
         }
 
+        StringBuilder query = new StringBuilder("SELECT ");
+        query.append(String.join(",", field));
+        query.append(" FROM ");
         query.append(String.join(".", catalogSchema));
         query.append(" LIMIT 100");
 
         return query.toString();
+    }
+
+    /**
+     * Identifies query parameters.
+     *
+     * @param query Query.
+     * @return Query parameters and type list.
+     */
+    public Map<String, String> extractParameters(String query) {
+        Map<String, String> parameter = new HashMap();
+        Matcher m = Pattern.compile("\\$\\{([^}]*)\\}").matcher(query);
+
+        while (m.find()) {
+            String name = m.group(1);
+
+            if (!parameter.containsKey(name)) {
+                String[] split = name.split("::");
+
+                if (split.length == 2) {
+                    parameter.put(name, split[1]);
+                } else {
+                    parameter.put(name, "text");
+                }
+            }
+        }
+
+        return parameter;
+    }
+
+    /**
+     * Replace dynamic query parameters.
+     *
+     * @param query Query
+     * @param parameters Query parameters
+     * @return Query final
+     */
+    public String replaceParameters(String query, JSONArray parameters) {
+        if (parameters != null
+                && !parameters.isEmpty()) {
+
+            for (Object parameter : parameters) {
+                JSONObject object = (JSONObject) parameter;
+                query = query.replaceAll("\\$\\{" + object.getString("name") + "\\}", object.getString("value"));
+            }
+        }
+
+        return query;
     }
 
     /**

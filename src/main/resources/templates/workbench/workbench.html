@@ -338,7 +338,6 @@
                  */
                 function query() {
                     var connection = $('#connection').val();
-                    var url = /*[[@{/workbench/query/}]]*/ "/workbench/query/";
                     var query = window.editor.getSelection();
 
                     if (query === "") {
@@ -346,32 +345,52 @@
                     }
 
                     if (query !== "") {
-                        $.ajax({
-                            type: "POST",
-                            url: url + connection,
-                            data: query,
-                            contentType: "text/html",
-                            timeout: 1000000,
-                            success: function (result) {
-                                $("#fragmentQueryResultSetHolder").html(result);
-                                $('.table').DataTable(
-                                        {
-                                            "paging": false,
-                                            "info": false,
-                                            "searching": true,
-                                            "retrieve": true,
-                                            "order": [],
-                                            "columnDefs": [{
-                                                    "targets": 'no-sort',
-                                                    "orderable": false
-                                                }
-                                            ]
-                                        });
-                            },
-                            error: function (e) {
-                                alert("Fail loading query resultset: " + e.statusText);
-                            }
-                        });
+                        if (query.includes("${")) {
+                            var url = /*[[@{/workbench/parameter/modal}]]*/ "/workbench/parameter/modal";
+
+                            $.ajax({
+                                type: "POST",
+                                url: url,
+                                data: {
+                                    connection: connection,
+                                    query: query
+                                },
+                                success: function (result) {
+                                    $("#modalHolder").html(result);
+                                    $("#modalQueryParameter").modal({backdrop: 'static'});
+                                }
+                            });
+                        } else {
+                            var url = /*[[@{/workbench/query/}]]*/ "/workbench/query/";
+
+                            $.ajax({
+                                type: "POST",
+                                url: url + connection,
+                                data: {
+                                    query: query
+                                },
+                                timeout: 1000000,
+                                success: function (result) {
+                                    $("#fragmentQueryResultSetHolder").html(result);
+                                    $('.table').DataTable(
+                                            {
+                                                "paging": false,
+                                                "info": false,
+                                                "searching": true,
+                                                "retrieve": true,
+                                                "order": [],
+                                                "columnDefs": [{
+                                                        "targets": 'no-sort',
+                                                        "orderable": false
+                                                    }
+                                                ]
+                                            });
+                                },
+                                error: function (e) {
+                                    alert("Fail loading query resultset: " + e.statusText);
+                                }
+                            });
+                        }
                     }
                 }
 

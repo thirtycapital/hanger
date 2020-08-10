@@ -196,7 +196,7 @@ public class WorkbenchService {
             String name = m.group(1);
 
             if (!parameter.containsKey(name)) {
-                String[] split = name.split("@");
+                String[] split = name.split("::");
 
                 if (split.length == 2) {
                     parameter.put(name, split[1]);

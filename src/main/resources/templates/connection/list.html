@@ -11,18 +11,7 @@
                     <th>
                         <h3 class="page-title">Connection</h3>
                     </th>
-                    <th class="btn-action">
-                        <a th:href="@{'/connection/add/'}" title="Add Connection">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </a>
-                    </th>
                     <div sec:authorize="isAuthenticated()">
-                        <th class="btn-action">
-                            <a th:href="@{'/workbench/workbench/'}" title="Workbench">
-                                <span class="glyphicon glyphicon-chevron-right"></span>
-                            </a>
-                        </th>                        
-
                         <th class="btn-action">
                             <a href="#" title="Test" th:id="modal_test_connections">
                                 <span class="glyphicon glyphicon-flash"></span>

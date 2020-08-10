@@ -24,6 +24,7 @@
 package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.Blueprint;
+import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.model.User;
 import java.io.File;
@@ -38,6 +39,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import br.com.dafiti.hanger.repository.WorkbenchEmailRepository;
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.springframework.scheduling.annotation.Async;
 
 /**
  *
@@ -53,6 +58,8 @@ public class WorkbenchEmailService {
     private final UserService userService;
     private final ExportService exportService;
     private final ConfigurationService configurationService;
+    
+    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(WorkbenchEmailService.class.getName());
 
     @Autowired
     public WorkbenchEmailService(
@@ -78,6 +85,15 @@ public class WorkbenchEmailService {
      */
     public Iterable<WorkbenchEmail> list() {
         return workbenchEmailRepository.findAll();
+    }
+    
+    /**
+     * 
+     * @param id
+     * @return 
+     */        
+    public WorkbenchEmail load(Long id) {
+        return workbenchEmailRepository.findById(id).get();
     }
 
     /**
@@ -109,21 +125,37 @@ public class WorkbenchEmailService {
     }
 
     /**
+     * Export a resultset to e-mail
+     *
+     * @param email
+     * @param principal Pquemrincipal
+     * @return
+     * @throws java.lang.Exception
+     */
+    public boolean toEmail(WorkbenchEmail email, Principal principal)
+            throws Exception {
+        return toEmail(email, userService.findByUsername(principal.getName()));
+    }
+
+    /**
      * Export a resultset to e-mail.
      *
      * @param email WorkbenchEmail
-     * @param principal Principal
-     * @return 
+     * @param user User
+     * @return
      * @throws java.io.IOException
      */
-    public boolean toEmail(WorkbenchEmail email, Principal principal)
+    public boolean toEmail(WorkbenchEmail email, User user)
             throws IOException, Exception {
         boolean sent = false;
+
+        //Get User object from logged user.
+        //User user = userService.findByUsername(principal.getName());
         ConnectionService.QueryResultSet queryResultSet = this.connectionService
                 .getQueryResultSet(
                         email.getConnection(),
                         email.getQuery(),
-                        principal);
+                        user);
 
         if (!queryResultSet.hasError()) {
             String fileName = exportService.toCSV(queryResultSet, email.getConnection());
@@ -139,7 +171,7 @@ public class WorkbenchEmailService {
             blueprint.addVariable("content", email.getContent());
             blueprint.addVariable("queryResultSet", queryResultSet);
             blueprint.addVariable("subject", email.getSubject());
-            blueprint.addVariable("user", userService.findByUsername(principal.getName()).getEmail());
+            blueprint.addVariable("user", user.getEmail());
 
             HtmlEmail mail = new HtmlEmail();
 
@@ -153,8 +185,35 @@ public class WorkbenchEmailService {
             //Delete temp file.
             Files.deleteIfExists(file.toPath());
         }
-        
+
         return sent;
+    }
+
+    /**
+     * Send e-mails linked to a job.
+     *
+     * @param job Job
+     */
+    @Async
+    public void toEmail(Job job) {
+        //Identifies if job has e-mail linked to him.
+        if (job.getEmail().size() > 0) {
+            try {
+                String email = configurationService.getValue("EMAIL_ADDRESS");
+
+                //Identifies if e-mail is set
+                if (!email.isEmpty()) {
+                    User user = userService.findByEmail(email);
+                    if (user != null) {
+                        for (WorkbenchEmail workBenchEmail : job.getEmail()) {
+                            this.toEmail(workBenchEmail, user);
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                LOG.log(Level.ERROR, "Fail sending e-mail", ex);
+            }
+        }
     }
 
     /**

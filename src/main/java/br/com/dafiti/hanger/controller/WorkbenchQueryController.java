@@ -29,6 +29,7 @@ import br.com.dafiti.hanger.model.WorkbenchQuery;
 import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.service.WorkbenchQueryService;
 import br.com.dafiti.hanger.service.UserService;
+import br.com.dafiti.hanger.service.ConnectionService;
 import java.security.Principal;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 /**
  *
  * @author Helio Leal
+ * @author Fernando Saga
  */
 @Controller
 @RequestMapping(path = "/query")
@@ -52,18 +54,21 @@ public class WorkbenchQueryController {
 
     private final WorkbenchQueryService workbenchQueryService;
     private final UserService userService;
+    private final ConnectionService connectionService;
 
     @Autowired
     public WorkbenchQueryController(
             WorkbenchQueryService workbenchQueryService,
-            UserService userService) {
+            UserService userService,
+            ConnectionService connectionService) {
 
         this.workbenchQueryService = workbenchQueryService;
         this.userService = userService;
+        this.connectionService = connectionService;
     }
 
     /**
-     * Query store modal.
+     * WorkbenchQuery modal.
      *
      * @param connection
      * @param query
@@ -95,7 +100,7 @@ public class WorkbenchQueryController {
     }
 
     /**
-     * Save a connection query store.
+     * Save a WorkbenchQuery.
      *
      * @param redirectAttributes
      * @param workbenchQuery
@@ -115,18 +120,13 @@ public class WorkbenchQueryController {
 
         try {
             workbenchQueryService.save(workbenchQuery);
-            redirectAttributes.addFlashAttribute(
-                    "successMessage",
-                    "Query successfully stored!");
 
-            if (!update) {
-                redirect = "redirect:/workbench/workbench/"
-                        .concat(workbenchQuery.getId().toString());
+            if (update) {
+                redirect = "redirect:/query/view/" + workbenchQuery.getId();
             }
         } catch (Exception ex) {
             model.addAttribute("workbenchQuery", workbenchQuery);
-            redirectAttributes.addFlashAttribute("errorMessage",
-                    new Message().getErrorMessage(ex));
+            redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(ex));
         }
 
         return redirect;
@@ -155,7 +155,7 @@ public class WorkbenchQueryController {
     }
 
     /**
-     * Call query store modal.
+     * Call WorkbenchQuery modal.
      *
      * @param workbenchQuery
      * @param model Model
@@ -179,7 +179,7 @@ public class WorkbenchQueryController {
     }
 
     /**
-     * Delete a connection query store.
+     * Delete a WorkbenchQuery.
      *
      * @param id
      * @param model
@@ -200,5 +200,68 @@ public class WorkbenchQueryController {
         }
 
         return this.list(model, principal);
+    }
+
+    /**
+     * Edit a WorkbenchQuery.
+     *
+     * @param model Model
+     * @param workbenchQuery WorkbenchQuery
+     * @return String edit
+     */
+    @GetMapping(path = "/edit/{id}")
+    public String edit(
+            Model model,
+            @PathVariable(value = "id") WorkbenchQuery workbenchQuery) {
+
+        modelDefault(model, workbenchQuery);
+        return "workbench/query/edit";
+    }
+
+    /**
+     * Add a WorkbenchQuery.
+     *
+     * @param model Model
+     * @param principal Principal
+     * @return
+     */
+    @GetMapping(path = "/add")
+    public String add(Model model, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+
+        if (user != null) {
+            WorkbenchQuery workbenchQuery = new WorkbenchQuery();
+            workbenchQuery.setUser(user);
+            modelDefault(model, workbenchQuery);
+        }
+
+        return "workbench/query/edit";
+    }
+
+    /**
+     * View a WorkbenchQuery.
+     *
+     * @param model Model
+     * @param workbenchQuery WorkbenchQuery
+     * @return String view
+     */
+    @GetMapping(path = "/view/{id}")
+    public String view(
+            Model model,
+            @PathVariable(value = "id") WorkbenchQuery workbenchQuery) {
+
+        modelDefault(model, workbenchQuery);
+        return "workbench/query/view";
+    }
+
+    /**
+     * Default model
+     *
+     * @param model Model
+     * @param workbenchQuery WorkbenchQuery
+     */
+    private void modelDefault(Model model, WorkbenchQuery workbenchQuery) {
+        model.addAttribute("workbenchQuery", workbenchQuery);
+        model.addAttribute("connections", connectionService.list());
     }
 }

@@ -53,6 +53,7 @@ public class EyeService {
     private final JobBuildPushService jobBuildPushService;
     private final JobCheckupService jobCheckupService;
     private final JobNotificationService jobNotificationService;
+    private final WorkbenchEmailService workbenchEmailService;
 
     private static final Logger LOG = LogManager.getLogger(EyeService.class.getName());
 
@@ -64,7 +65,8 @@ public class EyeService {
             JobBuildPushService jobBuildPushService,
             JobCheckupService jobCheckupService,
             SlackService slackService,
-            JobNotificationService jobNotificationService) {
+            JobNotificationService jobNotificationService,
+            WorkbenchEmailService workbenchEmailService) {
 
         this.jobService = jobService;
         this.jobStatusService = jobStatusService;
@@ -72,6 +74,7 @@ public class EyeService {
         this.jobBuildPushService = jobBuildPushService;
         this.jobCheckupService = jobCheckupService;
         this.jobNotificationService = jobNotificationService;
+        this.workbenchEmailService = workbenchEmailService;
     }
 
     /**
@@ -190,6 +193,12 @@ public class EyeService {
                 if (jobStatus.getFlow().equals(Flow.NORMAL)
                         && jobBuild.getPhase().equals(Phase.FINALIZED)
                         && jobBuild.getStatus().equals(Status.SUCCESS)) {
+
+                    //If job ran sucessfully send e-mails linked to it.
+                    workbenchEmailService.toEmail(job);
+
+                    //Log the e-mail send.
+                    LOG.log(Level.INFO, "[" + uuid + "] Job e-mails sent sucessfully");
 
                     //Log the job children build push.
                     LOG.log(Level.INFO, "[" + uuid + "] Lob children build pushed");

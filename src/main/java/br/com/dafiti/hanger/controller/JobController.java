@@ -31,6 +31,7 @@ import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.Server;
 import br.com.dafiti.hanger.model.Subject;
+import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.service.ConnectionService;
@@ -47,6 +48,7 @@ import br.com.dafiti.hanger.service.ServerService;
 import br.com.dafiti.hanger.service.SlackService;
 import br.com.dafiti.hanger.service.SubjectService;
 import br.com.dafiti.hanger.service.UserService;
+import br.com.dafiti.hanger.service.WorkbenchEmailService;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -97,9 +99,10 @@ public class JobController {
     private final JobApprovalService jobApprovalService;
     private final JobDetailsService jobDetailsService;
     private final AuditorService auditorService;
+    private final WorkbenchEmailService workbenchEmailService;
 
     private static final Logger LOG = LogManager.getLogger(JobController.class.getName());
-
+    
     @Autowired
     public JobController(JobService jobService,
             ServerService serverService,
@@ -114,7 +117,8 @@ public class JobController {
             FlowService flowService,
             JobApprovalService jobApprovalService,
             JobDetailsService jobDetailsService,
-            AuditorService auditorService) {
+            AuditorService auditorService,
+            WorkbenchEmailService workbenchEmailService) {
 
         this.jobService = jobService;
         this.serverService = serverService;
@@ -130,6 +134,7 @@ public class JobController {
         this.jobApprovalService = jobApprovalService;
         this.jobDetailsService = jobDetailsService;
         this.auditorService = auditorService;
+        this.workbenchEmailService = workbenchEmailService;
     }
 
     /**
@@ -685,6 +690,58 @@ public class JobController {
     }
 
     /**
+     * Add e-mail list.
+     *
+     * @param job
+     * @param emailList
+     * @param bindingResult BindingResult
+     * @param model Model
+     * @return Subject edit
+     */
+    @PostMapping(path = "/save", params = {"partial_add_email"})
+    public String addEmailList(
+            @Valid @ModelAttribute Job job,
+            @RequestParam(value = "emailList", required = false) List<WorkbenchEmail> emailList,
+            BindingResult bindingResult,
+            Model model) {
+
+        try {
+            emailList.forEach((email) -> {
+                job.addEmail(email);
+            });
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+        } finally {
+            this.modelDefault(model, job);
+        }
+
+        return "job/edit";
+
+    }
+
+    /**
+     * Remove an e-mail.
+     *
+     * @param job Job
+     * @param index index
+     * @param bindingResult BindingResult
+     * @param model Model
+     * @return Job edit
+     */
+    @PostMapping(path = "/save", params = {"partial_remove_email"})
+    public String removeEmail(
+            @ModelAttribute Job job,
+            @RequestParam(value = "partial_remove_email", required = false) int index,
+            BindingResult bindingResult,
+            Model model) {
+
+        job.getEmail().remove(index);
+        this.modelDefault(model, job);
+
+        return "job/edit";
+    }
+
+    /**
      * Job list modal.
      *
      * @param server Server
@@ -718,6 +775,18 @@ public class JobController {
     public String slackChannelListModal(Model model) {
         model.addAttribute("channels", slackService.getChannels());
         return "job/modalSlackChannel::channel";
+    }
+
+    /**
+     * E-mail list modal.
+     *
+     * @param model Model
+     * @return E-mail list modal
+     */
+    @GetMapping(path = "/modal/email")
+    public String emailListModal(Model model) {
+        model.addAttribute("emails", workbenchEmailService.list());
+        return "job/modalEmailList::email";
     }
 
     /**

@@ -11,6 +11,11 @@
                     <th>
                         <h3 class="page-title">E-mails</h3>
                     </th>
+                    <th class="btn-action">
+                        <a th:href="@{'/email/add/'}" title="Add E-mail">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </a>
+                    </th>
                     <th class="btn-action"> 
                         <a th:href="@{'/workbench/workbench/'}" title="Workbench">
                             <span class="glyphicon glyphicon-chevron-right"></span>
@@ -26,17 +31,13 @@
             </div>
 
             <fieldset>
-                <table id="table_workbench_email" class="table table-hover">
+                <table id="table_paginated" class="table table-hover">
                     <thead>
                         <tr>
                             <th style="width:3%">#</th>
-                            <th>Recipient</th>
-                            <th>External Recipient</th>
-                            <th>Subject</th>
-                            <th>Query</th>
+                            <th style="width:37%">Subject</th>
                             <th>Connection</th>
-                            <th>Created at</th>
-
+                            <th style="width:1%" class="no-sort"></th>
                             <th style="width:1%" class="no-sort"></th>
                             <th style="width:1%" class="no-sort"></th>
                             <th style="width:1%" class="no-sort"></th>
@@ -45,63 +46,27 @@
                     <tbody>
                         <tr class="query-row" th:each="workbenchEmail : ${workbenchEmailList}">
                             <td th:text="${workbenchEmail.id}">#</td>
-                            <td th:text="*{ #lists.isEmpty(workbenchEmail.recipient) ? '' : #strings.arrayJoin(workbenchEmail.recipient, '; ') }"></td>
-                            <td>
-                                <span th:text="${#strings.length(workbenchEmail.externalRecipient) > 35 ? #strings.substring(workbenchEmail.externalRecipient,0,35) : workbenchEmail.externalRecipient}"></span>                                
-                                <div class="btn-group" th:if="${#strings.length(workbenchEmail.externalRecipient) > 35}">
-                                    <button class="dropdown-toggle close" data-toggle="dropdown">...</button>
-                                    <ul class="dropdown-menu">                                                
-                                        <li>
-                                            <pre class="line-numbers">
-                                                    <code class="language-none" th:text="${workbenchEmail.externalRecipient}"></code>
-                                            </pre>
-                                        </li>  
-                                    </ul>
-                                </div>
-                                <a class="btn-copy" 
-                                   href="javascript:;" 
-                                   th:if="${not #lists.isEmpty(workbenchEmail.externalRecipient)}" 
-                                   th:attr="data-clipboard-text=${workbenchEmail.externalRecipient}">
-                                    <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="copy"></span>
-                                </a>                                
-                            </td>
                             <td th:text="${workbenchEmail.subject}"></td>
-                            <td>
-                                <div class="btn-group" th:if="${not #lists.isEmpty(workbenchEmail.query)}">
-                                    <button class="dropdown-toggle close" data-toggle="dropdown"><span class="caret"></span></button>
-                                    <ul class="dropdown-menu">                                                
-                                        <li>
-                                            <pre class="line-numbers">
-                                                    <code class="language-sql" th:text="${workbenchEmail.query}"></code>
-                                            </pre>
-                                        </li>  
-                                    </ul>
-                                </div>
-                                <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${workbenchEmail.query}">
-                                    <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="copy"></span>
-                                </a>
-                            </td>
                             <td th:text="${workbenchEmail.connection.name}"></td>
-                            <td th:text="${#dates.format(workbenchEmail.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
                             <td>
                                 <button 
                                     type="button" 
                                     class="btn btn-generic btn-xs btn-send" 
                                     th:id="'send_' + ${workbenchEmail.id}" 
                                     th:value="${workbenchEmail.id}">
-                                    <span class="glyphicon glyphicon-send" aria-hidden="true"></span> 
+                                    <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> 
                                     Send
                                 </button>
                             </td>
                             <td>
-                                <button 
-                                    type="button" 
-                                    class="btn btn-generic btn-xs btn-edit" 
-                                    th:id="'edit_' + ${workbenchEmail.id}" 
-                                    th:value="${workbenchEmail.id}">
-                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 
-                                    Edit
-                                </button>
+                                <a th:href="@{'/email/view/' + ${workbenchEmail.id}}" class="btn btn-generic btn-xs">
+                                    <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> See
+                                </a>
+                            </td>
+                            <td>
+                                <a th:href="@{'/email/edit/' + ${workbenchEmail.id}}" class="btn btn-generic btn-xs">
+                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                                </a>
                             </td>
                             <td>
                                 <a class="btn btn-xs btn-delete" 
@@ -216,7 +181,7 @@
                             } else {
                                 toastr.error('Error sending email');
                             }
-                            
+
                             btnSend.prop("disabled", false);
                         },
                         error: function (e) {

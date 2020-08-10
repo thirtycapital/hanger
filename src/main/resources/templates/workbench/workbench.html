@@ -9,166 +9,151 @@
 
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
-        <div class="container-fluid main-content">
+        <div class="container-fluid main-content p-0">
             <div class="tab-content">
-                <table>
-                    <tr>
-                        <th>
-                            <h3 class="page-title">Workbench</h3>
-                        </th>
-                        <th class="btn-action">
-                            <a th:href="@{'/query/list/'}" title="Queries">
-                                <span class="glyphicon glyphicon-list"></span>
-                            </a>
-                        </th>    
-                        <th class="btn-action">
-                            <a th:href="@{'/email/list/'}" title="E-mails">
-                                <span class="glyphicon glyphicon-envelope"></span>
-                            </a>
-                        </th>
-                    </tr>            
-                </table>
-
                 <div class="form-horizontal">
-                    <div id="workbench_top" class="collapse in">                        
-                        <div class="row space-top">
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label>Connection</label>
-                                    <select 
-                                        id="connection" 
-                                        class="selectpicker form-control" 
-                                        data-live-search="true" 
-                                        required="true" 
-                                        placeholder="Connection">
-                                        <option th:each="connection : ${connections}" 
-                                                th:value="${connection.id}" 
-                                                th:text="${connection.name}"
-                                                th:selected="${workbenchQuery != null ? connection == workbenchQuery.connection : jobCheckup != null ? connection == jobCheckup.connection : 0}">
-                                        </option>
-                                    </select>
-                                </div>
+                    <div class="row">
+                        <div class="col-sm-2 space-right space-top">
+                            <div class="form-group mb-2">                                    
+                                <select 
+                                    id="connection" 
+                                    class="selectpicker form-control" 
+                                    data-live-search="true" 
+                                    required="true" 
+                                    placeholder="Connection">
+                                    <option th:each="conn : ${connections}" 
+                                            th:value="${conn.id}" 
+                                            th:text="${conn.name}"
+                                            th:selected="${connection != null ? conn == connection : 0}">
+                                    </option>
+                                </select>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-3">
-                                <div class="form-group col-div-jstree">
-                                    <input type="text"
-                                           id="jstree-search"
-                                           class="form-control form-control-search" 
-                                           maxlength="50" 
-                                           placeholder="Search: "/>
+                            <div class="form-group col-div-jstree">
+                                <input type="text"
+                                       id="jstree-search"
+                                       class="form-control form-control-search" 
+                                       maxlength="50" 
+                                       placeholder="Search:"/>
 
-                                    <div class="div-jstree">
-                                        <div id="jstree"></div>
-                                    </div>                                
-                                </div>
-                            </div>
-                            <div class="col-sm-9 col-div-query">
+                                <div class="div-jstree">
+                                    <div id="jstree"></div>
+                                </div>                                
+                            </div>                                
+                        </div>                            
+                        <div class="col-sm-10 col-div-query space-top">
+                            <div class="collapse in" id="workbench_top">
                                 <div class="form-group">
                                     <textarea 
                                         class="form-control" 
-                                        id="query" 
+                                        id="cm" 
                                         required="true" 
                                         rows="10" 
                                         minlength="1" 
                                         maxlength="5000"
-                                        th:text="${workbenchQuery != null ? workbenchQuery.query : jobCheckup != null ? jobCheckup.query : ''}"></textarea>
+                                        th:text="${query != null ? query : ''}">
+                                    </textarea>
+                                </div>
+                                <div class="form-group">
+                                    <div class="btn-group pull-right dropup">
+                                        <button 
+                                            id="cancel-button" 
+                                            class="btn-approval btn-sm pull-right btn-space" 
+                                            type="button"
+                                            style="display:none;">
+
+                                            <span class="glyphicon glyphicon-stop" 
+                                                  aria-hidden="true"></span> Cancel
+                                        </button>
+                                        <button type="button" 
+                                                class="btn btn-generic btn-sm pull-right dropdown-toggle" 
+                                                data-toggle="dropdown" 
+                                                aria-haspopup="true" 
+                                                aria-expanded="false">
+                                            <span class="glyphicon glyphicon-menu-hamburger"></span>
+                                            <span class="sr-only"></span>
+                                        </button>
+                                        <ul class="dropdown-menu">    
+                                            <li class="btn btn-sm pull-left">
+                                                <a id="save-query-button" class="btn btn-sm pull-left" title="Save a query">
+                                                    <span  class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> 
+                                                    Save a query
+                                                </a>
+                                                <a id="email-button" class="btn btn-sm pull-left" title="Save an e-mail">
+                                                    <span  class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> 
+                                                    Save an e-mail
+                                                </a>
+                                                <a id="export-button" class="btn btn-sm pull-left" title="Export as csv">
+                                                    <span  class="glyphicon glyphicon-export" aria-hidden="true"></span> 
+                                                    Export as csv
+                                                </a>
+                                                <a th:href="@{'/query/list/'}" class="btn btn-sm pull-left" title="Saved queries">
+                                                    <span class="glyphicon glyphicon-list"></span>
+                                                    Saved queries
+                                                </a>
+                                                <a th:href="@{'/email/list/'}" class="btn btn-sm pull-left" title="Saved e-mails">
+                                                    <span class="glyphicon glyphicon-envelope"></span>
+                                                    Saved e-mails
+                                                </a>
+                                            </li>
+                                        </ul>
+                                        <button 
+                                            id="play-button" 
+                                            class="btn-generic btn-sm pull-right btn-space" 
+                                            type="button">
+
+                                            <span class="glyphicon glyphicon-play" 
+                                                  aria-hidden="true"></span> Play
+                                        </button>
+                                        <button 
+                                            id="wait" 
+                                            type="button"
+                                            class="btn btn-default btn-sm" 
+                                            style="display:none;">
+
+                                            <img th:src="@{'/images/ajax-loader.gif'}"></img>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row">
-                            <button 
-                                id="cancel-button" 
-                                class="btn-approval btn-sm pull-right btn-space" 
-                                type="button"
-                                style="display:none;">
-
-                                <span class="glyphicon glyphicon-stop" 
-                                      aria-hidden="true"></span> Cancel
-                            </button>
-
-                            <button 
-                                id="play-button" 
-                                class="btn-generic btn-sm pull-right btn-space" 
-                                type="button">
-
-                                <span class="glyphicon glyphicon-play" 
-                                      aria-hidden="true"></span> Play
-                            </button>
-
-                            <button 
-                                id="save-query-button" 
-                                class="btn btn-generic btn-sm btn-space" 
-                                type="button">
-
-                                <span class="glyphicon glyphicon-floppy-disk" 
-                                      aria-hidden="true"></span> Query
-                            </button>
-
-                            <button 
-                                id="email-button" 
-                                class="btn btn-generic btn-sm btn-space" 
-                                type="button">
-
-                                <span class="glyphicon glyphicon-floppy-disk" 
-                                      aria-hidden="true"></span> E-mail
-                            </button>
-
-                            <button 
-                                id="export-button" 
-                                class="btn btn-generic btn-sm btn-space" 
-                                type="button">
-
-                                <span class="glyphicon glyphicon-export" 
-                                      aria-hidden="true"></span> Export
-                            </button>
-
-                            <button 
-                                id="wait" 
-                                type="button"
-                                class="btn btn-default btn-sm" 
-                                style="display:none;">
-
-                                <img th:src="@{'/images/ajax-loader.gif'}"></img>
-                            </button>
-                        </div>
-                    </div>
-
-                    <hr/>
-
-                    <div id="workbench_collapse_top" class="text-center">
-                        <a class="link glyphicon glyphicon-triangle-top" 
-                           id="a_collapse_top"
-                           data-toggle="collapse" 
-                           href="#workbench_top" 
-                           role="button" aria-expanded="false" 
-                           aria-controls="workbench_top" 
-                           title="Click me to see a greater table."
-                           style="text-decoration: none">
-                        </a>
-                    </div>
-
-                    <div id="workbench_bottom" class="space-top">
-                        <!--Fragment-->
-                        <div id="fragmentQueryResultSetHolder" />
-
-                        <div th:if="${ errorMessage != null }" class="row">
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <div class="alert alert-danger" role="alert">
-                                        <span th:text="${errorMessage}"></span>
-                                    </div>  
+                            <div class="form-group">
+                                <hr class="hr-workbench-collapse"/>
+                                <div id="workbench_collapse_top" class="text-center">
+                                    <a class="link glyphicon glyphicon-triangle-top" 
+                                       id="a_collapse_top"
+                                       data-toggle="collapse" 
+                                       href="#workbench_top" 
+                                       role="button" aria-expanded="false" 
+                                       aria-controls="workbench_top" 
+                                       title="Click me to see a greater table."
+                                       style="text-decoration: none">
+                                    </a>
                                 </div>
                             </div>
-                        </div>
-                        <div th:if="${ successMessage != null }" class="row">
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <div class="alert alert-info" role="alert">
-                                        <span th:text="${successMessage}"></span>
-                                    </div>  
+
+                            <div class="form-group">
+                                <div id="workbench_bottom">
+                                    <!--Fragment-->
+                                    <div id="fragmentQueryResultSetHolder" />
+
+                                    <div th:if="${ errorMessage != null }" class="row">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <div class="alert alert-danger" role="alert">
+                                                    <span th:text="${errorMessage}"></span>
+                                                </div>  
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div th:if="${ successMessage != null }" class="row">
+                                        <div class="col-sm-12">
+                                            <div class="form-group">
+                                                <div class="alert alert-info" role="alert">
+                                                    <span th:text="${successMessage}"></span>
+                                                </div>  
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -207,12 +192,13 @@
                     createJSTree(connection);
                 });
 
-                window.editor = CodeMirror.fromTextArea(document.getElementById('query'), {
+                window.editor = CodeMirror.fromTextArea(document.getElementById('cm'), {
                     mode: 'text/x-sql',
                     indentWithTabs: true,
                     smartIndent: true,
                     lineNumbers: true,
                     matchBrackets: true,
+                    theme: 'eclipse',
                     autofocus: true,
                     extraKeys: {"Ctrl-Enter": function () {
                             $("#fragmentQueryResultSetHolder").show();
@@ -235,7 +221,7 @@
                 $(document).ajaxStart(function () {
                     $("#wait").css("display", "inline");
                     $("#cancel-button").css("display", "inline");
-                    $("#query").prop("disabled", true);
+                    $("#cm").prop("disabled", true);
                     $("#play-button").prop("disabled", true);
                 });
 
@@ -246,7 +232,7 @@
                 $(document).ajaxComplete(function () {
                     $("#wait").css("display", "none");
                     $("#cancel-button").css("display", "none");
-                    $("#query").prop("disabled", false);
+                    $("#cm").prop("disabled", false);
                     $("#play-button").prop("disabled", false);
                 });
 
@@ -337,13 +323,13 @@
                 $('#workbench_top').on('shown.bs.collapse', function () {
                     $("#a_collapse_top").addClass('glyphicon-triangle-top').removeClass('glyphicon-triangle-bottom');
                     $("#a_collapse_top").removeAttr("title").attr("title", "Click me to see a greater table.");
-                    $("#table").addClass("table-workbench-result");
+                    $("#table").css('height', '325px');
                 });
 
                 $('#workbench_top').on('hidden.bs.collapse', function () {
                     $("#a_collapse_top").addClass('glyphicon-triangle-bottom').removeClass('glyphicon-triangle-top');
                     $("#a_collapse_top").removeAttr("title").attr("title", "Click me to expand workbench settings.");
-                    $("#table").removeClass("table-workbench-result");
+                    $("#table").css('height', '835px');
                 });
 
                 /**

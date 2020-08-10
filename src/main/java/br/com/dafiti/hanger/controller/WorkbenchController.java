@@ -26,10 +26,12 @@ package br.com.dafiti.hanger.controller;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.model.WorkbenchQuery;
 import br.com.dafiti.hanger.model.JobCheckup;
+import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.service.ConfigurationService;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.WorkbenchService;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
+import br.com.dafiti.hanger.service.UserService;
 import java.security.Principal;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,15 +58,18 @@ public class WorkbenchController {
     private final ConnectionService connectionService;
     private final WorkbenchService workbenchService;
     private final ConfigurationService configurationService;
+    private final UserService userService;
 
     @Autowired
     public WorkbenchController(
             ConnectionService connectionService,
             WorkbenchService workbenchService,
-            ConfigurationService configurationService) {
+            ConfigurationService configurationService,
+            UserService userService) {
         this.connectionService = connectionService;
         this.workbenchService = workbenchService;
         this.configurationService = configurationService;
+        this.userService = userService;
     }
 
     /**
@@ -98,7 +103,7 @@ public class WorkbenchController {
         QueryResultSet queryResultSet = connectionService.getQueryResultSet(
                 connection,
                 query,
-                principal);
+                userService.findByUsername(principal.getName()));
 
         if (queryResultSet.hasError()) {
             model.addAttribute("errorMessage", queryResultSet.getError());
@@ -136,35 +141,58 @@ public class WorkbenchController {
     /**
      * Show SQL workbench
      *
-     * @param workbenchQuery
+     * @param query WorkbenchQuery
      * @param model Model
      * @return SQL workbench template.
      */
     @GetMapping(path = "/workbench/{id}")
     public String workbench(
-            @PathVariable(name = "id") WorkbenchQuery workbenchQuery,
+            @PathVariable(name = "id") WorkbenchQuery query,
             Model model) {
-        model.addAttribute("workbenchQuery", workbenchQuery);
-        model.addAttribute("connections", connectionService.list());
-
+        modelDefault(model, query.getQuery(), query.getConnection());
         return "workbench/workbench";
     }
 
     /**
      * Job checkup query on workbench
      *
-     * @param jobCheckup
+     * @param checkup JobCheckup
      * @param model Model
      * @return SQL workbench template.
      */
     @GetMapping(path = "/job/checkup/{id}")
     public String workbench(
-            @PathVariable(name = "id") JobCheckup jobCheckup,
+            @PathVariable(name = "id") JobCheckup checkup,
             Model model) {
-        model.addAttribute("jobCheckup", jobCheckup);
-        model.addAttribute("connections", connectionService.list());
-
+        modelDefault(model, checkup.getQuery(), checkup.getConnection());
         return "workbench/workbench";
+    }
+
+    /**
+     * Job checkup query on workbench
+     *
+     * @param email WorkbenchEmail
+     * @param model Model
+     * @return SQL workbench template.
+     */
+    @GetMapping(path = "/workbench/email/{id}")
+    public String workbench(
+            @PathVariable(name = "id") WorkbenchEmail email,
+            Model model) {
+        modelDefault(model, email.getQuery(), email.getConnection());
+        return "workbench/workbench";
+    }
+
+    /**
+     *
+     * @param model
+     * @param query
+     * @param connection
+     */
+    private void modelDefault(Model model, String query, Connection connection) {
+        model.addAttribute("query", query);
+        model.addAttribute("connection", connection);
+        model.addAttribute("connections", connectionService.list());
     }
 
     /**

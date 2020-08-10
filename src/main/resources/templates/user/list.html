@@ -14,12 +14,6 @@
                         <h3 class="page-title">User</h3>
                     </th>
 
-                    <th class="btn-action">
-                        <a th:href="@{'/user/add/'}" title="Add User">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </a>
-                    </th>
-
                     <!-- Identifies if user is authenticated -->
                     <div sec:authorize="isAuthenticated()">
                         <th class="btn-action">

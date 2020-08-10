@@ -27,6 +27,7 @@ import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.model.User;
+import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.WorkbenchEmailService;
 import br.com.dafiti.hanger.service.UserService;
 import java.io.IOException;
@@ -37,6 +38,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,13 +59,16 @@ public class WorkbenchEmailController {
 
     private final UserService userService;
     private final WorkbenchEmailService workbenchEmailService;
+    private final ConnectionService connectionService;
 
     @Autowired
     public WorkbenchEmailController(
             UserService userService,
-            WorkbenchEmailService workbenchEmailService) {
+            WorkbenchEmailService workbenchEmailService,
+            ConnectionService connectionService) {
         this.userService = userService;
         this.workbenchEmailService = workbenchEmailService;
+        this.connectionService = connectionService;
     }
 
     /**
@@ -256,5 +261,87 @@ public class WorkbenchEmailController {
     private void modelDefault(Model model, WorkbenchEmail workbenchEmail) {
         model.addAttribute("users", userService.list());
         model.addAttribute("email", workbenchEmail);
+        model.addAttribute("connections", connectionService.list());
+    }
+
+    /**
+     * Edit a WorkbenchEmail.
+     *
+     * @param model
+     * @param id
+     * @return
+     */
+    @GetMapping(path = "/edit/{id}")
+    public String edit(
+            Model model,
+            @PathVariable(value = "id") Long id) {
+        modelDefault(model, workbenchEmailService.load(id));
+        return "workbench/email/edit";
+    }
+
+    /**
+     * Save a server.
+     *
+     * @param workbenchEmail WorkbenchEmail
+     * @param bindingResult BindingResult
+     * @param principal
+     * @param model Model
+     * @return Server edit template.
+     */
+    @PostMapping(path = "/save")
+    public String saveEmail(
+            @Valid @ModelAttribute WorkbenchEmail workbenchEmail,
+            BindingResult bindingResult,
+            Model model,
+            Principal principal) {
+
+        if (bindingResult.hasErrors()) {
+            modelDefault(model, workbenchEmail);
+            return "workbench/email/edit";
+        }
+
+        try {
+            modelDefault(model, workbenchEmail);
+            workbenchEmailService.save(workbenchEmail);
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+        }
+
+        return "redirect:/email/view/" + workbenchEmail.getId();
+    }
+
+    /**
+     * Add a WorkbenchEmail.
+     *
+     * @param model Model
+     * @param principal Principal
+     * @return
+     */
+    @GetMapping(path = "/add")
+    public String add(Model model, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+
+        if (user != null) {
+            WorkbenchEmail workbenchEmail = new WorkbenchEmail();
+            workbenchEmail.setUser(user);
+            modelDefault(model, workbenchEmail);
+        }
+
+        return "workbench/email/edit";
+    }
+
+    /**
+     * View a WorkbenchEmail.
+     *
+     * @param model Model
+     * @param id Long workbenchemail id
+     * @return
+     */
+    @GetMapping(path = "/view/{id}")
+    public String view(
+            Model model,
+            @PathVariable(value = "id") Long id) {
+        modelDefault(model, workbenchEmailService.load(id));
+        return "workbench/email/view";
     }
 }

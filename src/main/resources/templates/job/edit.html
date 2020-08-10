@@ -111,27 +111,7 @@
                                 <input type="number" min="0" max="720" class="form-control" maxlength="1" th:field="*{wait}" required="false" placeholder="Waiting time"/>
                                 <span th:if="${#fields.hasErrors('wait')}" class="help-block" th:errors="*{wait}"></span>
                             </div>
-                        </div>          
-
-                        <div th:if="${not #lists.isEmpty(job.channel)}">  
-                            <!--Slack channel list-->   
-                            <table class="table">
-                                <tr>
-                                    <th style="width:77.5%">Channel</th>
-                                    <th></th>
-                                </tr>
-                                <tr th:each="slackChannel, slackChannelStat : ${job.channel}">
-                                    <td> 
-                                        <span th:text="${slackChannel}"></span>
-                                    </td>
-                                    <td>
-                                        <button type="submit" name="partial_remove_slack_channel" th:value="${slackChannel}" class="btn btn-generic btn-xs">
-                                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove
-                                        </button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>                         
+                        </div>
                     </div>
 
                     <!--Subject modal-->                
@@ -174,6 +154,7 @@
                     </div>
 
                     <div th:if="${not #lists.isEmpty(job.subject)}">  
+                        <label>Subject</label>
                         <table class="table">
                             <tr>
                                 <th style="width:5%">#</th>
@@ -196,7 +177,7 @@
                                 </td>
                             </tr>
                         </table>
-                    </div> 
+                    </div>
 
                     <!--AJAX Parent modal --> 
                     <div id="modalHolder"/>
@@ -659,15 +640,75 @@
                                 </select>
                             </div>
                         </div>
-                    </div>  
+                    </div>
 
-                    <!--Options-->
-                    <div th:if="${ job.server != null }">
+                    <div th:if="${not #lists.isEmpty(job.email)}">
                         <fieldset>
                             <legend>
-                                Slack notification
+                                E-mail
                             </legend>
-                        </fieldset> 
+                            <span>If job runs successfully, send e-mails bellow with resultset</span>
+                        </fieldset>
+                        <br/>
+
+                        <table class="table">
+                            <tr>
+                                <th style="width:5%">#</th>
+                                <th style="width:50%">E-mail</th>
+                                <th style="width:22.5%">Owner</th>
+                                <th></th>
+                            </tr>
+                            <tr th:each="email, emailStat : ${job.email}">
+                                <input type="hidden" th:field="*{email[__${emailStat.index}__]}"/> 
+
+                                <td> 
+                                    <span th:text="*{email[__${emailStat.index}__].id}"></span>
+                                </td>
+                                <td>
+                                    <a class="link" 
+                                       th:text="*{email[__${emailStat.index}__].subject}" 
+                                       th:href="@{'/email/view/' + *{email[__${emailStat.index}__].id}}" 
+                                       target="_blank"></a>                                    
+                                </td>
+                                <td>
+                                    <span th:text="*{email[__${emailStat.index}__].user.username}"></span>
+                                </td>                                
+                                <td>
+                                    <button type="submit" name="partial_remove_email" th:value="${emailStat.index}" class="btn btn-delete btn-xs">
+                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>                    
+
+                    <div th:if="${not #lists.isEmpty(job.channel)}">
+                        <fieldset>
+                            <legend>
+                                Slack Notification
+                            </legend>
+                        </fieldset>
+
+                        <div class="alert alert-link" role="alert">
+                            <span>Job status and checkup failure notification on slack</span>
+                        </div>
+                        <!--Slack channel list-->   
+                        <table class="table">
+                            <tr>
+                                <th style="width:77.5%">Channel</th>
+                                <th></th>
+                            </tr>
+                            <tr th:each="slackChannel, slackChannelStat : ${job.channel}">
+                                <td> 
+                                    <span th:text="${slackChannel}"></span>
+                                </td>
+                                <td>
+                                    <button type="submit" name="partial_remove_slack_channel" th:value="${slackChannel}" class="btn btn-generic btn-xs">
+                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>  
 
                         <div class="form-group">
                             <div class="col-sm-10">
@@ -681,7 +722,7 @@
                                             th:checked="*{notify}"/> Build status  
                                     </label>
 
-                                    <br/>
+                                    <br />
 
                                     <label th:if="${not #lists.isEmpty(job.checkup)}">
                                         <input  
@@ -694,7 +735,10 @@
                                 </div>
                             </div>
                         </div>
+                    </div>                        
 
+                    <!--Options-->
+                    <div th:if="${ job.server != null }">
                         <fieldset>
                             <legend>
                                 Options
@@ -736,7 +780,7 @@
                                     </label>
                                 </div>
                             </div>
-                        </div>
+                        </div>                        
                     </div>
 
                     <hr/>
@@ -746,12 +790,12 @@
                         <div class="col-sm-10">
                             <div th:if="${ job.server != null }">
                                 <button type="submit" class="btn btn-generic btn-sm pull-right btn-space" name="partial_add_job_checkup">
-                                    <span class="glyphicon glyphicon-heart-empty" aria-hidden="true"></span> Add checkup
+                                    <span class="glyphicon glyphicon-heart" aria-hidden="true"></span> Checkup
                                 </button>
 
                                 <div class="btn-group pull-right btn-space dropup">
                                     <button type="button" class="btn btn-generic btn-sm" th:id="'modal_add_parent_' + ${job.server.id}" th:value="${job.server.id}">
-                                        <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Add parent
+                                        <span class="glyphicon glyphicon-tree-deciduous" aria-hidden="true"></span> Parent
                                     </button>
 
                                     <button type="button" class="btn btn-generic btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -769,12 +813,18 @@
                                 </div>
 
                                 <button type="button" class="btn btn-generic btn-sm pull-right btn-space" data-toggle="modal" data-backdrop="static" data-target="#modalSubject">
-                                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Add subject
+                                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Subject
                                 </button>
 
                                 <div class="btn-group pull-right btn-space dropup">
                                     <button type="button" class="btn btn-generic btn-sm" th:id="modal_add_slack_channel">                                         
-                                        <span class="glyphicon glyphicon-bell" aria-hidden="true"></span> Slack channel
+                                        <span class="glyphicon glyphicon-bell" aria-hidden="true"></span> Slack
+                                    </button>
+                                </div>
+
+                                <div class="btn-group pull-right btn-space dropup">
+                                    <button type="button" class="btn btn-generic btn-sm" th:id="modal_add_email">                                         
+                                        <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> E-mail
                                     </button>
                                 </div>
 
@@ -871,6 +921,28 @@
                             },
                             error: function (e) {
                                 alert("Error loading channels from Slack " + e);
+                            }
+                        });
+                    });
+
+                    /**
+                     * Show slack channel modal. 
+                     * @returns {undefined}
+                     */
+                    $("#modal_add_email").click(function () {
+                        var url = /*[[@{/job/modal/email/}]]*/ "/job/modal/email/";
+
+                        $.ajax({
+                            type: "GET",
+                            url: url,
+                            timeout: 30000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalEmailList").modal({backdrop: 'static', keyboard: false});
+                                $('.selectpicker').selectpicker();
+                            },
+                            error: function (e) {
+                                alert("Error loading e-mail list " + e);
                             }
                         });
                     });

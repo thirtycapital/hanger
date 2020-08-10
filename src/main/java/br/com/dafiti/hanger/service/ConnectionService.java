@@ -23,10 +23,10 @@
  */
 package br.com.dafiti.hanger.service;
 
-import br.com.dafiti.hanger.Setup;
 import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.Connection;
+import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.option.Database;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.repository.ConnectionRepository;
@@ -50,8 +50,6 @@ import javax.persistence.Transient;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -447,13 +445,13 @@ public class ConnectionService {
      *
      * @param connection Connection.
      * @param query Query.
-     * @param principal Principal.
+     * @param user User.
      * @return QueryResultSet instance.
      */
     public QueryResultSet getQueryResultSet(
             Connection connection,
             String query,
-            Principal principal) {
+            User user) {
 
         QueryResultSet queryResultSet = new QueryResultSet();
         DataSource datasource = this.getDataSource(connection);
@@ -486,7 +484,7 @@ public class ConnectionService {
                         ResultSet.CONCUR_READ_ONLY);
 
                 //Salves the statement being executed.
-                inflight.put(principal.getName(), preparedStatement);
+                inflight.put(user.getUsername(), preparedStatement);
 
                 return preparedStatement;
             }, (ResultSet resultSet) -> {
@@ -518,7 +516,7 @@ public class ConnectionService {
                         .add(resultSetRow);
 
                 //Removes the statement from inflight when a query finishes.
-                inflight.remove(principal.getName());
+                inflight.remove(user.getUsername());
             });
 
             //Log.

@@ -53,8 +53,11 @@
                                         th:text="${query != null ? query : ''}">
                                     </textarea>
                                 </div>
-                                <div class="form-group">
-                                    <div class="btn-group pull-right dropup">
+                                <div class="form-group">                     
+                                    <div class="alert alert-info pull-left wb-alert">
+                                        <span th:text="${'LIMIT ' + maxRows}"></span>
+                                    </div>
+                                    <div class="btn-group pull-right dropup">                                        
                                         <button 
                                             id="cancel-button" 
                                             class="btn-approval btn-sm pull-right btn-space" 
@@ -104,6 +107,7 @@
                                             <span class="glyphicon glyphicon-play" 
                                                   aria-hidden="true"></span> Play
                                         </button>
+
                                         <button 
                                             id="wait" 
                                             type="button"

@@ -1001,7 +1001,7 @@ input[type='file'] {
 }
 
 .p-0 {
-  padding: 0px !important;
+    padding: 0px !important;
 }
 
 .mb-2 {
@@ -1029,4 +1029,14 @@ input[type='file'] {
 
 .CodeMirror-linenumber {
     color: #337ab7 !important;
+}
+
+.wb-alert {
+    margin-bottom: 0px;
+    height: 30px;
+    line-height:30px;
+    padding:0px 15px;    
+    border: none;
+    background-color: #F4F5F7;
+    color: #337ab7;
 }

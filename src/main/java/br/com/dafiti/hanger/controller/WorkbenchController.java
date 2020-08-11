@@ -82,6 +82,7 @@ public class WorkbenchController {
     @GetMapping(path = "/workbench/")
     public String workbench(Model model) {
         model.addAttribute("connections", connectionService.list());
+        model.addAttribute("maxRows", configurationService.getMaxRows());
         return "workbench/workbench";
     }
 
@@ -112,7 +113,6 @@ public class WorkbenchController {
             model.addAttribute("errorMessage", queryResultSet.getError());
         } else {
             model.addAttribute("resultset", queryResultSet);
-            model.addAttribute("maxRows", configurationService.getMaxRows());
         }
 
         return "workbench/fragmentQueryResultSet::resultSet";

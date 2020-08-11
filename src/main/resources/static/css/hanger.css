@@ -1004,6 +1004,11 @@ input[type='file'] {
     padding: 0px !important;
 }
 
+.p-1 {
+    padding: 1px !important;
+}
+
+
 .mb-2 {
     margin-bottom: 5px !important;
 }
@@ -1039,4 +1044,8 @@ input[type='file'] {
     border: none;
     background-color: #F4F5F7;
     color: #337ab7;
+}
+
+.date-range {
+    cursor:pointer !important;
 }

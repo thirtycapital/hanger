@@ -1047,3 +1047,7 @@ input[type='file'] {
 .date-range {
     cursor:pointer !important;
 }
+
+.bold{
+    font-weight: bold;
+}

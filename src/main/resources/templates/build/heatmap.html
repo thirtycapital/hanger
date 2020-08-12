@@ -6,13 +6,6 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fuild main-content">
-            <table>
-                <tr>
-                    <th>
-                        <h3 class="page-title">Heatmap</h3>
-                    </th>
-                </tr>            
-            </table>
             <form class="form-horizontal" th:object="${filter}" th:action="@{/build/heatmap/filtered}" method="post">
                 <div class="form-group space-top space-left space-right">  
                     <div class="col-md-4" style="padding-left: 0">

@@ -6,20 +6,6 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <table>
-                <tr>
-                    <th>
-                        <h3 class="page-title">Job</h3>
-                    </th>
-
-                    <th class="btn-action">
-                        <a th:href="@{'/job/add/'}" title="Add Job">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </a>
-                    </th>
-                </tr>            
-            </table>
-
             <div>    
                 <form class="form-horizontal" th:object="${job}">                    
                     <!--Job ID-->
@@ -438,7 +424,7 @@
                             <legend>
                                 E-mail
                             </legend>
-                            <span>If job runs successfully, send e-mails bellow with resultset</span>
+                            <span>E-mails to be sent when this job finishes sucessfully</span>
                         </fieldset>
                         <br/>
 

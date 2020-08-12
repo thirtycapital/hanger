@@ -6,21 +6,6 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <table>
-                <tr>
-                    <th>
-                        <h3 class="page-title">Connection</h3>
-                    </th>
-                    <div sec:authorize="isAuthenticated()">
-                        <th class="btn-action">
-                            <a href="#" title="Test" th:id="modal_test_connections">
-                                <span class="glyphicon glyphicon-flash"></span>
-                            </a>
-                        </th>
-                    </div>
-                </tr>            
-            </table>
-
             <div th:if="${ errorMessage != null }" class="form-group">
                 <div class="alert alert-danger" role="alert">
                     <span th:text="${errorMessage}"></span>
@@ -55,7 +40,7 @@
                         <td th:text="${connection.target}">Driver</td>
                         <td>
                             <a th:href="@{'/connection/test/' + ${connection.id}}" class="btn btn-generic btn-xs">
-                                <span class="glyphicon glyphicon-link" aria-hidden="true"></span> Connect
+                                <span class="glyphicon glyphicon-flash" aria-hidden="true"></span> Check
                             </a>
                         </td>
                         <td>
@@ -100,6 +85,15 @@
                     </tr>
                 </tbody>
             </table>
+
+            <table sec:authorize="isAuthenticated()">
+                <tr>
+                    <a href="#" title="Test" th:id="modal_test_connections">
+                        <span class="glyphicon glyphicon-flash"></span> Check all connections
+                    </a>
+                </tr>            
+            </table>
+
             <center>
                 <button id="modal_wait" type="button" class="btn btn-default btn-sm" style="display:none;">
                     <img th:src="@{'/images/ajax-loader.gif'}"></img>

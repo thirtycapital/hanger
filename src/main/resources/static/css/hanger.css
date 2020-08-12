@@ -324,8 +324,8 @@ code[class*="language-free"] {
 .sub_icon_create {
     float: right;
     padding-top: 10px;
-    height: 35px;
-    width: 45px;
+    height: 10px;
+    width: 10px;
     display: none;
 }
 
@@ -334,17 +334,15 @@ code[class*="language-free"] {
 }
 
 .sub_icon_create:hover{
-    height: 35px;
-    width: 45px;
     color: darkblue;
 }
 
 #sidebar li .menu_link_option{
-    width: 85%;
+    width: 70%;
 }
 
 #sidebar li .menu_link_create{
-    width: 15%;
+    width: 15px;
 }
 
 .sub_icon {
@@ -904,9 +902,9 @@ input[type='file'] {
 
 .div-jstree {
     position: relative; 
-    overflow: auto; 
+    overflow: none; 
     width: auto; 
-    height: 840px;
+    height: auto;
 }
 
 .form-control-search {

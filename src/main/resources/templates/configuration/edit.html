@@ -6,7 +6,6 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <h3 class="page-title">Configuration</h3>
             <div>
                 <form id="configuration" class="form-horizontal space-top" th:object="${configurationGroup}" th:action="@{/configuration/save}" method="post">
                     <div class="form-group">

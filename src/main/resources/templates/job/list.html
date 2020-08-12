@@ -6,25 +6,6 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <table>
-                <tr>
-                    <th>
-                        <h3 class="page-title">Job</h3>
-                    </th>
-                    <th class="btn-action">
-                        <a th:href="@{/build/heatmap}" title="Heatmap">
-                            <span class="glyphicon glyphicon-th"></span>
-                        </a>
-                    </th>
-
-                    <th class="btn-action">
-                        <a th:href="@{/build/gantt}" title="Gantt">
-                            <span class="glyphicon glyphicon-object-align-left"></span>
-                        </a>
-                    </th>
-                </tr>            
-            </table>
-
             <div th:if="${ errorMessage != null }" class="form-group">
                 <div class="alert alert-danger" role="alert">
                     <span th:text="${errorMessage}"></span>
@@ -40,7 +21,7 @@
             </div> 
 
             <div>
-                <table id="table_paginated" class="table table-hover">
+                <table id="table_paginated" class="table table-hover space-top">
                     <thead>
                         <tr>
                             <th>#</th>

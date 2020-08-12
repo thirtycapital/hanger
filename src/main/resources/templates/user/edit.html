@@ -7,7 +7,6 @@
     </head>
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
-
         <script th:inline="javascript">
             //<![CDATA[
             $(document).ready(
@@ -90,7 +89,6 @@
         </script>
 
         <div class="container-fluid main-content">
-            <h3 class="page-title">User</h3>
             <div>
                 <form class="form-horizontal" 
                       th:object="${user}"                      

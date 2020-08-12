@@ -5,8 +5,7 @@
     </head>
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
-        <div class="container-fluid main-content">
-            <h3 class="page-title">Job</h3>            
+        <div class="container-fluid main-content">        
             <div>    
                 <form class="form-horizontal" th:object="${job}" th:action="@{/job/save}" method="post">
                     <div class="form-group">
@@ -647,7 +646,7 @@
                             <legend>
                                 E-mail
                             </legend>
-                            <span>If job runs successfully, send e-mails bellow with resultset</span>
+                            <span>E-mails to be sent when this job finishes sucessfully</span>
                         </fieldset>
                         <br/>
 
@@ -795,7 +794,7 @@
 
                                 <div class="btn-group pull-right btn-space dropup">
                                     <button type="button" class="btn btn-generic btn-sm" th:id="'modal_add_parent_' + ${job.server.id}" th:value="${job.server.id}">
-                                        <span class="glyphicon glyphicon-tree-deciduous" aria-hidden="true"></span> Parent
+                                        <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Parent
                                     </button>
 
                                     <button type="button" class="btn btn-generic btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

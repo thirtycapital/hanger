@@ -80,7 +80,12 @@
                         <li id="teste" th:classappend="${#httpServletRequest.getRequestURI().contains('/search/') ? 'active':''}">
                             <a th:href="@{/search/search}" title="Search"><span class="sub_icon glyphicon glyphicon-search"></span>Search</a>
                         </li>
-                        <li th:classappend="${#httpServletRequest.getRequestURI().contains('/workbench/') ? 'active':''}"><a th:href="@{/workbench/workbench/}" title="Workbench"><span class="sub_icon glyphicon glyphicon-chevron-right"></span>Workbench</a></li>
+                        <li th:classappend="${#httpServletRequest.getRequestURI().contains('/workbench/') ? 'active':''}">
+                            <a class="menu_link_option" th:href="@{/workbench/workbench/}" title="Workbench">
+                                <span class="sub_icon glyphicon glyphicon-chevron-right"></span>Workbench
+                            </a>
+                            <span class="label label-primary">New</span>
+                        </li>                                               
                         <li th:classappend="${#httpServletRequest.getRequestURI().contains('/server/') ? 'active':''}">
                             <a class="menu_link_option" th:href="@{/server/list}" title="Server">
                                 <span class="sub_icon glyphicon glyphicon-tasks"></span>Server
@@ -125,33 +130,43 @@
                             <a class="menu_link_create" th:href="@{'/user/add/'}" title="Add User">
                                 <span class="sub_icon_create glyphicon glyphicon-plus"> </span>
                             </a>
+                            <a class="menu_link_create" th:href="@{'/user/password/'}" title="Change Password">
+                                <span class="sub_icon_create glyphicon glyphicon-lock"> </span>
+                            </a>
                         </li>
                         <li th:classappend="${#httpServletRequest.getRequestURI().contains('/configuration/') ? 'active':''}"><a th:href="@{/configuration/edit}" title="Configuration"><span class="sub_icon glyphicon glyphicon-cog"></span>Configuration</a></li>                        
                     </ul>
 
                     <div class="wrapper-bottom">
                         <span sec:authorize="isAuthenticated()">
-                            <div>
-                                <div>
-                                    <p th:attr="data-letters=${#authentication.getPrincipal().getFirstName().substring(0, 1) + #authentication.getPrincipal().getLastName().substring(0, 1)}" 
-                                       class="text-center profile-icon" 
-                                       th:classappend="'profile-icon-color-' + ${T(Math).abs(#authentication.getPrincipal().getId() % 5)}">
-                                    </p>
+                            <p th:attr="data-letters=${#authentication.getPrincipal().getFirstName().substring(0, 1) + #authentication.getPrincipal().getLastName().substring(0, 1)}" 
+                               class="text-center profile-icon" 
+                               th:classappend="'profile-icon-color-' + ${T(Math).abs(#authentication.getPrincipal().getId() % 5)}">
+                            </p>
 
-                                    <p th:inline="text" 
-                                       class="text-center">
-                                        [[${#authentication.getPrincipal().getFirstName() + ' ' + #authentication.getPrincipal().getLastName()}]]
-                                    </p>
-                                </div>                                
-                                <a href="#" onclick="javascript:logoutForm.submit();" th:inline="text" title="Login">
-                                    <div class="text-center">Logout<span class="glyphicon glyphicon-off" style="margin-left:5px"></span></div>
-                                </a>
-                                <form th:action="@{/logout}" method="post" id="logoutForm">
-                                    <input type="hidden" 
-                                           name="${_csrf.parameterName}"
-                                           value="${_csrf.token}" />
-                                </form>                                
-                            </div>
+                            <p th:inline="text" 
+                               class="text-center">
+                                <a class="menu_link_option" 
+                                   th:href="@{'/user/edit/' + ${#authentication.getPrincipal().getId()}}" 
+                                   title="User Settings"
+                                   data-toggle="tooltip" 
+                                   data-placement="top">
+                                    [[${#authentication.getPrincipal().getFirstName() + ' ' + #authentication.getPrincipal().getLastName()}]]
+                                </a> 
+                            </p>                                
+                            <a href="#" 
+                               onclick="javascript:logoutForm.submit();" 
+                               th:inline="text" 
+                               title="Logout"
+                               data-toggle="tooltip" 
+                               data-placement="bottom">
+                                <div class="text-center">Logout<span class="glyphicon glyphicon-off" style="margin-left:5px"></span></div>
+                            </a>
+                            <form th:action="@{/logout}" method="post" id="logoutForm">
+                                <input type="hidden" 
+                                       name="${_csrf.parameterName}"
+                                       value="${_csrf.token}" />
+                            </form>   
                         </span>
 
                         <span sec:authorize="!isAuthenticated()">

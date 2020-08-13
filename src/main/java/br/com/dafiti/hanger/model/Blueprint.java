@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.json.JSONObject;
 
 /**
  * Mail blueprint
@@ -124,6 +125,14 @@ public class Blueprint {
 
     public void setFile(File file) {
         this.file = file;
+    }
+    
+    @Override
+    public String toString() {
+        JSONObject object = new JSONObject();
+        object.put("subject", this.getSubject());
+        object.put("name", this.getTemplate());
+        return object.toString();
     }
 
 }

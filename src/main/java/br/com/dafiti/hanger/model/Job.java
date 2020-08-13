@@ -423,6 +423,6 @@ public class Job extends Tracker<Job> implements Serializable {
         object.put("alias", alias);
         object.put("description", description);
         object.put("enabled", enabled);
-        return object.toString(4);
+        return object.toString();
     }
 }

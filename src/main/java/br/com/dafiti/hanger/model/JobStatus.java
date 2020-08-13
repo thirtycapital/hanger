@@ -144,6 +144,6 @@ public class JobStatus implements Serializable {
         object.put("flow", flow);
         object.put("scope", scope);
         object.put("failureTimestamp", failureTimestamp);
-        return object.toString(4);
+        return object.toString();
     }
 }

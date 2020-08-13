@@ -188,6 +188,6 @@ public class Subject extends Tracker<Subject> implements Serializable {
         object.put("description", description);
         object.put("mandatory", mandatory);
         object.put("notified", notified);
-        return object.toString(4);
+        return object.toString();
     }
 }

@@ -138,6 +138,6 @@ public class Server extends Tracker<Server> implements Serializable {
         object.put("name", name);
         object.put("url", url);
         object.put("username", username);
-        return object.toString(4);
+        return object.toString();
     }
 }

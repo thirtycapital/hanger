@@ -109,21 +109,24 @@ public class AuditorService {
      * @param data Event payload
      */
     public void publish(String type, Map<String, Object> data) {
+        String username = "hanger";
         Authentication authentication = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
 
         if (authentication != null) {
-            applicationEventPublisher.publishEvent(
-                    new AuditApplicationEvent(
-                            new AuditEvent(
-                                    authentication.getName(),
-                                    type,
-                                    data
-                            )
-                    )
-            );
+            username = authentication.getName();
         }
+
+        applicationEventPublisher.publishEvent(
+                new AuditApplicationEvent(
+                        new AuditEvent(
+                                username,
+                                type,
+                                data
+                        )
+                )
+        );
     }
 
     /**

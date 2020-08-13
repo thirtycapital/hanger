@@ -23,6 +23,7 @@
  */
 package br.com.dafiti.hanger.service;
 
+import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.Blueprint;
 import java.util.HashMap;
 import java.util.Locale;
@@ -32,10 +33,11 @@ import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Async;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
@@ -51,16 +53,19 @@ public class MailService {
 
     private final ConfigurationService configurationService;
     private final ApplicationContext applicationContext;
+    private final AuditorService auditorService;
 
     private static final Logger LOG = LogManager.getLogger(MailService.class.getName());
 
     @Autowired
     public MailService(
             ConfigurationService configurationService,
-            ApplicationContext applicationContext) {
+            ApplicationContext applicationContext,
+            AuditorService auditorService) {
 
         this.configurationService = configurationService;
         this.applicationContext = applicationContext;
+        this.auditorService = auditorService;
     }
 
     /**
@@ -100,6 +105,11 @@ public class MailService {
         int port = Integer.valueOf(configurationService.getValue("EMAIL_PORT"));
         String email = configurationService.getValue("EMAIL_ADDRESS");
         String password = configurationService.getValue("EMAIL_PASSWORD");
+        
+        auditorService.publish("SEND_EMAIL",
+                new AuditorData()
+                        .addData("javascript", this.toString(email, mail, blueprint))
+                        .getData());
 
         try {
             mail.setHostName(host);
@@ -164,5 +174,21 @@ public class MailService {
                 || port.isEmpty()
                 || user.isEmpty()
                 || password.isEmpty());
+    }
+
+    /**
+     * Get e-mail object as JSON.
+     * 
+     * @param email
+     * @param mail
+     * @param subject
+     * @return 
+     */
+    private String toString(String email, HtmlEmail mail, Blueprint blueprint) {
+        JSONObject object = new JSONObject();
+        object.put("email", email);
+        object.put("recipients", mail.getBccAddresses());
+        object.put("blueprint", blueprint.toString());
+        return object.toString();        
     }
 }

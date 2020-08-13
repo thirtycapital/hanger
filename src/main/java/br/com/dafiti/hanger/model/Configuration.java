@@ -181,6 +181,6 @@ public class Configuration extends Tracker<Configuration> implements Serializabl
         object.put("parameter", parameter);
         object.put("value", value);
         object.put("name", name);
-        return object.toString(4);
+        return object.toString();
     }
 }

@@ -16,6 +16,10 @@
                             <input type="hidden" th:field="*{channel}"/>
                             <!--User list-->
                             <input type="hidden" th:field="*{user}"/>
+                            <!--Swimlanes-->
+                            <div th:each="entry : *{swimlane}">
+                                <input type="hidden" th:id="${entry.key}" th:field="*{swimlane[__${entry.key}__]}" th:value="${entry.value}" /> 
+                            </div>
                         </div>
                     </div>
 
@@ -29,7 +33,7 @@
                     </div> 
 
                     <!--Subject-->   
-                    <label>Subject</label> 
+
                     <div class="form-group">
                         <div class="col-sm-10">
                             <input type="text" class="form-control" maxlength="50" th:field="*{name}" placeholder="Subject name"/>
@@ -45,6 +49,31 @@
                         </div>
                         <span th:if="${#fields.hasErrors('description')}" class="help-block" th:errors="*{description}"></span>
                     </div>
+
+                    <!--Swimlanes-->  
+                    <div th:if="not ${subject.swimlane.isEmpty()}">  
+                        <label>Swimlanes</label> 
+                        <table class="table">
+                            <tr>
+                                <th style="width:20%">Swimlane</th>
+                                <th style="width:57.5%">Critéria</th>
+                                <th></th>
+                            </tr>
+                            <tr th:each="swimlane: ${subject.swimlane}">
+                                <td> 
+                                    <span th:text="${swimlane.key}"></span>
+                                </td>
+                                <td> 
+                                    <span th:text="${swimlane.value}"></span>
+                                </td>
+                                <td>
+                                    <button type="submit" name="partial_remove_swimlane" th:value="${swimlane.key}" class="btn btn-delete btn-xs">
+                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div> 
 
                     <fieldset>
                         <legend>Subscription</legend>
@@ -127,6 +156,10 @@
                                 <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save
                             </button>
 
+                            <button type="button" class="btn btn-generic btn-sm pull-right btn-space" data-toggle="modal" data-backdrop="static" data-target="#modalSwimlane">
+                                <span class="glyphicon glyphicon-menu-hamburger" aria-hidden="true"></span> Swimlanes
+                            </button>
+
                             <div class="btn-group pull-right btn-space dropup">
                                 <button type="button" class="btn btn-generic btn-sm" th:id="modal_add_slack_channel">                                         
                                     <span class="glyphicon glyphicon-bell" aria-hidden="true"></span> Slack channel
@@ -148,6 +181,41 @@
                             </div>
                         </div>
                     </div>
+
+                    <!--Swimlane modal-->                
+                    <div class="modal fade" id="modalSwimlane" tabindex="-1" role="dialog" aria-labelledby="modalSwimlaneLabel">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="modalSubjectLabel">Swimlane</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="modal-body">                            
+                                        <div class="form-group">
+                                            <div class="col-sm-3">
+                                                <label>Swimlane</label> 
+                                                <input id="key" name="key" type="text" maxlength="255" class="form-control"/>                                    
+                                            </div>
+                                            <div class="col-sm-9">
+                                                <label>Criteria</label> 
+                                                <input id="value" name="value" type="text" maxlength="255" class="form-control" placeholder="Regexp is welcome"/>                                    
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">                                
+                                    <button type="button" class="btn btn-generic btn-sm" data-dismiss="modal">
+                                        <span aria-hidden="true"></span> Close
+                                    </button>
+
+                                    <button type="submit" name="partial_add_swimlane" class="btn btn-generic btn-sm">
+                                        <span aria-hidden="true"></span> Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
@@ -159,7 +227,6 @@
                  */
                 $(document).ajaxStart(function () {
                     $("#modal_wait").css("display", "block");
-                    $("[id^=modal_add_parent_]").prop("disabled", true);
                 });
 
                 /**
@@ -168,7 +235,6 @@
                  */
                 $(document).ajaxComplete(function () {
                     $("#modal_wait").css("display", "none");
-                    $("[id^=modal_add_parent_]").prop("disabled", false);
                 });
 
                 /**

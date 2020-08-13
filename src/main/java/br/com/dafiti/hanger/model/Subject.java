@@ -25,8 +25,10 @@ package br.com.dafiti.hanger.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -41,6 +43,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -52,6 +55,7 @@ import org.json.JSONObject;
 /**
  *
  * @author Daniel D GOMES
+ * @author Valdiney V GOMES
  */
 @Entity
 public class Subject extends Tracker<Subject> implements Serializable {
@@ -63,6 +67,7 @@ public class Subject extends Tracker<Subject> implements Serializable {
     private boolean mandatory;
     private Set<String> channel = new HashSet();
     private List<User> user = new ArrayList();
+    private Map<String, String> swimlane = new HashMap<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -154,6 +159,18 @@ public class Subject extends Tracker<Subject> implements Serializable {
 
     public void addUser(User user) {
         this.user.add(user);
+    }
+
+    public void setSwimlane(Map<String, String> swimlane) {
+        this.swimlane = swimlane;
+    }
+
+    @ElementCollection
+    @MapKeyColumn(name = "swimlane")
+    @Column(name = "criteria")
+    @CollectionTable(name = "subject_swimlanes", joinColumns = @JoinColumn(name = "id"))
+    public Map<String, String> getSwimlane() {
+        return swimlane;
     }
 
     @Override

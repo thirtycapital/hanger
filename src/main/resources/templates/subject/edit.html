@@ -36,7 +36,8 @@
 
                     <div class="form-group">
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" maxlength="50" th:field="*{name}" placeholder="Subject name"/>
+                            <label>Subject</label> 
+                            <input type="text" class="form-control" maxlength="50" th:field="*{name}" placeholder="Subject name" required="true"/>
                             <span th:if="${#fields.hasErrors('name')}" class="help-block" th:errors="*{name}"></span>
                         </div>
                     </div>        

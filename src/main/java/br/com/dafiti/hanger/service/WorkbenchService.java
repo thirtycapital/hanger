@@ -125,7 +125,7 @@ public class WorkbenchService {
                                     tableEntity.getTable(),
                                     tableEntity.getTable(),
                                     schemaEntity.getCatalogSchema(),
-                                    ("EXTERNAL TABLE".equals(tableEntity.getType())) ? "glyphicon glyphicon-share-alt" : "glyphicon glyphicon-th-list",
+                                    ("EXTERNAL TABLE".equals(tableEntity.getType())) ? "glyphicon glyphicon-file" : "glyphicon glyphicon-list",
                                     false,
                                     new TreeAttribute(
                                             tableEntity.getCatalog(),

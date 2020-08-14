@@ -273,6 +273,8 @@ public class SubjectController {
             Model model) {
 
         try {
+            //Identifies if the criteria is a valid regexp.
+            "DUMMY".matches(value);
             subject.getSwimlane().put(key, value);
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));

@@ -901,7 +901,8 @@ input[type='file'] {
 
 .div-jstree {
     position: relative; 
-    overflow: none; 
+    overflow-y: hidden;
+    overflow-x: auto;
     width: auto; 
     height: auto;
 }

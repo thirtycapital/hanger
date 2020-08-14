@@ -289,7 +289,8 @@
                                 <button type="button" 
                                         class="btn btn-generic btn-sm pull-right"
                                         th:id="modal_add_privileges"
-                                        th:classappend="${#authorization.expression('hasRole(''HERO'')') ? '':'dispDef'}">
+                                        th:classappend="${#authorization.expression('hasRole(''HERO'')') ? '':'dispDef'}"
+                                        th:disabled="*{username == #httpServletRequest.remoteUser}">
                                     <span class="glyphicon glyphicon-equalizer" 
                                           aria-hidden="true"></span>
                                     Privileges

@@ -135,10 +135,14 @@
 
                         <hr/>
 
+                        <a th:href="@{'/subject/edit/' + ${currentSubject.id}}" class="btn btn-link btn-sm">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit subject
+                        </a>
+
                         <button id="add_job" 
-                                class="btn btn-generic btn-sm btn-home" 
+                                class="btn btn-link btn-sm btn-home" 
                                 th:attr="onclick='addJobModal(' + ${currentSubject.id} + ');'">
-                            <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Add Job
+                            <span class="glyphicon glyphicon-magnet" aria-hidden="true"></span> Link a job
                         </button>
 
                         <button id="wait" 

@@ -80,9 +80,8 @@ public class WorkbenchController {
      * @return SQL workbench template.
      */
     @GetMapping(path = "/workbench/")
-    public String workbench(Model model) {
-        model.addAttribute("connections", connectionService.list());
-        model.addAttribute("maxRows", configurationService.getMaxRows());
+    public String workbench(Model model) {        
+        modelDefault(model);        
         return "workbench/workbench";
     }
 
@@ -196,6 +195,18 @@ public class WorkbenchController {
         model.addAttribute("query", query);
         model.addAttribute("connection", connection);
         model.addAttribute("connections", connectionService.list());
+        model.addAttribute("maxRows", configurationService.getMaxRows());
+    }
+    
+    /**
+     *
+     * @param model
+     * @param query
+     * @param connection
+     */
+    private void modelDefault(Model model) {
+        model.addAttribute("connections", connectionService.list());
+        model.addAttribute("maxRows", configurationService.getMaxRows());
     }
 
     /**

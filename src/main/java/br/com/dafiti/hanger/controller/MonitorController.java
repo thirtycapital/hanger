@@ -147,6 +147,7 @@ public class MonitorController {
 
         if (principal != null || jobs != null) {
             Map<String, List<JobDetails>> swimlanes = new HashMap();
+            Map<String, String> rules = subject.getSwimlane();
             List<JobDetails> jobDetails = jobDetailsService.getDetailsOf(jobs, principal);
 
             //Sorts details. 
@@ -160,7 +161,7 @@ public class MonitorController {
                 boolean classified = false;
 
                 //Identifies if the job detail match any swimlanes criteria. 
-                for (Entry<String, String> entry : subject.getSwimlane().entrySet()) {
+                for (Entry<String, String> entry : rules.entrySet()) {
                     if (jobDetail.getJob().getName().matches(entry.getValue())) {
                         if (swimlanes.containsKey(entry.getKey())) {
                             swimlanes.get(entry.getKey()).add(jobDetail);
@@ -187,6 +188,7 @@ public class MonitorController {
                 }
             }
 
+            model.addAttribute("rules", rules);
             model.addAttribute("swimlanes", swimlanes);
         }
     }

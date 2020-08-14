@@ -12,7 +12,10 @@
                         <legend 
                             th:if="${swimlane.key != 'ALL'}" 
                             class="space-top" 
-                            th:text="${swimlane.key}">
+                            th:text="${swimlane.key}"
+                            data-toggle="tooltip" 
+                            data-placement="left"
+                            th:title="${rules.get(swimlane.key)}">
                         </legend>
 
                         <table 

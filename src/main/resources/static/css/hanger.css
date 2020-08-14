@@ -215,7 +215,6 @@ code[class*="language-free"] {
     border-right: 1px solid #eee;
     position: fixed;
     height: 100%;
-    z-index: 10000;
     transition: all .4s ease 0s;
 }
 

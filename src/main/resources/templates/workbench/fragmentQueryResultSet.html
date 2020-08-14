@@ -14,10 +14,16 @@
                 </div> 
 
                 <div th:if="${ errorMessage == null }">
-                    <table id="table" class="table table-hover space-top">
+                    <table id="table" class="table table-hover space-top table-workbench-result">
                         <thead> 
                             <tr>
-                                <th th:each="header: ${resultset.header}" class="column-title" th:text="${header}" />
+                                <th 
+                                    th:each="header: ${resultset.header}" 
+                                    class="column-title" 
+                                    th:text="${header}" 
+                                    data-toggle="tooltip" 
+                                    data-placement="left"
+                                    th:title="${resultset.type.get(header)}"></th>
                             </tr>
                         </thead>
                         <tbody>

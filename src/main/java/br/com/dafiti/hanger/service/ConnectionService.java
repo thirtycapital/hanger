@@ -268,6 +268,7 @@ public class ConnectionService {
                                     catalogName,
                                     schemaName,
                                     "",
+                                    "",
                                     connection.getTarget()));
                 }
             }
@@ -282,6 +283,7 @@ public class ConnectionService {
                             new Entity(
                                     catalogs.getString("TABLE_CAT"),
                                     null,
+                                    "",
                                     "",
                                     connection.getTarget()
                             ));
@@ -308,7 +310,7 @@ public class ConnectionService {
      * @param schema String
      * @return Database metadata
      */
-    @Cacheable(value = "tables", key = "{#connection, #catalog, #schema}")
+    //@Cacheable(value = "tables", key = "{#connection, #catalog, #schema}")
     public List<Entity> getTables(Connection connection, String catalog, String schema) {
         List table = new ArrayList();
         DataSource datasource = this.getDataSource(connection);
@@ -331,6 +333,7 @@ public class ConnectionService {
                                     tables.getString("TABLE_CAT"),
                                     tables.getString("TABLE_SCHEM"),
                                     tables.getString("TABLE_NAME"),
+                                    tables.getString("TABLE_TYPE"),
                                     connection.getTarget()));
                 }
             }
@@ -340,7 +343,7 @@ public class ConnectionService {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-               LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
+                LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -495,11 +498,16 @@ public class ConnectionService {
                     //Retrives the metadata. 
                     ResultSetMetaData metaData = resultSet.getMetaData();
 
-                    //Identifies the metadata columns. 
                     for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                        //Extracts columns name.
                         queryResultSet
                                 .getHeader()
                                 .add(metaData.getColumnName(i));
+
+                        //Extracts columns data type. 
+                        queryResultSet
+                                .getType()
+                                .put(metaData.getColumnName(i), metaData.getColumnTypeName(i));
                     }
                 }
 
@@ -507,7 +515,7 @@ public class ConnectionService {
                 for (String column : queryResultSet.getHeader()) {
                     resultSetRow
                             .getColumn()
-                            .add(resultSet.getObject(column));
+                            .add(resultSet.getString(column));
                 }
 
                 //Sets the row to the resultset. 
@@ -699,17 +707,20 @@ public class ConnectionService {
         private String catalog;
         private String schema;
         private String table;
+        private String type;
         private Database target;
 
         public Entity(
                 String catalog,
                 String schema,
                 String table,
+                String type,
                 Database target) {
 
             this.catalog = catalog;
             this.schema = schema;
             this.table = table;
+            this.type = type;
             this.target = target;
         }
 
@@ -735,6 +746,14 @@ public class ConnectionService {
 
         public void setTable(String table) {
             this.table = table;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
         }
 
         public Database getTarget() {
@@ -853,6 +872,7 @@ public class ConnectionService {
 
         String error = new String();
         List<String> header = new ArrayList();
+        Map<String, String> type = new HashMap();
         List<QueryResultSetRow> row = new ArrayList();
         long elapsedTime = 0;
 
@@ -862,6 +882,14 @@ public class ConnectionService {
 
         public void setHeader(List<String> header) {
             this.header = header;
+        }
+
+        public Map<String, String> getType() {
+            return type;
+        }
+
+        public void setType(Map<String, String> type) {
+            this.type = type;
         }
 
         public List<QueryResultSetRow> getRow() {

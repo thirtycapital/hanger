@@ -33,11 +33,12 @@ import br.com.dafiti.hanger.service.SubjectService;
 import br.com.dafiti.hanger.service.UserService;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
@@ -58,13 +59,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping(path = {"/", "/home"})
 public class MonitorController {
-
+    
     private final JobService jobService;
     private final SubjectService subjectService;
     private final JobDetailsService jobDetailsService;
     private final SubjectDetailsService subjectDetailsService;
     private final UserService userService;
-
+    
+    private static final Logger LOG = LogManager.getLogger(MonitorController.class.getName());
+    
     @Autowired
     public MonitorController(
             JobService jobService,
@@ -72,7 +75,7 @@ public class MonitorController {
             JobDetailsService jobDetails,
             SubjectDetailsService subjectDetailsService,
             UserService userService) {
-
+        
         this.jobService = jobService;
         this.subjectService = subjectService;
         this.jobDetailsService = jobDetails;
@@ -89,9 +92,7 @@ public class MonitorController {
     @GetMapping(path = {"/", "/home"})
     public String subjectDetail(Model model) {
         model.addAttribute("subjectDetails", subjectDetailsService.getDetailsOf(subjectService.findBySubscription()));
-
         modelDefault(model);
-
         return "monitor/monitor";
     }
 
@@ -110,10 +111,10 @@ public class MonitorController {
             Model model,
             HttpServletRequest request,
             @PathVariable(value = "id") String id) {
-
+        
         Subject subject = new Subject();
         List<Job> jobs = new ArrayList();
-
+        
         if (id.equalsIgnoreCase("all")) {
             jobs = (List) jobService.list();
         } else if (StringUtils.isNumeric(id)) {
@@ -122,10 +123,10 @@ public class MonitorController {
                 jobs = jobService.findBySubjectOrderByName(subject);
             }
         }
-
+        
         modelDefault(model);
         modelDetails(model, subject, principal, jobs);
-
+        
         return "monitor/monitor";
     }
 
@@ -141,9 +142,9 @@ public class MonitorController {
             Subject subject,
             Principal principal,
             List<Job> jobs) {
-
+        
         model.addAttribute("currentSubject", subject);
-
+        
         if (principal != null || jobs != null) {
             Map<String, List<JobDetails>> swimlanes = new HashMap();
             List<JobDetails> jobDetails = jobDetailsService.getDetailsOf(jobs, principal);
@@ -160,17 +161,21 @@ public class MonitorController {
 
                 //Identifies if the job detail match any swimlanes criteria. 
                 for (Entry<String, String> entry : subject.getSwimlane().entrySet()) {
-                    if (jobDetail.getJob().getName().matches(entry.getValue())) {
-                        if (swimlanes.containsKey(entry.getKey())) {
-                            swimlanes.get(entry.getKey()).add(jobDetail);
-                        } else {
-                            List<JobDetails> details = new ArrayList();
-                            details.add(jobDetail);
-                            swimlanes.put(entry.getKey(), details);
+                    try {
+                        if (jobDetail.getJob().getName().matches(entry.getValue())) {
+                            if (swimlanes.containsKey(entry.getKey())) {
+                                swimlanes.get(entry.getKey()).add(jobDetail);
+                            } else {
+                                List<JobDetails> details = new ArrayList();
+                                details.add(jobDetail);
+                                swimlanes.put(entry.getKey(), details);
+                            }
+                            
+                            classified = true;
+                            break;
                         }
-
-                        classified = true;
-                        break;
+                    } catch (Exception ex) {
+                        LOG.error("Error evaluating regexp criteria", ex);
                     }
                 }
 
@@ -185,7 +190,7 @@ public class MonitorController {
                     }
                 }
             }
-
+            
             model.addAttribute("swimlanes", swimlanes);
         }
     }
@@ -203,11 +208,11 @@ public class MonitorController {
             @RequestParam(value = "jobList", required = false, defaultValue = "") String jobsID,
             @PathVariable(value = "id") Subject subject,
             Model model) {
-
+        
         if (!jobsID.isEmpty()) {
             for (String jobId : jobsID.split(",")) {
                 Job job = jobService.load(Long.parseLong(jobId));
-
+                
                 if (job != null) {
                     if (!job.getSubject().contains(subject)) {
                         job.addSubject(subject);
@@ -216,10 +221,10 @@ public class MonitorController {
                 }
             }
         }
-
+        
         model.addAttribute("currentSubject", subject);
         modelDefault(model);
-
+        
         return "redirect:/detail/" + subject.getId();
     }
 
@@ -237,13 +242,13 @@ public class MonitorController {
             @PathVariable(value = "subjectID") Subject subject,
             Model model
     ) {
-
+        
         job.getSubject().remove(subject);
         jobService.save(job);
-
+        
         model.addAttribute("currentSubject", subject);
         modelDefault(model);
-
+        
         return "redirect:/detail/" + subject.getId();
     }
 
@@ -259,10 +264,10 @@ public class MonitorController {
             @PathVariable(value = "subjectID") Subject subject,
             Model model
     ) {
-
+        
         model.addAttribute("subject", subject);
         model.addAttribute("jobs", jobService.list());
-
+        
         return "monitor/modalJobList::job";
     }
 

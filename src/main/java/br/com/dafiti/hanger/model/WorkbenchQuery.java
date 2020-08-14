@@ -144,7 +144,7 @@ public class WorkbenchQuery extends Tracker<WorkbenchQuery> implements Serializa
         object.put("name", name);
         object.put("query", query);
         object.put("shared", shared);
-        object.put("connection", connection);
-        return object.toString();
+        object.put("connection", connection.getName());
+        return object.toString(2);
     }
 }

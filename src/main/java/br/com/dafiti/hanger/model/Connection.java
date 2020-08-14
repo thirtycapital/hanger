@@ -157,6 +157,6 @@ public class Connection extends Tracker<Connection> implements Serializable {
         object.put("url", url);
         object.put("username", username);
         object.put("className", className);
-        return object.toString();
+        return object.toString(2);
     }
 }

@@ -126,13 +126,13 @@ public class Blueprint {
     public void setFile(File file) {
         this.file = file;
     }
-    
+
     @Override
     public String toString() {
         JSONObject object = new JSONObject();
-        object.put("subject", this.getSubject());
-        object.put("name", this.getTemplate());
-        return object.toString();
+        object.put("subject", subject);
+        object.put("template", template);
+        return object.toString(2);
     }
 
 }

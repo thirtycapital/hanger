@@ -202,7 +202,7 @@ public class WorkbenchEmail extends Tracker<WorkbenchEmail> implements Serializa
         object.put("content", content);
         object.put("externalRecipient", externalRecipient);
         object.put("recipient", recipient);
-        object.put("connection", connection);
-        return object.toString();
+        object.put("connection", connection.getName());
+        return object.toString(2);
     }
 }

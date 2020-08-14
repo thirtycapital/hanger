@@ -105,10 +105,11 @@ public class MailService {
         int port = Integer.valueOf(configurationService.getValue("EMAIL_PORT"));
         String email = configurationService.getValue("EMAIL_ADDRESS");
         String password = configurationService.getValue("EMAIL_PASSWORD");
-        
+
         auditorService.publish("SEND_EMAIL",
                 new AuditorData()
-                        .addData("javascript", this.toString(email, mail, blueprint))
+                        .addData("to", mail.getBccAddresses().toString())
+                        .addData("javascript", blueprint.toString())
                         .getData());
 
         try {
@@ -121,14 +122,13 @@ public class MailService {
             mail.setSubject(blueprint.getSubject());
             mail.setHtmlMsg(this.getTemplateHTMLOf(blueprint.getPath(), blueprint.getTemplate(), blueprint.getVariables()));
 
-            //Check if blueprint has attachment.
             if (blueprint.getFile() != null) {
                 mail.attach(blueprint.getFile());
             }
 
             mail.send();
         } catch (EmailException ex) {
-            LogManager.getLogger(MailService.class).log(Level.ERROR, "Fail sending e-mail", ex);
+            LOG.log(Level.ERROR, "Fail sending e-mail", ex);
             sent = false;
         }
 
@@ -174,21 +174,5 @@ public class MailService {
                 || port.isEmpty()
                 || user.isEmpty()
                 || password.isEmpty());
-    }
-
-    /**
-     * Get e-mail object as JSON.
-     * 
-     * @param email
-     * @param mail
-     * @param subject
-     * @return 
-     */
-    private String toString(String email, HtmlEmail mail, Blueprint blueprint) {
-        JSONObject object = new JSONObject();
-        object.put("email", email);
-        object.put("recipients", mail.getBccAddresses());
-        object.put("blueprint", blueprint.toString());
-        return object.toString();        
     }
 }

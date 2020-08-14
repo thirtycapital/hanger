@@ -284,6 +284,6 @@ public class User extends Tracker<User> implements Serializable, UserDetails {
         object.put("username", username);
         object.put("email", email);
         object.put("enabled", enabled);
-        return object.toString();
+        return object.toString(2);
     }
 }

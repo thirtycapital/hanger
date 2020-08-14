@@ -426,6 +426,13 @@ public class JenkinsService {
 
                         //Update Jenkins job. 
                         jenkins.updateJob(name, config, true);
+
+                        //Identifies if should enable or disable a job on Jenkins. 
+                        if (job.isEnabled()) {
+                            jenkins.enableJob(name, true);
+                        } else {
+                            jenkins.disableJob(name, true);
+                        }
                     }
 
                     jenkins.close();

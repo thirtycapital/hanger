@@ -582,6 +582,7 @@ img.media-object{
     color: #777777;
     font-weight: normal;
     border: none;
+    background-color: #f6faff;
 }
 
 .btn-filter{
@@ -881,6 +882,10 @@ input[type='file'] {
     display: block;
     overflow: auto;
     height: 370px;
+}
+
+.panel-default>.panel-heading{
+    background-color: #f6faff;
 }
 
 .panel-heading-height {

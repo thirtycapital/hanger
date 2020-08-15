@@ -33,10 +33,10 @@ import br.com.dafiti.hanger.service.SubjectService;
 import br.com.dafiti.hanger.service.UserService;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.stream.Collectors;
@@ -146,7 +146,7 @@ public class MonitorController {
         model.addAttribute("currentSubject", subject);
 
         if (principal != null || jobs != null) {
-            Map<String, List<JobDetails>> swimlanes = new HashMap();
+            Map<String, List<JobDetails>> swimlanes = new TreeMap();
             Map<String, String> rules = subject.getSwimlane();
             List<JobDetails> jobDetails = jobDetailsService.getDetailsOf(jobs, principal);
 

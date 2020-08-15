@@ -25,12 +25,12 @@ package br.com.dafiti.hanger.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TreeMap;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -67,7 +67,7 @@ public class Subject extends Tracker<Subject> implements Serializable {
     private boolean mandatory;
     private Set<String> channel = new HashSet();
     private List<User> user = new ArrayList();
-    private Map<String, String> swimlane = new HashMap<>();
+    private Map<String, String> swimlane = new TreeMap<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

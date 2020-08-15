@@ -1056,3 +1056,7 @@ input[type='file'] {
 .bold{
     font-weight: bold;
 }
+
+fieldset > legend{
+    padding-left: 15px;
+}

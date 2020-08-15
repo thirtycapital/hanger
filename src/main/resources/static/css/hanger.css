@@ -1056,3 +1056,8 @@ input[type='file'] {
 .bold{
     font-weight: bold;
 }
+
+div.dataTables_wrapper > div > * {
+    padding-left: 0px;
+    padding-right: 0px;
+}

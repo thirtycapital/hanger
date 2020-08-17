@@ -1068,3 +1068,9 @@ div.dataTables_wrapper > div > * {
     padding-left: 0px;
     padding-right: 0px;
 }
+
+
+.jstree-default,
+.jstree-anchor {
+    color:  #337ab7; 
+}

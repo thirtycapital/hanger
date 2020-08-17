@@ -40,8 +40,8 @@ import org.springframework.stereotype.Service;
 import br.com.dafiti.hanger.repository.WorkbenchEmailRepository;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 import org.springframework.scheduling.annotation.Async;
 
 /**
@@ -59,7 +59,7 @@ public class WorkbenchEmailService {
     private final ExportService exportService;
     private final ConfigurationService configurationService;
     
-    private static final org.apache.logging.log4j.Logger LOG = LogManager.getLogger(WorkbenchEmailService.class.getName());
+    private static final Logger LOG = LogManager.getLogger(WorkbenchEmailService.class.getName());
 
     @Autowired
     public WorkbenchEmailService(

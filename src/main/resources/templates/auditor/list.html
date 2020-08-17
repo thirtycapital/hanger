@@ -84,7 +84,7 @@
                                      not #strings.contains(event.type, 'FAILURE')
                                      and 
                                      not #strings.contains(event.type, 'SUCCESS')}">
-                                    <span class="label label-default" th:text="${event.type}"></span>
+                                    <span class="label label-primary" th:text="${event.type}"></span>
                                 </div>
                             </td>  
                             <td th:text="${event.username}">User</td> 
@@ -98,7 +98,7 @@
                                                 </pre>
                                             </div>
                                             <div th:unless="${data.key == 'sql' or data.key == 'javascript'}">
-                                                <span th:text="${data.value}"></span>
+                                                <span class="bold" th:text="${data.value}"></span>
                                             </div>
                                         </td>
                                     </tr>

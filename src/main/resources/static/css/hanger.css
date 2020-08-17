@@ -2,6 +2,14 @@
     border-radius: 0px !important;
 }
 
+.bold{
+    font-weight: bold;
+}
+
+.italic{
+    font-style: italic;
+}
+
 div.dataTables_filter input{
     border: 0;
     outline: 0;
@@ -1051,10 +1059,6 @@ input[type='file'] {
 
 .date-range {
     cursor:pointer !important;
-}
-
-.bold{
-    font-weight: bold;
 }
 
 div.dataTables_wrapper > div > * {

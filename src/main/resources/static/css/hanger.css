@@ -585,10 +585,13 @@ img.media-object{
     font-size: 10px !important;
 }
 
-.table>thead>tr>th,
+.table>thead>tr>th{
+    border: none;
+    border-top: 1px solid #ddd !important;
+}
+
 .table th{
     color: #777777;
-    font-weight: normal;
     border: none;
     background-color: #f6faff;
 }

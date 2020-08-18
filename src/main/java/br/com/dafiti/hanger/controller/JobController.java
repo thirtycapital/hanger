@@ -49,6 +49,8 @@ import br.com.dafiti.hanger.service.SlackService;
 import br.com.dafiti.hanger.service.SubjectService;
 import br.com.dafiti.hanger.service.UserService;
 import br.com.dafiti.hanger.service.WorkbenchEmailService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -81,6 +83,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  *
  * @author Valdiney V GOMES
  */
+
 @Controller
 @RequestMapping(path = "/job")
 public class JobController {
@@ -260,6 +263,7 @@ public class JobController {
      * @param job
      * @return Identifies if the job was buit sucessfully.
      */
+    @ApiOperation(value = "Build a job")
     @PostMapping(path = "/api/build/{id}")
     @ResponseBody
     public ResponseEntity build(

@@ -30,6 +30,8 @@ import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.WorkbenchEmailService;
 import br.com.dafiti.hanger.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.security.Principal;
 import javax.validation.Valid;
@@ -182,6 +184,7 @@ public class WorkbenchEmailController {
      * @return
      * @throws java.io.IOException
      */
+    @ApiOperation(value = "Send a workbench saved e-mail")
     @PostMapping(path = "api/send/{id}")
     public ResponseEntity send(
             @PathVariable(name = "id") WorkbenchEmail workbenchEmail,

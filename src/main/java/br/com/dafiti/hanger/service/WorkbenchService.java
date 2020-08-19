@@ -130,8 +130,9 @@ public class WorkbenchService {
     public List<Tree> JSTreeSchemaList(Connection connection, String catalog) {
         List<Tree> tree = new ArrayList();
 
+        String parent = ((catalog == null) || (catalog.isEmpty())) ? "#" : catalog;
+        
         connectionService.getSchemas(connection).forEach((schemaEntity) -> {
-            String parent = ((catalog == null) || (catalog.isEmpty())) ? "#" : catalog;
             tree.add(
                     new Tree(
                             schemaEntity.getSchema(),

@@ -241,6 +241,49 @@ public class ConnectionService {
     }
 
     /**
+     * Get catalogs.
+     *
+     * @param connection Connection
+     * @return Database metadata
+     */
+    @Cacheable(value = "catalogs", key = "#connection")
+    public List<Entity> getCatalogs(Connection connection) {
+        List catalog = new ArrayList();
+        DataSource datasource = this.getDataSource(connection);
+
+        try {
+            ResultSet catalogs = datasource.getConnection()
+                    .getMetaData()
+                    .getCatalogs();
+
+            while (catalogs.next()) {
+                String catalogName = catalogs.getString("TABLE_CAT");
+
+                if (catalogName != null && !catalogName.isEmpty()) {
+
+                    catalog.add(
+                            new Entity(
+                                    catalogName,
+                                    "",
+                                    "",
+                                    "",
+                                    connection.getTarget()));
+                }
+            }
+        } catch (SQLException ex) {
+            LOG.log(Level.ERROR, "Fail getting metadata of " + connection.getName(), ex);
+        } finally {
+            try {
+                datasource.getConnection().close();
+            } catch (SQLException ex) {
+                LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
+            }
+        }
+
+        return catalog;
+    }
+
+    /**
      * Get schemas.
      *
      * @param connection Connection
@@ -273,22 +316,6 @@ public class ConnectionService {
                 }
             }
 
-            if (schema.isEmpty()) {
-                ResultSet catalogs = datasource.getConnection()
-                        .getMetaData()
-                        .getCatalogs();
-
-                while (catalogs.next()) {
-                    schema.add(
-                            new Entity(
-                                    catalogs.getString("TABLE_CAT"),
-                                    null,
-                                    "",
-                                    "",
-                                    connection.getTarget()
-                            ));
-                }
-            }
         } catch (SQLException ex) {
             LOG.log(Level.ERROR, "Fail getting metadata of " + connection.getName(), ex);
         } finally {
@@ -310,7 +337,7 @@ public class ConnectionService {
      * @param schema String
      * @return Database metadata
      */
-    //@Cacheable(value = "tables", key = "{#connection, #catalog, #schema}")
+    @Cacheable(value = "tables", key = "{#connection, #catalog, #schema}")
     public List<Entity> getTables(Connection connection, String catalog, String schema) {
         List table = new ArrayList();
         DataSource datasource = this.getDataSource(connection);

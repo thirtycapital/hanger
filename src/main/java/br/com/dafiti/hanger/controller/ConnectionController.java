@@ -166,8 +166,14 @@ public class ConnectionController {
             Model model) {
 
         try {
+            List<ConnectionService.Entity> entity = connectionService.getSchemas(connection);
+            
+            if (entity.isEmpty()) {
+                entity = connectionService.getCatalogs(connection);
+            }
+            
             model.addAttribute("connection", connection);
-            model.addAttribute("metadata", connectionService.getSchemas(connection));
+            model.addAttribute("metadata", entity);
         } catch (Exception ex) {
             model.addAttribute("errorMessage", "Fail listing schema " + new Message().getErrorMessage(ex));
         }

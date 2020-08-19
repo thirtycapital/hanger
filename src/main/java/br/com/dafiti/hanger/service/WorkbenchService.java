@@ -25,7 +25,6 @@ package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.option.Database;
-import br.com.dafiti.hanger.service.ConnectionService.Entity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,11 +65,49 @@ public class WorkbenchService {
             String catalog,
             String schema) {
 
+        List<Tree> jsTreeList;
+
         if (catalog.isEmpty() && schema.isEmpty()) {
-            return JSTreeSchemaList(connection);
+            jsTreeList = JSTreeCatalogList(connection);
+
+            if (jsTreeList.isEmpty()) {
+                jsTreeList = JSTreeSchemaList(connection);
+            }
+        } else if (schema.isEmpty()) {
+            jsTreeList = JSTreeSchemaList(connection, catalog);
+
+            if (jsTreeList.isEmpty()) {
+                jsTreeList = JSTreeTableList(connection, catalog, schema);
+            }
+        } else {
+            jsTreeList = JSTreeTableList(connection, catalog, schema);
         }
 
-        return JSTreeTableList(connection, catalog, schema);
+        return jsTreeList;
+    }
+
+    /**
+     * Fully qualified catalog list.
+     *
+     * @param connection Connection
+     * @return List Catalogs tree
+     */
+    public List<Tree> JSTreeCatalogList(Connection connection) {
+        List<Tree> tree = new ArrayList();
+
+        connectionService.getCatalogs(connection).forEach((catalogEntity) -> {
+            tree.add(
+                    new Tree(
+                            catalogEntity.getCatalog(),
+                            catalogEntity.getCatalog(),
+                            "#",
+                            "glyphicon glyphicon-th-large",
+                            true,
+                            new TreeAttribute(catalogEntity.getCatalog())
+                    ));
+        });
+
+        return tree;
     }
 
     /**
@@ -80,14 +117,26 @@ public class WorkbenchService {
      * @return List schemas tree
      */
     public List<Tree> JSTreeSchemaList(Connection connection) {
+        return JSTreeSchemaList(connection, "");
+    }
+
+    /**
+     * Fully qualified schema list.
+     *
+     * @param connection Connection
+     * @param catalog
+     * @return List schemas tree
+     */
+    public List<Tree> JSTreeSchemaList(Connection connection, String catalog) {
         List<Tree> tree = new ArrayList();
 
         connectionService.getSchemas(connection).forEach((schemaEntity) -> {
+            String parent = ((catalog == null) || (catalog.isEmpty())) ? "#" : catalog;
             tree.add(
                     new Tree(
-                            schemaEntity.getCatalogSchema(),
-                            schemaEntity.getCatalogSchema(),
-                            "#",
+                            schemaEntity.getSchema(),
+                            schemaEntity.getSchema(),
+                            parent,
                             "glyphicon glyphicon-book",
                             true,
                             new TreeAttribute(
@@ -115,31 +164,23 @@ public class WorkbenchService {
 
         List tree = new ArrayList();
 
-        for (Entity schemaEntity : connectionService.getSchemas(connection)) {
-            if ((schemaEntity.getCatalog() == null || schemaEntity.getCatalog().equals(catalog))
-                    && (schemaEntity.getSchema() == null || schemaEntity.getSchema().equals(schema))) {
-
-                connectionService.getTables(connection, catalog, schema).forEach((tableEntity) -> {
-                    tree.add(
-                            new Tree(
+        connectionService.getTables(connection, catalog, schema).forEach((tableEntity) -> {
+            tree.add(
+                    new Tree(
+                            tableEntity.getTable(),
+                            tableEntity.getTable(),
+                            ((tableEntity.getSchema() == null) || (tableEntity.getSchema().isEmpty())) ? tableEntity.getCatalog() : tableEntity.getSchema(),
+                            ("EXTERNAL TABLE".equals(tableEntity.getType())) ? "glyphicon glyphicon-file" : "glyphicon glyphicon-list",
+                            false,
+                            new TreeAttribute(
+                                    tableEntity.getCatalog(),
+                                    tableEntity.getSchema(),
                                     tableEntity.getTable(),
-                                    tableEntity.getTable(),
-                                    schemaEntity.getCatalogSchema(),
-                                    ("EXTERNAL TABLE".equals(tableEntity.getType())) ? "glyphicon glyphicon-file" : "glyphicon glyphicon-list",
-                                    false,
-                                    new TreeAttribute(
-                                            tableEntity.getCatalog(),
-                                            tableEntity.getSchema(),
-                                            tableEntity.getTable(),
-                                            connection.getTarget()
-                                    )
+                                    connection.getTarget()
                             )
-                    );
-                });
-
-                break;
-            }
-        }
+                    )
+            );
+        });
 
         return tree;
     }
@@ -315,6 +356,10 @@ public class WorkbenchService {
         String schema;
         String table;
         Database target;
+
+        public TreeAttribute(String catalog) {
+            this.catalog = catalog;
+        }
 
         public TreeAttribute(String catalog, String schema) {
             this.catalog = catalog;

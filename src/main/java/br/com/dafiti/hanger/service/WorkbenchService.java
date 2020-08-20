@@ -65,25 +65,24 @@ public class WorkbenchService {
             String catalog,
             String schema) {
 
-        List<Tree> jsTreeList;
+        List<Tree> tree = new ArrayList();
 
+        //Whether catalog and schema are empty, get catalogs.
         if (catalog.isEmpty() && schema.isEmpty()) {
-            jsTreeList = JSTreeCatalogList(connection);
-
-            if (jsTreeList.isEmpty()) {
-                jsTreeList = JSTreeSchemaList(connection);
-            }
-        } else if (schema.isEmpty()) {
-            jsTreeList = JSTreeSchemaList(connection, catalog);
-
-            if (jsTreeList.isEmpty()) {
-                jsTreeList = JSTreeTableList(connection, catalog, schema);
-            }
-        } else {
-            jsTreeList = JSTreeTableList(connection, catalog, schema);
+            tree = JSTreeCatalogList(connection);
         }
 
-        return jsTreeList;
+        //Whether tree is empty and schema, get schemas.
+        if (tree.isEmpty() && schema.isEmpty()) {
+            tree = JSTreeSchemaList(connection, catalog);
+        }
+
+        //Whether tree is empty, get tables.
+        if (tree.isEmpty()) {
+            tree = JSTreeTableList(connection, catalog, schema);
+        }
+
+        return tree;
     }
 
     /**
@@ -131,7 +130,7 @@ public class WorkbenchService {
         List<Tree> tree = new ArrayList();
 
         String parent = ((catalog == null) || (catalog.isEmpty())) ? "#" : catalog;
-        
+
         connectionService.getSchemas(connection).forEach((schemaEntity) -> {
             tree.add(
                     new Tree(

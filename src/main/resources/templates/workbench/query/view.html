@@ -6,20 +6,6 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <table>
-                <tr>
-                    <th class="btn-action">
-                        <a th:href="@{'/query/add/'}" title="Add query">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </a>
-                    </th>
-                    <th class="btn-action">
-                        <a th:href="@{'/query/list/'}" title="Queries">
-                            <span class="glyphicon glyphicon-list"></span>
-                        </a>
-                    </th>
-                </tr>
-            </table>
             <div>
                 <form class="form-horizontal" th:object="${workbenchQuery}">
                     <div class="form-group">
@@ -71,22 +57,26 @@
                     </div>
 
                     <!-- Shared -->
-                    <div class="form-group">  
-                        <div class="col-sm-10">
-                            <div class="btn-group">
-                                <label>
-                                    <input 
-                                        id="shared" 
-                                        name="shared" 
-                                        type="checkbox" 
-                                        th:field="*{shared}" 
-                                        th:checked="*{shared}" 
-                                        disabled="true"/>
-                                    Shared
-                                </label>
+                    <fieldset>
+                        <legend>Options</legend>
+
+                        <div class="form-group">  
+                            <div class="col-sm-10">
+                                <div class="btn-group">
+                                    <label>
+                                        <input 
+                                            id="shared" 
+                                            name="shared" 
+                                            type="checkbox" 
+                                            th:field="*{shared}" 
+                                            th:checked="*{shared}" 
+                                            disabled="true"/>
+                                        Shared
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </fieldset>
 
                     <div th:if="*{#authorization.expression('hasRole(''HERO'')') or user.username == #httpServletRequest.remoteUser}">
                         <hr/>
@@ -99,17 +89,28 @@
                         </div>
                     </div>
 
-                    <!--Tracker-->
-                    <div th:if="*{ updatedAt != null }">
-                        <hr/>
-                        <div class="form-group">                        
-                            <div class="col-sm-10">
+                    <hr/>
+                    
+                    <div class="form-group">   
+                        <div class="col-sm-5">
+                            <a th:href="@{'/query/add/'}" class="btn btn-link btn-sm">
+                                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add query
+                            </a>
+
+                            <a th:href="@{'/workbench/workbench/'}" class="btn btn-link btn-sm">
+                                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Open workbench
+                            </a>
+                        </div>
+
+                        <!--Tracker-->
+                        <div th:if="*{ updatedAt != null }">
+                            <div class="col-sm-5">
                                 <label class="pull-right label-edit-information" th:inline="text">
                                     Updated by [[*{modifiedBy}]] at [[*{#dates.format(updatedAt, 'yyyy-MM-dd HH:mm:ss')}]]
                                 </label>
                             </div>
                         </div>
-                    </div>                    
+                    </div>                   
                 </form>
             </div>
         </div>

@@ -6,115 +6,109 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <table>
-                <tr>
-                    <th class="btn-action">
-                        <a th:href="@{'/email/add/'}" title="Add E-mail">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </a>
-                    </th>
-                    <th class="btn-action"> 
-                        <a th:href="@{'/workbench/workbench/'}" title="Workbench">
-                            <span class="glyphicon glyphicon-play"></span>
-                        </a>
-                    </th>
-                </tr>            
-            </table>
-
             <div th:if="${ errorMessage != null }" class="form-group">
                 <div class="alert alert-danger" role="alert">
                     <span th:text="${errorMessage}"></span>
                 </div>  
             </div>
 
-            <fieldset>
-                <table id="table_paginated" class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th style="width:3%">#</th>
-                            <th style="width:37%">Subject</th>
-                            <th>Connection</th>
-                            <th style="width:1%" class="no-sort"></th>
-                            <th style="width:1%" class="no-sort"></th>
-                            <th style="width:1%" class="no-sort"></th>
-                            <th style="width:1%" class="no-sort"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="query-row" th:each="workbenchEmail : ${workbenchEmailList}">
-                            <td th:text="${workbenchEmail.id}">#</td>
-                            <td th:text="${workbenchEmail.subject}"></td>
-                            <td th:text="${workbenchEmail.connection.name}"></td>
-                            <td>
-                                <button 
-                                    type="button" 
-                                    class="btn btn-generic btn-xs btn-send" 
-                                    th:id="'send_' + ${workbenchEmail.id}" 
-                                    th:value="${workbenchEmail.id}">
-                                    <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> 
-                                    Send
-                                </button>
-                            </td>
-                            <td>
-                                <a th:href="@{'/email/view/' + ${workbenchEmail.id}}" class="btn btn-generic btn-xs">
-                                    <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> See
-                                </a>
-                            </td>
-                            <td>
-                                <a th:href="@{'/email/edit/' + ${workbenchEmail.id}}" class="btn btn-generic btn-xs">
-                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
-                                </a>
-                            </td>
-                            <td>
-                                <a class="btn btn-xs btn-delete" 
-                                   data-toggle="modal" 
-                                   th:attr="data-target='#'+${workbenchEmail.id}" 
-                                   href="">
-                                    <span 
-                                        class="glyphicon glyphicon-trash" 
-                                        aria-hidden="true"></span> 
-                                    Delete
-                                </a>
 
-                                <!-- Model delete -->
-                                <div class="modal fade" 
-                                     th:id="${workbenchEmail.id}" 
-                                     tabindex="-1" role="dialog" 
-                                     aria-labelledby="modalDelete">
-                                    <div class="modal-dialog" role="document">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" 
-                                                        class="close" 
-                                                        data-dismiss="modal" 
-                                                        aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                                <h4 class="modal-title" 
-                                                    id="modalParentLabel">Delete</h4>
-                                            </div>
-                                            <div class="modal-body">
-                                                <span th:inline="text">Are you sure you want to delete "[[${workbenchEmail.subject}]]"?</span>
-                                            </div>
-                                            <div class="modal-footer"> 
-                                                <a th:href="@{'/email/delete/' + ${workbenchEmail.id}}" 
-                                                   class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
-                                                    Yes
-                                                </a>
-                                                <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" 
-                                                   data-dismiss="modal" 
-                                                   aria-label="Close">
-                                                    No
-                                                </a>
-                                            </div>
+            <table id="table_paginated" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width:3%">#</th>
+                        <th style="width:37%">Subject</th>
+                        <th>Connection</th>
+                        <th style="width:1%" class="no-sort"></th>
+                        <th style="width:1%" class="no-sort"></th>
+                        <th style="width:1%" class="no-sort"></th>
+                        <th style="width:1%" class="no-sort"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="query-row" th:each="workbenchEmail : ${workbenchEmailList}">
+                        <td th:text="${workbenchEmail.id}">#</td>
+                        <td th:text="${workbenchEmail.subject}"></td>
+                        <td th:text="${workbenchEmail.connection.name}"></td>
+                        <td>
+                            <button 
+                                type="button" 
+                                class="btn btn-generic btn-xs btn-send" 
+                                th:id="'send_' + ${workbenchEmail.id}" 
+                                th:value="${workbenchEmail.id}">
+                                <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> 
+                                Send
+                            </button>
+                        </td>
+                        <td>
+                            <a th:href="@{'/email/view/' + ${workbenchEmail.id}}" class="btn btn-generic btn-xs">
+                                <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> See
+                            </a>
+                        </td>
+                        <td>
+                            <a th:href="@{'/email/edit/' + ${workbenchEmail.id}}" class="btn btn-generic btn-xs">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                            </a>
+                        </td>
+                        <td>
+                            <a class="btn btn-xs btn-delete" 
+                               data-toggle="modal" 
+                               th:attr="data-target='#'+${workbenchEmail.id}" 
+                               href="">
+                                <span 
+                                    class="glyphicon glyphicon-trash" 
+                                    aria-hidden="true"></span> 
+                                Delete
+                            </a>
+
+                            <!-- Model delete -->
+                            <div class="modal fade" 
+                                 th:id="${workbenchEmail.id}" 
+                                 tabindex="-1" role="dialog" 
+                                 aria-labelledby="modalDelete">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" 
+                                                    class="close" 
+                                                    data-dismiss="modal" 
+                                                    aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                            <h4 class="modal-title" 
+                                                id="modalParentLabel">Delete</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <span th:inline="text">Are you sure you want to delete "[[${workbenchEmail.subject}]]"?</span>
+                                        </div>
+                                        <div class="modal-footer"> 
+                                            <a th:href="@{'/email/delete/' + ${workbenchEmail.id}}" 
+                                               class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
+                                                Yes
+                                            </a>
+                                            <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" 
+                                               data-dismiss="modal" 
+                                               aria-label="Close">
+                                                No
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </fieldset>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr/>
+
+            <a th:href="@{'/email/add/'}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add e-mail
+            </a>
+
+            <a th:href="@{'/workbench/workbench/'}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Open workbench
+            </a>
 
             <!--AJAX Parent modal --> 
             <div id="modalHolder"></div>

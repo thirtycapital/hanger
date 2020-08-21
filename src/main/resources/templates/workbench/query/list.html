@@ -6,153 +6,146 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <table>
-                <tr>
-                    <th class="btn-action">
-                        <a th:href="@{'/query/add/'}" title="Add query">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </a>
-                    </th>
-                    <th class="btn-action"> 
-                        <a th:href="@{'/workbench/workbench/'}" title="Workbench">
-                            <span class="glyphicon glyphicon-play"></span>
-                        </a>
-                    </th>
-                </tr>            
-            </table>
-
             <div th:if="${ errorMessage != null }" class="form-group">
                 <div class="alert alert-danger" role="alert">
                     <span th:text="${errorMessage}"></span>
                 </div>  
             </div>
 
-            <fieldset>
-                <table id="table_paginated" class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th style="width:3%">#</th>
-                            <th>Name</th>
-                            <th style="width:30%">Query</th>
-                            <th style="width:12%">Connection</th>
-                            <th style="width:12%">Owner</th>
-                            <th style="width:1%">
-                                <span class="glyphicon glyphicon-eye-open"
-                                      title="Shared"></span>
-                            </th>
-                            <th style="width:1%" class="no-sort"></th>
-                            <th style="width:1%" class="no-sort"></th>
-                            <th style="width:1%" class="no-sort"></th>
-                            <th style="width:1%" class="no-sort"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="query-row" th:each="workbenchQuery : ${workbenchQueryList}">
-                            <td th:text="${workbenchQuery.id}">#</td>
-                            <td th:text="${workbenchQuery.name}">#</td>
-                            <td>                                
-                                <span th:text="${#strings.length(workbenchQuery.query) > 70 ? #strings.substring(workbenchQuery.query,0,70) : workbenchQuery.query}"></span>                                
-                                <div class="btn-group" th:if="${#strings.length(workbenchQuery.query) > 70}">
-                                    <button class="dropdown-toggle close" data-toggle="dropdown">...</button>
-                                    <ul class="dropdown-menu">                                                
-                                        <li>
-                                            <pre class="line-numbers">
+            <table id="table_paginated" class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width:3%">#</th>
+                        <th>Name</th>
+                        <th style="width:30%">Query</th>
+                        <th style="width:12%">Connection</th>
+                        <th style="width:12%">Owner</th>
+                        <th style="width:1%">
+                            <span class="glyphicon glyphicon-eye-open"
+                                  title="Shared"></span>
+                        </th>
+                        <th style="width:1%" class="no-sort"></th>
+                        <th style="width:1%" class="no-sort"></th>
+                        <th style="width:1%" class="no-sort"></th>
+                        <th style="width:1%" class="no-sort"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="query-row" th:each="workbenchQuery : ${workbenchQueryList}">
+                        <td th:text="${workbenchQuery.id}">#</td>
+                        <td th:text="${workbenchQuery.name}">#</td>
+                        <td>                                
+                            <span th:text="${#strings.length(workbenchQuery.query) > 70 ? #strings.substring(workbenchQuery.query,0,70) : workbenchQuery.query}"></span>                                
+                            <div class="btn-group" th:if="${#strings.length(workbenchQuery.query) > 70}">
+                                <button class="dropdown-toggle close" data-toggle="dropdown">...</button>
+                                <ul class="dropdown-menu">                                                
+                                    <li>
+                                        <pre class="line-numbers">
                                                 <code class="language-sql" th:text="${workbenchQuery.query}"></code>
-                                            </pre>
-                                        </li>  
-                                    </ul>                                    
-                                </div>
-                                <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${workbenchQuery.query}">
-                                    <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="Copy"></span>
+                                        </pre>
+                                    </li>  
+                                </ul>                                    
+                            </div>
+                            <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${workbenchQuery.query}">
+                                <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="Copy"></span>
+                            </a>
+                        </td>
+                        <td th:text="${workbenchQuery.connection.name}">#</td>
+                        <td th:text="${workbenchQuery.user.username}">#</td>  
+                        <td>                               
+                            <div th:if="${workbenchQuery.shared}">
+                                <span class="glyphicon glyphicon-eye-open"></span>
+                            </div>
+                        </td> 
+                        <td>
+                            <a 
+                                th:href="@{'/workbench/workbench/' + ${workbenchQuery.id}}" 
+                                class="btn btn-generic btn-xs"  
+                                title="Open query">
+                                <span class="glyphicon glyphicon-play"></span>
+                                Open
+                            </a>                                
+                        </td>
+                        <td>
+                            <div 
+                                class="form-group">
+                                <a th:href="@{'/query/view/' + ${workbenchQuery.id}}" class="btn btn-generic btn-xs">
+                                    <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> See
                                 </a>
-                            </td>
-                            <td th:text="${workbenchQuery.connection.name}">#</td>
-                            <td th:text="${workbenchQuery.user.username}">#</td>  
-                            <td>                               
-                                <div th:if="${workbenchQuery.shared}">
-                                    <span class="glyphicon glyphicon-eye-open"></span>
-                                </div>
-                            </td> 
-                            <td>
-                                <a 
-                                    th:href="@{'/workbench/workbench/' + ${workbenchQuery.id}}" 
-                                    class="btn btn-generic btn-xs"  
-                                    title="Open query">
-                                    <span class="glyphicon glyphicon-play"></span>
-                                    Open
-                                </a>                                
-                            </td>
-                            <td>
-                                <div 
-                                    class="form-group">
-                                    <a th:href="@{'/query/view/' + ${workbenchQuery.id}}" class="btn btn-generic btn-xs">
-                                        <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> See
-                                    </a>
-                                </div>
-                            </td>
-                            <td>
-                                <div 
-                                    class="form-group" 
-                                    th:if="*{#authorization.expression('hasRole(''HERO'')') or workbenchQuery.user.username == #httpServletRequest.remoteUser}">
-                                    <a th:href="@{'/query/edit/' + ${workbenchQuery.id}}" class="btn btn-generic btn-xs">
-                                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
-                                    </a>
-                                </div>
-                            </td>
-                            <td>
-                                <div th:if="*{#authorization.expression('hasRole(''HERO'')') or workbenchQuery.user.username == #httpServletRequest.remoteUser}">
-                                    <a class="btn btn-xs btn-delete" 
-                                       data-toggle="modal" 
-                                       th:attr="data-target='#'+${workbenchQuery.id}" 
-                                       href="">
-                                        <span 
-                                            class="glyphicon glyphicon-trash" 
-                                            aria-hidden="true"></span> 
-                                        Delete
-                                    </a>
+                            </div>
+                        </td>
+                        <td>
+                            <div 
+                                class="form-group" 
+                                th:if="*{#authorization.expression('hasRole(''HERO'')') or workbenchQuery.user.username == #httpServletRequest.remoteUser}">
+                                <a th:href="@{'/query/edit/' + ${workbenchQuery.id}}" class="btn btn-generic btn-xs">
+                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            <div th:if="*{#authorization.expression('hasRole(''HERO'')') or workbenchQuery.user.username == #httpServletRequest.remoteUser}">
+                                <a class="btn btn-xs btn-delete" 
+                                   data-toggle="modal" 
+                                   th:attr="data-target='#'+${workbenchQuery.id}" 
+                                   href="">
+                                    <span 
+                                        class="glyphicon glyphicon-trash" 
+                                        aria-hidden="true"></span> 
+                                    Delete
+                                </a>
 
 
-                                    <!-- INÍCIO MODAL DELETE -->
-                                    <div class="modal fade" 
-                                         th:id="${workbenchQuery.id}" 
-                                         tabindex="-1" role="dialog" 
-                                         aria-labelledby="modalDelete">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" 
-                                                            class="close" 
-                                                            data-dismiss="modal" 
-                                                            aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                    <h4 class="modal-title" 
-                                                        id="modalParentLabel">Delete</h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <span th:inline="text">Are you sure you want to delete [[${workbenchQuery.name}]]?</span>
-                                                </div>
-                                                <div class="modal-footer"> 
-                                                    <a th:href="@{'/query/delete/' + ${workbenchQuery.id}}" 
-                                                       class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
-                                                        Yes
-                                                    </a>
-                                                    <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" 
-                                                       data-dismiss="modal" 
-                                                       aria-label="Close">
-                                                        No
-                                                    </a>
-                                                </div>
+                                <!-- INÍCIO MODAL DELETE -->
+                                <div class="modal fade" 
+                                     th:id="${workbenchQuery.id}" 
+                                     tabindex="-1" role="dialog" 
+                                     aria-labelledby="modalDelete">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" 
+                                                        class="close" 
+                                                        data-dismiss="modal" 
+                                                        aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                <h4 class="modal-title" 
+                                                    id="modalParentLabel">Delete</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <span th:inline="text">Are you sure you want to delete [[${workbenchQuery.name}]]?</span>
+                                            </div>
+                                            <div class="modal-footer"> 
+                                                <a th:href="@{'/query/delete/' + ${workbenchQuery.id}}" 
+                                                   class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
+                                                    Yes
+                                                </a>
+                                                <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" 
+                                                   data-dismiss="modal" 
+                                                   aria-label="Close">
+                                                    No
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- FIM MODAL DELETE -->
                                 </div>
-                            </td>                            
-                        </tr>
-                    </tbody>
-                </table>
-            </fieldset>
+                                <!-- FIM MODAL DELETE -->
+                            </div>
+                        </td>                            
+                    </tr>
+                </tbody>
+            </table>
+
+            <hr/>
+
+            <a th:href="@{'/query/add/'}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add query
+            </a>
+
+            <a th:href="@{'/workbench/workbench/'}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Open workbench
+            </a>
         </div>
     </body>
 </html> 

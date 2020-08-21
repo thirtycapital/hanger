@@ -6,15 +6,6 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <table>
-                <tr>
-                    <th class="btn-action">
-                        <a th:href="@{'/email/list/'}" title="Query list">
-                            <span class="glyphicon glyphicon-envelope"></span>
-                        </a>
-                    </th>
-                </tr>
-            </table>
             <div>
                 <form class="form-horizontal" th:object="${email}" th:action="@{/email/save}" method="post">
                     <div class="form-group">
@@ -140,11 +131,18 @@
                         </div>
                     </div>
 
-                    <!--Tracker-->
-                    <div th:if="*{ updatedAt != null }">
-                        <hr/>
-                        <div class="form-group">                        
-                            <div class="col-sm-10">
+                    <hr/>
+
+                    <div class="form-group">   
+                        <div class="col-sm-5">
+                            <a th:href="@{'/email/list/'}" class="btn btn-link btn-sm">
+                                <span class="glyphicon glyphicon-backward" aria-hidden="true"></span> Back to e-mail list
+                            </a>
+                        </div>
+
+                        <!--Tracker-->
+                        <div th:if="*{ updatedAt != null }">
+                            <div class="col-sm-5">
                                 <label class="pull-right label-edit-information" th:inline="text">Updated by [[*{modifiedBy}]] at [[*{#dates.format(updatedAt, 'yyyy-MM-dd HH:mm:ss')}]]</label>
                             </div>
                         </div>

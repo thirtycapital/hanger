@@ -504,7 +504,7 @@
                                     tableMetadataModal(node);
                                 },
                                 // catalog or schema doesn't have metadata.
-                                '_disabled': node.parent === "#"
+                                '_disabled': (node.a_attr.table == null || node.a_attr.table == "")
                             }
                         };
                         return items;

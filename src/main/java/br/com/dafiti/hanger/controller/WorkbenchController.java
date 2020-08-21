@@ -248,11 +248,8 @@ public class WorkbenchController {
             Model model) {
 
         if (fields != null && fields.size() > 0) {
-            WorkbenchQuery workbenchQuery = new WorkbenchQuery();
-            workbenchQuery.setConnection(connection);
-            workbenchQuery.setQuery(this.workbenchService.doQuery(fields, catalog, schema, table));
-
-            model.addAttribute("workbenchQuery", workbenchQuery);
+            model.addAttribute("connection", connection);
+            model.addAttribute("query", this.workbenchService.doQuery(fields, catalog, schema, table));
         }
 
         return this.workbench(model);

@@ -7,9 +7,17 @@
         <div class="container">
             <!--Fragment-->
             <div th:fragment="jobDetails">
+
+                <ul th:if="${not #lists.isEmpty(swimlanes)}" class="pager">
+                    <li th:if="${swimlane.key != 'ALL'}" th:each="swimlane, swimlaneStat: ${swimlanes}">
+                        <a th:href="${'#' + swimlane.key}" th:text="${swimlane.key}"></a>
+                    </li>
+                </ul>                
+
                 <div th:if="${not #lists.isEmpty(swimlanes)}" th:each="swimlane, swimlaneStat: ${swimlanes}">  
                     <fieldset th:if="${not #lists.isEmpty(swimlane.value)}" >
                         <legend 
+                            th:id="${swimlane.key}" 
                             th:if="${swimlane.key != 'ALL'}" 
                             class="space-top" 
                             th:text="${swimlane.key}"

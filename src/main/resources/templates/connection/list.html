@@ -86,15 +86,14 @@
                 </tbody>
             </table>
 
-            <table sec:authorize="isAuthenticated()">
-                <hr/>
-                
+            <div sec:authorize="isAuthenticated()">
+                <hr/>                
                 <tr>
                     <a href="#" title="Test" th:id="modal_test_connections">
                         <span class="glyphicon glyphicon-flash"></span> Check all connections
                     </a>
                 </tr>            
-            </table>
+            </div>
 
             <center>
                 <button id="modal_wait" type="button" class="btn btn-default btn-sm" style="display:none;">

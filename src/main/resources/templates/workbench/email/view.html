@@ -104,6 +104,33 @@
                                 <code class="language-sql" th:text="*{query}"></code>
                             </pre>
                         </div>                        
+                    </div>    
+                    <div th:if="*{not #lists.isEmpty(job)}">
+                        <fieldset>
+                            <legend>
+                                Jobs
+                            </legend>
+                            <span>Jobs related to this e-mail</span>
+                        </fieldset>
+                        <br/>
+
+                        <table class="table">
+                            <tr>
+                                <th style="width:3%">#</th>
+                                <th style="width:50%">Job</th>
+                                <th style="width:47%">Server</th>
+                            </tr>
+                            <tr th:each="j : *{job}">
+                                <td><span th:text="${j.id}"></span></td>
+                                <td>
+                                    <a class="link" 
+                                       th:text="${j.name}" 
+                                       th:href="@{'/job/view/' + ${j.id}}" 
+                                       target="_blank"></a>  
+                                </td>
+                                <td><span th:text="${j.server.name}"></span></td>
+                            </tr>
+                        </table>
                     </div>                    
                     <hr/>
                     <!--Buttons--> 
@@ -120,7 +147,7 @@
                     </div>
 
                     <hr/>
-                    
+
                     <div class="form-group">   
                         <div class="col-sm-5">
                             <a th:href="@{'/email/add/'}" class="btn btn-link btn-sm">

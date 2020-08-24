@@ -20,6 +20,12 @@
                             <span class="badge badge-warning" th:text="${#lists.size(warnings)}"></span>
                         </a>
                     </li>
+                    <li role="presentation" th:if="${not #lists.isEmpty(job.email)}">
+                        <a href="#" th:id="'modal_emails_' + ${job.id}" th:name="${job.id}" th:inline="text">                                                     
+                            E-MAILS 
+                            <span class="badge" th:text="${#lists.size(job.email)}"></span>
+                        </a>
+                    </li>
                 </ul>
 
                 <div th:if="${errorMessage != null}">
@@ -242,6 +248,27 @@
                     },
                     error: function (e) {
                         alert("Fail loading job warning " + e);
+                    }
+                });
+            });
+            
+            /**
+             * Modal email action.                 
+             */
+            $("[id^=modal_emails_]").click(function () {
+                var url = /*[[@{/job/emails/}]]*/ "/job/emails/";
+                var job = $(this).attr("name");
+
+                $.ajax({
+                    type: "GET",
+                    url: url + job,
+                    timeout: 30000,
+                    success: function (result) {
+                        $("#modalHolder").html(result);
+                        $("#modalEmails").modal({backdrop: 'static', keyboard: false});
+                    },
+                    error: function (e) {
+                        alert("Fail loading job emails " + e);
                     }
                 });
             });

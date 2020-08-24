@@ -998,4 +998,19 @@ public class JobController {
         
         return isEnabled;
     }
+    
+    /**
+     * Show the job flow emails modal.
+     *
+     * @param job Job
+     * @param model Model
+     * @return flow modal
+     */
+    @GetMapping(path = "/emails/{id}")
+    public String emails(
+            @PathVariable("id") Job job,
+            Model model) {
+        this.modelDefault(model, job);
+        return "flow/modalEmails::emails";
+    }
 }

@@ -1074,3 +1074,15 @@ div.dataTables_wrapper > div > * {
 .jstree-anchor {
     color:  #337ab7; 
 }
+
+.back_top {
+    position: fixed;
+    bottom: 2em;
+    right: 2em;
+    text-decoration: none;
+    color: #000000;
+    background-color: #F4F5F7;
+    font-size: 12px;
+    padding: 1em;
+    display: none;
+}

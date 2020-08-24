@@ -158,6 +158,12 @@
                 </div>
             </div>
         </div>
+
+        <a href="#" class="back_top">
+            <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+        </a>
+
+
         <script th:inline="javascript">
             /**
              * Define ajax start behavior. 
@@ -217,6 +223,21 @@
 
                 $("#modalRemoveJobFromSubject").modal();
             }
+
+            // Exibe ou oculta o botão
+            $(window).scroll(function () {
+                if (jQuery(this).scrollTop() > 100) {
+                    jQuery('.back_top').fadeIn(100);
+                } else {
+                    jQuery('.back_top').fadeOut(100);
+                }
+            });
+
+            // Faz animação para subir
+            $('.back_top').click(function (event) {
+                event.preventDefault();
+                $('html, body').animate({scrollTop: 0}, 400);
+            });
         </script>
     </body>
 </html>

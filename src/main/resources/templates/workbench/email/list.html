@@ -28,7 +28,15 @@
                 <tbody>
                     <tr class="query-row" th:each="workbenchEmail : ${workbenchEmailList}">
                         <td th:text="${workbenchEmail.id}">#</td>
-                        <td th:text="${workbenchEmail.subject}"></td>
+                        <td>
+                            <button 
+                                class="btn btn-link btn-sm hanger-no-border "
+                                th:text="${workbenchEmail.subject}"
+                                title="Show e-mail details." 
+                                th:id="'modal_email_detail_' + ${workbenchEmail.id}" 
+                                th:value="${workbenchEmail.id}">
+                            </button>
+                        </td>
                         <td th:text="${workbenchEmail.connection.name}"></td>
                         <td>
                             <button 
@@ -179,6 +187,27 @@
                             alert("Fail loading query resultset: "
                                     + e.statusText);
                             btnSend.prop("disabled", false);
+                        }
+                    });
+                });
+                
+                /**
+                 * Show e-mail details modal. 
+                 * @returns {undefined}
+                 */
+                $("[id^=modal_email_detail_]").click(function () {
+                    var url = /*[[@{/email/modal/detail/}]]*/ "/email/modal/detail/";
+                    var email = $(this).val();
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + email,
+                        success: function (result) {
+                            $("#modalHolder").html(result);
+                            $("#modalJobDetails").modal({backdrop: 'static', keyboard: false});
+                        },
+                        error: function (e) {
+                            alert("Error loading e-mail details: " + e);
                         }
                     });
                 });

@@ -25,15 +25,20 @@ package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Connection;
+import br.com.dafiti.hanger.model.Job;
+import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.service.ConnectionService;
+import br.com.dafiti.hanger.service.JobDetailsService;
+import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.WorkbenchEmailService;
 import br.com.dafiti.hanger.service.UserService;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,15 +67,21 @@ public class WorkbenchEmailController {
     private final UserService userService;
     private final WorkbenchEmailService workbenchEmailService;
     private final ConnectionService connectionService;
+    private final JobService jobService;
+    private final JobDetailsService jobDetailsService;
 
     @Autowired
     public WorkbenchEmailController(
             UserService userService,
             WorkbenchEmailService workbenchEmailService,
-            ConnectionService connectionService) {
+            ConnectionService connectionService,
+            JobService jobService,
+            JobDetailsService jobDetailsService) {
         this.userService = userService;
         this.workbenchEmailService = workbenchEmailService;
         this.connectionService = connectionService;
+        this.jobService = jobService;
+        this.jobDetailsService = jobDetailsService;
     }
 
     /**
@@ -346,5 +357,30 @@ public class WorkbenchEmailController {
             @PathVariable(value = "id") Long id) {
         modelDefault(model, workbenchEmailService.load(id));
         return "workbench/email/view";
+    }
+
+    /**
+     * E-mail details modal.
+     *
+     * @param email
+     * @param model Model
+     * @return E-mail detail modal
+     */
+    @GetMapping(path = "/modal/detail/{id}")
+    public String emailDetailModal(
+            @PathVariable("id") WorkbenchEmail email,
+            Model model) {
+        email = workbenchEmailService.load(email.getId());
+
+        if (email != null) {
+            List<Job> jobs = email.getJob();
+
+            List<JobDetails> jobDetails = jobDetailsService.getDetailsOf(jobs);
+            model.addAttribute("jobDetails", jobDetails
+                    .stream()
+                    .sorted((a, b) -> (a.getJob().getName().compareTo(b.getJob().getName())))
+                    .collect(Collectors.toList()));
+        }
+        return "workbench/email/modalJobDetails::detail";
     }
 }

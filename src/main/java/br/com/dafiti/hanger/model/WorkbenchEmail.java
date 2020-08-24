@@ -38,6 +38,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import org.json.JSONObject;
@@ -58,6 +59,7 @@ public class WorkbenchEmail extends Tracker<WorkbenchEmail> implements Serializa
     private String content;
     private String externalRecipient;
     private List<String> recipient;
+    private List<Job> job;
     private Connection connection;
     private User user;
 
@@ -108,7 +110,7 @@ public class WorkbenchEmail extends Tracker<WorkbenchEmail> implements Serializa
     public void setQuery(String query) {
         this.query = query.trim();
     }
-    
+
     @NotEmpty
     public String getSubject() {
         return subject;
@@ -166,6 +168,15 @@ public class WorkbenchEmail extends Tracker<WorkbenchEmail> implements Serializa
         });
 
         return recipients;
+    }
+
+    @ManyToMany(mappedBy = "email")
+    public List<Job> getJob() {
+        return job;
+    }
+
+    public void setJob(List<Job> job) {
+        this.job = job;
     }
 
     @Override

@@ -23,6 +23,7 @@
  */
 package br.com.dafiti.hanger.service;
 
+import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobBuildMetric;
 import br.com.dafiti.hanger.option.Phase;
@@ -32,7 +33,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -46,10 +46,12 @@ import org.springframework.stereotype.Service;
 public class JobBuildGraphService {
 
     private final JobBuildRepository jobBuildRepository;
+    private final AuditorService auditorService;
 
     @Autowired
-    public JobBuildGraphService(JobBuildRepository jobBuildRepository) {
+    public JobBuildGraphService(JobBuildRepository jobBuildRepository, AuditorService auditorService) {
         this.jobBuildRepository = jobBuildRepository;
+        this.auditorService = auditorService;
     }
 
     /**
@@ -178,6 +180,8 @@ public class JobBuildGraphService {
             List<Job> jobs,
             Date dateFrom,
             Date dateTo) {
+        
+        auditorService.publish("GANTT_RUN");
 
         Long surrogateID = 0L;
         List<DHTMLXGantt> data = new ArrayList();
@@ -198,7 +202,7 @@ public class JobBuildGraphService {
                             "#D6DBE1",
                             ""
                     ));
-                    
+
                     break;
                 }
             }

@@ -40,7 +40,7 @@
                 <nav th:if="${not #lists.isEmpty(searches)}">
                     <ul class="pager">
                         <li th:each="search, searchStat : ${searches}">
-                            <button class="btn btn btn-default btn-xs search-history-button" 
+                            <button class="btn btn-default btn-xs search-history-button" 
                                     th:id="'search_' + ${searchStat.index}" 
                                     th:inline="text" 
                                     th:value="${search}">[[${search}]]</button>

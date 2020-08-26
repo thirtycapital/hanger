@@ -717,9 +717,11 @@ input[type=radio]:checked + img {
     border-bottom-right-radius: 25px !important;
 }
 
-.search-history-button{
+.pager-item{
     color: #337ab7;
-    margin-left: 5px
+    margin-left: 1px;
+    padding: 1px 5px !important;
+    font-size: 12px;
 }   
 
 .thin-line{

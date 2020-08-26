@@ -10,7 +10,7 @@
 
                 <ul th:if="${not #lists.isEmpty(swimlanes)}" class="pager">
                     <li th:if="${swimlane.key != 'ALL'}" th:each="swimlane, swimlaneStat: ${swimlanes}">
-                        <a th:href="${'#' + swimlane.key}" th:text="${swimlane.key}"></a>
+                        <a th:href="${'#' + swimlane.key}" th:text="${swimlane.key}" class="pager-item"></a>
                     </li>
                 </ul>                
 

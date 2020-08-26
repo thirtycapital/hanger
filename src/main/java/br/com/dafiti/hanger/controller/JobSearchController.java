@@ -23,7 +23,6 @@
  */
 package br.com.dafiti.hanger.controller;
 
-import br.com.dafiti.hanger.Setup;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.Subject;
@@ -34,6 +33,8 @@ import br.com.dafiti.hanger.service.SubjectService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import java.util.stream.Collectors;
@@ -157,12 +158,16 @@ public class JobSearchController {
         request.getCookies();
 
         List<JobDetails> jobDetails = jobDetailsService.getDetailsOf(jobs);
-        model.addAttribute("jobDetails", jobDetails
+        //Required parameter for template.
+        Map<String, List<JobDetails>> swimlanes = new TreeMap();
+        swimlanes.put("ALL", jobDetails
                 .stream()
                 .sorted((a, b) -> (a.getJob().getName().compareTo(b.getJob().getName())))
                 .sorted((a, b) -> a.getStatus().toString().compareTo(b.getStatus().toString())).collect(Collectors.toList()));
 
+        model.addAttribute("swimlanes", swimlanes);
         model.addAttribute("currentSubject", new Subject());
+
         return "monitor/fragmentJobDetails::jobDetails";
     }
 }

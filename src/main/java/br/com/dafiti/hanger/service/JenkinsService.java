@@ -39,6 +39,10 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.parser.Parser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -249,6 +253,44 @@ public class JenkinsService {
         }
 
         return upstreamProjects;
+    }
+
+    /**
+     * Retrieves one or more shell script commands related to a job.
+     *
+     * @param job Job
+     * @return Shell script list.
+     */
+    @Cacheable(value = "jobShellScript", key = "#job.id")
+    public List<String> getShellScript(Job job) {
+        JenkinsServer jenkins;
+        List<String> shellScripts = new ArrayList();
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        String config = jenkins.getJobXml(job.getName());
+
+                        if (config != null) {
+                            Document document = Jsoup.parse(config);
+
+                            document.getElementsByTag("hudson.tasks.Shell").forEach(element -> {
+                                shellScripts.add(element.wholeText());
+                            });
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                LOG.log(Level.ERROR, "Fail getting shell script from job " + job.getName() + "!", ex);
+            }
+        }
+
+        return shellScripts;
     }
 
     /**
@@ -478,7 +520,9 @@ public class JenkinsService {
      * Clean the job list cache.
      */
     @Caching(evict = {
-        @CacheEvict(value = "serverJobs", allEntries = true)})
+        @CacheEvict(value = "serverJobs", allEntries = true),
+        @CacheEvict(value = "jobShellScript", allEntries = true)
+    })
     public void refreshCache() {
     }
 

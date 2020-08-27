@@ -798,14 +798,21 @@ public class JobController {
      * @return Job list template.
      */
     @GetMapping(path = "/refresh/")
-    public String refreshCache(Model model) {
+    public String refreshCache(Model model, RedirectAttributes redirectAttributes) {
         auditorService.publish("REFRESH_CACHE");
 
-        jobService.refresh();
-        jenkinsService.refreshCache();
+        try {
+            jobService.refresh();
+            jenkinsService.refreshCache();
 
-        model.addAttribute("jobs", jobService.listFromCache());
-        return "job/list";
+            model.addAttribute("jobs", jobService.listFromCache());
+
+            redirectAttributes.addFlashAttribute("successMessage", "Cache updated successfully!");
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Fail update cache: " + ex.toString());
+        }
+
+        return "redirect:/configuration/edit";
     }
 
     /**

@@ -272,24 +272,45 @@ Permite excluir uma conexão.
 ##### WORKBENCH
 O *Workbench* é uma ferramenta que permite realizar queries com as conexões já estabelecidas.
 
-- No menu lateral, acesse a opção ***Connection***.
-- Clique no botão ***Workbench***, representado pelo ícone **>**.
+- No menu lateral, acesse a opção ***Workbench***.
 - Selecione a conexão desejada no campo ***Connection***.
 - No campo ***Search*** informe o nome do schema desejado para realizar a consulta ou escolha umas das opções listadas.
 - Uma query pré-estabelecida será exibida na área de texto ao lado.
 - Altere, se necessário e então, clique no botão ***Play*** para realizar a execução.
 - Será exibido o resultado da query executada.
 
-###### E-MAIL
-Em *E-mail* é possível enviar o resultado de uma consulta para outros usuários.
+###### SEND E-MAIL
+Em *Workbench* é possível enviar o resultado de uma consulta para outros usuários.
 
-- Em ***Workbench***, clique no botão ***E-mail***.
+- Em ***Workbench***, clique no botão ***Save an e-mail*** disponível no menu ao lado do botão ***Play***.
 - No campo ***Recipient***, selecione ou escreva os nomes dos destinatários.
 - No campo ***External Recipient***, selecione ou escreva o endereço de usuários externos, caso seja necessário.
 - No campo ***Subject***, informe o assunto do e-mail.
 - Na área de texto ***Body***, escreva ou não alguma mensagem.
 - Ao final, clique no botão ***Send*** para enviar.
+- Clique em ***Save***, caso queira salvar o e-mail e enviá-lo em outro momento.
 - Clique no botão ***Close*** para cancelar a operação.
+
+**Nota:** após clicar em ***Save***, a página será redirecionada para ***E-mails***, onde se encontram todos os e-mails salvos.
+
+###### SAVE AN E-MAIL
+Em *Workbench* é possível salvar um e-mail para enviá-lo mais tarde.
+
+- Em ***Workbench***, clique no botão ***Save an e-mail*** disponível no menu ao lado do botão ***Play***.
+- Preencha os campos apresentados anteriormente.
+- Clique em ***Save*** para salvar o e-mail.
+- Após clicar em ***Save***, a página será redirecionada para a lista com todos os e-mails salvos.
+
+###### SAVED E-MAILS
+Em *Workbench* é possível visualizar todos os e-mails salvos.
+
+- Em ***Workbench***, clique no botão ***Saved e-mails*** disponível no menu ao lado do botão ***Play***.
+- Após clicar em ***Saved e-mails***, a página será redirecionada para a lista com todos os e-mails salvos.
+- Clique no ***Subject*** do e-mail para ver mais detalhes.
+- Um modal com todos os jobs vinculados ao e-mail selecionado será exibido.
+- Para adicionar um novo e-mail à lista, clique em ***Add e-mail***, preencha os campos e clique no botão ***Save***.
+- Para voltar à tela principal ***Workbench***, clique em ***Open workbench***.
+
 
 ###### EXPORT
 Permite exportar o resultado de uma query para um arquivo CSV.

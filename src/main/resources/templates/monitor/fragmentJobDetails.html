@@ -43,6 +43,7 @@
                                     <th style="width:1%" class="no-sort"></th>
                                     <th style="width:1%" class="no-sort"></th>
                                     <th style="width:1%" class="no-sort"></th>
+                                    <th style="width:1%" class="no-sort"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -72,11 +73,11 @@
                                         </div>
                                     </div>
                                     <td>
-                                        <a class="link" th:href="@{ ${jobDetail.job.server.url} + 'job/' + ${jobDetail.job.name}}" target="_blank"> +</a>
+                                        <a class="link node-link" th:href="@{ ${jobDetail.job.server.url} + 'job/' + ${jobDetail.job.name}}" target="_blank"> +</a>
                                     </td>
                                     <td>
                                         <div th:if="${ not #lists.isEmpty(jobDetail.job.checkup) }">
-                                            <a th:href="@{'/checkup/job/' + ${jobDetail.job.id} + '/list'}" target="_blank">
+                                            <a th:href="@{'/checkup/job/' + ${jobDetail.job.id} + '/list'}" target="_blank" class="node-link">
                                                 +
                                             </a>
                                         </div>                                
@@ -93,6 +94,11 @@
                                             </button>
                                         </div>
                                     </td>                            
+                                    <td>
+                                        <a th:href="@{'/job/view/' + ${jobDetail.job.id}}" class="btn btn-generic btn-xs">
+                                            <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> See
+                                        </a>
+                                    </td>
                                     <td>
                                         <div th:if="${ 
                                              ( #httpServletRequest.isUserInRole('ADMIN') or #httpServletRequest.isUserInRole('HERO') ) and 

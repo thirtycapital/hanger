@@ -23,7 +23,6 @@
  */
 package br.com.dafiti.hanger.controller;
 
-import br.com.dafiti.hanger.Setup;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

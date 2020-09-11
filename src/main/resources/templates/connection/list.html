@@ -25,8 +25,9 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th style="width:30%">Name</th>
-                        <th style="width:70%">Driver</th>
+                        <th style="width:18%">Name</th>
+                        <th style="width:60%">Description</th>
+                        <th style="width:10%">Driver</th>
                         <th class="no-sort"></th>
                         <th class="no-sort"></th>
                         <th class="no-sort"></th>
@@ -37,6 +38,7 @@
                     <tr th:each="connection : ${connections}">
                         <td th:text="${connection.id}">#</td>
                         <td th:text="${connection.name}">Name</td>
+                        <td th:text="${connection.description}">Name</td>
                         <td th:text="${connection.target}">Driver</td>
                         <td>
                             <a th:href="@{'/connection/test/' + ${connection.id}}" class="btn btn-generic btn-xs">

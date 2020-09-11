@@ -47,6 +47,7 @@ public class Connection extends Tracker<Connection> implements Serializable {
 
     private Long id;
     private String name;
+    private String description;
     private Database target;
     private String url;
     private String username;
@@ -120,6 +121,15 @@ public class Connection extends Tracker<Connection> implements Serializable {
 
     public void setClassName(String className) {
         this.className = className;
+    }
+    
+    @Column(columnDefinition = "text")
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

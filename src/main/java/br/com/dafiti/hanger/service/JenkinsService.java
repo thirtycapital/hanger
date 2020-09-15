@@ -464,7 +464,7 @@ public class JenkinsService {
                         }
 
                         //Identifies if job has builders tag for update shell script
-                        if (config.contains("<builders>")) {
+                        if ((config.contains("<builders>")) && (job.getShellScript().size() > 0)) {
                             String commands = "";
 
                             for (String shell : job.getShellScript()) {

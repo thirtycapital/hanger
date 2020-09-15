@@ -465,15 +465,15 @@ public class JenkinsService {
 
                         //Identifies if job has builders tag for update shell script
                         if ((config.contains("<builders>")) && (job.getShellScript().size() > 0)) {
-                            String commands = "";
+                            String shellScripts = "";
 
-                            for (String shell : job.getShellScript()) {
-                                commands += "<hudson.tasks.Shell>\n<command>" + shell + "</command>\n</hudson.tasks.Shell>\n";
+                            for (String shellScript : job.getShellScript()) {
+                                shellScripts += "<hudson.tasks.Shell>\n<command>" + shellScript + "</command>\n</hudson.tasks.Shell>\n";
                             }
 
                             //Escape dollar signs characters.
-                            commands = commands.replaceAll("\\$", "\\\\\\$");
-                            config = config.replaceAll("(?s)<builders>(.*)</builders>", "<builders>" + commands + "</builders>");
+                            shellScripts = shellScripts.replaceAll("\\$", "\\\\\\$");
+                            config = config.replaceAll("(?s)<builders>(.*)</builders>", "<builders>" + shellScripts + "</builders>");
                         }
 
                         //Update Jenkins job. 

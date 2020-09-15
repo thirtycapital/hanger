@@ -470,7 +470,9 @@ public class JenkinsService {
                             for (String shell : job.getShellScript()) {
                                 commands += "<hudson.tasks.Shell>\n<command>" + shell + "</command>\n</hudson.tasks.Shell>\n";
                             }
-
+                            
+                            //Escape dollar signs characters.
+                            commands = commands.replaceAll("\\$","\\\\\\$");
                             config = config.replaceAll("(?s)<builders>(.*)</builders>", "<builders>" + commands + "</builders>");
                         }
 

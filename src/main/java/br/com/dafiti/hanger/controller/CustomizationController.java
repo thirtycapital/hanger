@@ -23,12 +23,14 @@
  */
 package br.com.dafiti.hanger.controller;
 
+import br.com.dafiti.hanger.service.AuditorService;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -51,7 +53,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class CustomizationController {
 
     private static final Logger LOG = LogManager.getLogger(CustomizationController.class.getName());
+    private final AuditorService auditorService;
 
+    @Autowired
+    public CustomizationController(AuditorService auditorService) {
+        this.auditorService = auditorService;
+    }
+    
     /**
      * Get the logo image.
      *
@@ -84,6 +92,7 @@ public class CustomizationController {
         File convFile = new File(System.getProperty("user.home") + "/.hanger/logo");
 
         try {
+            auditorService.publish("UPDATED_LOGO");
             // If no file is selected, restore default logo.
             if (file.isEmpty()) {
                 convFile.delete();

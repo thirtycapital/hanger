@@ -86,6 +86,7 @@ public class Job extends Tracker<Job> implements Serializable {
     private List<JobCheckup> checkup = new ArrayList();
     private List<JobApproval> approval = new ArrayList();
     private List<WorkbenchEmail> email = new ArrayList();
+    private List<String> shellScript = new ArrayList();
     private Set<String> channel = new HashSet();
     private boolean enabled = true;
     private boolean notify;
@@ -264,6 +265,15 @@ public class Job extends Tracker<Job> implements Serializable {
     public void addEmail(WorkbenchEmail email) {
         this.email.add(email);
     }
+    
+    @Transient
+    public List<String> getShellScript() {
+        return shellScript;
+    }
+
+    public void setShellScript(List<String> shellScript) {
+        this.shellScript = shellScript;
+    }    
 
     public boolean isRebuild() {
         return rebuild;

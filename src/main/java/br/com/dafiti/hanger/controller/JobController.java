@@ -865,12 +865,13 @@ public class JobController {
      * @param jobList boolean
      */
     private void modelDefault(Model model, Job job, boolean jobList) {
+        job.setShellScript(jenkinsService.getShellScript(job));
+        
         model.addAttribute("job", job);
         model.addAttribute("servers", serverService.list());
         model.addAttribute("subjects", subjectService.list());
         model.addAttribute("connections", connectionService.list());
         model.addAttribute("users", userService.list(true));
-        model.addAttribute("shellScripts", jenkinsService.getShellScript(job));
 
         if (jobList) {
             if (!job.getCheckup().isEmpty()) {

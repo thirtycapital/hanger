@@ -41,8 +41,6 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -261,7 +259,6 @@ public class JenkinsService {
      * @param job Job
      * @return Shell script list.
      */
-    @Cacheable(value = "jobShellScript", key = "#job.id")
     public List<String> getShellScript(Job job) {
         JenkinsServer jenkins;
         List<String> shellScripts = new ArrayList();
@@ -271,14 +268,14 @@ public class JenkinsService {
                 jenkins = this.getJenkinsServer(job.getServer());
 
                 if (jenkins != null) {
-                    if (jenkins.isRunning()) {
+                    if (jenkins.isRunning() && job.getName() != null) {
                         String config = jenkins.getJobXml(job.getName());
 
                         if (config != null) {
                             Document document = Jsoup.parse(config);
 
                             document.getElementsByTag("hudson.tasks.Shell").forEach(element -> {
-                                shellScripts.add(element.wholeText());
+                                shellScripts.add(element.wholeText().trim());
                             });
                         }
                     }
@@ -464,6 +461,17 @@ public class JenkinsService {
 
                             //Replace notification plugin endpoint tag of Jenkins config XML
                             config = config.replaceAll("(?s)<com\\.tikal\\.hudson\\.plugins\\.notification\\.Endpoint>(.*)</com\\.tikal\\.hudson\\.plugins\\.notification\\.Endpoint>", notificationPluginEndpoint);
+                        }
+
+                        //Identifies if job has builders tag for update shell script
+                        if (config.contains("<builders>")) {
+                            String commands = "";
+
+                            for (String shell : job.getShellScript()) {
+                                commands += "<hudson.tasks.Shell>\n<command>" + shell + "</command>\n</hudson.tasks.Shell>\n";
+                            }
+
+                            config = config.replaceAll("(?s)<builders>(.*)</builders>", "<builders>" + commands + "</builders>");
                         }
 
                         //Update Jenkins job. 

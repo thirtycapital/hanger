@@ -116,7 +116,7 @@ public class WorkbenchQueryController {
             Model model,
             Principal principal) {
         boolean update = workbenchQuery.getId() != null;
-        String redirect = "redirect:/query/list/";
+        String redirect = "redirect:/query/stored/";
 
         try {
             workbenchQueryService.save(workbenchQuery);
@@ -139,7 +139,7 @@ public class WorkbenchQueryController {
      * @param principal
      * @return
      */
-    @GetMapping(path = "/list")
+    @GetMapping(path = "/stored")
     public String list(
             Model model,
             Principal principal) {

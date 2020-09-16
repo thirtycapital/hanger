@@ -172,7 +172,8 @@ public class JobService {
                 }
             }
         }
-
+        
+        
         jenkinsService.updateJob(job);
         return this.save(job);
     }

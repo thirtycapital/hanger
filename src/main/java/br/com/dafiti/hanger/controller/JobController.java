@@ -453,6 +453,22 @@ public class JobController {
 
         return "job/edit";
     }
+    
+    /**
+     * Add a shell script.
+     *
+     * @param job Job
+     * @param model Model
+     * @return Job edit
+     */
+    @PostMapping(path = "/save", params = {"partial_add_job__shell_script"})
+    public String addShellScript(
+            @Valid @ModelAttribute Job job,
+            Model model) {
+        job.addShellScript("");
+        this.modelDefault(model, job);
+        return "job/edit";
+    }
 
     /**
      * Remove a shell script.

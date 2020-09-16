@@ -274,6 +274,10 @@ public class Job extends Tracker<Job> implements Serializable {
     public void setShellScript(List<String> shellScript) {
         this.shellScript = shellScript;
     }    
+    
+    public void addShellScript(String shellScript) {
+        this.shellScript.add(shellScript);
+    }
 
     public boolean isRebuild() {
         return rebuild;

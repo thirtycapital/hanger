@@ -172,8 +172,8 @@ public class JobService {
                 }
             }
         }
-        
-        
+
+        jenkinsService.updateShellScript(job);
         jenkinsService.updateJob(job);
         return this.save(job);
     }

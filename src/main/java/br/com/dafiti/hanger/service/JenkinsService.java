@@ -400,6 +400,49 @@ public class JenkinsService {
     }
 
     /**
+     * Updates job shell script on jenkins.
+     *
+     * @param job Job
+     */
+    public void updateShellScript(Job job) {
+        JenkinsServer jenkins;
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        String name = job.getName();
+                        String config = jenkins.getJobXml(name);
+
+                        String shellScripts = "";
+
+                        for (String shellScript : job.getShellScript()) {
+                            shellScripts += "<hudson.tasks.Shell>\n<command>" + shellScript + "</command>\n</hudson.tasks.Shell>\n";
+                        }
+
+                        //Escape dollar signs characters.
+                        shellScripts = shellScripts.replaceAll("\\$", "\\\\\\$");
+
+                        //Identifies if job has builders tag for update shell script
+                        if ((config.contains("<builders>"))) {
+                            config = config.replaceAll("(?s)<builders>(.*)</builders>", "<builders>" + shellScripts + "</builders>");
+                        } else if(job.getShellScript().size() > 0) {
+                            config = config.replaceAll("(?s)<builders/>", "<builders>" + shellScripts + "</builders>");
+                        }
+
+                        //Update Jenkins job. 
+                        jenkins.updateJob(name, config, true);
+                    }
+                }
+            } catch (URISyntaxException | IOException ex) {
+                LOG.log(Level.WARN, "Fail updating Jenkins job shell script!", ex);
+            }
+        }
+    }
+
+    /**
      * Add the Hanger endpoint to the notificion plugin configuration of a
      * Jenkins job.
      *
@@ -461,19 +504,6 @@ public class JenkinsService {
 
                             //Replace notification plugin endpoint tag of Jenkins config XML
                             config = config.replaceAll("(?s)<com\\.tikal\\.hudson\\.plugins\\.notification\\.Endpoint>(.*)</com\\.tikal\\.hudson\\.plugins\\.notification\\.Endpoint>", notificationPluginEndpoint);
-                        }
-
-                        //Identifies if job has builders tag for update shell script
-                        if ((config.contains("<builders>")) && (job.getShellScript().size() > 0)) {
-                            String shellScripts = "";
-
-                            for (String shellScript : job.getShellScript()) {
-                                shellScripts += "<hudson.tasks.Shell>\n<command>" + shellScript + "</command>\n</hudson.tasks.Shell>\n";
-                            }
-
-                            //Escape dollar signs characters.
-                            shellScripts = shellScripts.replaceAll("\\$", "\\\\\\$");
-                            config = config.replaceAll("(?s)<builders>(.*)</builders>", "<builders>" + shellScripts + "</builders>");
                         }
 
                         //Update Jenkins job. 

@@ -173,7 +173,8 @@ public class JobController {
     public String edit(
             Model model,
             @PathVariable(value = "id") Job job) {
-
+        //Get shell script of jenkins.
+        job.setShellScript(jenkinsService.getShellScript(job));
         model.addAttribute("children", jobService.getChildrenlist(job));
         this.modelDefault(model, job);
         return "job/edit";
@@ -215,7 +216,8 @@ public class JobController {
     public String view(
             Model model,
             @PathVariable(value = "id") Job job) {
-
+        //Get shell script of jenkins.
+        job.setShellScript(jenkinsService.getShellScript(job));
         model.addAttribute("children", jobService.getChildrenlist(job));
         this.modelDefault(model, job, false);
         return "job/view";
@@ -449,6 +451,24 @@ public class JobController {
         job.getSubject().remove(index);
         this.modelDefault(model, job);
 
+        return "job/edit";
+    }
+
+    /**
+     * Remove a shell script.
+     *
+     * @param job Job
+     * @param index index
+     * @param model Model
+     * @return Job edit
+     */
+    @PostMapping(path = "/save", params = {"partial_remove_job_shell_script"})
+    public String removeShellScript(
+            @ModelAttribute Job job,
+            @RequestParam(value = "partial_remove_job_shell_script", required = false) int index,
+            Model model) {
+        job.getShellScript().remove(index);
+        this.modelDefault(model, job);
         return "job/edit";
     }
 
@@ -865,8 +885,6 @@ public class JobController {
      * @param jobList boolean
      */
     private void modelDefault(Model model, Job job, boolean jobList) {
-        job.setShellScript(jenkinsService.getShellScript(job));
-        
         model.addAttribute("job", job);
         model.addAttribute("servers", serverService.list());
         model.addAttribute("subjects", subjectService.list());
@@ -995,9 +1013,9 @@ public class JobController {
     public String relatedEmailModal(
             @PathVariable("id") Job job,
             Model model) {
-        
+
         this.modelDefault(model, job);
-        
+
         return "flow/modalEmails::emails";
     }
 

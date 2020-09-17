@@ -1030,14 +1030,18 @@
                         });
                     });
 
-                    //CodeMirror plugin in shell script fields
+                    /**
+                     * CodeMirror plugin in shell script fields
+                     */
                     var shellScript = document.getElementsByClassName('shell-script');
                     for (var i = 0; i < shellScript.length; i++) {
-                        window.editor = CodeMirror.fromTextArea(shellScript[i], {
+                        var codeMirror = CodeMirror.fromTextArea(shellScript[i], {
                             mode: 'shell',
                             lineNumbers: true,
                             matchBrackets: true
                         });
+                        
+                        codeMirror.setSize("100%", "200px");
                     }
                 });
             </script>

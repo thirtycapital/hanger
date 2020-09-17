@@ -269,7 +269,7 @@ Permite alterar uma conexão.
 ##### DELETE
 Permite excluir uma conexão.
 
-##### WORKBENCH
+## WORKBENCH
 O *Workbench* é uma ferramenta que permite realizar queries com as conexões já estabelecidas.
 
 - No menu lateral, acesse a opção ***Workbench***.
@@ -412,6 +412,10 @@ Permite adicionar um novo *job*.
 - Caso deseje definir um intervalo mínimo para que o *job* seja reexecutado, digite a quantidade de minutos no campo ***Rebuild interval***.
 - Marque o checkbox ***Enabled*** para habilitar o job ou desmarque para desabilitá-lo. 
 - Caso o *job* possa ser executado mais de uma vez ao dia, marque o checkbox ***Rebuildable***. Por padrão, um *job* pode ser executado apenas uma vez ao dia. Quando esta opção estiver selecionada, o *job* será executado pela primeira vez quando todas as dependências forem atendidas e voltará a ser executado sempre que qualquer uma das dependências for executada com sucesso no decorrer do dia. Caso necessite que o *job* somente seja reexecutado quando todas as dependências forem atendidas novamente, selecione quais dependências serão ***blockers*** na lista de ***parents***.
+- Caso deseje vincular e-mails ao *job*, clique no botão ***E-mail***.
+- Será exibido o modal ***E-mail list***. Selecione os e-mails que deseja vincular ao *job* e clique no botão ***Add***.
+- Os e-mails selecionados serão enviados aos destinatários assim que o *job* for executado com sucesso, ou seja, assim que o *build* for realizado.
+	> Caso queira ver mais detalhes, clique no assunto do e-mail desejado e a página será redirecionada para as informações do e-mail escolhido.
 - Caso deseje receber notificações de execuções do job, marque a opção ***Slack notification***.
 - Para definir o canal no qual as notificações serão enviadas, clique no botão ***Slack channel***. Será exibido o modal ***Slack channels*** no qual será possível selecionar um ou mais canais do Slack nos quais as notificações devem ser enviadas.
 	> Caso nenhum canal seja selecionado no modal Slack channels, o canal configurado na guia Configuration será usado para notificação deste *job*.

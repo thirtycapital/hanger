@@ -55,6 +55,7 @@
         <script th:src="@{/js/dhtmlxgantt.js}"></script>
         <script th:src="@{/js/codemirror.js}"></script>
         <script th:src="@{/js/codemirror-sql.js}"></script>
+        <script th:src="@{/js/codemirror-shell.js}"></script>
         <script th:src="@{/js/context-menu.min.js}"></script>
         <script th:src="@{/js/jstree.min.js}"></script>
         <script th:src="@{/js/clipboard.min.js}"></script>
@@ -84,6 +85,14 @@
                             <a class="menu_link_option" th:href="@{/workbench/workbench/}" title="Workbench">
                                 <span class="sub_icon glyphicon glyphicon-play"></span>Workbench
                             </a>
+                            <div sec:authorize="isAuthenticated()">
+                                <a class="menu_link_create" th:href="@{'/query/stored/'}" title="Queries">
+                                    <span class="sub_icon_create glyphicon glyphicon-list"> </span>
+                                </a>
+                                <a class="menu_link_create" th:href="@{'/email/list/'}" title="E-mails">
+                                    <span class="sub_icon_create glyphicon glyphicon-envelope"> </span>
+                                </a>
+                            </div>
                         </li>                                               
                         <li th:classappend="${#httpServletRequest.getRequestURI().contains('/server/') ? 'active':''}">
                             <a class="menu_link_option" th:href="@{/server/list}" title="Server">

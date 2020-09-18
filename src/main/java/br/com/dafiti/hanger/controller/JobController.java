@@ -175,7 +175,6 @@ public class JobController {
             @PathVariable(value = "id") Job job) {
         //Get shell script of jenkins.
         job.setShellScript(jenkinsService.getShellScript(job));
-        model.addAttribute("children", jobService.getChildrenlist(job));
         this.modelDefault(model, job);
         return "job/edit";
     }
@@ -218,7 +217,6 @@ public class JobController {
             @PathVariable(value = "id") Job job) {
         //Get shell script of jenkins.
         job.setShellScript(jenkinsService.getShellScript(job));
-        model.addAttribute("children", jobService.getChildrenlist(job));
         this.modelDefault(model, job, false);
         return "job/view";
     }
@@ -906,7 +904,11 @@ public class JobController {
         model.addAttribute("subjects", subjectService.list());
         model.addAttribute("connections", connectionService.list());
         model.addAttribute("users", userService.list(true));
-
+        
+        if (job.getId() != null) {
+            model.addAttribute("children", jobService.getChildrenlist(job));
+        }
+        
         if (jobList) {
             if (!job.getCheckup().isEmpty()) {
                 model.addAttribute("triggers", jobService.getMesh(job, false));

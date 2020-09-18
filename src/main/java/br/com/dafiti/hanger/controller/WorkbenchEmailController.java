@@ -31,7 +31,6 @@ import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.JobDetailsService;
-import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.WorkbenchEmailService;
 import br.com.dafiti.hanger.service.UserService;
 import io.swagger.annotations.ApiOperation;
@@ -67,7 +66,6 @@ public class WorkbenchEmailController {
     private final UserService userService;
     private final WorkbenchEmailService workbenchEmailService;
     private final ConnectionService connectionService;
-    private final JobService jobService;
     private final JobDetailsService jobDetailsService;
 
     @Autowired
@@ -75,12 +73,10 @@ public class WorkbenchEmailController {
             UserService userService,
             WorkbenchEmailService workbenchEmailService,
             ConnectionService connectionService,
-            JobService jobService,
             JobDetailsService jobDetailsService) {
         this.userService = userService;
         this.workbenchEmailService = workbenchEmailService;
         this.connectionService = connectionService;
-        this.jobService = jobService;
         this.jobDetailsService = jobDetailsService;
     }
 

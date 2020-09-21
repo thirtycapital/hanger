@@ -1088,3 +1088,11 @@ div.dataTables_wrapper > div > * {
     padding: 1em;
     display: none;
 }
+
+label.radio-generic.active,
+label.radio-generic:hover
+{
+    color: white !important;
+    border: 1px solid #D8D8D8;
+    background-color: #337ab7;
+}

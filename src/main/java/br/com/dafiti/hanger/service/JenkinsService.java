@@ -125,6 +125,8 @@ public class JenkinsService {
                 for (String job : jenkins.getJobs().keySet()) {
                     jobs.add(job);
                 }
+            } else {
+                throw new URISyntaxException("Jenkins is not running", "Can't import Jenkins job list");
             }
 
             jenkins.close();
@@ -428,7 +430,7 @@ public class JenkinsService {
                         //Identifies if job has builders tag for update shell script
                         if ((config.contains("<builders>"))) {
                             config = config.replaceAll("(?s)<builders>(.*)</builders>", "<builders>" + shellScripts + "</builders>");
-                        } else if(job.getShellScript().size() > 0) {
+                        } else if (job.getShellScript().size() > 0) {
                             config = config.replaceAll("(?s)<builders/>", "<builders>" + shellScripts + "</builders>");
                         }
 
@@ -438,6 +440,54 @@ public class JenkinsService {
                 }
             } catch (URISyntaxException | IOException ex) {
                 LOG.log(Level.WARN, "Fail updating Jenkins job shell script!", ex);
+            }
+        }
+    }
+
+    /**
+     * Create a new job.
+     *
+     * @param job Job
+     * @throws java.net.URISyntaxException
+     * @throws java.io.IOException
+     */
+    public void createJob(Job job) throws URISyntaxException, IOException {
+        JenkinsServer jenkins;
+
+        if (job != null) {
+            jenkins = this.getJenkinsServer(job.getServer());
+
+            if (jenkins != null) {
+                if (jenkins.isRunning()) {
+                    if (!this.exists(job)) {
+                        String config = ""
+                                + "<project>\n"
+                                + "     <description/>\n"
+                                + "     <keepDependencies>false</keepDependencies>\n"
+                                + "     <properties/>\n"
+                                + "     <properties>\n"
+                                + "         <com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty plugin=\"ownership@0.12.1\"/>"
+                                + "     </properties>"
+                                + "     <scm class=\"hudson.scm.NullSCM\"/>\n"
+                                + "     <canRoam>true</canRoam>\n"
+                                + "     <disabled>false</disabled>\n"
+                                + "     <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>\n"
+                                + "     <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>\n"
+                                + "     <triggers/>\n"
+                                + "     <concurrentBuild>false</concurrentBuild>\n"
+                                + "     <builders/>\n"
+                                + "     <publishers/>\n"
+                                + "     <buildWrappers/>\n"
+                                + "</project>";
+
+                        //Update Jenkins job. 
+                        jenkins.createJob(job.getName(), config);
+                    } else {
+                        throw new URISyntaxException(job.getName(), "The job already exists on Jenkins");
+                    }
+                } else {
+                    throw new URISyntaxException(job.getName(), "Jenkins is not running, can't create a new job");
+                }
             }
         }
     }

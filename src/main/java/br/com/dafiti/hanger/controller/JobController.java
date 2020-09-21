@@ -382,18 +382,30 @@ public class JobController {
      * Save a job.
      *
      * @param job Job
-     * @param model Model
+     * @param importJob
+     * @param jobName
+     * @param model
      * @return Job edit
      */
     @PostMapping(path = "/save", params = {"partial_load_job"})
     public String loadJob(
             @Valid @ModelAttribute Job job,
+            @RequestParam(name = "importJob", required = false) boolean importJob,
+            @RequestParam(name = "jobName", required = false) String jobName,
             Model model) {
 
         try {
-            model.addAttribute("jobs", jenkinsService.listJob(job.getServer()));
+            //Identify if import or create a new job.
+            if (importJob) {
+                model.addAttribute("jobs", jenkinsService.listJob(job.getServer()));                
+            } else {
+                job.setName(jobName);
+                jenkinsService.createJob(job);
+                model.addAttribute("jobs", job);
+            }
         } catch (URISyntaxException | IOException ex) {
-            model.addAttribute("errorMessage", "Fail listing jobs from Jenkins: " + ex.getMessage());
+            job.setServer(null);
+            model.addAttribute("errorMessage", "Fail: " + ex.getMessage());
         } finally {
             this.modelDefault(model, job);
         }
@@ -451,7 +463,7 @@ public class JobController {
 
         return "job/edit";
     }
-    
+
     /**
      * Add a shell script.
      *
@@ -904,11 +916,11 @@ public class JobController {
         model.addAttribute("subjects", subjectService.list());
         model.addAttribute("connections", connectionService.list());
         model.addAttribute("users", userService.list(true));
-        
+
         if (job.getId() != null) {
             model.addAttribute("children", jobService.getChildrenlist(job));
         }
-        
+
         if (jobList) {
             if (!job.getCheckup().isEmpty()) {
                 model.addAttribute("triggers", jobService.getMesh(job, false));

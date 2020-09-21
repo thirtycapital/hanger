@@ -28,7 +28,19 @@
                                 <span th:text="${errorMessage}"></span>
                             </div>  
                         </div> 
-                    </div> 
+                    </div>
+
+                    <div th:if="${ job.server == null }">
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            <label class="btn radio-generic active" data-toggle="tooltip" data-placement="bottom" title="Import existing job from Jenkins">
+                                <input type="radio" name="importJob" id="importJob" value="true" checked="checked"> Import
+                            </label>
+                            <label class="btn radio-generic" data-toggle="tooltip" data-placement="bottom" title="Create a new job on Jenkins">
+                                <input type="radio" name="importJob" id="importJob" value="false"> Add Job
+                            </label>
+                        </div>
+                        <hr />
+                    </div>
 
                     <!--Jenkins server-->
                     <label>Server</label> 
@@ -50,6 +62,15 @@
                             <span th:if="${#fields.hasErrors('server')}" class="help-block" th:errors="*{server}"></span>
                         </div>
                     </div>
+
+                    <div th:if="${ job.server == null }">
+                        <div class="form-group">
+                            <div class="col-sm-10" id="div_job_name">
+                                <label>Name</label> 
+                                <input type="text" class="form-control" name="jobName" id="jobName" minlength="10" />
+                            </div>
+                        </div>
+                    </div>  
 
                     <div th:if="${ job.server != null }">
                         <!--Name-->
@@ -865,7 +886,7 @@
 
                             <div th:if="${ job.server == null }">
                                 <button type="submit" class="btn btn-generic btn-sm" name="partial_load_job">
-                                    <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span> Job list
+                                    <span class="glyphicon glyphicon-forward" aria-hidden="true"></span> Next
                                 </button>
                             </div> 
                         </div>
@@ -887,6 +908,20 @@
             <!--Scroll position-->
             <script th:inline="javascript">
                 $(document).ready(function () {
+                    $("#div_job_name").hide();
+
+                    //Identify if is import or create a new job.
+                    $("input[name=importJob]").on("change", function () {
+                        if ($(this).val() === 'true') {
+                            $("#div_job_name").hide("fast");
+                            $("#jobName").removeAttr("required");
+                        } else {
+                            $("#div_job_name").show("fast");
+                            $("#jobName").focus();
+                            $("#jobName").attr("required", "true");
+                        }
+                    });
+
                     /**
                      * Show wait panel.
                      * @returns {undefined}
@@ -1040,7 +1075,7 @@
                             lineNumbers: true,
                             matchBrackets: true
                         });
-                        
+
                         codeMirror.setSize("100%", "200px");
                     }
                 });

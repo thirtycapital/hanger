@@ -424,8 +424,9 @@ public class JenkinsService {
                             shellScripts += "<hudson.tasks.Shell>\n<command>" + shellScript + "</command>\n</hudson.tasks.Shell>\n";
                         }
 
-                        //Escape dollar signs characters.
+                        //Escape special characters.
                         shellScripts = shellScripts.replaceAll("\\$", "\\\\\\$");
+                        shellScripts = shellScripts.replaceAll("\\\\", "\\\\\\\\");
 
                         //Identifies if job has builders tag for update shell script
                         if ((config.contains("<builders>"))) {

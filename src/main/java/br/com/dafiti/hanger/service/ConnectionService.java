@@ -521,7 +521,7 @@ public class ConnectionService {
                 for (String column : queryResultSet.getHeader()) {
                     resultSetRow
                             .getColumn()
-                            .add(resultSet.getObject(column));
+                            .add(resultSet.getString(column));
                 }
 
                 //Sets the row to the resultset. 

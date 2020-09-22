@@ -135,7 +135,7 @@ public class WorkbenchEmailController {
     public String save(@Valid @ModelAttribute WorkbenchEmail workbenchEmail)
             throws IOException {
         workbenchEmailService.save(workbenchEmail);
-        return "redirect:/email/list/";
+        return "redirect:/email/stored/";
     }
 
     /**
@@ -215,7 +215,7 @@ public class WorkbenchEmailController {
      * @param principal Principal
      * @return
      */
-    @GetMapping(path = "/list")
+    @GetMapping(path = "/stored")
     public String list(Model model, Principal principal) {
         if (principal != null) {
             User user = userService.findByUsername(principal.getName());

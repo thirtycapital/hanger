@@ -31,6 +31,7 @@ import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.Server;
 import br.com.dafiti.hanger.model.Subject;
+import br.com.dafiti.hanger.model.Template;
 import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Status;
@@ -47,6 +48,7 @@ import br.com.dafiti.hanger.service.RetryService;
 import br.com.dafiti.hanger.service.ServerService;
 import br.com.dafiti.hanger.service.SlackService;
 import br.com.dafiti.hanger.service.SubjectService;
+import br.com.dafiti.hanger.service.TemplateService;
 import br.com.dafiti.hanger.service.UserService;
 import br.com.dafiti.hanger.service.WorkbenchEmailService;
 import io.swagger.annotations.ApiOperation;
@@ -62,6 +64,7 @@ import org.apache.logging.log4j.LogManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -101,6 +104,7 @@ public class JobController {
     private final JobDetailsService jobDetailsService;
     private final AuditorService auditorService;
     private final WorkbenchEmailService workbenchEmailService;
+    private final TemplateService templateService;
 
     private static final Logger LOG = LogManager.getLogger(JobController.class.getName());
 
@@ -119,7 +123,8 @@ public class JobController {
             JobApprovalService jobApprovalService,
             JobDetailsService jobDetailsService,
             AuditorService auditorService,
-            WorkbenchEmailService workbenchEmailService) {
+            WorkbenchEmailService workbenchEmailService,
+            TemplateService templateService) {
 
         this.jobService = jobService;
         this.serverService = serverService;
@@ -136,6 +141,7 @@ public class JobController {
         this.jobDetailsService = jobDetailsService;
         this.auditorService = auditorService;
         this.workbenchEmailService = workbenchEmailService;
+        this.templateService = templateService;
     }
 
     /**
@@ -173,7 +179,7 @@ public class JobController {
     public String edit(
             Model model,
             @PathVariable(value = "id") Job job) {
-        //Get shell script of jenkins.
+
         job.setShellScript(jenkinsService.getShellScript(job));
         this.modelDefault(model, job);
         return "job/edit";
@@ -215,7 +221,7 @@ public class JobController {
     public String view(
             Model model,
             @PathVariable(value = "id") Job job) {
-        //Get shell script of jenkins.
+
         job.setShellScript(jenkinsService.getShellScript(job));
         this.modelDefault(model, job, false);
         return "job/view";
@@ -397,7 +403,7 @@ public class JobController {
         try {
             //Identify if import or create a new job.
             if (importJob) {
-                model.addAttribute("jobs", jenkinsService.listJob(job.getServer()));                
+                model.addAttribute("jobs", jenkinsService.listJob(job.getServer()));
             } else {
                 job.setName(jobName);
                 jenkinsService.createJob(job);
@@ -468,15 +474,30 @@ public class JobController {
      * Add a shell script.
      *
      * @param job Job
+     * @param template
+     * @param parameters
      * @param model Model
      * @return Job edit
      */
-    @PostMapping(path = "/save", params = {"partial_add_job__shell_script"})
+    @PostMapping(path = "/save", params = {"partial_add_job_shell_script"})
     public String addShellScript(
             @Valid @ModelAttribute Job job,
+            @RequestParam(name = "templateID", required = false) Template template,
+            @RequestParam(name = "templateParameters", required = false) JSONArray parameters,
             Model model) {
-        job.addShellScript("");
+
+        String shellScript = "";
+
+        if (template != null) {
+            shellScript = templateService.setParameters(
+                    template.getModel(),
+                    parameters
+            );
+        }
+
+        job.addShellScript(shellScript);
         this.modelDefault(model, job);
+
         return "job/edit";
     }
 
@@ -493,9 +514,32 @@ public class JobController {
             @ModelAttribute Job job,
             @RequestParam(value = "partial_remove_job_shell_script", required = false) int index,
             Model model) {
+
         job.getShellScript().remove(index);
         this.modelDefault(model, job);
+
         return "job/edit";
+    }
+
+    /**
+     *
+     * @param template
+     * @param model
+     * @return
+     */
+    @GetMapping(path = "/modal/template/{id}")
+    public String shellScriptTemplateModal(
+            @PathVariable(value = "id") Template template,
+            Model model) {
+
+        try {
+            model.addAttribute("template", template);
+            model.addAttribute("parameters", templateService.getParameters(template.getModel()));
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", "Fail getting parameters " + new Message().getErrorMessage(ex));
+        }
+
+        return "job/modalShellScriptTemplate::parameter";
     }
 
     /**
@@ -841,10 +885,14 @@ public class JobController {
      * Refresh job cache
      *
      * @param model Model
+     * @param redirectAttributes
      * @return Job list template.
      */
     @GetMapping(path = "/refresh/")
-    public String refreshCache(Model model, RedirectAttributes redirectAttributes) {
+    public String refreshCache(
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
         auditorService.publish("REFRESH_CACHE");
 
         try {
@@ -916,6 +964,7 @@ public class JobController {
         model.addAttribute("subjects", subjectService.list());
         model.addAttribute("connections", connectionService.list());
         model.addAttribute("users", userService.list(true));
+        model.addAttribute("templates", templateService.list());
 
         if (job.getId() != null) {
             model.addAttribute("children", jobService.getChildrenlist(job));

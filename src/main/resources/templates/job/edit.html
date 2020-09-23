@@ -832,9 +832,16 @@
                     <div class="form-group">
                         <div class="col-sm-10">
                             <div th:if="${ job.server != null }">
-                                <button type="button" class="btn btn-generic btn-sm pull-right btn-space" data-toggle="modal" data-backdrop="static" data-target="#modalSubject">
-                                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Subject
-                                </button>
+
+                                <!--E-mail-->
+
+                                <div class="btn-group pull-right btn-space dropup">
+                                    <button type="button" class="btn btn-generic btn-sm" th:id="modal_add_email">                                         
+                                        <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> E-mail
+                                    </button>
+                                </div>
+
+                                <!--Slack-->
 
                                 <div class="btn-group pull-right btn-space dropup">
                                     <button type="button" class="btn btn-generic btn-sm" th:id="modal_add_slack_channel">                                         
@@ -842,9 +849,41 @@
                                     </button>
                                 </div>
 
-                                <button type="submit" class="btn btn-generic btn-sm pull-right btn-space" name="partial_add_job__shell_script">
-                                    <span class="glyphicon glyphicon-console" aria-hidden="true"></span> Shell Script
+                                <!--Checkup-->
+
+                                <button type="submit" class="btn btn-generic btn-sm pull-right btn-space" name="partial_add_job_checkup">
+                                    <span class="glyphicon glyphicon-heart" aria-hidden="true"></span> Checkup
                                 </button>
+
+                                <!--Subject-->
+
+                                <button type="button" class="btn btn-generic btn-sm pull-right btn-space" data-toggle="modal" data-backdrop="static" data-target="#modalSubject">
+                                    <span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Subject
+                                </button>
+
+
+                                <!--Shell Script-->
+
+                                <div class="btn-group pull-right btn-space dropup">
+                                    <button type="submit" class="btn btn-generic btn-sm" name="partial_add_job_shell_script">
+                                        <span class="glyphicon glyphicon-console" aria-hidden="true"></span> Shell Script
+                                    </button>
+
+                                    <button type="button" class="btn btn-generic btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="caret"></span>
+                                        <span class="sr-only"></span>
+                                    </button>
+
+                                    <ul class="dropdown-menu">                                                                             
+                                        <li th:each="template : ${templates}" th:id="'modal_add_shell_script_template_' + ${template.id}" th:value="${template.id}">
+                                            <a th:inline= "text" class="btn btn-sm pull-left">
+                                                <span  class="glyphicon glyphicon-tasks" aria-hidden="true"></span> [[${template.name}]]
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <!--Parent--> 
 
                                 <div class="btn-group pull-right btn-space dropup">
                                     <button type="button" class="btn btn-generic btn-sm" th:id="'modal_add_parent_' + ${job.server.id}" th:value="${job.server.id}">
@@ -865,15 +904,7 @@
                                     </ul>
                                 </div>
 
-                                <div class="btn-group pull-right btn-space dropup">
-                                    <button type="button" class="btn btn-generic btn-sm" th:id="modal_add_email">                                         
-                                        <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> E-mail
-                                    </button>
-                                </div>
-
-                                <button type="submit" class="btn btn-generic btn-sm pull-right btn-space" name="partial_add_job_checkup">
-                                    <span class="glyphicon glyphicon-heart" aria-hidden="true"></span> Checkup
-                                </button>
+                                <!--Save-->
 
                                 <button type="submit" class="btn btn-generic btn-sm">
                                     <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Save
@@ -929,6 +960,7 @@
                     $(document).ajaxStart(function () {
                         $("#modal_wait").css("display", "block");
                         $("[id^=modal_add_parent_]").prop("disabled", true);
+                        $("[id^=modal_add_shell_script_template_]").prop("disabled", true);
                     });
 
                     /**
@@ -938,6 +970,7 @@
                     $(document).ajaxComplete(function () {
                         $("#modal_wait").css("display", "none");
                         $("[id^=modal_add_parent_]").prop("disabled", false);
+                        $("[id^=modal_add_shell_script_template_]").prop("disabled", false);
                     });
 
                     /**
@@ -959,6 +992,28 @@
                             },
                             error: function (e) {
                                 alert("Error loading jobs from Jenkins " + e);
+                            }
+                        });
+                    });
+
+                    /**
+                     * Show template parameter modal. 
+                     * @returns {undefined}
+                     */
+                    $("[id^=modal_add_shell_script_template_]").click(function () {
+                        var url = /*[[@{/job/modal/template/}]]*/ "job/modal/template/";
+                        var template = $(this).val();
+
+                        $.ajax({
+                            type: "GET",
+                            url: url + template,
+                            timeout: 30000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalShellScriptTemplateParameter").modal({backdrop: 'static', keyboard: false});
+                            },
+                            error: function (e) {
+                                alert("Fail loading shell script template parameter modal " + e);
                             }
                         });
                     });

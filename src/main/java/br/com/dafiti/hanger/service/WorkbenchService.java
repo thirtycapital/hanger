@@ -224,53 +224,6 @@ public class WorkbenchService {
     }
 
     /**
-     * Identifies query parameters.
-     *
-     * @param query Query.
-     * @return Query parameters and type list.
-     */
-    public Map<String, String> extractParameters(String query) {
-        Map<String, String> parameter = new HashMap();
-        Matcher m = Pattern.compile("\\$\\{([^}]*)\\}").matcher(query);
-
-        while (m.find()) {
-            String name = m.group(1);
-
-            if (!parameter.containsKey(name)) {
-                String[] split = name.split("::");
-
-                if (split.length == 2) {
-                    parameter.put(name, split[1]);
-                } else {
-                    parameter.put(name, "text");
-                }
-            }
-        }
-
-        return parameter;
-    }
-
-    /**
-     * Replace dynamic query parameters.
-     *
-     * @param query Query
-     * @param parameters Query parameters
-     * @return Query final
-     */
-    public String replaceParameters(String query, JSONArray parameters) {
-        if (parameters != null
-                && !parameters.isEmpty()) {
-
-            for (Object parameter : parameters) {
-                JSONObject object = (JSONObject) parameter;
-                query = query.replaceAll("\\$\\{" + object.getString("name") + "\\}", object.getString("value"));
-            }
-        }
-
-        return query;
-    }
-
-    /**
      * Represents a JSTree.
      */
     public class Tree {

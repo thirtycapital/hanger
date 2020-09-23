@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -73,25 +74,44 @@ public class TemplateService {
     }
 
     /**
-     * Identifies template parameters.
+     * Extract template parameters.
      *
      * @param template Template.
      * @return Template parameters and type list.
      */
-    public Map<String, String> extractParameters(String template) {
-        Map<String, String> parameter = new HashMap();
-        Matcher m = Pattern.compile("\\$\\{([^}]*)\\}").matcher(template);
+    public Map<String, Map<String, String>> getParameters(String template) {
+        Map<String, Map<String, String>> parameter = new HashMap();
+        Matcher m = Pattern.compile("\\$\\{\\{(.*)\\}\\}").matcher(template);
 
         while (m.find()) {
             String name = m.group(1);
 
             if (!parameter.containsKey(name)) {
+                Map<String, String> attributes = new HashMap();
                 String[] split = name.split("::");
 
                 if (split.length == 2) {
-                    parameter.put(name, split[1]);
+                    String type;
+                    String defaultValue;
+
+                    try {
+                        JSONObject object = new JSONObject(split[1]);
+                        type = object.optString("type", "text");
+                        defaultValue = String.valueOf(object.opt("default"));
+                    } catch (JSONException ex) {
+                        type = "text";
+                        defaultValue = "";
+                    }
+
+                    attributes.put("type", type);
+                    attributes.put("default", defaultValue);
+
+                    parameter.put(name, attributes);
                 } else {
-                    parameter.put(name, "text");
+                    attributes.put("type", "text");
+                    attributes.put("default", "");
+
+                    parameter.put(name, attributes);
                 }
             }
         }
@@ -106,13 +126,19 @@ public class TemplateService {
      * @param parameters Template parameters
      * @return Template final
      */
-    public String replaceParameters(String template, JSONArray parameters) {
+    public String setParameters(String template, JSONArray parameters) {
         if (parameters != null
                 && !parameters.isEmpty()) {
 
             for (Object parameter : parameters) {
                 JSONObject object = (JSONObject) parameter;
-                template = template.replaceAll("\\$\\{" + object.getString("name") + "\\}", object.getString("value"));
+                template = template.replaceAll(
+                        "\\$\\{\\{"
+                                .concat(object.getString("name")
+                                        .replace("{", "\\{")
+                                        .replace("}", "\\}")).concat("\\}\\}"),
+                        object.getString("value")
+                );
             }
         }
 

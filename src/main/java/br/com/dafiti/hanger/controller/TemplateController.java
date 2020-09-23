@@ -143,29 +143,4 @@ public class TemplateController {
 
         return "template/list";
     }
-
-    /**
-     * Show a modal with all parameters extract from a template.
-     *
-     * @param id Template ID
-     * @param model Model
-     * @return Template parameter modal.
-     */
-    @GetMapping(path = "/parameter/modal/{id}")
-    public String templateParameterModal(
-            @PathVariable(value = "id") Long id,
-            Model model) {
-
-        try {
-            Template template = templateService.load(id);
-            String templateModel = template.getModel();
-
-            model.addAttribute("template", templateModel);
-            model.addAttribute("parameters", templateService.extractParameters(templateModel));
-        } catch (Exception ex) {
-            model.addAttribute("errorMessage", "Fail getting parameters " + new Message().getErrorMessage(ex));
-        }
-
-        return "template/modalTemplateParameter::parameter";
-    }
 }

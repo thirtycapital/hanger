@@ -30,13 +30,7 @@
                 <tbody>
                     <tr th:each="template : ${templates}">
                         <td th:text="${template.id}">#</td>
-                        <td>
-                            <button class="btn btn-link hanger-no-border" 
-                                    th:inline="text" 
-                                    th:id="'modal_tamplate_parameter_' + ${template.id}" 
-                                    th:attr="onclick='showTemplateParameterModal(' + ${template.id} + ');'"> [[${template.name}]]
-                            </button>
-                        </td>     
+                        <td th:text="${template.name}">Name</td>    
                         <td>
                             <a th:href="@{'/template/edit/' + ${template.id}}" 
                                class="btn btn-generic btn-xs">                                
@@ -82,32 +76,5 @@
                 </tbody>
             </table>
         </div>
-
-        <div id="modalHolder"></div>
-
-        <script th:inline="javascript">
-            /**
-             * Show the template parameter modal. 
-             * 
-             * @param {type} id
-             * @returns {undefined}
-             */
-            function showTemplateParameterModal(id) {
-                var url = /*[[@{/template/parameter/modal/}]]*/ "/template/parameter/modal/";
-
-                $.ajax({
-                    type: "GET",
-                    url: url + id,
-                    timeout: 30000,
-                    success: function (result) {
-                        $("#modalHolder").html(result);
-                        $("#modalTemplateParameter").modal({backdrop: 'static', keyboard: false});
-                    },
-                    error: function (e) {
-                        alert("Fail loading template parameter modal " + e);
-                    }
-                });
-            }
-        </script>
     </body>
 </html>

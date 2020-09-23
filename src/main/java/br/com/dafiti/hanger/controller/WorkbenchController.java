@@ -32,6 +32,7 @@ import br.com.dafiti.hanger.service.ConfigurationService;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.WorkbenchService;
 import br.com.dafiti.hanger.service.ConnectionService.QueryResultSet;
+import br.com.dafiti.hanger.service.TemplateService;
 import br.com.dafiti.hanger.service.UserService;
 import java.security.Principal;
 import java.util.List;
@@ -60,17 +61,21 @@ public class WorkbenchController {
     private final WorkbenchService workbenchService;
     private final ConfigurationService configurationService;
     private final UserService userService;
+    private final TemplateService templateService;
 
     @Autowired
     public WorkbenchController(
             ConnectionService connectionService,
             WorkbenchService workbenchService,
             ConfigurationService configurationService,
-            UserService userService) {
+            UserService userService,
+            TemplateService templateService) {
+
         this.connectionService = connectionService;
         this.workbenchService = workbenchService;
         this.configurationService = configurationService;
         this.userService = userService;
+        this.templateService = templateService;
     }
 
     /**
@@ -80,8 +85,8 @@ public class WorkbenchController {
      * @return SQL workbench template.
      */
     @GetMapping(path = "/workbench/")
-    public String workbench(Model model) {        
-        modelDefault(model);        
+    public String workbench(Model model) {
+        modelDefault(model);
         return "workbench/workbench";
     }
 
@@ -105,7 +110,7 @@ public class WorkbenchController {
 
         QueryResultSet queryResultSet = connectionService.getQueryResultSet(
                 connection,
-                workbenchService.replaceParameters(query, parameters),
+                templateService.setParameters(query, parameters),
                 userService.findByUsername(principal.getName()));
 
         if (queryResultSet.hasError()) {
@@ -197,7 +202,7 @@ public class WorkbenchController {
         model.addAttribute("connections", connectionService.list());
         model.addAttribute("maxRows", configurationService.getMaxRows());
     }
-    
+
     /**
      *
      * @param model
@@ -271,7 +276,7 @@ public class WorkbenchController {
         try {
             model.addAttribute("connection", connection);
             model.addAttribute("query", query);
-            model.addAttribute("parameters", workbenchService.extractParameters(query));
+            model.addAttribute("parameters", templateService.getParameters(query));
         } catch (Exception ex) {
             model.addAttribute("errorMessage", "Fail listing columns " + new Message().getErrorMessage(ex));
         }

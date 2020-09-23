@@ -403,7 +403,7 @@ public class JobController {
         try {
             //Identify if import or create a new job.
             if (importJob) {
-                model.addAttribute("jobs", jenkinsService.listJob(job.getServer()));
+                model.addAttribute("jobs", jobService.listNonExistsJobs(job.getServer()));
             } else {
                 job.setName(jobName);
                 jenkinsService.createJob(job);

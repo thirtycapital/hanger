@@ -54,7 +54,7 @@ public class TemplateController {
     }
 
     /**
-     * Save a t.
+     * Save a template.
      *
      * @param template Template
      * @param bindingResult BindingResult
@@ -80,7 +80,7 @@ public class TemplateController {
             model.addAttribute("templates", templateService.list());
         }
 
-        return "template/list";
+        return "redirect:/template/view/" + template.getId();
     }
 
     /**
@@ -106,6 +106,19 @@ public class TemplateController {
         model.addAttribute("templates", templateService.list());
         return "template/list";
     }
+    
+    /**
+     * View a template.
+     *
+     * @param model Model
+     * @param id ID
+     * @return Template view template.
+     */
+    @GetMapping(path = "/view/{id}")
+    public String viewTemplate(Model model, @PathVariable(value = "id") Long id) {
+        model.addAttribute("template", templateService.load(id));
+        return "template/view";
+    }    
 
     /**
      * Edit a template.

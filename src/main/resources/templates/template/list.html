@@ -25,12 +25,19 @@
                         <th style="width:90%">Name</th>
                         <th class="no-sort"></th>
                         <th class="no-sort"></th>
+                        <th class="no-sort"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="template : ${templates}">
                         <td th:text="${template.id}">#</td>
                         <td th:text="${template.name}">Name</td>    
+                        <td>
+                            <a th:href="@{'/template/view/' + ${template.id}}" 
+                               class="btn btn-generic btn-xs">                                
+                                <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> See
+                            </a>
+                        </td>
                         <td>
                             <a th:href="@{'/template/edit/' + ${template.id}}" 
                                class="btn btn-generic btn-xs">                                

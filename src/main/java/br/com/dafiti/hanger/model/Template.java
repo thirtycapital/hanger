@@ -30,7 +30,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import javax.validation.constraints.Size;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.json.JSONObject;
 
 /**
@@ -72,6 +76,15 @@ public class Template extends Tracker<Template> implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Transient
+    public String getHTMLDescription() {
+        Parser parser = Parser.builder().build();
+        Node document = parser.parse(this.getDescription());
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+
+        return renderer.render(document);
     }
 
     @Column(columnDefinition = "text")

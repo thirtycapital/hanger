@@ -25,6 +25,7 @@
                         <th style="width:90%">Name</th>
                         <th class="no-sort"></th>
                         <th class="no-sort"></th>
+                        <th class="no-sort"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,6 +38,12 @@
                                     th:attr="onclick='showTemplateParameterModal(' + ${template.id} + ');'"> [[${template.name}]]
                             </button>
                         </td>     
+                        <td>
+                            <a th:href="@{'/template/view/' + ${template.id}}" 
+                               class="btn btn-generic btn-xs">                                
+                                <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> See
+                            </a>
+                        </td>
                         <td>
                             <a th:href="@{'/template/edit/' + ${template.id}}" 
                                class="btn btn-generic btn-xs">                                

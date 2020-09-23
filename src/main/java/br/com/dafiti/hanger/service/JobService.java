@@ -35,6 +35,8 @@ import br.com.dafiti.hanger.repository.JobRepository;
 import static com.cronutils.model.CronType.QUARTZ;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -596,4 +598,35 @@ public class JobService {
     public HashSet<JobParent> getChildrenlist(Job job) {
         return jobParentService.findByParent(job);
     }
+    
+    /**
+     * Get list of only existing jobs at Jenkins.
+     * 
+     * @param server Server
+     * @return
+     * @throws URISyntaxException
+     * @throws IOException 
+     */
+    public List<String> listNonExistsJobs(Server server) throws URISyntaxException, IOException {
+        List<String> listJobServer = this.jenkinsService.listJob(server);
+        Iterable<Job> listJob = this.list();
+        List<String> list = new ArrayList<>();
+        
+        for (String jobServer : listJobServer) {
+            boolean jobExists = false;
+            
+            for (Job job : listJob) {
+                if (jobServer.equals(job.getName())) {
+                    jobExists = true;
+                    break;
+                }
+            }
+            
+            if (!jobExists) {
+                list.add(jobServer);
+            }
+        }
+        
+        return list;
+    }    
 }

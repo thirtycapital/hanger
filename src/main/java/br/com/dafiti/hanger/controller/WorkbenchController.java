@@ -276,6 +276,6 @@ public class WorkbenchController {
             model.addAttribute("errorMessage", "Fail listing columns " + new Message().getErrorMessage(ex));
         }
 
-        return "workbench/modalQueryParameter::metadata";
+        return "workbench/modalQueryParameter::parameter";
     }
 }

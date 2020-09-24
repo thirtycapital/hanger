@@ -28,11 +28,11 @@
                                         <div class="col-sm-12">
                                             <input 
                                                 class="form-control"
-                                                th:type="${parameter.value}" 
+                                                th:type="${parameter.value.get('type')}" 
                                                 th:name="${parameter.key}" 
                                                 th:id="${parameter.key}" 
-                                                maxlength="255"
-                                                required="true"/>
+                                                th:value="${parameter.value.get('default')}"
+                                                maxlength="255"/>
                                         </div>
                                     </div>
                                 </div>

@@ -42,6 +42,15 @@
                     <div class="form-group">
                         <div class="col-sm-10">
                             <label>Template</label> 
+                            <pre class="line-numbers">                                             
+Sintaxe:
+    <b>${{variable}}</b> where a variable could include the type and a default value attributes, as: 
+    <b>${{variable::{"type":"number", "default":10}}}</b> where <b>::</b> indicate that type and default value attributes of a variable are being suplied by <b>{"type":"number", "default":10}</b>
+
+Attributes: 
+    <b>type</b>: number, text and date are acceptable types. 
+    <b>default</b>: Any value are acceptable.
+                            </pre>  
                             <textarea class="form-control shell-script" rows="3" th:field="*{model}" placeholder="Template" maxlength="65000"></textarea>
                         </div>
                         <span th:if="${#fields.hasErrors('model')}" class="help-block" th:errors="*{model}"></span>
@@ -82,7 +91,7 @@
                         matchBrackets: true
                     });
 
-                    codeMirror.setSize("100%", "400px");
+                    codeMirror.setSize("100%", "300px");
                 }
             });
         </script>

@@ -84,10 +84,10 @@ public class WorkbenchController {
      * @param model Model
      * @return SQL workbench template.
      */
-    @GetMapping(path = "/workbench/")
+    @GetMapping(path = "/studio/")
     public String workbench(Model model) {
         modelDefault(model);
-        return "workbench/workbench";
+        return "workbench/studio";
     }
 
     /**
@@ -152,12 +152,12 @@ public class WorkbenchController {
      * @param model Model
      * @return SQL workbench template.
      */
-    @GetMapping(path = "/workbench/{id}")
+    @GetMapping(path = "/studio/{id}")
     public String workbench(
             @PathVariable(name = "id") WorkbenchQuery query,
             Model model) {
         modelDefault(model, query.getQuery(), query.getConnection());
-        return "workbench/workbench";
+        return "workbench/studio";
     }
 
     /**
@@ -172,7 +172,7 @@ public class WorkbenchController {
             @PathVariable(name = "id") JobCheckup checkup,
             Model model) {
         modelDefault(model, checkup.getQuery(), checkup.getConnection());
-        return "workbench/workbench";
+        return "workbench/studio";
     }
 
     /**
@@ -182,12 +182,12 @@ public class WorkbenchController {
      * @param model Model
      * @return SQL workbench template.
      */
-    @GetMapping(path = "/workbench/email/{id}")
+    @GetMapping(path = "/studio/email/{id}")
     public String workbench(
             @PathVariable(name = "id") WorkbenchEmail email,
             Model model) {
         modelDefault(model, email.getQuery(), email.getConnection());
-        return "workbench/workbench";
+        return "workbench/studio";
     }
 
     /**

@@ -162,7 +162,7 @@ public class WorkbenchEmailController {
             redirectAttributes.addFlashAttribute("errorMessage",
                     new Message().getErrorMessage(exception));
         }
-        return "redirect:/workbench/workbench/";
+        return "redirect:/workbench/studio/";
     }
 
     /**

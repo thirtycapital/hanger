@@ -42,8 +42,9 @@
                     <div class="form-group">
                         <div class="col-sm-10">
                             <label>Template</label> 
-                            <pre class="no-border">    
-                                <code class="language-shell">
+                            <textarea class="form-control shell-script" rows="3" th:field="*{model}" placeholder="Template" maxlength="65000"></textarea>
+                            <div class="space-top">
+                                <pre class="language-free no-border">    
 Sintaxe:
     <b>${{variable}}</b> where a variable could include the type and a default value attributes, as: 
     <b>${{variable::{"type":"number", "default":10}}}</b> where <b>::</b> indicate that type and default value attributes of a variable are being suplied by <b>{"type":"number", "default":10}</b>
@@ -51,9 +52,8 @@ Sintaxe:
 Attributes: 
     <b>type</b>: number, text and date are acceptable types. 
     <b>default</b>: Any value are acceptable.
-                                </code>
-                            </pre>  
-                            <textarea class="form-control shell-script" rows="3" th:field="*{model}" placeholder="Template" maxlength="65000"></textarea>
+                                </pre>   
+                            </div>
                         </div>
                         <span th:if="${#fields.hasErrors('model')}" class="help-block" th:errors="*{model}"></span>
                     </div>

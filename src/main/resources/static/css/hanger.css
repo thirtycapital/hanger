@@ -73,7 +73,6 @@ pre[class*="language-"] {
 pre[class*="language-free"] {
     padding-left: 20px;
     border: none;
-    border-left: 1px solid #D8D8D8;
 }
 
 code[class*="language-free"] {

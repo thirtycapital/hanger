@@ -30,6 +30,12 @@
                         </div> 
                     </div>
 
+                    <div th:if="${not connected}">
+                        <div class="alert alert-danger" role="alert" style="margin-bottom: 0">
+                            <span>Disconnect from Jenkins</span>
+                        </div>
+                    </div>
+
                     <div th:if="${ job.server == null }">
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                             <label class="btn radio-generic active" data-toggle="tooltip" data-placement="bottom" title="Import existing job from Jenkins">
@@ -197,16 +203,6 @@
                                 </td>
                             </tr>
                         </table>
-                    </div>
-
-                    <div th:if="${not connected}" class="alert alert-danger" role="alert" style="margin-bottom: 0">
-                        <fieldset>
-                            <legend>
-                                Shell Script
-                            </legend>
-                        </fieldset>
-
-                        <span>Disconnect from Jenkins, not able to recovery or update shell scripts</span>
                     </div>
 
                     <div th:if="${not #lists.isEmpty(job.shellScript)}"> 

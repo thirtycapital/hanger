@@ -20,9 +20,27 @@ Utilizando o [Maven](https://maven.apache.org/):
 - O arquivo hanger.war será gerado no subdiretório *target*. 
 
 ##### CONFIGURAÇÃO
+- Crie um Banco de dados no Mysql/MariaDB e um usuário com permissão total apenas para o banco que irá receber o metadado do Hanger.
+
+```
+#Exemplo para execução com o usuário root/admin do mysql/mariadb
+
+#Cria um banco de dados chamado hanger
+CREATE DATABASE hanger default character set utf8 default collate utf8_bin;
+
+#Cria um usuário chamado hanger
+CREATE USER hanger@localhost IDENTIFIED BY 'SetYourPasswor';
+
+#Libera acesso ao usuário hanger para o banco de dados com o mesmo nome.
+GRANT ALL PRIVILEGES on hanger.* to 'hanger'@'localhost' identified by 'SetYourPasswor';
+
+#Atualiza as permissões
+FLUSH PRIVILEGES;
+
+```
 
 - Crie o arquivo ~/.hanger/hanger.properties, com o seguinte conteúdo:
- 
+
 ```
 # Hanger MySQL
 spring.datasource.url=jdbc:mysql://<host>:<port>/<db>

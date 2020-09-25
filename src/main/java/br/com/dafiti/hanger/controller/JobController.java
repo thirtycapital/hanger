@@ -976,7 +976,7 @@ public class JobController {
             }
         }
 
-        if (job.getServer() == null) {
+        if (job.getServer() != null) {
             model.addAttribute("connected", jenkinsService.isRunning(job.getServer()));
         } else {
             model.addAttribute("connected", false);

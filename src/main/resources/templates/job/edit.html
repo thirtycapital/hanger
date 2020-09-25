@@ -30,13 +30,7 @@
                         </div> 
                     </div>
 
-                    <div th:if="${not connected}">
-                        <div class="alert alert-danger" role="alert" style="margin-bottom: 0">
-                            <span>Disconnect from Jenkins</span>
-                        </div>
-                    </div>
-
-                    <div th:if="${ job.server == null }">
+                    <div th:if="${ job.server == null }">                       
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                             <label class="btn radio-generic active" data-toggle="tooltip" data-placement="bottom" title="Import existing job from Jenkins">
                                 <input type="radio" name="importJob" id="importJob" value="true" checked="checked"> Import
@@ -64,6 +58,10 @@
                             <div th:if="${ job.server != null }">
                                 <input type="hidden" th:field="*{server}"/> 
                                 <input type="text" class="form-control" th:value="${job.server.name}" readonly="true"/>
+
+                                <div th:if="${not connected}" class="alert alert-danger" role="alert" style="margin-bottom: 0">
+                                    <span>Not connected to Jenkins server</span>
+                                </div>
                             </div>
                             <span th:if="${#fields.hasErrors('server')}" class="help-block" th:errors="*{server}"></span>
                         </div>

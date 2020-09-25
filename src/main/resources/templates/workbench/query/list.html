@@ -17,12 +17,10 @@
                     <tr>
                         <th style="width:3%">#</th>
                         <th>Name</th>
-                        <th style="width:30%">Query</th>
                         <th style="width:12%">Connection</th>
                         <th style="width:12%">Owner</th>
                         <th style="width:1%">
-                            <span class="glyphicon glyphicon-eye-open"
-                                  title="Shared"></span>
+                            <span class="glyphicon glyphicon-eye-open" title="Shared"></span>
                         </th>
                         <th style="width:1%" class="no-sort"></th>
                         <th style="width:1%" class="no-sort"></th>
@@ -33,25 +31,9 @@
                 <tbody>
                     <tr class="query-row" th:each="workbenchQuery : ${workbenchQueryList}">
                         <td th:text="${workbenchQuery.id}">#</td>
-                        <td th:text="${workbenchQuery.name}">#</td>
-                        <td>                                
-                            <span th:text="${#strings.length(workbenchQuery.query) > 70 ? #strings.substring(workbenchQuery.query,0,70) : workbenchQuery.query}"></span>                                
-                            <div class="btn-group" th:if="${#strings.length(workbenchQuery.query) > 70}">
-                                <button class="dropdown-toggle close" data-toggle="dropdown">...</button>
-                                <ul class="dropdown-menu">                                                
-                                    <li>
-                                        <pre class="line-numbers">
-                                                <code class="language-sql" th:text="${workbenchQuery.query}"></code>
-                                        </pre>
-                                    </li>  
-                                </ul>                                    
-                            </div>
-                            <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${workbenchQuery.query}">
-                                <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="Copy"></span>
-                            </a>
-                        </td>
-                        <td th:text="${workbenchQuery.connection.name}">#</td>
-                        <td th:text="${workbenchQuery.user.username}">#</td>  
+                        <td th:text="${workbenchQuery.name}">Name</td>
+                        <td th:text="${workbenchQuery.connection.name}">Connection</td>
+                        <td th:text="${workbenchQuery.user.username}">Owner</td>  
                         <td>                               
                             <div th:if="${workbenchQuery.shared}">
                                 <span class="glyphicon glyphicon-eye-open"></span>

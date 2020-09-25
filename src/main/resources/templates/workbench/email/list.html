@@ -17,8 +17,9 @@
                 <thead>
                     <tr>
                         <th style="width:3%">#</th>
-                        <th style="width:37%">Subject</th>
-                        <th>Connection</th>
+                        <th>Subject</th>
+                        <th style="width:12%">Connection</th>
+                        <th style="width:12%">Owner</th>
                         <th style="width:1%" class="no-sort"></th>
                         <th style="width:1%" class="no-sort"></th>
                         <th style="width:1%" class="no-sort"></th>
@@ -37,7 +38,8 @@
                                 th:value="${workbenchEmail.id}">
                             </button>
                         </td>
-                        <td th:text="${workbenchEmail.connection.name}"></td>
+                        <td th:text="${workbenchEmail.connection.name}">Connection</td>
+                        <td th:text="${workbenchEmail.user.username}">Owner</td>  
                         <td>
                             <button 
                                 type="button" 
@@ -190,7 +192,7 @@
                         }
                     });
                 });
-                
+
                 /**
                  * Show e-mail details modal. 
                  * @returns {undefined}

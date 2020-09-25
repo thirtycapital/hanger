@@ -199,6 +199,16 @@
                         </table>
                     </div>
 
+                    <div th:if="${not connected}" class="alert alert-danger" role="alert" style="margin-bottom: 0">
+                        <fieldset>
+                            <legend>
+                                Shell Script
+                            </legend>
+                        </fieldset>
+
+                        <span>Disconnect from Jenkins, not able to recovery or update shell scripts</span>
+                    </div>
+
                     <div th:if="${not #lists.isEmpty(job.shellScript)}"> 
                         <fieldset>
                             <legend>

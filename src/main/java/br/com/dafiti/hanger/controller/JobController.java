@@ -975,6 +975,12 @@ public class JobController {
                 model.addAttribute("triggers", jobService.getMesh(job, false));
             }
         }
+
+        if (job.getServer() == null) {
+            model.addAttribute("connected", jenkinsService.isRunning(job.getServer()));
+        } else {
+            model.addAttribute("connected", false);
+        }
     }
 
     /**

@@ -598,35 +598,35 @@ public class JobService {
     public HashSet<JobParent> getChildrenlist(Job job) {
         return jobParentService.findByParent(job);
     }
-    
+
     /**
      * Get list of only existing jobs at Jenkins.
-     * 
+     *
      * @param server Server
      * @return
      * @throws URISyntaxException
-     * @throws IOException 
+     * @throws IOException
      */
     public List<String> listNonExistsJobs(Server server) throws URISyntaxException, IOException {
         List<String> listJobServer = this.jenkinsService.listJob(server);
-        Iterable<Job> listJob = this.list();
+        Iterable<Job> listJob = this.listFromCache();
         List<String> list = new ArrayList<>();
-        
+
         for (String jobServer : listJobServer) {
             boolean jobExists = false;
-            
+
             for (Job job : listJob) {
                 if (jobServer.equals(job.getName())) {
                     jobExists = true;
                     break;
                 }
             }
-            
+
             if (!jobExists) {
                 list.add(jobServer);
             }
         }
-        
+
         return list;
-    }    
+    }
 }

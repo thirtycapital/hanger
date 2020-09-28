@@ -51,8 +51,18 @@ Sintaxe:
 
 Attributes: 
     <b>type</b>: number, text and date are acceptable types. 
-    <b>default</b>: Any value are acceptable.
-                                </pre>   
+    <b>default</b>: Any value are acceptable.         
+
+Sample:
+    cd /path/
+    bash kitchen.sh \
+    -file=/path/home/etl/glove/extractor/glove.kjb \
+    -param:VARIABLE=<b>${{VARIABLE NAME}}</b> \
+    -param:DEFAULT_TEXT=<b>${{DEFAULT TEXT VALUE::{"type":"text","default":"default_value"}}}</b> \
+    -param:DEFAULT_NUMBER=<b>${{DEFAULT NUMBER VALUE::{"type":"number","default":"0"}}}</b> \
+    -param:DEFAULT_DATE=<b>${{DEFAULT DATE VALUE::{"type":"date","default":"2020-09-28"}}}</b>
+    
+    </pre>
                             </div>
                         </div>
                         <span th:if="${#fields.hasErrors('model')}" class="help-block" th:errors="*{model}"></span>

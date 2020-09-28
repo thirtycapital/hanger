@@ -76,6 +76,8 @@ public class TemplateController {
             templateService.save(template);
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+            model.addAttribute("template", template);
+            return "template/edit";
         } finally {
             model.addAttribute("templates", templateService.list());
         }

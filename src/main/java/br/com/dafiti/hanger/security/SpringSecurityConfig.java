@@ -136,6 +136,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                     .authorizeRequests()
                     .expressionHandler(permissionHandler())
                     .antMatchers(
+                            "/template/**",
                             "/user/add/",
                             "/user/role/**",
                             "/user/active/**",

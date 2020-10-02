@@ -459,7 +459,7 @@ public class JenkinsService {
     }
 
     /**
-     * Clona a job template from jenkins.
+     * Clone a job template from jenkins.
      *
      * @param job Job
      * @param template

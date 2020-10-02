@@ -390,6 +390,7 @@ public class JobController {
      * @param job Job
      * @param importJob
      * @param jobName
+     * @param template
      * @param model
      * @return Job edit
      */
@@ -398,6 +399,7 @@ public class JobController {
             @Valid @ModelAttribute Job job,
             @RequestParam(name = "importJob", required = false) boolean importJob,
             @RequestParam(name = "jobName", required = false) String jobName,
+            @RequestParam(name = "select-template", required = false) String template,
             Model model) {
 
         try {
@@ -406,7 +408,8 @@ public class JobController {
                 model.addAttribute("jobs", jobService.listNonExistsJobs(job.getServer()));
             } else {
                 job.setName(jobName);
-                jenkinsService.createJob(job);
+                jenkinsService.clone(job, template);
+                job.setShellScript(jenkinsService.getShellScript(job, template));
                 model.addAttribute("jobs", job);
             }
         } catch (URISyntaxException | IOException ex) {

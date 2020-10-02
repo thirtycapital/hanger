@@ -35,6 +35,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -259,9 +261,20 @@ public class JenkinsService {
      * Retrieves one or more shell script commands related to a job.
      *
      * @param job Job
-     * @return Shell script list.
+     * @return
      */
     public List<String> getShellScript(Job job) {
+        return this.getShellScript(job, job.getName());
+    }
+
+    /**
+     * Retrieves one or more shell script commands related to a job.
+     *
+     * @param job Job
+     * @param jobName Name of job to get configuration from
+     * @return Shell script list.
+     */
+    public List<String> getShellScript(Job job, String jobName) {
         JenkinsServer jenkins;
         List<String> shellScripts = new ArrayList();
 
@@ -270,8 +283,8 @@ public class JenkinsService {
                 jenkins = this.getJenkinsServer(job.getServer());
 
                 if (jenkins != null) {
-                    if (jenkins.isRunning() && job.getName() != null) {
-                        String config = jenkins.getJobXml(job.getName());
+                    if (jenkins.isRunning() && jobName != null) {
+                        String config = jenkins.getJobXml(jobName);
 
                         if (config != null) {
                             Document document = Jsoup.parse(config);
@@ -285,7 +298,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                LOG.log(Level.ERROR, "Fail getting shell script from job " + job.getName() + "!", ex);
+                LOG.log(Level.ERROR, "Fail getting shell script from job " + jobName + "!", ex);
             }
         }
 
@@ -446,13 +459,14 @@ public class JenkinsService {
     }
 
     /**
-     * Create a new job.
+     * Clona a job template from jenkins.
      *
      * @param job Job
+     * @param template
      * @throws java.net.URISyntaxException
      * @throws java.io.IOException
      */
-    public void createJob(Job job) throws URISyntaxException, IOException {
+    public void clone(Job job, String template) throws URISyntaxException, IOException {
         JenkinsServer jenkins;
 
         if (job != null) {
@@ -461,25 +475,7 @@ public class JenkinsService {
             if (jenkins != null) {
                 if (jenkins.isRunning()) {
                     if (!this.exists(job)) {
-                        String config = ""
-                                + "<project>\n"
-                                + "     <description/>\n"
-                                + "     <keepDependencies>false</keepDependencies>\n"
-                                + "     <properties/>\n"
-                                + "     <properties>\n"
-                                + "         <com.synopsys.arc.jenkins.plugins.ownership.jobs.JobOwnerJobProperty plugin=\"ownership@0.12.1\"/>"
-                                + "     </properties>"
-                                + "     <scm class=\"hudson.scm.NullSCM\"/>\n"
-                                + "     <canRoam>true</canRoam>\n"
-                                + "     <disabled>false</disabled>\n"
-                                + "     <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>\n"
-                                + "     <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>\n"
-                                + "     <triggers/>\n"
-                                + "     <concurrentBuild>false</concurrentBuild>\n"
-                                + "     <builders/>\n"
-                                + "     <publishers/>\n"
-                                + "     <buildWrappers/>\n"
-                                + "</project>";
+                        String config = jenkins.getJobXml(template);
 
                         //Update Jenkins job. 
                         jenkins.createJob(job.getName(), config);
@@ -648,5 +644,42 @@ public class JenkinsService {
         }
 
         return exists;
+    }
+
+    /**
+     * Get Jenkins template list.
+     *
+     * @param server Server
+     * @return Job list
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    //@Cacheable(value = "serverTemplates", key = "#server.id")
+    public List<String> listTemplates(Server server) throws URISyntaxException, IOException {
+        List<String> templates = new ArrayList();
+        JenkinsServer jenkins = this.getJenkinsServer(server);
+
+        if (jenkins != null) {
+            if (jenkins.isRunning()) {
+                String prefix = "TEMPLATE_";
+
+                Map<String, String> filteredJobs = jenkins
+                        .getJobs()
+                        .entrySet()
+                        .stream()
+                        .filter(map -> map.getValue().getName().startsWith(prefix))
+                        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue().getName()));
+
+                filteredJobs.keySet().forEach((job) -> {
+                    templates.add(job);
+                });
+
+            } else {
+                throw new URISyntaxException("Jenkins is not running", "Can't import Jenkins template list");
+            }
+            jenkins.close();
+        }
+
+        return templates;
     }
 }

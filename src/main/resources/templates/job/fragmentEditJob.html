@@ -33,13 +33,17 @@
                                         th:text="${job}">
                                 </option>
                             </select>
-                        </div>
+                        </div>                        
 
                         <div th:if="${ job.name != null }">
                             <input type="text" maxlength="255" class="form-control" th:field="*{name}"/>
                         </div>
                         <span th:if="${#fields.hasErrors('name')}" class="help-block" th:errors="*{name}"></span>
-                    </div>
+
+                        <div th:if="*{ !assignedNode.isEmpty() }" class="alert alert-warning" role="alert" style="margin-bottom: 0">
+                            <span th:text="*{'Executes on node(s): ' + assignedNode}"></span>
+                        </div>
+                    </div>                    
                 </div>
 
                 <label>Alias</label>
@@ -853,7 +857,7 @@
                             <label class="pull-right label-edit-information" th:inline="text">Updated by [[*{modifiedBy}]] at [[*{#dates.format(updatedAt, 'yyyy-MM-dd HH:mm:ss')}]]</label>
                         </div>
                     </div>
-                </div>
+                </div>                
             </div>
         </div>       	
     </body>

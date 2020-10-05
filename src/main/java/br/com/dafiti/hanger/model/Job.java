@@ -76,6 +76,7 @@ public class Job extends Tracker<Job> implements Serializable {
     private String alias;
     private String description;
     private String timeRestriction;
+    private String assignedNode;
     private int retry;
     private int tolerance;
     private int wait;
@@ -265,7 +266,7 @@ public class Job extends Tracker<Job> implements Serializable {
     public void addEmail(WorkbenchEmail email) {
         this.email.add(email);
     }
-    
+
     @Transient
     public List<String> getShellScript() {
         return shellScript;
@@ -273,10 +274,19 @@ public class Job extends Tracker<Job> implements Serializable {
 
     public void setShellScript(List<String> shellScript) {
         this.shellScript = shellScript;
-    }    
-    
+    }
+
     public void addShellScript(String shellScript) {
         this.shellScript.add(shellScript);
+    }
+
+    @Transient
+    public String getAssignedNode() {
+        return assignedNode;
+    }
+
+    public void setAssignedNode(String assignedNode) {
+        this.assignedNode = assignedNode;
     }
 
     public boolean isRebuild() {

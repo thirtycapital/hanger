@@ -686,7 +686,7 @@ public class JenkinsService {
     }
 
     /**
-     * Retrieves one or more shell script commands related to a job.
+     * Retrieves a string with nodes that executes the job
      *
      * @param job Job
      * @return Shell script list.

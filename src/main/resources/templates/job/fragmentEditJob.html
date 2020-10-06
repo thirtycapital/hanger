@@ -40,7 +40,7 @@
                         </div>
                         <span th:if="${#fields.hasErrors('name')}" class="help-block" th:errors="*{name}"></span>
 
-                        <div th:if="*{ !assignedNode.isEmpty() }" class="alert alert-warning" role="alert" style="margin-bottom: 0">
+                        <div th:if="*{ assignedNode != null and !assignedNode.isEmpty() }" class="alert alert-warning" role="alert" style="margin-bottom: 0">
                             <span th:text="*{'Executes on node(s): ' + assignedNode}"></span>
                         </div>
                     </div>                    

@@ -478,7 +478,7 @@ public class JenkinsService {
                         String config = jenkins.getJobXml(template);
 
                         //Update Jenkins job. 
-                        jenkins.createJob(job.getName(), config);
+                        jenkins.createJob(job.getName(), config, true);
                     } else {
                         throw new URISyntaxException(job.getName(), "The job already exists on Jenkins");
                     }

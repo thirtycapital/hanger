@@ -412,6 +412,7 @@ public class JobController {
                 job.setName(jobName);
                 jenkinsService.clone(job, template);
                 job.setShellScript(jenkinsService.getShellScript(job, template));
+                job.setAssignedNode(jenkinsService.getAssignedNode(job));
                 model.addAttribute("jobs", job);
             }
         } catch (URISyntaxException | IOException ex) {

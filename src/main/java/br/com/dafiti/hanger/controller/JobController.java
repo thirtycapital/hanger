@@ -415,6 +415,7 @@ public class JobController {
                 job.setAssignedNode(jenkinsService.getAssignedNode(job));
                 model.addAttribute("jobs", job);
             }
+            model.addAttribute("readOnly", importJob);
         } catch (URISyntaxException | IOException ex) {
             job.setServer(null);
             model.addAttribute("errorMessage", "Fail: " + ex.getMessage());

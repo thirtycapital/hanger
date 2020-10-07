@@ -441,7 +441,6 @@ public class JobController {
             }
             
             job.setAssignedNode(jenkinsService.getAssignedNode(job));
-            model.addAttribute("jobs", job);            
             model.addAttribute("readOnly", true);
             
         } catch (URISyntaxException | IOException ex) {

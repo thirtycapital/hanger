@@ -90,10 +90,12 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
      */
     @Override
     public void onApplicationEvent(ContextRefreshedEvent e) {
-        int logRetention = Integer.valueOf(
-                configurationService.findByParameter("LOG_RETENTION_PERIOD").getValue());
-
+        int logRetention;
+        
         if (!this.setup) {
+            //Setup the configuration table. 
+            configurationService.createConfigurationIfNotExists();
+
             //Setup the additional privileges. 
             privilegeService.createPrivilegeIfNotExists("WORKBENCH");
             privilegeService.createPrivilegeIfNotExists("API");
@@ -124,6 +126,9 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
             LOG.log(Level.INFO, job.getName());
             jobNotificationService.notify(job, false, true);
         });
+
+        logRetention = Integer.valueOf(
+                configurationService.findByParameter("LOG_RETENTION_PERIOD").getValue());
 
         //Run log cleanup on the context refresh.
         jobCheckupLogService.cleaneup(expiration(logRetention));

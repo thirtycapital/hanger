@@ -51,8 +51,6 @@ public class ConfigurationService {
         this.configurationRepository = configurationRepository;
         this.configurationGroupService = configurationGroupService;
         this.passwordCryptor = passwordCryptor;
-
-        this.init();
     }
 
     public Iterable<Configuration> list() {
@@ -123,7 +121,7 @@ public class ConfigurationService {
     /**
      * Insert default values into Configuration table.
      */
-    private void init() {
+    public void createConfigurationIfNotExists() {
         //E-mail configuration.
         ConfigurationGroup emailGroup = new ConfigurationGroup("E-mail");
         emailGroup = this.configurationGroupService.save(emailGroup, true);

@@ -167,6 +167,29 @@ public class JobController {
         model.addAttribute("jobs", jobService.listFromCache());
         return "job/list";
     }
+    
+    /**
+     * List job of a server.
+     *
+     * @param server Server
+     * @return Job list modal
+     */
+    @GetMapping(path = "/list/{serverID}")
+    @ResponseBody
+    public List<String> listJobServer(
+            @PathVariable(value = "serverID") Server server) {
+        List<String> jobs = null;
+
+        if (server != null) {
+            try {
+                jobs = jobService.listNonExistsJobs(server);
+            } catch (URISyntaxException | IOException ex) {
+                jobs = null;
+            }
+        }
+
+        return jobs;
+    }
 
     /**
      * Edit a job.
@@ -391,8 +414,9 @@ public class JobController {
      *
      * @param job Job
      * @param importJob
-     * @param jobName
+     * @param newJobName
      * @param template
+     * @param importJobName
      * @param model
      * @return Job edit
      */
@@ -400,22 +424,26 @@ public class JobController {
     public String loadJob(
             @Valid @ModelAttribute Job job,
             @RequestParam(name = "importJob", required = false) boolean importJob,
-            @RequestParam(name = "jobName", required = false) String jobName,
+            @RequestParam(name = "jobName", required = false) String newJobName,
             @RequestParam(name = "select-template", required = false) String template,
+            @RequestParam(name = "select-job", required = false) String importJobName,
             Model model) {
 
         try {
             //Identify if import or create a new job.
             if (importJob) {
-                model.addAttribute("jobs", jobService.listNonExistsJobs(job.getServer()));
+                job.setName(importJobName);
+                job.setShellScript(jenkinsService.getShellScript(job));
             } else {
-                job.setName(jobName);
+                job.setName(newJobName);
                 jenkinsService.clone(job, template);
                 job.setShellScript(jenkinsService.getShellScript(job, template));
-                job.setAssignedNode(jenkinsService.getAssignedNode(job));
-                model.addAttribute("jobs", job);
             }
-            model.addAttribute("readOnly", importJob);
+            
+            job.setAssignedNode(jenkinsService.getAssignedNode(job));
+            model.addAttribute("jobs", job);            
+            model.addAttribute("readOnly", true);
+            
         } catch (URISyntaxException | IOException ex) {
             job.setServer(null);
             model.addAttribute("errorMessage", "Fail: " + ex.getMessage());

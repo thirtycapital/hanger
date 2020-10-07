@@ -65,6 +65,11 @@
                     // Default value is to import jobs.
                     var importJob = true;
 
+                    // Load jobs list only when select server
+                    if ($("#select-server").val() !== undefined) {
+                        loadJobList();
+                    }
+
                     $("input[name=importJob]").on("change", function () {
                         //Identify if is import or create a new job.
                         importJob = $(this).val() === 'true';
@@ -72,6 +77,9 @@
                         if (importJob) {
                             // Hides div for new job
                             $(".div_new_job").hide("fast");
+                            
+                            // Show div for import
+                            $(".div_import").show("fast");                            
 
                             // When is import, job name is not required.
                             $("#jobName").removeAttr("required");
@@ -84,8 +92,14 @@
 
                             // Button Next appear on import operation.
                             $('#partial_load_job').prop('disabled', false);
+                            
+                            // Loads job list of jenkins
+                            loadJobList();
 
                         } else {
+                            // Hide div for import
+                            $(".div_import").hide("fast");
+                            
                             // Appears div for new job.
                             $(".div_new_job").show("fast");
 
@@ -108,8 +122,9 @@
 
                     //Identify if is import or create a new job.
                     $("#select-server").on("change", function () {
-                        // Only loads template list when is a new job.
-                        if (!importJob) {
+                        if (importJob) {
+                            loadJobList();
+                        } else {
                             loadTemplateList();
                         }
                     });
@@ -152,6 +167,48 @@
                                 $('#select-template').empty();
                             }
                         });
+                    }
+                    
+                    /**
+                     * Loads jobs related to selected server. 
+                     * @returns {undefined}
+                     */
+                    function loadJobList() {
+                        var url = /*[[@{/job/list/}]]*/ "/job/list/";
+                        var server = $("#select-server").val();
+
+                        if ((server !== null) && (server !== undefined)) {
+                            $.ajax({
+                                type: "GET",
+                                url: url + server,
+                                timeout: 5000,
+                                success: function (jobs) {
+                                    // If jobs load successfully Nest button appears.
+                                    $('#partial_load_job').prop('disabled', false);
+
+                                    //Fetch jobs and put it into select/option.
+                                    for (var index = 0; index < jobs.length; index++) {
+                                        $("#select-job").append(new Option(jobs[index], jobs[index]));
+                                    }
+
+                                    // Refresh component.
+                                    $('#select-job').selectpicker('refresh');
+                                },
+                                error: function (xhr, ajaxOptions, thrownError) {
+                                    $('#select-job').empty();
+                                    $('#select-job').selectpicker('refresh');
+                                    toastr.error("Error trying to get list of jobs " + xhr.responseText);
+                                },
+                                beforeSend: function () {
+                                    // Before ajax is complete, disable next button
+                                    $('#partial_load_job').prop('disabled', true);
+
+                                    // Select picket will be feed in case of success
+                                    $('#select-job').selectpicker('refresh');
+                                    $('#select-job').empty();
+                                }
+                            });
+                        }
                     }
 
                     /**

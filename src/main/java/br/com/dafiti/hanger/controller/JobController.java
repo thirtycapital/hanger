@@ -167,7 +167,7 @@ public class JobController {
         model.addAttribute("jobs", jobService.listFromCache());
         return "job/list";
     }
-    
+
     /**
      * List job of a server.
      *
@@ -439,10 +439,10 @@ public class JobController {
                 jenkinsService.clone(job, template);
                 job.setShellScript(jenkinsService.getShellScript(job, template));
             }
-            
+
             job.setAssignedNode(jenkinsService.getAssignedNode(job));
             model.addAttribute("readOnly", true);
-            
+
         } catch (URISyntaxException | IOException ex) {
             job.setServer(null);
             model.addAttribute("errorMessage", "Fail: " + ex.getMessage());
@@ -932,8 +932,7 @@ public class JobController {
         try {
             jobService.refresh();
             jenkinsService.refreshCache();
-
-            model.addAttribute("jobs", jobService.listFromCache());
+            slackService.refresh();
 
             redirectAttributes.addFlashAttribute("successMessage", "Cache updated successfully!");
         } catch (Exception ex) {

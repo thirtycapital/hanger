@@ -37,7 +37,9 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.client.RestTemplate;
@@ -170,4 +172,10 @@ public class SlackService {
             }
         }
     }
+
+    @Caching(evict = {
+        @CacheEvict(value = "slackChannels", allEntries = true)})
+    public void refresh() {
+    }
+
 }

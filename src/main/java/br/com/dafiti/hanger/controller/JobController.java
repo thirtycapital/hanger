@@ -187,7 +187,6 @@ public class JobController {
             try {
                 jobs = jobService.listNonExistsJobs(server);
             } catch (URISyntaxException | IOException ex) {
-                jobs = null;
             }
         }
 
@@ -320,7 +319,7 @@ public class JobController {
      * @return boolean with status of job build.
      */
     private boolean jobBuild(Job job) {
-        this.jobBuild(job, false);
+        return this.jobBuild(job, false);
     }
 
     /**
@@ -1013,9 +1012,9 @@ public class JobController {
     /**
      * Default model.
      *
-     * @param model        Model
-     * @param job          Job
-     * @param checkpuIndex int
+     * @param model Model
+     * @param job Job
+     * @param checkupIndex int
      */
     private void modelDefault(Model model, Job job, int checkupIndex) {
         model.addAttribute("expanded", checkupIndex);

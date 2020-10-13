@@ -8,7 +8,7 @@
         <div class="container-fluid main-content">
             <div>
                 <form id="configuration" class="form-horizontal space-top" th:object="${configurationGroup}" th:action="@{/configuration/save}" method="post">
-                    
+
                     <div th:if="${ errorMessage != null }">
                         <div class="alert alert-danger" role="alert">
                             <span th:text="${errorMessage}"></span>
@@ -20,7 +20,7 @@
                             <span th:text="${successMessage}"></span>
                         </div>  
                     </div>
-                    
+
                     <!-- Fetch the configuration group -->
                     <fieldset th:each="configGroup : ${configurationGroup}">
                         <legend th:text="${configGroup.name}"></legend>
@@ -58,7 +58,7 @@
 
                     <fieldset>
                         <legend>Maintenance</legend>                    
-                        <div class="btn-group">
+                        <div class="btn-group dropup">
                             <a class="btn btn-generic btn-sm" th:id="modal_change_logo">                                         
                                 <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Update logo
                             </a>
@@ -67,10 +67,25 @@
                                 <span class="glyphicon glyphicon-refresh"></span> Update cache 
                             </a>
 
-                            <a class="btn btn-delete btn-space btn-sm" th:attr="onclick='modalUpdate();'">
-                                <span class="glyphicon glyphicon-plane" aria-hidden="true"></span> 
-                                Update plugin
-                            </a>
+                            <div class="btn-group pull-right dropup">
+                                <a class="btn btn-delete btn-space btn-sm" th:attr="onclick='modalUpdate();'">
+                                    <span class="glyphicon glyphicon-plane" aria-hidden="true"></span> 
+                                    Update plugin
+                                </a>
+
+                                <button type="button" class="btn btn-generic btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only"></span>
+                                </button>
+
+                                <ul class="dropdown-menu">                                                                             
+                                    <li th:each="server : ${servers}">
+                                        <a th:inline= "text" class="btn btn-sm pull-left" th:attr="onclick='modalUpdate('+${server.id}+');'">
+                                            <span  class="glyphicon glyphicon-tasks" aria-hidden="true"></span> [[${server.name}]]
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </fieldset>
                 </form>
@@ -114,6 +129,8 @@
         </div>
         <br />
         <script th:inline="javascript">
+            var server;
+
             // Save the especific input configuration on database.
             $("input").blur(function () {
                 var value = $(this).val();
@@ -197,11 +214,23 @@
              * @returns {undefined}
              */
             function modalUpdate() {
+                //Identify if update all servers or just one.
+                if (arguments.length > 0) {
+                    server = arguments[0];
+                } else {
+                    server = null;
+                }
+
                 $("#modalUpdate").modal({backdrop: 'static', keyboard: false});
             }
 
             $("#modalConfirmUpdate").click(function () {
                 var url = /*[[@{/job/maintenance/plugin/}]]*/ "/job/maintenance/plugin/";
+
+                //Identify if update just one server
+                if (server) {
+                    url = url + server;
+                }
 
                 // Hide control buttons and appears loading bar.
                 $("#modalConfirmUpdate").hide();
@@ -211,7 +240,7 @@
                 $.ajax({
                     type: "GET",
                     url: url,
-                    timeout: 30000,
+                    timeout: 100000,
                     success: function (result) {
                         location.reload();
                     },

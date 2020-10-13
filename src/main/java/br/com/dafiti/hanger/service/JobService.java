@@ -107,6 +107,10 @@ public class JobService {
         return jobRepository.findByNameContainingOrAliasContaining(search, search);
     }
 
+    public List<Job> findByServer(Server server) {
+        return jobRepository.findByServer(server);
+    }
+
     @Cacheable(value = "job_count")
     public long count() {
         return jobRepository.count();

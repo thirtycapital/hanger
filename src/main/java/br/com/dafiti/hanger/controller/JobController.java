@@ -956,7 +956,7 @@ public class JobController {
     }
 
     /**
-     * Update notification plugin.
+     * Update notification plugin for all server.
      *
      * @return Job list
      */
@@ -966,6 +966,31 @@ public class JobController {
         List<Job> jobs = (List) jobService.list();
 
         auditorService.publish("PLUGIN_MAINTENANCE");
+
+        jobs.forEach(job -> {
+            LOG.log(Level.INFO, "Updating plugin for: " + job.getName());
+            jenkinsService.updateJob(job);
+        });
+
+        return true;
+    }
+
+    /**
+     * Update notification plugin for a specific server.
+     *
+     * @param server Server
+     * @return Job list
+     */
+    @GetMapping(path = "/maintenance/plugin/{id}")
+    @ResponseBody
+    public boolean pluginMaintenance(
+            @PathVariable(value = "id") Server server) {
+        List<Job> jobs = jobService.findByServer(server);
+
+        auditorService.publish("PLUGIN_MAINTENANCE",
+                new AuditorData()
+                        .addData("server", server.getName())
+                        .getData());
 
         jobs.forEach(job -> {
             LOG.log(Level.INFO, "Updating plugin for: " + job.getName());

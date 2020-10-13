@@ -24,11 +24,13 @@
 package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.exception.Message;
+import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.model.User;
+import br.com.dafiti.hanger.service.AuditorService;
 import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.JobDetailsService;
 import br.com.dafiti.hanger.service.WorkbenchEmailService;
@@ -67,17 +69,21 @@ public class WorkbenchEmailController {
     private final WorkbenchEmailService workbenchEmailService;
     private final ConnectionService connectionService;
     private final JobDetailsService jobDetailsService;
+    private final AuditorService auditorService;
 
     @Autowired
     public WorkbenchEmailController(
             UserService userService,
             WorkbenchEmailService workbenchEmailService,
             ConnectionService connectionService,
-            JobDetailsService jobDetailsService) {
+            JobDetailsService jobDetailsService,
+            AuditorService auditorService) {
+
         this.userService = userService;
         this.workbenchEmailService = workbenchEmailService;
         this.connectionService = connectionService;
         this.jobDetailsService = jobDetailsService;
+        this.auditorService = auditorService;
     }
 
     /**
@@ -192,10 +198,15 @@ public class WorkbenchEmailController {
      * @throws java.io.IOException
      */
     @ApiOperation(value = "Send a workbench saved e-mail")
-    @PostMapping(path = "api/send/{id}")
+    @PostMapping(path = "/api/send/{id}")
     public ResponseEntity send(
             @PathVariable(name = "id") WorkbenchEmail workbenchEmail,
             Principal principal) throws IOException, Exception {
+
+        auditorService.publish("API_SEND_MAIL",
+                new AuditorData()
+                        .addData("name", workbenchEmail.getSubject())
+                        .getData());
 
         if (workbenchEmailService.toEmail(workbenchEmail, principal)) {
             return ResponseEntity
@@ -279,7 +290,7 @@ public class WorkbenchEmailController {
      *
      * @param model
      * @param id
-     * @return
+     * @return WorkbenchEmail edit template.
      */
     @GetMapping(path = "/edit/{id}")
     public String edit(
@@ -290,13 +301,13 @@ public class WorkbenchEmailController {
     }
 
     /**
-     * Save a server.
+     * Save a WorkbenchEmail.
      *
      * @param workbenchEmail WorkbenchEmail
      * @param bindingResult BindingResult
      * @param principal
      * @param model Model
-     * @return Server edit template.
+     * @return WorkbenchEmail edit template.
      */
     @PostMapping(path = "/save")
     public String saveEmail(

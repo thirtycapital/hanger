@@ -332,7 +332,7 @@ public class JobController {
     private boolean jobBuild(Job job, boolean api) {
         boolean built = false;
 
-        auditorService.publish(api ? "BUILD_JOB_API" : "BUILD_JOB",
+        auditorService.publish(api ? "API_BUILD_JOB" : "BUILD_JOB",
                 new AuditorData()
                         .addData("name", job.getName())
                         .getData());
@@ -1067,7 +1067,7 @@ public class JobController {
      * @param server Server
      * @param jobList Parent or Children Job List
      * @param children Identify if propagation or flow
-     * @param rebuildable Identify if should make all childs rebuildable.
+     * @param rebuildable Identify if should make all children rebuildable.
      * @param principal Logged User.
      * @param model model
      * @param request

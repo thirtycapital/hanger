@@ -203,7 +203,7 @@ public class WorkbenchEmailController {
             @PathVariable(name = "id") WorkbenchEmail workbenchEmail,
             Principal principal) throws IOException, Exception {
 
-        auditorService.publish("API_SEND_MAIL",
+        auditorService.publish("API_SEND_EMAIL",
                 new AuditorData()
                         .addData("name", workbenchEmail.getSubject())
                         .getData());

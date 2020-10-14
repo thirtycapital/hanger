@@ -243,9 +243,7 @@ public class JobCheckupService {
                         this.save(checkup);
 
                         //Identifies if should retry.
-                        if (retry < job.getRetry()
-                                || job.getRetry() == 0) {
-
+                        if (retry < (job.getRetry() == 0 ? 1 : job.getRetry())) {
                             if (!validated && !log) {
                                 //Increases the retry counter.
                                 retryService.increase(job);

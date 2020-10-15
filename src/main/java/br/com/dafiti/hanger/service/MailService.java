@@ -81,7 +81,7 @@ public class MailService {
 
             if (blueprint.getRecipients().size() > 0) {
                 for (String recipient : blueprint.getRecipients()) {
-                    mail.addTo(recipient);
+                    mail.addBcc(recipient);
                 }
             }
 

@@ -109,7 +109,7 @@ public class AuditorService {
      * @param data Event payload
      */
     public void publish(String type, Map<String, Object> data) {
-        String username = "hanger";
+        String username = "";
         Authentication authentication = SecurityContextHolder
                 .getContext()
                 .getAuthentication();

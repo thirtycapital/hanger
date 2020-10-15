@@ -637,7 +637,7 @@ public class JobCheckupService {
 
         //Identifies if the job has approver. 
         if (job.getApprover() != null) {
-            Blueprint blueprint = new Blueprint(job.getApprover().getEmail(), "Nick Checkup failure", "checkupFailure");
+            Blueprint blueprint = new Blueprint(job.getApprover().getEmail(), "Hanger Checkup failure", "checkupFailure");
             blueprint.addVariable("approver", job.getApprover().getFirstName());
             blueprint.addVariable("job", job.getName());
             blueprint.addVariable("checkup", checkup.getDescription());

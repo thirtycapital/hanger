@@ -620,7 +620,7 @@ public class JobService {
             boolean jobExists = false;
 
             for (Job job : listJob) {
-                if (jobServer.equals(job.getName())) {
+                if (jobServer.equalsIgnoreCase(job.getName())) {
                     jobExists = true;
                     break;
                 }

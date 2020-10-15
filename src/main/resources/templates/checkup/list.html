@@ -91,7 +91,7 @@
                                 <th style="width:5%" class="img-sort">Status</th> 
                                 <th style="width:10%">Date</th> 
                                 <th style="width:5%">Scope</th> 
-                                <th style="width:25%">SQL</th>
+                                <th style="width:30%">SQL</th>
                                 <th style="width:5%">Result</th>
                                 <th style="width:10%" class="no-sort"></th>    
                                 <th style="width:5%">Threshold</th>     
@@ -140,15 +140,21 @@
                                 <td th:text="${checkupLog.conditional}"></td>  
                                 <td th:text="${checkupLog.threshold}"></td>  
                                 <td th:text="${checkupLog.success ? '' : checkupLog.action}"></td>   
-                                <td>
-                                    <div th:if="${checkup.command}">
-                                        <table  class="table borderless">
+                                <td>                                   
+                                    <div th:if="${not #lists.isEmpty(checkupLog.commandLog)}">
+                                        <table class="table borderless">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:10%" class="img-sort">Status</th> 
+                                                    <th class="no-sort">Command</th>
+                                                </tr>
+                                            </thead>
                                             <tbody>
-                                                <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}" th:remove="tag"> 
+                                                <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}"> 
                                                     <td style="width:5%"><img class="hanger-img-sm" th:src="@{'/images/' + ${ commandLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="alt=${ commandLog.success }"></img></td>
                                                     <td>
                                                         <a th:inline="text" th:href="@{'/checkup/log/' + ${commandLog.id}}">
-                                                            [[${ (commandLogStat.index + 1) + '. ' + commandLog.commandType}]]
+                                                            [[${ (commandLogStat.index + 1) + '° ' + commandLog.commandType}]]
                                                         </a>
                                                     </td>
                                                 </tr>

@@ -370,19 +370,24 @@
 
                                         <!--Checkup command-->
                                         <div th:if="*{not #lists.isEmpty(checkup[__${stat.index}__].command)}"> 
+                                            <fieldset>
+                                                <legend>
+                                                    Command
+                                                </legend>
+                                            </fieldset>
+
                                             <div th:each="command, commandStat : *{checkup[__${stat.index}__].command}">
                                                 <div class="form-group">  
                                                     <div class="col-sm-10">    
-                                                        <label>Failure command type</label> 
+                                                        <label th:text="${ (commandStat.index + 1) + '°' }"></label> 
                                                         <input type="text" class="form-control" maxlength="10" th:field="*{checkup[__${stat.index}__].command[__${commandStat.index}__].commandType}" disabled="true"/>  
                                                     </div>
                                                 </div>
 
                                                 <div class="form-group">
                                                     <div class="col-sm-10">
-                                                        <label>Failure command</label>
                                                         <pre class="line-numbers">
-                                                                 <code th:class="*{checkup[__${stat.index}__].command[__${commandStat.index}__].commandType} == 'SQL' ? language-sql : language-bash" th:text="*{checkup[__${stat.index}__].command[__${commandStat.index}__].command}"></code>
+                                                              <code th:class="*{checkup[__${stat.index}__].command[__${commandStat.index}__].commandType} == 'SQL' ? language-sql : language-bash" th:text="*{checkup[__${stat.index}__].command[__${commandStat.index}__].command}"></code>
                                                         </pre>
                                                     </div>
                                                 </div>

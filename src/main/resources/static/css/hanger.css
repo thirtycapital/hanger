@@ -71,7 +71,7 @@ pre[class*="language-"] {
     padding-left: 0px;
     margin: 0px;
     background-color: transparent !important;
-    min-height: 30px;
+    min-height: 75px;
 }
 
 pre[class*="language-free"] {

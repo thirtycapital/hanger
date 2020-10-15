@@ -553,12 +553,17 @@
 
                                     <!--Checkup command-->
                                     <div th:if="*{not #lists.isEmpty(checkup[__${checkupStat.index}__].command)}">   
+                                        <fieldset>
+                                            <legend>
+                                                Command
+                                            </legend>
+                                        </fieldset>
+
                                         <div th:each="command, commandStat : *{checkup[__${checkupStat.index}__].command}">
                                             <input type="hidden" th:field="*{checkup[__${checkupStat.index}__].command[__${commandStat.index}__].id}"/>
-
                                             <div class="form-group">  
                                                 <div class="col-sm-10">    
-                                                    <label>Failure command type</label> 
+                                                    <label th:text="${ (commandStat.index + 1) + '°' }"></label> 
                                                     <select id="on-fail" 
                                                             class="selectpicker form-control" 
                                                             data-live-search="true" 
@@ -576,7 +581,6 @@
 
                                             <div class="form-group">   
                                                 <div class="col-sm-10">
-                                                    <label>Failure command</label>
                                                     <textarea class="form-control" 
                                                               rows="3" 
                                                               th:field="*{checkup[__${checkupStat.index}__].command[__${commandStat.index}__].command}" 
@@ -632,6 +636,7 @@
                         </legend>
                         <span>Send when this job finishes sucessfully</span>
                     </fieldset>
+
                     <br/>
 
                     <table class="table">

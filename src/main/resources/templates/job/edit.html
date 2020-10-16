@@ -7,7 +7,7 @@
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">        
             <div>    
-                <form class="form-horizontal" th:object="${job}" th:action="@{/job/save}" method="post">
+                <form class="form-horizontal" th:object="${job}" th:action="@{/job/save}" method="post" id="form-job">
                     <div class="form-group">
                         <div class="col-sm-10">
                             <!--Job ID-->
@@ -77,9 +77,9 @@
                         if (importJob) {
                             // Hides div for new job
                             $(".div_new_job").hide("fast");
-                            
+
                             // Show div for import
-                            $(".div_import").show("fast");                            
+                            $(".div_import").show("fast");
 
                             // When is import, job name is not required.
                             $("#jobName").removeAttr("required");
@@ -92,14 +92,14 @@
 
                             // Button Next appear on import operation.
                             $('#partial_load_job').prop('disabled', false);
-                            
+
                             // Loads job list of jenkins
                             loadJobList();
 
                         } else {
                             // Hide div for import
                             $(".div_import").hide("fast");
-                            
+
                             // Appears div for new job.
                             $(".div_new_job").show("fast");
 
@@ -168,7 +168,7 @@
                             }
                         });
                     }
-                    
+
                     /**
                      * Loads jobs related to selected server. 
                      * @returns {undefined}
@@ -229,6 +229,16 @@
                         $("#modal_wait").css("display", "none");
                         $("[id^=modal_add_parent_]").prop("disabled", false);
                         $("[id^=modal_add_shell_script_template_]").prop("disabled", false);
+                    });
+
+                    $("#form-job").submit(function (event) {
+                        $('#select-server').prop('readonly', true);
+                        $('#select-server').selectpicker('refresh');
+                        $('#select-job').prop('readonly', true);
+                        $('#select-job').selectpicker('refresh');
+                        $('#select-template').prop('readonly', true);
+                        $('#select-template').selectpicker('refresh');
+                        $("#jobName").prop("readonly", true);
                     });
 
                     /**

@@ -1099,3 +1099,9 @@ label.radio-generic:hover
     border: 1px solid #D8D8D8;
     background-color: #337ab7;
 }
+
+.alert-light{
+    color: #818182;
+    background-color: #f6faff;
+    border-color: #eee;
+}

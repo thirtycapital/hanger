@@ -75,7 +75,7 @@
                             </div>
                         </div> 
 
-                        <label>Time restriction</label>
+                        <label>Time restriction <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Cron based build time restriction"></span></label>
                         <div class="form-group">
                             <div class="col-sm-10">
                                 <input type="text" class="form-control" th:value="*{timeRestriction}" readonly="true"/>
@@ -85,9 +85,9 @@
                             </div>                
                         </div>
 
+                        <label>Eagerness <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Identifies that previous day executions, terminated within the tolerance period of hours, should be considered in the current day's data stream."></span></label>
                         <div class="form-group">
-                            <div class="col-sm-10">
-                                <label data-toggle="tooltip" title="Identifies that previous day executions, terminated within the tolerance period of hours, should be considered in the current day's data stream.">Eagerness</label>               
+                            <div class="col-sm-10">              
                                 <input type="number" min="0" max="12" class="form-control" maxlength="1" th:field="*{tolerance}" disabled="true"/>
                                 <span th:if="${#fields.hasErrors('tolerance')}" class="help-block" th:errors="*{tolerance}"></span>
                             </div>

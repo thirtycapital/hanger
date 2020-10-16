@@ -53,17 +53,22 @@
                     <span th:if="${#fields.hasErrors('description')}" class="help-block" th:errors="*{description}"></span>
                 </div>
 
-                <label>Time restriction</label>
+                <label>Time restriction <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Cron based build time restriction"></span></label>
                 <div class="form-group">
                     <div class="col-sm-10">
                         <input type="text" maxlength="255" class="form-control" th:field="*{timeRestriction}" placeholder="Cron expression"/>
                         <span th:if="${#fields.hasErrors('timeRestriction')}" class="help-block" th:errors="*{timeRestriction}"></span>
+                        <div class="alert alert-light" role="alert" style="margin-bottom: 0">
+                            Sintaxe:
+                            <b>&lt;Seconds&gt; &lt;Minutes&gt; &lt;Hours&gt; &lt;Day of month&gt; &lt;Month&gt; &lt;Day of week&gt; [Year]</b> where, for instance,
+                            <b>* * 11-12 ? * * *</b> allows a job to be build at <b>every hour between 11 and 12</b>. For more details reach the <a href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/tutorial-lesson-06.html" target="_blank">QUARTZ Cron Trigger Tutorial</a>
+                        </div>
                     </div>
                 </div>
 
+                <label>Eagerness <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Identifies that previous day executions, terminated within the tolerance period of hours, should be considered in the current day's data stream."></span></label>
                 <div class="form-group">
                     <div class="col-sm-10">
-                        <label data-toggle="tooltip" data-placement="right" title="Identifies that previous day executions, terminated within the tolerance period of hours, should be considered in the current day's data stream.">Eagerness</label>
                         <input type="number" min="0" max="12" class="form-control" maxlength="1" th:field="*{tolerance}" required="false" placeholder="Eagerness"/>
                         <span th:if="${#fields.hasErrors('tolerance')}" class="help-block" th:errors="*{tolerance}"></span>
                     </div>
@@ -71,7 +76,7 @@
 
                 <div class="form-group">
                     <div class="col-sm-10">
-                        <label title="Minutes beetwen rebuild">Rebuild Interval</label>
+                        <label title="Minutes beetwen rebuild">Rebuild interval</label>
                         <input type="number" min="0" max="720" class="form-control" maxlength="1" th:field="*{wait}" required="false" placeholder="Waiting time"/>
                         <span th:if="${#fields.hasErrors('wait')}" class="help-block" th:errors="*{wait}"></span>
                     </div>

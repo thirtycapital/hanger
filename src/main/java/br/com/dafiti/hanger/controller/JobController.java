@@ -413,6 +413,7 @@ public class JobController {
 
         try {
             jobService.saveAndRefreshCache(job);
+            jenkinsService.refreshCache();
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
             this.modelDefault(model, job);

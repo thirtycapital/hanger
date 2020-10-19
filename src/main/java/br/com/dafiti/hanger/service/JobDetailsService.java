@@ -219,6 +219,11 @@ public class JobDetailsService {
                 phase = Phase.NONE;
                 building
                         .append("Building now");
+            } else if (!jobBuildStatusService.isTimeRestrictionMatch(job.getTimeRestriction())) {
+                //Identifies if the job match a time restriction. 
+                status = Status.RESTRICTED;
+                phase = Phase.NONE;
+                building.append("RESTRICTED, Never build");
             } else {
                 try {
                     status = Status.valueOf(jobStatus.getFlow().toString());

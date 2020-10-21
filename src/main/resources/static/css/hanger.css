@@ -45,6 +45,23 @@ label {
     font-weight: normal;
 }
 
+.label-success {
+    background-color: #20b2aa;
+}
+
+.label-warning {
+    background-color: #ffa500;
+}
+
+.label-danger {
+    background-color: #dd424a;
+}
+
+.label-neutral {
+    background-color: #e5e8ec;
+    color: gray;
+}
+
 legend{
     color: black;
     font-weight: bold;

@@ -58,6 +58,10 @@ label {
 }
 
 .label-neutral {
+    background-color: lightgray;
+}
+
+.label-default {
     background-color: #e5e8ec;
     color: gray;
 }
@@ -458,13 +462,13 @@ code[class*="language-free"] {
 }
 
 .node>p {
-    padding-left: 45px;
+    --padding-left: 45px;
     margin: 0px;
     font-size: 11px;
 }
 
 .node-name {
-    padding-left: 45px;
+    --padding-left: 45px;
 }
 
 .node-phase {

@@ -115,9 +115,7 @@ public class MonitorController {
         Subject subject = new Subject();
         List<Job> jobs = new ArrayList();
 
-        if (id.equalsIgnoreCase("all")) {
-            jobs = (List) jobService.list();
-        } else if (StringUtils.isNumeric(id)) {
+        if (StringUtils.isNumeric(id)) {
             subject = subjectService.load(Long.valueOf(id));
             if (subject != null) {
                 jobs = jobService.findBySubjectOrderByName(subject);
@@ -126,6 +124,19 @@ public class MonitorController {
 
         modelDefault(model);
         modelDetails(model, subject, principal, jobs);
+
+        return "monitor/monitor";
+    }
+
+    @PostMapping("/detail/filter")
+    public String jobFilter(
+            Principal principal,
+            Model model,
+            HttpServletRequest request,
+            @RequestParam(value = "status", required = false, defaultValue = "") List<String> status) {
+        List<Job> jobs = subjectDetailsService.getFilteredJobs((List) jobService.list(), status);
+        modelDefault(model);
+        modelDetails(model, new Subject(), principal, jobs);
 
         return "monitor/monitor";
     }

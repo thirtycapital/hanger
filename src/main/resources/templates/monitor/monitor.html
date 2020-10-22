@@ -20,14 +20,43 @@
                         <span class="badge" th:text="${subjects.jobCount}"></span>
                     </a>
                 </li>
-                <li role="presentation" th:classappend="${#httpServletRequest.getRequestURI().endsWith('all') ? 'active home':''}">
-                    <a th:href="@{'/detail/' + all}" title="ALL">
-                        ALL 
+                <li role="presentation" th:classappend="${#httpServletRequest.getRequestURI().endsWith('filter') ? 'active home':''}">
+                    <a th:href="@{'/detail/' + filter}" title="ALL">
+                        ALL
                         <span class="badge" th:text="${all}"></span>
-                    </a>
+                    </a>                    
                 </li>
             </ul>
 
+            <div class="tab-content" th:if="${#httpServletRequest.getRequestURI().endsWith('filter')}">
+                <form class="form-horizontal" th:action="@{/detail/filter}" method="POST">
+                    <div class="space-top">
+                        <div class="form-group">                            
+                            <div class="col-md-12">
+                                <select class="selectpicker form-control" 
+                                        name="status"
+                                        data-live-search="true"  
+                                        data-actions-box="true"
+                                        multiple="true" 
+                                        th:checked="SUCCESS">
+
+                                    <option value="SUCCESS">SUCCESS</option>
+                                    <option value="WAITING">WAITING</option>
+                                    <option value="BUILDING">BUILDING</option>
+                                    <option value="RUNNING">RUNNING</option>
+                                    <option value="WARNING">WARNING</option>
+                                    <option value="FAILURE">FAILURE</option>                                    
+                                </select>                                
+                            </div>                        
+                        </div>
+                        <button type="submit" 
+                                class="btn btn-generic" 
+                                id="filter">
+                            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Filter
+                        </button>  
+                    </div>             
+                </form>
+            </div>
             <hr/>
 
             <div class="tab-content">

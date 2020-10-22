@@ -39,6 +39,7 @@
                                         data-actions-box="true"
                                         multiple="true" 
                                         th:checked="SUCCESS">
+                                    
                                     <option value="SUCCESS">SUCCESS</option>
                                     <option value="WAITING">WAITING</option>
                                     <option value="BUILDING">BUILDING</option>
@@ -80,7 +81,7 @@
                             <tr th:each="subjects : ${subjectDetails}">
                                 <td><a th:href="@{'/detail/' + ${subjects.subject.id}}" th:text="${subjects.subject.name}" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
 
-                                <td width="18.5%">
+                                <td width="22.5%">
                                     <div class="progress">
                                         <div class="progress-bar progress-bar-success" th:inline="text" th:attr="style='width:' +  ${ subjects.successPercent } + '%'" title="SUCCESS">
                                             <span class="sr-only"></span> [[${subjects.successPercent}]]%

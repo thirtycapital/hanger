@@ -71,7 +71,6 @@ public class SubjectDetailsService {
             List<Job> subjectJobs) {
 
         int building = 0;
-        int running = 0;
         int success = 0;
         int warning = 0;
         int failure = 0;
@@ -96,7 +95,7 @@ public class SubjectDetailsService {
                             if ((jobBuild.getPhase().equals(Phase.STARTED) || jobBuild.getPhase().equals(Phase.QUEUED))
                                     && jobBuild.getStatus().equals(Status.SUCCESS)) {
 
-                                running += 1;
+                                building += 1;
 
                                 //Identify success jobs.
                             } else if (jobBuild.getPhase().equals(Phase.FINALIZED)
@@ -136,7 +135,6 @@ public class SubjectDetailsService {
         return new SubjectDetails(
                 subject,
                 building,
-                running,
                 success,
                 warning,
                 failure,
@@ -212,7 +210,7 @@ public class SubjectDetailsService {
                             if ((jobBuild.getPhase().equals(Phase.STARTED) || jobBuild.getPhase().equals(Phase.QUEUED))
                                     && jobBuild.getStatus().equals(Status.SUCCESS)) {
 
-                                if (status.contains("RUNNING")) {
+                                if (status.contains("BUILDING")) {
                                     filteredJobs.add(job);
                                 }
 

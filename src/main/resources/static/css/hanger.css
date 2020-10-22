@@ -1126,3 +1126,8 @@ label.radio-generic:hover
     background-color: #f6faff;
     border-color: #eee;
 }
+
+.label-primary{
+    background-color: #F6F558;
+    color: #373E46;  
+}

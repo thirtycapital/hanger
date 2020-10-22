@@ -134,7 +134,14 @@ public class MonitorController {
             Model model,
             HttpServletRequest request,
             @RequestParam(value = "status", required = false, defaultValue = "") List<String> status) {
-        List<Job> jobs = subjectDetailsService.getFilteredJobs((List) jobService.list(), status);
+        List<Job> jobs;
+
+        if (status.size() > 0) {
+            jobs = subjectDetailsService.getFilteredJobs((List) jobService.list(), status);
+        } else {
+            jobs = (List) jobService.list();
+        }
+
         modelDefault(model);
         modelDetails(model, new Subject(), principal, jobs);
 

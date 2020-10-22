@@ -58,12 +58,8 @@ label {
 }
 
 .label-neutral {
-    background-color: lightgray;
-}
-
-.label-default {
     background-color: #e5e8ec;
-    color: gray;
+    color: #808080;
 }
 
 legend{

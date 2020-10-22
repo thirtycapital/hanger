@@ -74,91 +74,75 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modalJobListLabel">Glossary</h4>
+                        <h4 class="modal-title" id="modalJobListLabel">What does each status means?</h4>
                     </div>
                     <div class="modal-body">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">Icon</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Description</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/WAITING.png'}"></img></td>
-                                    <td><p>WAITING</p></td>
+                                    <td><span class="label label-neutral">WAITING</span></td>
                                     <td>Job was not built today yet</td>
                                 </tr>
                                 <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/REBUILD.png'}"></img></td>
-                                    <td><p>REBUILD</p></td>
-                                    <td>Job is being prepared</td>
-                                </tr>
-                                <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/RUNNING.png'}"></img></td>
-                                    <td><p>RUNNING</p></td>
-                                    <td>Job is running</td>
-                                </tr>
-                                <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/SUCCESS.png'}"></img></td>
-                                    <td><p>SUCCESS</p></td>
-                                    <td>Job build finished successfully</td>
-                                </tr>
-                                <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/UNSTABLE.png'}"></img></td>
-                                    <td><p>UNSTABLE</p></td>
-                                    <td>Job build finished successfully but failed at least one time during the day</td>
-                                </tr>
-                                <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/CHECKUP.png'}"></img></td>
-                                    <td><p>CHECKUP</p></td>
-                                    <td>Job checkups are running</td>
-                                </tr>
-                                <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/UNHEALTHY.png'}"></img></td>
-                                    <td><p>UNHEALTHY</p></td>
-                                    <td>Post-validation job checkup failed</td>
-                                </tr>
-                                <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/BLOCKED.png'}"></img></td>
-                                    <td><p>BLOCKED</p></td>
-                                    <td>Pre-validation job checkup failed</td>
-                                </tr>
-                                <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/RESTRICTED.png'}"></img></td>
-                                    <td><p>TIME RESTRICTION</p></td>
+                                    <td><span class="label label-neutral">RESTRICTED</span></td>
                                     <td>Job has time restriction</td>
                                 </tr> 
                                 <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/FAILURE.png'}"></img></td>
-                                    <td><p>FAILURE</p></td>
+                                    <td><span class="label label-success">SUCCESS</span></td>
+                                    <td>Job build finished successfully</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="label label-success">APPROVED</span></td>
+                                    <td>Unhealthy job approved to continue</td>
+                                </tr> 
+                                <tr>
+                                    <td><span class="label label-primary">REBUILD</span></td>
+                                    <td>Job is being prepared</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="label label-primary">RUNNING</span></td>
+                                    <td>Job is running</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="label label-danger">UNSTABLE</span></td>
+                                    <td>Job build finished successfully but failed at least one time during the day</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="label label-danger">CHECKUP</span></td>
+                                    <td>Job checkups are running</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="label label-danger">UNHEALTHY</span></td>
+                                    <td>Post-validation job checkup failed</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="label label-danger">BLOCKED</span></td>
+                                    <td>Pre-validation job checkup failed</td>
+                                </tr>
+                                <tr>
+                                    <td><span class="label label-danger">FAILURE</span></td>
                                     <td>Build failure</td>
                                 </tr>
                                 <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/ABORTED.png'}"></img></td>
-                                    <td><p>ABORTED</p></td>
+                                    <td><span class="label label-danger">ABORTED</span></td>
                                     <td>Build aborted</td>
                                 </tr>
                                 <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/APPROVED.png'}"></img></td>
-                                    <td><p>APPROVED</p></td>
-                                    <td>Unhealthy job approved to continue</td>
-                                </tr>
-                                <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/DISAPPROVED.png'}"></img></td>
-                                    <td><p>DISAPPROVED</p></td>
+                                    <td><span class="label label-danger">DISAPPROVED</span></td>
                                     <td>Unhealthy job not approved to continue</td>
                                 </tr>
                                 <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/ERROR.png'}"></img></td>
-                                    <td><p>ERROR</p></td>
+                                    <td><span class="label label-danger">ERROR</span></td>
                                     <td>Something really weird happened :O</td>
                                 </tr>
                                 <tr>
-                                    <td><img class="hanger-image" th:src="@{'/images/DISABLED.png'}"></img></td>
-                                    <td><p>DISABLED</p></td>
+                                    <td><span class="label label-default">DISABLED</span></td>
                                     <td>Job is disabled</td>
                                 </tr>    
                             </tbody>
@@ -251,7 +235,7 @@
                     }
                 });
             });
-            
+
             /**
              * Modal email action.                 
              */

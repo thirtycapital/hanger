@@ -423,9 +423,9 @@ code[class*="language-free"] {
     position: absolute;
 }
 
-.Treant .collapse-switch { width: 45px; height: 100%; border: none; left: 1%; }
+.Treant .collapse-switch { width: 10px; height: 100%; border: none; left: 1px; background: #F4F5F7; }
 .Treant .node.collapsed {  border: dotted; border-color: #999999; border-width: 1px }
-.Treant .node.collapsed .collapse-switch { background: none; }
+.Treant .node.collapsed .collapse-switch { background: #337ab7; }
 
 .status {
     width: 25px;
@@ -462,13 +462,13 @@ code[class*="language-free"] {
 }
 
 .node>p {
-    --padding-left: 45px;
+    padding-left: 15px;
     margin: 0px;
     font-size: 11px;
 }
 
 .node-name {
-    --padding-left: 45px;
+    padding-left: 15px;
 }
 
 .node-phase {

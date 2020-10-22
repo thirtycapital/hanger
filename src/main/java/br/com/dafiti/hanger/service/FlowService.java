@@ -28,6 +28,9 @@ import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.JobParent;
 import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Scope;
+import com.hp.gagawa.java.elements.A;
+import com.hp.gagawa.java.elements.P;
+import com.hp.gagawa.java.elements.Span;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -39,9 +42,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Icons Pack: Bitsies icons por Bitsies (143 Ícones) Designer: Bitsies
- * Categoria: Aplicação, Objeto, Alimentos Licença: CC Attribution-ShareAlike
- * 3.0 Unported Liconset url: http://www.recepkutuk.com/bitsies/
  *
  * @author Valdiney V GOMES
  */
@@ -162,8 +162,6 @@ public class FlowService {
             String parentLineage,
             Scope parentScope) {
 
-        String phase;
-        String checkup;
         Scope scope = null;
 
         //Identify the step.
@@ -194,28 +192,24 @@ public class FlowService {
         //Get the details getDetails each job. 
         JobDetails jobDetails = jobDetailsService.getDetailsOf(job);
 
-        //Define the checkup object.
-        if (job.getCheckup().isEmpty()) {
-            checkup = "";
-        } else {
-            checkup = " checkup: "
-                    + " { "
-                    + "     val: \"" + "CHECKUP" + "\", "
-                    + "     target: \"_blank\", "
-                    + "     href: \"" + request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/checkup/job/" + job.getId() + "/list/" + "\""
-                    + " },";
+        //Define the job checkup link.        
+        A jobCheckupLink = new A();
+
+        if (!job.getCheckup().isEmpty()) {
+            jobCheckupLink.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/checkup/job/" + job.getId() + "/list/");
+            jobCheckupLink.setTarget("_blank");
+            jobCheckupLink.setCSSClass("node-checkup");
+            jobCheckupLink.appendText("CHECKUP");
         }
 
-        //Define the phase object. 
-        if (jobDetails.getPhase().equals(Phase.NONE)) {
-            phase = "";
-        } else {
-            phase = " phase: "
-                    + " { "
-                    + "     val: \"" + jobDetails.getPhase() + "\", "
-                    + "     target: \"_blank\", "
-                    + "     href: \"" + job.getServer().getUrl() + "job/" + job.getName() + "/" + jobDetails.getBuildNumber() + "/console" + "\""
-                    + " },";
+        //Define the job phase link.  
+        A jobPhaseLink = new A();
+
+        if (!jobDetails.getPhase().equals(Phase.NONE)) {
+            jobPhaseLink.setHref(job.getServer().getUrl() + "job/" + job.getName() + "/" + jobDetails.getBuildNumber() + "/console");
+            jobPhaseLink.setTarget("_blank");
+            jobPhaseLink.setCSSClass("node-phase");
+            jobPhaseLink.appendText(jobDetails.getPhase().toString());
         }
 
         //Identify optional scope. 
@@ -227,37 +221,112 @@ public class FlowService {
             }
         }
 
+        //Define the job name link.  
+        A jobNameLink = new A();
+        jobNameLink.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/job/view/" + job.getId());
+        jobNameLink.setTarget("_blank");
+        jobNameLink.setCSSClass("node-name");
+        jobNameLink.appendText(job.getDisplayName());
+
+        //Define the jenkins link. 
+        A jobLink = new A();
+        jobLink.setHref(job.getServer().getUrl() + "job/" + job.getName());
+        jobLink.setTarget("_blank");
+        jobLink.setCSSClass("node-link");
+        jobLink.appendText("+");
+
+        //Define the job build status span.
+        String label = "";
+
+        switch (jobDetails.getStatus()) {
+            case REBUILD:
+            case RUNNING:
+                label = "label label-primary";
+                break;
+            case SUCCESS:
+            case APPROVED:
+                label = "label label-success";
+                break;
+            case ABORTED:
+            case FAILURE:
+            case UNHEALTHY:
+            case ERROR:
+            case BLOCKED:
+            case DISAPPROVED:
+                label = "label label-danger";
+                break;
+            case DISABLED:
+                label = "label label-default";
+                break;
+            case UNSTABLE:
+            case CHECKUP:
+                label = "label label-warning";
+                break;
+            case RESTRICTED:
+            case WAITING:
+                label = "label label-neutral";
+                break;
+        }
+
+        Span spanStatus = new Span();
+        spanStatus.setCSSClass(label);
+        spanStatus.setTitle(jobDetails.getStatus().toString());
+        spanStatus.appendText(jobDetails.getStatus().toString());
+
+        P jobStatus = new P();
+        jobStatus.appendChild(spanStatus);
+
+        //Define the job build time paragraph.
+        P jobBuildTime = new P();
+        jobBuildTime.appendText(jobDetails.getBuildTime());
+        jobBuildTime.setCSSClass("node-time");
+
+        //Define the node HTML content. 
+        StringBuilder node = new StringBuilder();
+        node.append(jobNameLink.write());
+        node.append(jobLink.write());
+
+        if (jobPhaseLink.getTarget() != null) {
+            node.append(jobPhaseLink.write());
+        }
+
+        if (jobCheckupLink.getTarget() != null) {
+            node.append(jobCheckupLink.write());
+        }
+
+        node.append(jobStatus.write());
+        node.append(jobBuildTime.write());
+
         //Identify root step.
         if (parent == null) {
+            //Define the job scope paragraph.
+            P jobBuildScope = new P();
+            jobBuildScope.appendText(jobDetails.getScope() == null ? "" : job.getServer().getName() + " | " + jobDetails.getScope());
+            jobBuildScope.setCSSClass("node-scope");
+
+            node.append(jobBuildScope.write());
+
             flow.put(
                     StringUtils.leftPad(String.valueOf(level), 5, "0"),
                     new Step(
                             jobLineage,
                             jobLineage + " = "
-                            + "{ text:"
-                            + "     { name: "
-                            + "         {  "
-                            + "             val: \"" + job.getDisplayName() + "\", "
-                            + "             href: \"" + request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/job/view/" + job.getId() + "\" "
-                            + "         }, "
-                            + "         link: "
-                            + "         {  "
-                            + "             val: \"" + "+" + "\", "
-                            + "             target: \"_blank\", "
-                            + "             href: \"" + job.getServer().getUrl() + "job/" + job.getName() + "\" "
-                            + "         }, "
-                            + phase
-                            + checkup
-                            + "         server: \"" + job.getServer().getName() + "\", "
-                            + "         time: \"" + jobDetails.getBuildTime() + "\", "
-                            + "         scope: \"" + (jobDetails.getScope() == null ? "" : jobDetails.getScope()) + "\", "
-                            + "     }, "
-                            + "     image: \"../../images/" + jobDetails.getStatus() + ".png\", "
+                            + "{"
+                            + "     innerHTML: '" + node.toString() + "',"
                             + "     HTMLid: \"" + job.getId() + "\","
-                            + "HTMLclass: \"" + "flow-job-clickable" + "\""
+                            + "     HTMLclass: \"" + "flow-job-clickable" + "\""
                             + "}")
             );
         } else {
+            //Define the job scope paragraph.
+            P jobBuildScope = new P();
+            jobBuildScope.appendText((scope == null
+                    ? (jobDetails.getScope() == null ? "" : job.getServer().getName() + " | " + jobDetails.getScope())
+                    : (job.getServer().getName() + " | " + scope.toString() + (job.isRebuild() ? " | REBUILD " + (job.getWait() != 0 ? "once every " + job.getWait() + " min" : "") : ""))) + (parent.isRebuildBlocked() && isBlocker ? " | BLOCKER" : ""));
+            jobBuildScope.setCSSClass("node-scope");
+
+            node.append(jobBuildScope.write());
+
             //Identify child steps.
             flow.put(
                     StringUtils.leftPad(String.valueOf(level), 5, "0")
@@ -267,32 +336,10 @@ public class FlowService {
                             jobLineage,
                             jobLineage + " = "
                             + "{ parent: " + parentLineage + ", "
-                            + "  text:"
-                            + "     { "
-                            + "         name: "
-                            + "             { "
-                            + "                 val: \"" + job.getDisplayName() + "\", "
-                            + "                 href: \"" + request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/job/view/" + job.getId() + "\""
-                            + "             }, "
-                            + "         link: "
-                            + "         {  "
-                            + "             val: \"" + "+" + "\", "
-                            + "             target: \"_blank\", "
-                            + "             href: \"" + job.getServer().getUrl() + "job/" + job.getName() + "\" "
-                            + "         }, "
-                            + phase
-                            + checkup
-                            + "         server: \"" + job.getServer().getName() + "\", "
-                            + "         time: \"" + jobDetails.getBuildTime() + "\", "
-                            + "         scope: \""
-                            + (scope == null
-                                    ? (jobDetails.getScope() == null ? "" : jobDetails.getScope())
-                                    : (scope.toString() + (job.isRebuild() ? " | REBUILD " + (job.getWait() != 0 ? "once every " + job.getWait() + " min" : "") : ""))) + (parent.isRebuildBlocked() && isBlocker ? " | BLOCKER" : "") + "\", "
-                            + "     }, "
-                            + "     image: \"../../images/" + jobDetails.getStatus() + ".png\","
-                            + "collapsed: " + (job.getParent().isEmpty() || reverse || expanded ? "false" : "true") + ","
-                            + "HTMLid: \"" + job.getId() + "\","
-                            + "HTMLclass: \"" + "flow-job-clickable" + "\""
+                            + "     innerHTML: '" + node.toString() + "',"
+                            + "     HTMLid: \"" + job.getId() + "\","
+                            + "     collapsed: " + (job.getParent().isEmpty() || reverse || expanded ? "false" : "true") + ","
+                            + "     HTMLclass: \"" + "flow-job-clickable" + "\""
                             + "}")
             );
         }

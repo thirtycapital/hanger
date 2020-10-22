@@ -48,7 +48,7 @@
                             <th style="width:10%">Date</th>
                             <th style="width:10">Type</th>
                             <th style="width:10%">User</th>   
-                            <th style="width:62.5%">Data</th>
+                            <th style="width:67.5%">Data</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -71,7 +71,7 @@
                                      #strings.contains(event.type, 'ADD') 
                                      or 
                                      #strings.contains(event.type, 'SUCCESS')}">
-                                    <span class="label label-success" th:text="${event.type}"></span>
+                                    <span class="label label-default" th:text="${event.type}"></span>
                                 </div>
 
                                 <div th:if="${
@@ -84,7 +84,7 @@
                                      not #strings.contains(event.type, 'FAILURE')
                                      and 
                                      not #strings.contains(event.type, 'SUCCESS')}">
-                                    <span class="label label-primary" th:text="${event.type}"></span>
+                                    <span class="label label-default" th:text="${event.type}"></span>
                                 </div>
                             </td>  
                             <td th:text="${event.username}">User</td> 

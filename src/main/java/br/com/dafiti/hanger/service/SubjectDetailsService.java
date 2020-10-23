@@ -253,6 +253,10 @@ public class SubjectDetailsService {
                                     filteredJobs.add(job);
                                 }
                             }
+                        } else {
+                            if (status.contains("WAITING")) {
+                                filteredJobs.add(job);
+                            }
                         }
                     } else {
                         if (status.contains("WAITING")) {

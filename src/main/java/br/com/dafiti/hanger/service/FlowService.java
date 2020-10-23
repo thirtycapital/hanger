@@ -259,6 +259,8 @@ public class FlowService {
                 label = "label label-default";
                 break;
             case UNSTABLE:
+                label = "label label-info";
+                break;
             case CHECKUP:
                 label = "label label-warning";
                 break;

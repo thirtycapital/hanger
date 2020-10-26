@@ -26,13 +26,7 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.Connection;
 import br.com.dafiti.hanger.option.Database;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -218,7 +212,7 @@ public class WorkbenchService {
         query.append(String.join(",", field));
         query.append(" FROM ");
         query.append(String.join(".", catalogSchema));
-        query.append(" LIMIT 100");
+        query.append(" LIMIT 10");
 
         return query.toString();
     }

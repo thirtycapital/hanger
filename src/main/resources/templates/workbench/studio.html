@@ -314,11 +314,11 @@
                         target = node.a_attr.target;
 
                         if (target === "HANA") {
-                            select = "SELECT * FROM " + node.parent + "." + '"' + node.text + '"' + " LIMIT 10;";
+                            select = "SELECT * FROM " + node.parent + "." + '"' + node.text + '"' + " LIMIT 10";
                         } else if (target === "MSSQL" || target === "JTDS") {
                             select = "SELECT TOP 10 * FROM " + node.parent + "." + node.text;
                         } else {
-                            select = "SELECT * FROM " + node.parent + "." + node.text + " LIMIT 10;";
+                            select = "SELECT * FROM " + node.parent + "." + node.text + " LIMIT 10";
                         }
 
                         query.setValue(select);

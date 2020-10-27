@@ -42,8 +42,8 @@
                     <div class="form-group">
                         <div class="col-sm-10">
                             <label>Template</label> 
-                            <textarea class="form-control shell-script" rows="3" th:field="*{model}" placeholder="Template" maxlength="65000"></textarea>
-                            <div class="space-top">
+                            <textarea class="form-control shell-script" rows="2" th:field="*{model}" placeholder="Template" maxlength="65000"></textarea>
+                            <div class="space-top alert alert-light">
                                 <pre class="language-free no-border">    
 Sintaxe:
     <b>${{variable}}</b> where a variable could include the type and a default value attributes, as: 
@@ -51,18 +51,8 @@ Sintaxe:
 
 Attributes: 
     <b>type</b>: number, text and date are acceptable types. 
-    <b>default</b>: Any value are acceptable.         
-
-Sample:
-    cd /path/
-    bash kitchen.sh \
-    -file=/path/home/etl/glove/extractor/glove.kjb \
-    -param:VARIABLE=<b>${{VARIABLE NAME}}</b> \
-    -param:DEFAULT_TEXT=<b>${{DEFAULT TEXT VALUE::{"type":"text","default":"default_value"}}}</b> \
-    -param:DEFAULT_NUMBER=<b>${{DEFAULT NUMBER VALUE::{"type":"number","default":"0"}}}</b> \
-    -param:DEFAULT_DATE=<b>${{DEFAULT DATE VALUE::{"type":"date","default":"2020-09-28"}}}</b>
-    
-    </pre>
+    <b>default</b>: Any value are acceptable.             
+                                </pre>
                             </div>
                         </div>
                         <span th:if="${#fields.hasErrors('model')}" class="help-block" th:errors="*{model}"></span>

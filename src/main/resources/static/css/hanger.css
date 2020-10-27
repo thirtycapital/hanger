@@ -348,28 +348,20 @@ code[class*="language-free"] {
     background: none;
 }
 
-.sub_icon_create {
-    float: right;
-    padding-top: 10px;
-    height: 10px;
-    width: 10px;
-    display: none;
-}
 
 #sidebar li:hover .sub_icon_create{
     display: inline;
 }
 
-.sub_icon_create:hover{
-    color: darkblue;
-}
 
 #sidebar li .menu_link_option{
     width: 66%;
 }
 
-#sidebar li .menu_link_create{
+#sidebar li .menu_dropdown{
     width: 15px;
+    display: inline-block;
+    float: left;
 }
 
 .sub_icon {

@@ -244,6 +244,7 @@ code[class*="language-free"] {
     position: fixed;
     height: 100%;
     transition: all .4s ease 0s;
+    z-index: 1000;
 }
 
 .sidebar-nav {

@@ -28,7 +28,9 @@ import br.com.dafiti.hanger.model.ConfigurationGroup;
 import br.com.dafiti.hanger.repository.ConfigurationRepository;
 import br.com.dafiti.hanger.security.PasswordCryptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 /**
@@ -67,6 +69,7 @@ public class ConfigurationService {
      * @param parameter name of the parameter.
      * @return Configuration object.
      */
+    @Cacheable(value = "parameters", key = "#parameter")
     public Configuration findByParameter(String parameter) {
         Configuration configuration = configurationRepository.findByParameter(parameter);
 
@@ -98,6 +101,8 @@ public class ConfigurationService {
         return value;
     }
 
+    @Caching(evict = {
+        @CacheEvict(value = "parameters", allEntries = true)})
     public void save(Configuration configuration) {
         save(configuration, false);
     }
@@ -171,6 +176,26 @@ public class ConfigurationService {
         this.save(new Configuration(
                 "Default channel",
                 "SLACK_CHANNEL",
+                "",
+                "text",
+                slackGroup,
+                5,
+                255,
+                "*"), true);
+        
+        this.save(new Configuration(
+                "Token of bots app",
+                "SLACK_BOT_TOKEN",
+                "",
+                "text",
+                slackGroup,
+                5,
+                255,
+                "*"), true);
+        
+        this.save(new Configuration(
+                "URL of Incoming WebHooks",
+                "SLACK_WEBHOOK_URL",
                 "",
                 "text",
                 slackGroup,

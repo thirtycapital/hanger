@@ -1,10 +1,9 @@
-
 # Hanger [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-### O Hanger é uma ferramenta gráfica de orquestração de processos e qualidade de dados, responsável pela execução dos processos de [ETL](https://pt.wikipedia.org/wiki/Extract,_transform,_load), controle de dependências e validação dos dados.
+### Hanger is a graphical tool for process orchestration and data quality, responsible for the execution of[ETL](https://pt.wikipedia.org/wiki/Extract,_transform,_load) processes, dependency control and data validation.
 
 ## Instalação
 
-##### REQUISITOS
+##### REQUIREMENTS
 
 - Tomcat 8 +
 - MySQL 5.7 +
@@ -12,14 +11,14 @@
 - Jenkins ( [https://jenkins.io/](https://jenkins.io/) )
 - Jenkins Notification Plugin ( [https://wiki.jenkins.io/display/JENKINS/Notification+Plugin](https://wiki.jenkins.io/display/JENKINS/Notification+Plugin) )
 
-##### CONSTRUÇÃO
+##### CONSTRUCTION
 Utilizando o [Maven](https://maven.apache.org/):
 
 - Acesse o diretório no qual os fontes do Hanger se localizam.
 - Digite o comando **mvn package**.
 - O arquivo hanger.war será gerado no subdiretório *target*. 
 
-##### CONFIGURAÇÃO
+##### CONFIGURATION
 
 - Crie o arquivo ~/.hanger/hanger.properties, com o seguinte conteúdo:
  
@@ -73,11 +72,11 @@ Utilizando o [Apache Tomcat](http://tomcat.apache.org/):
 > - Na seção CSRF Protection, desmarque a opção *Prevenir site contra invasões*.
 
 ## Monitor
-O *Monitor* é onde a carga de trabalho do Hanger é monitorada. O *dashboard* é organizado da seguinte forma:
+*Monitor* is where the freight of Hanger is observed. The *dashboard* is organized as follows:
 
-- Na parte superior são exibidos todos os *subjects* disponíveis e uma opção de filtro:
-	- Ao lado esquerdo do nome do assunto é exibido um ícone indicando que o usuário logado está inscrito (o ícone só aparece se o assunto não for *mandatory*).
-	- Ao lado direito do nome do assunto é exibido o total de *jobs* em um subject.
+- On top are shown all the available *subjects* and a filter option:
+	- At the left side of the *subject* name is displayed an icon that indcates that the logged user is subscribed. However, the icon only appears if the *subject* is not mandatory. A *subject* is defined as mandatory if the user wants that the *subject* is visible to all other Hanger users. 
+	- To the right of the subject's name, the total number of *jobs* contained in it is informed.
 	- Na aba de assuntos:
 		- Clique sob o nome do *subject* desejado e será exibida a lista de *jobs* do subject contendo as seguintes informações:
 			- **Status:** Status do *job*.
@@ -115,283 +114,318 @@ O *Monitor* é onde a carga de trabalho do Hanger é monitorada. O *dashboard* �
 
 ## Search
 
-O *Search* é o caminho mais rápido para encontrar e ter acesso às informações de status de um *job* no Hanger. 
+*Search* is the faster way to find and to access *job* status informations on Hanger. To use it, read below:
 
-- Clique na opção *Search*.
-- Será exibida a tela de pesquisa, contendo um campo de texto e um botão com o desenho de uma lupa. 
-- Digite o conteúdo a ser pesquisado e clique no botão.
-	> O conteúdo informado no campo de busca pode ser uma parte do nome, nome completo ou o alias do *job*.
+- On the side menu, click on Search.
+- A search screen and a button Search with a magnifying glass symbol will be shown.
+- Write the content to be searched and click on the button, it can be part of the name, full name or the *job* alias.
 
 ## Flow
 
-O *flow* é a representação gráfica da cadeia de dependências de um *job*. 
+*Flow* is a graphical representation of a job's dependency chain.
 
-Cada *job* representado no *flow* apresenta uma imagem representando o status e as seguintes informações:
+Each *job* represented on flow has a  status and the follow information:
 
-- Nome do *job*.
-- Link para o *job* no Jenkins.
-- Link para o console do Jenkins.
-- Link para a página de resultados da validação do *job*. 
-	- Clique no link ***CHECKUP*** e será exibida a página com o resultado dos últimos dez checkups do *job*.
-	- Clique no botão ***View*** para visualizar a configuração do *job*.
-	- Clique no botão ***Flow*** para ser redirecionado novamente para a cadeia de dependência do *job*.
-- Instância do Jenkins na qual o job é executado.  
-- Data de execução do *job*.
-- Escopo do *job*.
-- Clique com o botão direito no status do *job* e será exibida uma lista suspensa com as seguintes opções:
-	- **Flow:** Atalho para o *flow* do *job* selecionado. 
-	- **Propagation:** Atalho para o propagation do *job* selecionado. 	
-	- **Build history:** Exibe uma lista com o histórico completo de execuções do *job* selecionado, a lista contem os campos:
-		- **Start:** Data e hora inicial da execução.
-		- **Finish:** Data e hora final da execução.
-		- **Duration in minutes:** Duração da execução em minutos.
-		- **Efficiency:** Exibe a porcentagem que a execução ficou em fila e o tempo real.
+- *Job* name.
+- Link to *job* on Jenkins.
+- Link to Jenkins console.
+- Link to the *job* validation results page. 
+	- Click on ***CHECKUP*** link and the page with the result of the last ten job checkups will be displayed.
+	- Click on ***View*** button to see the job configuration.
+	- Click on ***Flow*** button to be redirected to job dependency chain.
+- Jenkins instance in which the *job* is executed.
+- *Job* execution date.
+- *Job* scope.
+- Click on *job* status with the right button and a list will be displayed with the following options:
+	- **Flow:** Shortcut to the selected *job flow*.
+	- **Propagation:** Shortcut to the selected *job propagation*. 	
+	- **Build history:**  Shows a list with the complete execution history of the selected job. The list contains these fields:
+		- **Start:** Start date and time of execution.
+		- **Finish:** Final date and time of execution.
+		- **Duration in minutes:** Execution duration in minutes.
+		- **Efficiency:**  Shows the percentage that the execution was queued.
 	- **Actions:**
-		- **Build:** Permite executar o *job* selecionado. 
-		- **Build Mesh:** Permite executar toda a cadeia do *job* selecionado. 
-		- **Parent:** Exibe uma lista com todos os servidores do Jenkins disponíveis, onde é possível adicionar um ou vários pais para o job corrente:
-			- Clique no servidor desejado.
-			- Uma tela com os jobs disponíveis naquele servidor será exibida.
-			- É possível selecionar os jobs desejados na lista ou simplesmente digitar o nome dos *jobs* no campo Jobs (separados por vírgula).
-			- Clique em Add para que a ação seja concluída.
-		- **Children:** Exibe uma lista com todos os servidores do Jenkins disponíveis, onde é possível adicionar um ou vários filhos para o job corrente:
-			- Clique no servidor desejado.
-			- Uma tela com os jobs disponíveis naquele servidor será exibida.
-			- É possível selecionar os jobs desejados na lista ou simplesmente digitar o nome dos *jobs* no campo Jobs (separados por vírgula).
-			- Clique em Add para que a ação seja concluída.
-		- **Disable:** Permite desabilitar/habilitar um job.
+		- **Build:** Allows to execute the selected job. 
+		- **Build Mesh:** Allows to execute all he selected job chain.
+		- **Parent:** Shows a list with all the Jenkins available servers, where it is possible to add one or more parents to the current job:	
+			- Click on the chosen server.
+			- A screen with all the available jobs in that server will be displayed.
+			- It is possible to select the jobs on the list or simply type the name of the jobs on Jobs field (comma-separated).
+			- Click on Add to conclude the action.
+		- **Children:**  Shows a list with all the Jenkins available servers, where it is possible to add one or more children to the current job:
+			- Click on the chosen server.
+			- A screen with all the available jobs in that server will be displayed.
+			- It is possible to select the jobs on the list or simply type the name of the jobs on Jobs field (comma-separated).
+			- Click on Add to conclude the action.
+
+		- **Disable:** Allows to disable/enable a job.
+
+During the Flow view, the available options are:
 
 ##### ZOOM OUT
-Permite reduzir o zoom do *flow*. 
+Zoom out the flow.
 
 ##### ZOOM IN
-Permite aumentar o zoom do *flow*.
+Zoom in the flow.
 
 ##### EXPAND ALL
-Permite expandir toda a cadeia de dependência de um *job*.
+Expand all the job dependency chain.
 
 ##### COLLPASE ALL
-Permite fechar toda a cadeia de dependência de um *job*.
+Close all the dependency chain of *job*.
 
 ##### APPROVAL
-Redireciona para a página de aprovação do *job*.
-
-> Esta opção só estará disponível caso o status do *job* seja **BLOCKED** ou **UNHEALTHY**.
+Redirect to job approbation page. However, this option only will be available if the *job* status is BLOCKED or UNHEALTHY.
 
 ##### GLOSSARY
-Exibe o glossário de todos os possíveis status de um *job*, contendo:
+Shows the glossary of all the possible status of a *job* with the following information:
 
-- ***Icon*:** Ícone de status. 
-- ***Name*:** Nome do status. 
-- ***Description*:** Descrição do status.
+- ***Name*:**  Status name. 
+- ***Description*:** Status description.
 
 ## Server
-Servers são as instâncias de Jenkins que serão gerenciadas pelo Hanger. 
+***Servers*** are Jenkins instances that will be managed by Hanger. 
 
-##### IMPORT
-Permite importar todos os jobs cadastrados no Jenkins.
-
-- No menu lateral, acesse a opção ***Server***.
-- Selecione o servidor desejado e clique no botão ***Import***, será exibido o modal ***Import jobs*** no qual será apresentado uma mensagem de confirmação.
-- Caso deseje realmente importar todos os jobs do Jenkins, clique em ***Yes*** .
-- Após a importação de todos os jobs, uma frase aparecerá no topo da tela informando que os *jobs* foram sincronizados.
-
-##### CONNECT
-Permite testar conexão uma instância do Jenkins cadastrada.
-
-- No menu lateral, acesse a opção ***Server***.
-- Selecione o servidor desejado e clique no botão ***Connect***.
-- Uma frase aparecerá no topo da tela informando se o servidor está ou não conectado.
+- To access the ***Server*** main page, on side menu, click on the ***Server*** option.
+- All the servers will be displayed.
+- If you want to edit a specific server, click on ***Edit*** button.
 
 ##### ADD SERVER
-Permite adicionar uma nova instância do Jenkins.
+Allows to add a new Jenkins instance
 
-No menu lateral, acesse a opção ***Server***.
-- Clique no botão ***Add Server***, representado pelo ícone **+**.
-- Defina o nome da conexão no campo ***Name***.
-- Informe a URL completa do servidor, com porta e host no campo **URL**.
-- Informe o usuário administrador do servidor no campo ***Username***.
-- Informe a senha ou [token](https://stackoverflow.com/questions/45466090/how-to-get-the-api-token-for-jenkins) do usuário no campo **Token**.
-- Clique no botão ***Save***.
+- On ***Server*** side menu option, click on the ***down arrow*** and choose the ***Add server*** option.
+- On ***Name*** field, define the server name.
+- Inform the full server URL, with port and host on ***URL*** field.
+- On ***Username*** field, inform the server administrator user.
+- On ***Token*** field, inform either the password or the user [token](https://stackoverflow.com/questions/45466090/how-to-get-the-api-token-for-jenkins).
+- Click on ***Save*** button to save.
 
-##### EDIT
-Permite alterar um servidor.
+##### IMPORT
+This option allows to import all the jobs registered on Jenkins.
 
-##### DELETE
-Permite exluir um servidor.
-
-## Connection
-*Connections* são as conexões com os bancos de dados que podem ser utilizados no processo de validação de dados ou para queries no Workbench.
-
-##### ADD CONNECTION
-Permite adicionar uma nova conexão.
-
-- No menu lateral, acesse a opção ***Connection***.
-- Clique no botão ***Add Connection***, representado pelo ícone **+**.
-- Defina o nome da conexão no campo ***Name***.
-- Selecione qual o banco de dados desejado no campo ***Database***.
-- Informe a URL para conexão com o JDBC, deve conter host e banco de dados.
-- Informe o usuário do banco de dados no campo ***Username***.
-- Informe a senha do usuário no campo ***Password***.
-- Clique no botão ***Save***.
-
-Os bancos de dados suportados e as respectivas JDBC Urls são as seguintes:
-
-    MYSQL: jdbc:mysql://<url>:<porta>/<database>
-    POSTGRES: jdbc:postgresql://<url>:<porta>/<database>
-    ATHENA: jdbc:awsathena://AwsRegion=<region>;S3OutputLocation=<bucket>
-    MSSQL: jdbc:sqlserver://<url>:<porta>;DataBaseName=<database>
-    HANA: jdbc:sap://<url>:<porta>/<database>
-    JTDS: Para Sybase: jdbc:jtds:sybase://<server>:<port5000>;DatabaseName=<database> ou, para MSSQL, jdbc:jtds:sqlserver://<server>:<port1433>;DatabaseName=<database> ou 
-    GENERIC: Para utilização de conexão do tipo genérico, o driver URL correspondente deve ser colocado no diretório ${CATALINA_HOME}/lib do servidor e informado o class name do driver.
-
-##### TEST CONNECTIONS
-Permite validar o estado de todas as conexões cadastradas.
-
-> Dependendo do número de conexões este processo pode ser demorado. 
+- On side menu, click on ***Server*** option.
+- Select the chosen server and click on ***Import*** button.
+- A confirmation message will be displayed. Click on ***Yes*** to confirm or click on ***No*** to cancel the operation.
+- After the importation of all jobs, a message will be displayed on top informing that the jobs have been synced.
 
 ##### CONNECT
-Permite testar o estado de uma conexão específica.
+This option allows to test the connection of a registered Jenkins instance.
 
-##### SCHEMA
-Permite explorar os catálogos e schemas de uma conexão.
-- No menu lateral, acesse a opção ***Connection***.
-- Clique no botão ***Schema***.
-- Será exibido uma tabela com todos os catálogos e schemas daquela conexão. No lado direito da tabela é possível explorar as tabelas de um catálogo ou schema.
-- Clique no botão ***Table***.
-- Será exibida todas as tabelas do catálogo ou schema. No lado direito da tabela é possível acessar os metadados de uma tabela.
-- Clique no botão ***Column***.
-- Será exibido a chave primária da tabela, os índices dela e todos os campos com seus respectivos tipos. 
+- On side menu, click on ***Server*** option.
+- Select the server that you want to test and click on ***Connect*** button.
+- A message will be displayed at the top, informing whether the server is connected or not.
 
-##### EDIT 
-Permite alterar uma conexão.
+##### EDIT
+Allows to edit a *server*. This process is pretty similar to Add server.
+
+- On side menu, click on ***Server***.
+- Select the chosen server and click on ***Edit*** button.
+- Fill in the information accordingly and, at the end, click on ***Save*** to save.
 
 ##### DELETE
-Permite excluir uma conexão.
+Allows to remove a server.
 
-## WORKBENCH
-O *Workbench* é uma ferramenta que permite realizar queries com as conexões já estabelecidas.
+- On ***Server*** main page, select a server that you want to remove and click on ***Delete*** button.
 
-- No menu lateral, acesse a opção ***Workbench***.
-- Selecione a conexão desejada no campo ***Connection***.
-- No campo ***Search*** informe o nome do schema desejado para realizar a consulta ou escolha umas das opções listadas.
-- Uma query pré-estabelecida será exibida na área de texto ao lado.
-- Altere, se necessário e então, clique no botão ***Play*** para realizar a execução.
-- Será exibido o resultado da query executada.
+## Connection
+*Connections* are the databases connections that can be used on data validation process and to do queries on Workbench.
 
-###### SEND E-MAIL
-Em *Workbench* é possível enviar o resultado de uma consulta para outros usuários.
+- To access the ***Connection*** main page, on side menu, click on the ***Connection*** option.
+- All the connections will be displayed.
+- If you want to edit a specific connection, click on ***Edit*** button.
 
-- Em ***Workbench***, clique no botão ***Save an e-mail*** disponível no menu ao lado do botão ***Play***.
-- No campo ***Recipient***, selecione ou escreva os nomes dos destinatários.
-- No campo ***External Recipient***, selecione ou escreva o endereço de usuários externos, caso seja necessário.
-- No campo ***Subject***, informe o assunto do e-mail.
-- Na área de texto ***Body***, escreva ou não alguma mensagem.
-- Ao final, clique no botão ***Send*** para enviar.
-- Clique em ***Save***, caso queira salvar o e-mail e enviá-lo em outro momento.
-- Clique no botão ***Close*** para cancelar a operação.
+##### ADD CONNECTION
+Allows to add a new connection.
 
-**Nota:** após clicar em ***Save***, a página será redirecionada para ***E-mails***, onde se encontram todos os e-mails salvos.
+- On ***Connection*** side menu option, click on the ***down arrow*** and choose the ***Add connection*** option.	
+- On ***Name*** field, inform the connection name.
+- Select the chosen database on ***Database*** field.
+- On ***Class name*** field, inform the used class to execute the connection with a *Generic* database.
+- On ***JDBC Url*** field, inform the URL to connect with JDBC. Must contain host and database.
+- On ***Username*** field, inform the database user.
+- On ***Password*** field, inform the user password.
+- Click on ***Save*** button to save.
 
-###### SAVE AN E-MAIL
-Em *Workbench* é possível salvar um e-mail para enviá-lo mais tarde.
+***Note:*** The supported databases and its JDBC Urls are:
 
-- Em ***Workbench***, clique no botão ***Save an e-mail*** disponível no menu ao lado do botão ***Play***.
-- Preencha os campos apresentados anteriormente.
-- Clique em ***Save*** para salvar o e-mail.
-- Após clicar em ***Save***, a página será redirecionada para a lista com todos os e-mails salvos.
+    ***MYSQL:*** jdbc:mysql://<url>:<porta>/<database>
+	***POSTGRES:*** jdbc:postgresql://<url>:<porta>/<database>
+	***ATHENA:*** jdbc:awsathena://AwsRegion=<region>;S3OutputLocation=<bucket>
+	***MSSQL:*** jdbc:sqlserver://<url>:<porta>;DataBaseName=<database>
+	***HANA:*** jdbc:sap://<url>:<porta>/<database>
+	***GENERIC:*** To use a generic connection, the URL must be put on ${CATALINA_HOME}/lib server directory and you have to inform the driver class name.
 
-###### SAVED E-MAILS
-Em *Workbench* é possível visualizar todos os e-mails salvos.
+##### CHECK ALL CONNECTIONS
+This option allows to validate the estate of all the registered connections. However, depending on the number of connections, this process can be time-consuming.
 
-- Em ***Workbench***, clique no botão ***Saved e-mails*** disponível no menu ao lado do botão ***Play***.
-- Após clicar em ***Saved e-mails***, a página será redirecionada para a lista com todos os e-mails salvos.
-- Clique no ***Subject*** do e-mail para ver mais detalhes.
-- Um modal com todos os jobs vinculados ao e-mail selecionado será exibido.
-- Para adicionar um novo e-mail à lista, clique em ***Add e-mail***, preencha os campos e clique no botão ***Save***.
-- Para voltar à tela principal ***Workbench***, clique em ***Open workbench***.
+- On side menu, click on ***Connection*** option.
+- At bottom, click on ***Check all connections***. 
+- If all the connections are okay, a success message will be displayed.
 
+##### CHECK
+Allows to check a specific connection.
 
-###### EXPORT
-Permite exportar o resultado de uma query para um arquivo CSV.
+- On side menu, click on ***Connection*** option.
+- Choose a connection to check and click on ***Check*** button.
+- If the connection is okay, a success message will be displayed.
 
-###### SAVE
-Permite salvar a query, caso seja necessário utulizá-la novamente em outro momento.
+##### SCHEMA
+This option allows to explore the catalogs and schemas of a connection.
 
-- Em ***Workbench***, clique no botão ***Save***.
-- Determine o nome da query no campo ***Name***.
-- O campo ***Connection*** informa a conexão utilizada.
-- Na área de texto ***Query*** é informada a query a ser salva.
-- Clique em ***Shared***, caso deseje compartilhar a query com outros usuários do sistema.
-- Ao final, clique no botão ***Save*** para salvar.
-- Clique no botão ***Close*** para cancelar a operação.
+- On side menu, click on ***Connection*** option.
+- Select the chosen connection and click on ***Schema*** button.
+- A table will be displayed with all the catalogs and schemas of that connection.
+- Click on ***Table*** button to explore the chosen schema or catalog tables.
+- Click on ***Column*** button to access the table metadata. Will be shown the primary key, index, fields and its types.
 
-###### STORED
-Permite visualizar todas as queries salvas.
+##### EDIT 
+Allows to edit a *connection*. This process is pretty similar to Add connection.
 
-- Em ***Workbench***, clique no botão ***Stored***.
-- Será exibida uma lista com todas as ***Queries*** salvas.
+- On side menu, click on ***Server***.
+- Select the chosen connection and click on ***Edit*** button.
+- Fill in the information accordingly and, at the end, click on ***Save*** to save.
 
-##### QUERIES
-Visualização de todas as queries salvas.
+##### DELETE
+Allows to remove a connection.
+
+- On ***Connection*** main page, select a connection that you want to remove and click on ***Delete*** button.
+
+## Workbench
+*Workbench* is a tool that allows to execute queries with all the available connections.
+
+- On side menu, click on ***Workbench***.
+- The ***Workbench*** page will be shown.
+- Select the chosen ***connection*** on connection field.
+- On ***Search*** field, search the database to be consulted or chose on the displayed list.
+- Click on the chosen database name and, after that, click on the table name or schema to be consulted.
+- After clicking on the name of the table or schema, a predefined query will be displayed in the text area on the side.
+- It is possible to make changes to the query and then click on ***Play*** to execute it.
+- The result will be displayed.
+
+###### SAVE A QUERY
+*Workbench* allows to save the query. To do that:
+
+- Click on the menu button, located next to the ***Play*** button, in the lower right corner of the screen.
+- Click ***Save a query*** button.
+- In the ***Name*** field, enter the query name.
+- The ***Connection*** field shows the connection chosen previously
+- The ***Query*** field shows the query text to be saved and allows changes
+- Click on ***Shared***, if you want to share the query with other Hanger users. 
+- At the end, click on ***Save*** button to save the query.
+- Click on ***Close*** to cancel the operation.
+
+###### SAVED QUERIES
+Allows to view all the saved queries.
+
+- On ***Workbench*** side menu option, click on the ***down arrow*** and choose the ***Saved queries*** option.
+- All the saved queries will be displayed.
+- You can also view the saved queries through the ***Workbench*** page by clicking on the menu button, in the lower right corner of the screen and then choosing the ***Saved queries*** option.
+
+***Note:*** queries saved by other users can only be viewed if they have been previously shared.
 
 ###### OPEN
-Permite abrir uma query e executá-la.
+This button allows to open a query and play it.
+
+##### SEE
+This button allows to view the query deitails.
+
+***Note:*** On this page, you can click on ***Open in workbench*** button to execute the query o ***Workbench*** main page.
  
 ###### EDIT
-Permite editar as informações de uma query.
+This button allows to edit the information about a query.
 
-- No campo ***Name*** determine o novo nome da query escolhida para edição.
-- O campo ***Connection*** informa a conexão utilizada.
-- Na área de texto ***Query*** é informada a query a ser editada.
-- Clique em ***Shared***, caso deseje compartilhar a query com outros usuários do sistema.
-- Ao final, clique no botão ***Save*** para salvar.
-- Clique no botão ***Close*** para cancelar a operação.
-- Em ***Queries***, clique no botão ***>*** para voltar ao ***Workbench***.
+- Inform the new query name on ***Name***  filed.
+- The ***Connection*** field informs the current connection, but you can change it.
+- In the text area ***Query***, the query to be edited is informed.
+- Click on ***Shared***, if you want to share the query with the other Hanger users.
+- At the end, click on ***Save***.
+- Click on ***Close***, if you want to cancel the operation.
 
 ###### DELETE
-Permite deletar uma query.
+This button allows to delete a query.
 
-###### VIEW MORE
-O botão representado por ***...*** permite visualizar uma query por completo.
+###### EXPORT AS CSV
+To export the query result to a CSV file, you must click on ***Export as csv*** button on ***Workbench*** page.
 
-- Na lista de queries, clique no botão ***...*** (três pontos) para visualizar a query por completo.
+###### SEND E-MAIL
+On *Workbench* it is possible to send the resultset by e-mail to other users.
 
-###### COPY
-Permite copiar uma query.
+- On ***Workbench*** page, click on ***Save an e-mail*** button, available on side menu next to ***Play*** button.
+- Inform the recipients in the ***Recipient*** field.
+- Inform recipients external to Hanger in the ***External Recipient*** field.
+- Inform the e-mail subject on ***Subject*** field.
+- If it is necessary, write some message on ***Body*** field.
+- Click on ***Send*** button to send.
+- Click on ***Save*** to save the e-mail and send it later.
+- Click on ***Close*** to cancel the operation.
 
-- Na lista de queries, passe o mouse em qualquer query e clique no botão ***Copy***, que será exibido, para copiá-la.
+**Note:** after clicking ***Save***, the page will be redirected to ***Saved e-mails***, where all saved e-mails are located.
+
+###### SAVE AN E-MAIL
+On *Workbench* is it possible to save an e-mail to send it later.
+
+- In ***Workbench***, click on the ***Save an email*** button available in the menu next to the ***Play*** button.
+- Fill in the fields presented previously.
+- Click on ***Save*** para salvar o e-mail.
+- After clicking on ***Save***, the page will be redirected to the ***Saved e-mails*** page.
+
+###### SAVED E-MAILS
+On *Saved e-mails* page you can view a list with all the saved e-mails.
+
+- On ***Workbench*** side menu option, click on the ***down arrow*** and choose the ***Saved e-mails*** option.
+- All the saved e-mails will be displayed.
+- Click on e-mail Subject to see more details.
+- After clicking on e-mail subject, the *jobs* related to this e-mail will be shown.
+- In this page, you can send an saved e-mail by clicking on ***Send*** button.
+- A success message will be displayed as soon as the email is sent.
+
+**Note:** You can also view the saved e-mails through the ***Workbench*** page by clicking on the menu button, in the lower right corner of the screen and then choosing the ***Saved e-mails*** option. 
+
+###### ADD EMAIL
+On *Saved e-mails* page you can also add a new e-mail to the list.
+
+- Click on ***+ Add Email*** and fill in the informations.
+- Click on ***Save*** to save, then click on ***Go back*** to return to the saved e-mails page.
+- You can send this new e-mail anytime by clicking on ***Send*** button.
+
+###### OPEN WORKBENCH
+If you are either in ***Saved queries*** page or in ***Saved e-mails*** page, you can return to the ***Workbench*** main page by clicking on ***Open workbench*** option.
 
 ## Subject
-Subjects são agrupadores utilizados para a organização e o acompanhamento sumarizado da execução dos *jobs*. 
+*Subjects* are groupers used for organizing and follow the *jobs* execution process.
+
+- To access the ***Subject*** main page, on side menu, click on the ***Subject*** option.
+- All the subjects will be displayed.
+- If you want to edit a specific subject, click on ***Edit*** button.
+
+##### EDIT
+Allows to edit a subject. This process is pretty similar to Add Subject.
+
+- On side menu, click on ***Subject***.
+- Select the chosen subject and click on ***Edit*** button.
+- Fill in the information accordingly and, at the end, click on ***Save*** to save.
 
 ##### ADD SUBJECT
 Permite adicionar um novo assunto.
 
-- No menu lateral, acesse a opção ***Subjects***.
-- Clique no botão ***Add Subject***, representado pelo ícone **+**.
-- Defina o nome do assunto no campo ***Subject***.
-- Defina a descrição do assunto no campo ***Description***.
-	> Neste campo é possível utilizar a linguagem ***Markdown*** para formatação do texto.
-- Para definir se o assunto deve ser visto por todos os usuários no monitor, marque a opção ***Mandatory***. 
-- Caso deseje receber notificações dos jobs pertencentes deste subject no slack, marque a opção ***Slack notification***.
-- Para definir o canal no qual as notificações serão enviadas, clique no botão ***Add channel***. Será exibido o modal ***Slack channels*** no qual será possível selecionar um ou mais canais do Slack nos quais as notificações devem ser enviadas.
-	> Caso nenhum canal seja selecionado no modal ***Slack channels***, o canal configurado na guia ***Configuration*** será usado para notificação deste *job*.
-- Clique no botão ***Save***.
+- On ***Subject*** side menu option, click on the ***down arrow*** and choose the ***Add subject*** option.
+- On ***Subject*** field, inform the subject name..
+- Define the subject description on ***Description*** field, if it is necessary. You can use *Markdown* language to write it.
+- On ***Subscription*** section, check the option ***Mandatory***, if you want that the subject can be seen on monitor by all the users. Some subjects are required and can not be removed from monitor, so, these subjects are shown with the subscription checkbox disabled.
+- Check the option ***Slack notification***, if you want to receive notifications of jobs belonging to this subject on slack.
+- Click on ***Slack Channel*** button to define the channel that the notifications will be sent. A modal will be displayed and you just only have to select the chosen channels and click on ***Add***.
+- Click on ***Swinlanes*** button to group the jobs that is in the same subject, by using *regexp*. This is a very useful resource when to subdivide the jobs.
+- At the end, click on ***Save*** .
 
-##### SUBSCRIPTION
-Permite selecionar qual subject será exibido no monitor quando o usuário estiver logado.
-
-> Alguns *subjects* são obrigatórios e não podem ser removidos do monitor, estes *subjects* são exibidos com o checkbox de subscrição desabilitado.
-
-##### EDIT 
-Permite editar um assunto. 
+***Note:*** if no channel is selected in the ***Slack channels*** modal, the channel configured on the ***Configuration*** tab will be used for notification of this *job*.
 
 ##### DELETE
-Permite excluir um assunto.
+Allows to remove a subject.
+
+- On ***Subject*** main page, select a subject that you want to remove and click on ***Delete*** button.
 
 ## Jobs
-*Jobs* são referencias para *jobs* do [Jenkins](https://jenkins.io/).
+On Hanger, *Jobs* are references to [Jenkins](https://jenkins.io/) jobs.
 
 ##### ADD JOB
 Permite adicionar um novo *job*. 
@@ -406,7 +440,7 @@ Permite adicionar um novo *job*.
 	> Neste campo é possível utilizar a linguagem ***Markdown*** para formatação do texto.
 - Caso o *job* possa ser executado mais de uma vez ao dia, marque o checkbox ***Rebuild along the day***. Por padrão, um *job* pode ser executado apenas uma vez ao dia. Quando esta opção estiver selecionada, o *job* será executado a primeira vez quando todas as dependências forem atendidas e voltará a ser executado sempre que qualquer uma das dependências for executada com sucesso no decorrer do dia. Caso necessite que o *job* somente seja reexecutado quando todas as dependências forem atendidas novamente, selecione quais dependências serão ***blockers*** na lista de ***parents***.
 - Caso deseje definir um intervalo mínimo para que o *job* seja reexecutado, digite a quantidade de minutos no campo ***Rebuild interval in minutes***.
-- Defina o conteúdo do campo **Eagerness** do job entre 0 e 12 horas. Para que uma dependência de um *job* seja considerada atendida, ela precisa ser executada com sucesso ao menos uma vez no dia. Caso alguma dependência precise ser executada antes da meia noite, o campo ***Eagerness*** deve ser preenchido com o número de horas, antes da meia noite, em que caso o job seja executado com sucesso, a dependência seja considerada como atendida. 
+- Defina o conteúdo do campo ***Eagerness*** do job entre 0 e 12 horas. Para que uma dependência de um *job* seja considerada atendida, ela precisa ser executada com sucesso ao menos uma vez no dia. Caso alguma dependência precise ser executada antes da meia noite, o campo ***Eagerness*** deve ser preenchido com o número de horas, antes da meia noite, em que caso o job seja executado com sucesso, a dependência seja considerada como atendida. 
 - Defina, em formato cron (http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html), o período permitido para a execução do job no campo ***Time restriction***.
 - Defina o conteúdo do campo ***Eagerness*** do job entre 0 e 12 horas. Para que uma dependência de um *job* seja considerada atendida, ela precisa ser executada com sucesso ao menos uma vez no dia. Caso alguma dependência precise ser executada antes da meia noite, o campo ***Eagerness*** deve ser preenchido com o número de horas, antes da meia noite, em que caso o job seja executado com sucesso, a dependência seja considerada como atendida.
 - Caso deseje definir um intervalo mínimo para que o *job* seja reexecutado, digite a quantidade de minutos no campo ***Rebuild interval***.
@@ -511,69 +545,79 @@ Permite analisar a carga de trabalho durante um intervalo de tempo.
 Permite atualizar a lista de *jobs* do Hanger. Por questões de performance o Hanger mantém o máximo possível de informação em memória, sincronizando os dados com o banco de dados somente quando necessário; por meio da opção ***Refresh*** é possível forçar a sincronização imediata destes dados.
 
 ## Log
-Logs são registros das atividades dos usuários no sistema e apresenta as seguintes informações:
-- ***Date:*** Data da ação.
-- ***Entity:*** Tipo de entidade na qual a ação foi executada.
-- ***Content:*** Nome da entidade na qual a ação foi executada.
-- ***User:*** Usuário que executou a ação.
-- ***Event:*** Ação executada pelo usuário.
-- No campo de filtro, defina um período e clique no botão ***Filter*** para encontrar um log específico.
+*Logs* are records of the executed activities by all the Hanger system users. To use the *Log* option, follow these steps.
+
+- On the side menu, click in ***Log***.
+- On top, select the chosen period to see the logs.
+- Click the ***Filter*** button and all records will be displayed in a table.
+
+Each logs table field has a meaning:
+
+- ***Date:*** Action date.
+- ***Type:*** Action type.
+- ***User:*** User who did the action.
+- ***Data:*** Changes that were made.
 
 ## User
-Users são os usuários do Hanger. 
+*Users* are the users of Hanger.
 
 ##### ADD USER
 Adiciona um novo usuário.
-- No menu lateral, acesse a opção ***User***.
-- Clique no botão Add User, representado pelo ícone **+**.
-- Defina o e-mail do usuário no campo **E-mail**.
-- Defina o nome de usuário do sistema no campo ***Username***.
-- Defina o primeiro nome do usuário no campo ***First Name***.
-- Defina o sobrenome do usuário no campo ***Last Name***.
-- Selecione o papel do usuário no campo ***Role***.
 
-**HERO:** É o administrador integral do sistema, pode efetuar todas as operações disponíveis.
+- On ***User*** side menu option, click on the ***down arrow*** and choose the ***Add user*** option.
+- On ***E-mail*** field, inform the user e-mail address.
+- On ***Username*** field, define the username.
+- On ***First Name*** field, inform the user first name.
+- On ***Last Name*** field, inform the user last name.
+- On ***Role*** field, define the user level.
+- Check the ***Enabled*** option to enable the user on system. If the option is unchecked, the user becomes inactive.
+- Click on ***Privileges*** button to set the user's privileges.
+- Click on ***Save*** button to save.
 
-**ADMIN:** Este usuário pode efetuar todas as operações dentro do sistema exceto criar, editar ou excluir usuários.
+***Note:*** the user levels, that is, the ***Roles*** present in the Hangar are:
 
-**USER:** Este usuário tem permissão de efetuar build em um *job* e aprovar *jobs* que estão em seu nome na seção Approval.
+**HERO:** is the integral system administrator. A Hero user can execute all the available operations. 
 
-- É possível definir se este usuário estará ou não ativo no sistema através do campo ***Enabled***.
-- Clique no botão ***Privileges*** para determinar os privilégios do usuário.
-- Clique no botão ***Save***.
+**ADMIN:** this user can execute all the operations in Hanger, except create, edit or delete other users.
+
+**USER:** this user can build a job and approve jobs that are in their name on ***Approval*** section.
 
 ##### EDIT
-Permite alterar um usuário e, para HERO, redefinir a senha de outros usuários: 
-- Clique no botão ***Edit***.
-- Clique no botão ***Reset password***.
-- Um e-mail será enviado ao usuário com a nova senha.
+Allows to edit an user. This process is pretty similar to Add user.
+
+- On side menu, click on ***User***.
+- Select the chosen user and click on ***Edit*** button.
+- Fill in the information accordingly and, at the end, click on ***Save*** to save.
 
 ##### DELETE
-Permite excluir um usuário.
-> Caso o usuário a ser excluído seja aprovador de algum *job*, será necessário trocar o usuário aprovador no momento da exclusão deste usuário.
+Allows to remove an user.
+
+- On ***User*** main page, select an user that you want to remove and click on ***Delete*** button.
 
 ##### CHANGE PASSWORD
-Permite ao usuário alterar a própria senha.
+This option allows the user to change their own password. For this:
+
+
 
 ##### API TOKEN
-Permite ao usuário obter a sua chave de acesso à API do glove. O token gerado não tem validade determinada e por ser usado até que o próprio usuário opte por renová-lo.
+Permite ao usuário obter a sua chave de acesso à API do glove. O token gerado não tem validade determinada e pode ser usado até que o próprio usuário opte por renová-lo.
 Para renovar o Token e invalidar o token gerado anteriormente:
 - Clique no botão ***Refresh Token***.
 - Um novo token será gerado, para visualizá-lo acesse novamente a opção de menu ***API Token***
 
 ## Configuration
-*Configuration* contém as configurações globais do Hanger. 
+In *Configuration* are all the global Hanger configurations. To set according to your need, follow the guidelines below:
 
-- No menu lateral, acesse a opção ***Configuration***
-- Digite o servidor utilizado para mandar e-mails no campo ***Host***.
-- Digite a porta do servidor de e-mail no campo ***Port***.
-- Digite o endereço de e-mail no campo ***Address***.
-- Digite a senha no campo ***Password***.
-- No campo ***Log Retention*** é possível definir em dias a limpeza do *log* de validação de dados e de aprovações. 
-- Defina qual é o canal padrão utilizado pelo Slack no campo ***Default channel***.
-- Defina o número máximo de entidades permitidas no workbench no campo ***Maximum entity number allowed***.
-- Defina os domínios permitidos para o envio de e-mails no campo ***E-mail filter (RegExp)***. Se vazio, é permitido qualquer domínio.  
-- Defina o número máximo de linhas por query no campo ***Max rows per query***.
-- Clique no botão ***Upload Logo*** para alterar o logo da ferramenta por qualquer arquivo do tipo imagem.
-- Clique no botão ***Update cache*** para atualizar o cache.
-- Clique no botão ***Update plugin*** para atualizar o plugin de notificação.
+- On side menu, click on ***Configuration***.
+- On ***Host*** field, inform the server used to send e-mails.
+- Write the e-mail server port on the field ***Port***.
+- On ***Address*** field, inform the e-mail address.
+- Write the password on the ***Password*** field.
+- On Log Retention field it is possible to define, in days, the period for cleaning the approvals and data validation log.
+- On ***Default Channel*** field, inform the default channel that will be used by Slack.
+- On ***Schema and table searcheble*** field, define the maximum number of entities allowed on Workbench.
+- Set the allowed domains to send e-mails on the ***E-mail filter (RegExp)*** field. If it is empty, any domain is allowed.  
+- Define the maximum number of rows per query on the ***Max rows per query field***.
+- Click on ***Update Logo*** button to change the tool logo to any image file.
+- Click on ***Update cache*** button if you want to update the cache.
+- Click on ***Update plugin*** button to update the notification plugin.

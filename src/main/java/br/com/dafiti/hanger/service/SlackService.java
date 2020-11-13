@@ -167,7 +167,9 @@ public class SlackService {
         @CacheEvict(value = "slackChannels", allEntries = true)})
     public void refresh() {
         try {
-            this.slackSession.disconnect();
+            if (this.slackSession != null) {
+                this.slackSession.disconnect();
+            }
         } catch (IOException ex) {
             LOG.log(Level.ERROR, "Fail disconnecting from slack", ex);
         }

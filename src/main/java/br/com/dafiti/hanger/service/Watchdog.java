@@ -31,11 +31,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobBuild;
+import br.com.dafiti.hanger.model.JobParent;
 import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.service.JobBuildPushService.PushInfo;
+import java.util.Date;
+import java.util.List;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.Minutes;
 
 /**
  *
@@ -108,7 +114,13 @@ public class Watchdog {
                         boolean onlyOptionalorDisabled = job
                                 .getParent()
                                 .stream()
-                                .filter(jobParent -> !jobParent.getScope().equals(Scope.OPTIONAL) && jobParent.getJob().isEnabled())
+                                .filter(jobParent
+                                        -> !jobParent.getScope().equals(Scope.OPTIONAL)
+                                && jobParent.getJob().isEnabled()
+                                //Identify if job parent ran in the last 10 minutes.
+                                && Minutes.minutesBetween(
+                                        new LocalDateTime(jobParent.getParent().getStatus().getBuild().getDate()),
+                                        new LocalDateTime()).getMinutes() >= 10)
                                 .collect(Collectors.toList())
                                 .isEmpty();
 

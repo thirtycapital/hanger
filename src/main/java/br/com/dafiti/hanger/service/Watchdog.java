@@ -76,7 +76,7 @@ public class Watchdog {
     /**
      * Watchdog patrols at every 1 hour.
      */
-    @Scheduled(cron = "0 0 0-23 * * *")
+    @Scheduled(cron = "${hanger.watchdog.cron}")
     public void patrol() {
         LOG.log(Level.INFO, "The watchdog is patrolling jobs!");
 

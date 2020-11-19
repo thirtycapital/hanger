@@ -31,15 +31,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobBuild;
-import br.com.dafiti.hanger.model.JobParent;
 import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.service.JobBuildPushService.PushInfo;
-import java.util.Date;
-import java.util.List;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Minutes;
 

@@ -1,7 +1,7 @@
 # Hanger [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-### Hanger is a graphical tool for process orchestration and data quality, responsible for the execution of[ETL](https://pt.wikipedia.org/wiki/Extract,_transform,_load) processes, dependency control and data validation.
+### Hanger is a graphical tool for process orchestration and data quality, responsible for the execution of [ETL](https://pt.wikipedia.org/wiki/Extract,_transform,_load) processes, dependency control and data validation.
 
-## Instalação
+## Instalation
 
 ##### REQUIREMENTS
 
@@ -12,15 +12,15 @@
 - Jenkins Notification Plugin ( [https://wiki.jenkins.io/display/JENKINS/Notification+Plugin](https://wiki.jenkins.io/display/JENKINS/Notification+Plugin) )
 
 ##### CONSTRUCTION
-Utilizando o [Maven](https://maven.apache.org/):
+Using [Maven](https://maven.apache.org/):
 
-- Acesse o diretório no qual os fontes do Hanger se localizam.
-- Digite o comando **mvn package**.
-- O arquivo hanger.war será gerado no subdiretório *target*. 
+- Go to the directory where the Hanger sources are located.
+- Type the **mvn package** command.
+- The hanger.war file will be generated on the *target* subdirectory.
 
 ##### CONFIGURATION
 
-- Crie o arquivo ~/.hanger/hanger.properties, com o seguinte conteúdo:
+- Create the ~/.hanger/hanger.properties file with the follow content:
  
 ```
 # Hanger MySQL
@@ -50,67 +50,68 @@ logging.level.org.hibernate.SQL=WARN
 spring.jackson.time-zone=America/Sao_Paulo
 ```
 
-> Para habilitar a integração com slack, siga os documentos:
+> To enable the slack integration, follow these documents:
 > - Habilitar Slack bot e pegar token.
 > - Habilitar Slack WebHook e pegar URL.
 
 ##### DEPLOY
-Utilizando o [Apache Tomcat](http://tomcat.apache.org/):
+Using [Apache Tomcat](http://tomcat.apache.org/):
 
-- Copie o arquivo hanger.war para o diretório webapps do Apache Tomcat.
+- Copy the hanger.war file to the Apache Tomcat webapps directory.
 
 ##### TROUBLESHOOTING
 
-> Caso haja problema para executar um job pelo Hanger, verifique se o campo *URL do Jenkins* está definida corretamente no Jenkins:
-> - Acesse o Jenkins e vá no menu Gerenciar Jenkins
-> - Clique no menu em Configurar o sistema
-> - Localize o campo *URL do Jenkins* na seção *Jenkins Location* e defina o valor corretamente. 
+> If there is a problem running a job through Hanger, verify that the *Jenkins URL* field is set correctly in Jenkins:
+> - Access Jenkins and go to the *Manage Jenkins* menu.
+> - Click on *Configure System* option.
+> - Setup the correct *Jenkins URL* on *Jenkins Location* section. 
 
-> Caso haja problemas de permissão entre Hanger e o Jenkins (Erro 403), verifique se a opção *Prevenir site contra invasões* está marcada e a desmarque:
-> - Acesse o Jenkins e vá no menu Gerenciar Jenkins
-> - Clique no menu em Configurar segurança global
-> - Na seção CSRF Protection, desmarque a opção *Prevenir site contra invasões*.
+> If there are permission issues between Hanger and Jenkins (Error 403), check if the option *Prevent site from intrusion* is checked and uncheck it:
+> - Access Jenkins and go to the *Manage Jenkins* menu.
+> - Click on *Configure Global Security* option.
+> - On *CSRF Protection* section, uncheck the *Prevent site from hacking* option.
 
 ## Monitor
 *Monitor* is where the freight of Hanger is observed. The *dashboard* is organized as follows:
 
 - On top are shown all the available *subjects* and a filter option:
+
 	- At the left side of the *subject* name is displayed an icon that indcates that the logged user is subscribed. However, the icon only appears if the *subject* is not mandatory. A *subject* is defined as mandatory if the user wants that the *subject* is visible to all other Hanger users. 
 	- To the right of the subject's name, the total number of *jobs* contained in it is informed.
-	- Na aba de assuntos:
-		- Clique sob o nome do *subject* desejado e será exibida a lista de *jobs* do subject contendo as seguintes informações:
-			- **Status:** Status do *job*.
-			- **Server:** Instância do Jenkins no qual o *job* é executado.
-			- **Job:** Nome do *job*. 
-			- **Warning:** Número de warning na cadeia do *job*. 
-			- **Link:** Link para redirecionamento para o *job* no Jenkins. 
-			- **Check-Up:** Link para redirecionamento para lista de execuções do checkup.
-			- **Scope:** Escopo de execução do *job*.
-			- **Update:** Data de execução do *job*. 
-		- Clique no nome do *job* para ser direcionado para a cadeia de dependências do *job* e será exibida a cadeia de dependências do *job*, denominada **flow**. 
-		- Clique no número exibido na coluna warning e será exibida a lista com todos os *jobs* com problema e seus respectivos status. 
-		- Clique na opção ***Delete*** para remover um *job* do *subject*.
-		- Clique na opção ***Build*** para executar um *job*. 
-		- Clique no botão ***Approval*** para aprovar ou recusar um *job* com status ***BLOCKED*** ou ***UNHEALTHY***.
-			- Analise o log de validação.
-			- Informe a justificativa para sua decisão.
-			- Clique no botão *Approve* ou *Disapprove* de acordo com a decisão tomada. 
-		- Clique no botão ***Add Job*** para adicionar um *job* em um *subject*. 
-- Na guia **HOME** é exibido o progresso de cada *subject* e a contagem de *jobs* por status:
-	- No gráfico: 
-		- **Cinza:** Representa o percentual de *jobs* ainda não executados. 
-		- **Verde:** Representa o percentual de *jobs* executados com sucesso. 
-		- **Vermelho:** Representa o percentual de *jobs* com falha ou com problema de validação dos dados.
-		- **Laranja:** Representa o percentual de *jobs* com alertas na cadeia de dependência. 
-	- Na tabela:
-		- **Success:** Total de *jobs* executados com sucesso.
-		- **Waiting:** Total de *jobs* ainda não executados. 
-		- **Building:** Total de *jobs* prontos para serem executados, mas ainda aguardando na fila. 
-		- **Running:** Total de *jobs* sendo executados.
-		- **Warning:** Total de *jobs* com alertas na cadeia de dependência. 
-		- **Failure:** Total de *jobs* com falhas ou com problema de validação dos dados. 
-		- **Checkup:** validação de health check de todos os checkups do *job*.
-- Na guia **ALL** são exibidos todos os jobs cadastrados no Hanger e seus respectivos status.
+	- Click under the chosen subject name and a list of subject jobs will be displayed with the following information:
+			- **Status:** job status.
+			- **Server:** Jenkins instance in which the job is executed.
+			- **Job:** job name.
+			- **Warning:** number of warning on job chain.
+			- **Link:** link to redirect to job on Jenkins.
+			- **Check-Up:** link to redirect to checkup execution list.
+			- **Updated:** job execution date.
+			- **Scope:** job execution scope.
+		- Click on job name to be directed to the job dependency chain named ***Flow***. 
+		- Click on the displayed number on warning column and a list with all the jobs with problems and its respective status will be shown. 
+		- Click on ***Build*** button to run a *job*.
+		- Click on ***See*** button to see the *job* details. 
+		- Click on ***Remove*** button to remove a job from a subject 
+		- Click on the ***Add Job*** option to add a *job* to the *subject*.
+
+- On ***HOME*** tab the progress from each *subject* and the count of *jobs* by status will be displayed:
+
+	- On graph: 
+		- **Gray:** represents the percentage of jobs that have not yet been executed.  
+		- **Green:** represents the percentage of jobs that have been successfully executed. 
+		- **Red:** represents the percentage of jobs with failure or with problems on data validation.
+		- **Orange:** represents the percentage of jobs with alerts in dependency chain. 
+
+	- On table:
+		- **Success:** total of jobs successfully executed.
+		- **Waiting:** total of jobs not executed yet. 
+		- **Building:** total of jobs ready to be executed. 
+		- **Running:** total of jobs that are running.
+		- **Warning:** total of jobs with alerts on dependency chain. 
+		- **Failure:** total of jobs with failures or with problems on data validation. 
+		- **Checkup:** health check validation of all the job checkups.
+
+- On ***ALL*** tab are displayed all the registered jobs on Hanger and its respective status.
 
 ## Search
 
@@ -428,12 +429,16 @@ Allows to remove a subject.
 On Hanger, *Jobs* are references to [Jenkins](https://jenkins.io/) jobs.
 
 ##### ADD JOB
-Permite adicionar um novo *job*. 
-- No menu lateral, acesse a opção ***Job***.
-- Clique no botão Add Job, representado pelo ícone **+**.
-- Selecione a instância desejada do Jenkins no combo ***Server*** .
+Allows to add a new *job*. You can import a *job* from Jenkins or create a new one by Hanger.
+
+- To access the ***Job*** main page, on side menu, click on the ***Job*** option.
+- All the jobs will be displayed.
+- If you want to edit a specific job, click on ***Edit*** button.
+
+##### IMPORT
+- On ***Job*** side menu option, click on the ***down arrow*** and choose the ***Add job*** option.
+- On ***Server*** field, inform the chosen Jenkins instance.
 	> Para adicionar um novo *job* é necessário ter ao menos um servidor cadastrado.
-- Clique no botão ***Job List*** para que todos os *jobs* da instância selecionada do Jenkins sejam listados. 
 - Selecione o *job* desejado no combo ***Name***. 
 - Caso deseje definir um nome sugestivo para o *job*, informe o no campo ***Alias***. O alias, com o sufixo [alias], substituirá o nome do *job* nas principais funcionalidades do Hanger.
 - Defina a descrição do *job* no campo ***Description***.
@@ -594,16 +599,22 @@ Allows to remove an user.
 
 - On ***User*** main page, select an user that you want to remove and click on ***Delete*** button.
 
-##### CHANGE PASSWORD
-This option allows the user to change their own password. For this:
-
-
-
 ##### API TOKEN
 Permite ao usuário obter a sua chave de acesso à API do glove. O token gerado não tem validade determinada e pode ser usado até que o próprio usuário opte por renová-lo.
 Para renovar o Token e invalidar o token gerado anteriormente:
 - Clique no botão ***Refresh Token***.
 - Um novo token será gerado, para visualizá-lo acesse novamente a opção de menu ***API Token***
+
+This option allows...
+
+- Click on ***Refresh Token***.
+- A new token will be created. To view it, click again on ***API Token*** option.
+
+##### CHANGE PASSWORD
+This option allows the user to change their own password. For this:
+
+- On ***User*** side menu option, click on the ***down arrow*** and choose the ***Change password*** option.
+- Fill in the information accordingly and click on ***Save*** button to save.
 
 ## Configuration
 In *Configuration* are all the global Hanger configurations. To set according to your need, follow the guidelines below:

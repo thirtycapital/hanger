@@ -35,6 +35,9 @@ hanger.encrypt.key=<Any key>
  
 # Hanger Anonymous Access
 hanger.anonymous.access=true
+
+# Hanger watchdog cron execution
+hanger.watchdog.cron=Cron expression (example: 0 20 6-23 * * *)
  
 # Slack bot token
 slackBotToken=<Token of your bot>

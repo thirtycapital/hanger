@@ -413,13 +413,13 @@ Allows to edit a subject. This process is pretty similar to Add Subject.
 Permite adicionar um novo assunto.
 
 - On ***Subject*** side menu option, click on the ***down arrow*** and choose the ***Add subject*** option.
-- On ***Subject*** field, inform the subject name..
+- On ***Subject*** field, inform the subject name.
 - Define the subject description on ***Description*** field, if it is necessary. You can use *Markdown* language to write it.
 - On ***Subscription*** section, check the option ***Mandatory***, if you want that the subject can be seen on monitor by all the users. Some subjects are required and can not be removed from monitor, so, these subjects are shown with the subscription checkbox disabled.
 - Check the option ***Slack notification***, if you want to receive notifications of jobs belonging to this subject on slack.
 - Click on ***Slack Channel*** button to define the channel that the notifications will be sent. A modal will be displayed and you just only have to select the chosen channels and click on ***Add***.
 - Click on ***Swinlanes*** button to group the jobs that is in the same subject, by using *regexp*. This is a very useful resource when to subdivide the jobs.
-- At the end, click on ***Save*** .
+- At the end, click on ***Save***.
 
 ***Note:*** if no channel is selected in the ***Slack channels*** modal, the channel configured on the ***Configuration*** tab will be used for notification of this *job*.
 
@@ -441,30 +441,27 @@ Allows to add a new *job*. You can import a *job* from Jenkins or create a new o
 ##### IMPORT
 - On ***Job*** side menu option, click on the ***down arrow*** and choose the ***Add job*** option.
 - On ***Server*** field, inform the chosen Jenkins instance.
-	> Para adicionar um novo *job* é necessário ter ao menos um servidor cadastrado.
-- Selecione o *job* desejado no combo ***Name***. 
-- Caso deseje definir um nome sugestivo para o *job*, informe o no campo ***Alias***. O alias, com o sufixo [alias], substituirá o nome do *job* nas principais funcionalidades do Hanger.
-- Defina a descrição do *job* no campo ***Description***.
-	> Neste campo é possível utilizar a linguagem ***Markdown*** para formatação do texto.
-- Caso o *job* possa ser executado mais de uma vez ao dia, marque o checkbox ***Rebuild along the day***. Por padrão, um *job* pode ser executado apenas uma vez ao dia. Quando esta opção estiver selecionada, o *job* será executado a primeira vez quando todas as dependências forem atendidas e voltará a ser executado sempre que qualquer uma das dependências for executada com sucesso no decorrer do dia. Caso necessite que o *job* somente seja reexecutado quando todas as dependências forem atendidas novamente, selecione quais dependências serão ***blockers*** na lista de ***parents***.
-- Caso deseje definir um intervalo mínimo para que o *job* seja reexecutado, digite a quantidade de minutos no campo ***Rebuild interval in minutes***.
-- Defina o conteúdo do campo ***Eagerness*** do job entre 0 e 12 horas. Para que uma dependência de um *job* seja considerada atendida, ela precisa ser executada com sucesso ao menos uma vez no dia. Caso alguma dependência precise ser executada antes da meia noite, o campo ***Eagerness*** deve ser preenchido com o número de horas, antes da meia noite, em que caso o job seja executado com sucesso, a dependência seja considerada como atendida. 
-- Defina, em formato cron (http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html), o período permitido para a execução do job no campo ***Time restriction***.
-- Defina o conteúdo do campo ***Eagerness*** do job entre 0 e 12 horas. Para que uma dependência de um *job* seja considerada atendida, ela precisa ser executada com sucesso ao menos uma vez no dia. Caso alguma dependência precise ser executada antes da meia noite, o campo ***Eagerness*** deve ser preenchido com o número de horas, antes da meia noite, em que caso o job seja executado com sucesso, a dependência seja considerada como atendida.
-- Caso deseje definir um intervalo mínimo para que o *job* seja reexecutado, digite a quantidade de minutos no campo ***Rebuild interval***.
-- Marque o checkbox ***Enabled*** para habilitar o job ou desmarque para desabilitá-lo. 
-- Caso o *job* possa ser executado mais de uma vez ao dia, marque o checkbox ***Rebuildable***. Por padrão, um *job* pode ser executado apenas uma vez ao dia. Quando esta opção estiver selecionada, o *job* será executado pela primeira vez quando todas as dependências forem atendidas e voltará a ser executado sempre que qualquer uma das dependências for executada com sucesso no decorrer do dia. Caso necessite que o *job* somente seja reexecutado quando todas as dependências forem atendidas novamente, selecione quais dependências serão ***blockers*** na lista de ***parents***.
-- Caso deseje vincular e-mails ao *job*, clique no botão ***E-mail***.
-- Será exibido o modal ***E-mail list***. Selecione os e-mails que deseja vincular ao *job* e clique no botão ***Add***.
-- Os e-mails selecionados serão enviados aos destinatários assim que o *job* for executado com sucesso, ou seja, assim que o *build* for realizado.
-	> Caso queira ver mais detalhes, clique no assunto do e-mail desejado e a página será redirecionada para as informações do e-mail escolhido.
-- Caso deseje receber notificações de execuções do job, marque a opção ***Slack notification***.
-- Para definir o canal no qual as notificações serão enviadas, clique no botão ***Slack channel***. Será exibido o modal ***Slack channels*** no qual será possível selecionar um ou mais canais do Slack nos quais as notificações devem ser enviadas.
-	> Caso nenhum canal seja selecionado no modal Slack channels, o canal configurado na guia Configuration será usado para notificação deste *job*.
-- Caso deseje classificar o *job* dentro de um ou mais assuntos, clique no botão ***Add subject***. Será exibido o modal ***Subject*** no qual será possível selecionar um ou mais subjects para o *job*. 
-	- Clique no botão ***Add***.
-	- Será criada uma nova seção denominada ***Subjects***, onde será possível gerenciar os subjects do job.
-	- Para remover um subject, clique no botão ***Remove***. 
+	> To add a new *job*, you must have at least one registered server.
+- Select the *job* on ***Name*** field.
+- Click on ***Next*** button to continue.
+- On ***Alias*** field it is possible to define a suggestive name for the *job*. The defined alias will replace the *job* name on mainly Hanger functionalities. 
+- If you want, on ***Description*** field, define the job description.
+	> You can use ***Markdown*** to type the description text.
+- On ***Time Restriction*** field, inform the allowed period in [cron](http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html) format to execute the job.
+- Define the content of the ***Eagerness*** field of the job between 0 and 12 hours. For a job dependency to be considered attended it must have been successfully carried out at least once a day. If some dependency wants to be executed before midnight, the ***Eagerness*** field must be filled with the number of hours, before midnight, so that, if the job runs successfully, the dependency is considered fulfilled.
+- If you want to define a minimum interval to reexcute the job, write the minutes on ***Rebuild Interval*** field.
+- On section ***Options***, check the option ***Enabled*** to enable the job or uncheck to disable it. 
+- Check the ***Rebuildable*** option if it is necessary to execute the job more than once a day. When this option is checked, the job will be executed for the first time when all the dependencies are catered and will be executed again always when, during the day all the dependencies are successfully catered. If it is necesssary to execute the job again only when all the dependencies are successfully catered again, select which dependencies will be blockers on parents list. For default, a job can be executed only once a day.
+- Check the option ***Build on any parent scope*** to allow that the job can be pushed, regardless of the parents execution scope.
+- Click on ***Parent*** button if you want to add a dependency to the current *job*.
+- Click on ***Shell Script*** button if you want to...
+- Click on ***Subject*** button to classify the *job* in one or more subjects.
+- Click on ***Checkup*** button to add a checkup to the *job*.
+- Click on ***Slack*** button to receive notifications abou the *job* on Slack.
+- Click on ***E-mail*** button if you want to relate an e-mail to the *job*.
+- At end, click on ***Save*** button to save.
+
+
 Caso o *job* tenha uma ou mais dependências, clique no botão ***Add Parent***, para adicionar *jobs* da mesma instância do Jenkins como dependência, ou clique na **seta** ao lado do botão para selecionar uma instância específica do Jenkins. Será exibido o modal ***Jenkins Server***, no qual será possível selecionar todos os *jobs* que serão dependência do *job* que está sendo criado. 
 - Caso os *jobs* do Jenkins possuam *upstream jobs*, marque a opção ***Import upstream project*** para que a relação de dependências representadas pelo upstream jobs do Jenkins seja replicada para o mecanismo de dependências do Hanger. 
 	- Clique no botão ***Add***.
@@ -481,43 +478,68 @@ Uma dependência pode ter os seguintes escopos:
 
 **OPTIONAL:** Identifica que a dependência é opcional, ou seja, sendo atendida ou não o *job* será executado normalmente. Caso todas as dependências do *job* sejam OPTIONAL, o *job* será executado assim que a primeira dependência for atendida. 
 
+##### PARENT
+By clicking the button ***Parent*** is it possible to define dependencies for the job.
 
-- Caso seja necessário realizar a validação dos dados resultantes da execução de um job, especificamente em um processo de [https://pt.wikipedia.org/wiki/Extract,_transform,_load](ETL), clique no botão ***Add checkup***. Será criada uma nova seção denominada ***Checkup***, na qual será possível definir uma instrução SQL para validação. Para criar um *checkup*:
-	- Informe a descrição do *checkup* no campo ***Description***.
-	- Selecione em qual conexão a validação será executada no combo ***Connection***.
-	- Defina em qual escopo a validação será realizada, selecionando uma das opções do combo ***Scope***. 
-		> **FULL:** o checkup do ***job*** só será executado quando todas as dependências com escopo **FULL** e **PARTIAL** foram atendidas.
-		> **PARTIAL:** o checkup do ***job*** só será executado quando as dependências com o escopo **PARTIAL** foram atendidas.
-		> **ONYONE:** o checkup do ***job*** será executado sempre que as depêndencias com escopo **PARTIAL** ou **FULL** foram atendidas.
-	- Defina a instrução SQL de validação no campo ***SQL Select Statement***, o *resultset* deve retornar apenas um valor inteiro. 
-	- Defina o teste que será feito para comparação entre o resultset e o threshold, selecionando uma das opções disponíveis no combo ***Test***.
-	- Defina o resultado esperado no campo ***Threshold***.
-		> É possível referenciar o resultado de outro ckeckup no campo threshold, utilizando a seguinte sintaxe: `${<checkup ID>}`
-	- Defina a ação que será executada caso a validação falhe, selecionando uma das opções disponíveis no combo **On fail**.
-		> Em caso de falha de um checkup, as seguintes ações podem ser executadas:
-		> 
-		> **NOTHING:** Apenas bloqueia a execução da cadeia. 
-		> 
-		> **REBUILD:** Caso seja uma pós validação, reexecuta o job. Caso contrário, tem o mesmo efeito de NOTHING. 
-		> 
-		> **REBUILD_MESH:** Caso seja uma pós validação, reexecuta todas as dependências do job e as dependências de cada dependência. Caso contrário, tem o mesmo efeito de NOTHING. 
-		> 
-		> **REBUILD_TRIGGER:**  Caso seja uma pós validação, reexecuta dependências específicas selecionadas clicando no botão ***Add Trigger***. Caso contrário, tem o mesmo efeito de NOTHING. 
-		> 
-		> **LOG_AND_CONTINUE:** Grava o resultado da execução do *checkup* e notifica os canais do Slack selecionados no job, mas não bloqueia a execução da cadeia. 
-	- Caso a ação escolhida seja **REBUILD_TRIGGER**, clique no botão ***Add Trigger***. Será exibido o modal ***Trigger*** no qual será possível selecionar quais dependências devem ser reexecutadas.
-	- Caso seja necessário executar algum comando quando um checkup falhar, clique no botão ***Add Command***. Será criada um nova seção, ***Script on failure***:
-		- Selecione o tipo de ação que será executada entre ***SHELL*** ou ***SQL***.
-		- Informe no campo ***Script*** a ação a ser executada.
-		- Para remover uma ação, clique no botão ***Remove***. 
-	- Um checkup pode ser executado como uma pré-validação ou uma pós validação. Pré-validações ocorrem quando todas as dependências foram atendidas e imediatamente antes da execução do *job*, enquanto pós-validações ocorrem após a execução do *job*. Para definir o tipo de um checkup, clique no toggle e escolha entre ***Pre-validation*** e ***Post-validation***. 
-- Defina o número de tentativas de execução do *job* no campo ***Retries***.
-> Para ações NOTHING e LOG_AND_CONTINUE não há número de tentativas.
-- Caso necessário, selecione um aprovador para o checkup no combo ***Approver***.
-- Clique no botão ***Save***.
+##### SHELL SCRIPT
+
+##### SUBJECT
+On the ***Add job*** page, click on ***Subject*** button, if you want to classify the job in one or more subjects. The ***Subject*** modal will be displayed that allows to select one or more subjects for the *job*.
+
+- After select the chosen subjects, click on ***Add*** button to add it.
+- A section called ***Subjects*** will be created, where it is possible to manage the *job* subjects.
+- Click on ***Remove*** button to delete a subject, if it is necessary.
+
+##### CHECKUP
+If it is necessary execute the validation of the data from *job* execution, on the ***Add job*** page click on ***Checkup*** button. Will be created a new section called *Checkup* that allows to define a SQL instruction for validation. Follow the steps below to create a checkup:
+
+- On field ***Name***, inform the *checkup* name.
+- On ***Description*** field, inform checkup description.
+- On ***Connection*** field, select in which connection the validation will be executed.
+- Define in which scope the validation will be executed. For that, select one of the ***Scope*** options:
+	> ***FULL***: the *job* checkup will be executed only when all the dependencies with FULL and PARTIAL scope are concluded.
+	> ***PARTIAL***: the *job* checkup will be executed only when all the dependencies with PARTIAL scope are concluded.
+	> ***ANYONE***: the *job* checkup will be executed always when the dependencies with FULL or PARTIAL scope are concluded.
+- Define the SQL validation instruction on ***SQL Select Statement*** field. The resultset must return only an integer value.
+- Select the condition on ***Condition***.
+- Define the expected result on Threshold field. Is it possible to reference the result of another ckeckup, using the following sintax: ***${<checkup ID>}***.
+- On ***On fail*** field, select the action that will be executed, whether the validation fails. The available options are:
+	> ***NOTHING***: just block the chain execution.
+	> ***REBUILD***: if it is a pos validation, the job is executed again. Otherwise, it has the same effect of NOTHING.
+	> ***REBUILD_MESH***:  if it is a pos validation, all the job dependencies and the dependencies of each dependency are executed again. Otherwise, it has the same effect of NOTHING.
+	> ***REBUILD_TRIGGER***: if it is a pos validation, all the specific dependencies are executed again by clicking on Add Trigger button. Otherwise, it has the same effect of NOTHING.
+	> ***LOG_AND_CONTINUE***: record the checkup execution result and notify the selected Slack channels Slack. However, it does not block the chain execution.
+
+	***Note***: To actions like ***NOTHING*** or ***LOG_AND_CONTINUE*** there is not attempts number.
+
+- If the chosen option is ***REBUILD_TRIGGER***, click on ***Add Trigger*** button. The modal ***Trigger*** will be displayed and will be possible to select which dependencies must be executed again.
+- If it is necessary to execute some comand when the checkup fails, click on ***Add Command*** button. The new section, ***Script on failure*** will be displayed:
+	> Select the action between ***SHELL*** or ***SQL*** to be executed.
+	> On ***Script*** field, inform the action to be executed.
+- A checkup can be executed as a pre validation or a pos validation. Pre validations happens when all the dependencies have been fullfilled and immediately before of the job execution, while pos validations happen after the job execution. To define the type of a checkup, click on toggle and chose between ***Pre-validation*** e ***Post-validation***.
+- On ***Retries***, define the number of attempts of job execution.
+- If it is necessary, select an approver for the checkup on ***Approver*** field.
+- At the end, click on ***Save*** button to save.
+
+##### SLACK
+If you want to receive notifications about the job executions, click on ***Slack*** button.
+
+- On the ***Add job*** page, define the channel that the notifications will be sent. The modal ***Slack*** will be displayed. Then, select one or more channels on Slack that the notifications must be sent.
+	> If no channels are selected on ***Slack*** modal, the configured channel on ***Configuration*** side menu option, will be used as default channel to this *job* notification.
+- After select the chosen channels, click on ***Add*** button to add it.
+
+##### E-MAIL
+This option allows to relate an specific e-mail to the current *job*.
+
+- On the ***Add job*** page, click on ***E-mail*** button.
+- The model ***E-mails list*** will be displayed. Select the e-mails that you want to relate to the *job* and click on ***Add*** button.
+- The selected e-mails will be sent to the recipients as soon as the *job* has been successfuly executed, that is, as soon as the *build* has been carried out.
+	> If you want to see more details, click on e-mail's subject and the page will be redirected to the informations about the chosen e-mail.
+
+##### CREATE
 
 ##### BUILD 
-Permite executar um *job*.  
+This option allows to run a *job*.  
 
 ##### SEE
 Permite visualizar as configurações do *job*. Na página de visualização as seguintes ações estão disponíveis:
@@ -531,10 +553,10 @@ Permite visualizar as configurações do *job*. Na página de visualização as 
 - Clique no botão ***Build mesh*** para executar toda a cadeia de dependência do *job*. 
 
 ##### EDIT 
-Permite editar as configurações de um *job*.
+Allows to edit the *job* settings.
 
 ##### DELETE
-Permite excluir um *job*.
+Allows to delete a *job*.
 
 ##### HEATMAP
 Permite a distribuição do trabalho em um período de tempo específico.
@@ -603,15 +625,10 @@ Allows to remove an user.
 - On ***User*** main page, select an user that you want to remove and click on ***Delete*** button.
 
 ##### API TOKEN
-Permite ao usuário obter a sua chave de acesso à API do glove. O token gerado não tem validade determinada e pode ser usado até que o próprio usuário opte por renová-lo.
-Para renovar o Token e invalidar o token gerado anteriormente:
-- Clique no botão ***Refresh Token***.
-- Um novo token será gerado, para visualizá-lo acesse novamente a opção de menu ***API Token***
+This option allows the user to have their own Glove api access key. The generated token has no determined validity and can be used until the user chooses to renew it.
 
-This option allows...
-
-- Click on ***Refresh Token***.
-- A new token will be created. To view it, click again on ***API Token*** option.
+- To renew the token click on ***Refresh Token***.
+- A new token will generated and you can view it by clicking again on ***API Token*** menu option.
 
 ##### CHANGE PASSWORD
 This option allows the user to change their own password. For this:

@@ -431,15 +431,16 @@ Allows to remove a subject.
 ## Jobs
 On Hanger, *Jobs* are references to [Jenkins](https://jenkins.io/) jobs.
 
-##### ADD JOB
-Allows to add a new *job*. You can import a *job* from Jenkins or create a new one by Hanger.
-
 - To access the ***Job*** main page, on side menu, click on the ***Job*** option.
 - All the jobs will be displayed.
 - If you want to edit a specific job, click on ***Edit*** button.
 
+##### ADD JOB
+Allows to add a new *job*. You can import a *job* from Jenkins or create a new one by Hanger.
+
 ##### IMPORT
 - On ***Job*** side menu option, click on the ***down arrow*** and choose the ***Add job*** option.
+- On top, select the option ***Import*** to import a *job* from Jenkins.
 - On ***Server*** field, inform the chosen Jenkins instance.
 	> To add a new *job*, you must have at least one registered server.
 - Select the *job* on ***Name*** field.
@@ -454,32 +455,42 @@ Allows to add a new *job*. You can import a *job* from Jenkins or create a new o
 - Check the ***Rebuildable*** option if it is necessary to execute the job more than once a day. When this option is checked, the job will be executed for the first time when all the dependencies are catered and will be executed again always when, during the day all the dependencies are successfully catered. If it is necesssary to execute the job again only when all the dependencies are successfully catered again, select which dependencies will be blockers on parents list. For default, a job can be executed only once a day.
 - Check the option ***Build on any parent scope*** to allow that the job can be pushed, regardless of the parents execution scope.
 - Click on ***Parent*** button if you want to add a dependency to the current *job*.
-- Click on ***Shell Script*** button if you want to...
+- Click on ***Shell Script*** button if you want to define or change the *job* shell script.
 - Click on ***Subject*** button to classify the *job* in one or more subjects.
 - Click on ***Checkup*** button to add a checkup to the *job*.
 - Click on ***Slack*** button to receive notifications abou the *job* on Slack.
 - Click on ***E-mail*** button if you want to relate an e-mail to the *job*.
-- At end, click on ***Save*** button to save.
-
-
-Caso o *job* tenha uma ou mais dependências, clique no botão ***Add Parent***, para adicionar *jobs* da mesma instância do Jenkins como dependência, ou clique na **seta** ao lado do botão para selecionar uma instância específica do Jenkins. Será exibido o modal ***Jenkins Server***, no qual será possível selecionar todos os *jobs* que serão dependência do *job* que está sendo criado. 
-- Caso os *jobs* do Jenkins possuam *upstream jobs*, marque a opção ***Import upstream project*** para que a relação de dependências representadas pelo upstream jobs do Jenkins seja replicada para o mecanismo de dependências do Hanger. 
-	- Clique no botão ***Add***.
-	- Será criada uma nova seção denominada ***Parent***, onde será possível gerenciar os parents do job.
-	- Para remover uma dependência, clique no botão ***Remove***. 
-	- Para definir escopo de uma dependência, selecione entre uma das opções disponíveis no combo apresentado na coluna ***Scope***. 
-
-
-Uma dependência pode ter os seguintes escopos:
-
-**FULL:** Identifica que todas as dependências com escopo FULL ou PARTIAL precisam ser atendidas para que o *job* seja executado. 
-
-**PARTIAL:** Identifica que todas as dependências com escopo PARTIAL precisam ser atendidas para que o *job* seja executado, o *job* será executado com escopo parcial pois nem todas suas dependências foram atendidas. 
-
-**OPTIONAL:** Identifica que a dependência é opcional, ou seja, sendo atendida ou não o *job* será executado normalmente. Caso todas as dependências do *job* sejam OPTIONAL, o *job* será executado assim que a primeira dependência for atendida. 
+- At the end, click on ***Save*** button to save.
 
 ##### PARENT
-By clicking the button ***Parent*** is it possible to define dependencies for the job.
+A dependency is nothing more than a *job* defined as the *parent* of another specific *job*. In other words, this means that in order for the *job* to be executed, it is necessary for its *parents* to be executed first.
+
+- On the ***Add job*** page, click on ***Parent*** button.
+- A modal will be displayed.
+- Select the jobs that you want to define as *parents* for the current job.
+- Check the ***Import upstream project*** option, if the jobs on Jenkins have upstream jobs, so that the list of dependencies represented by Jenkins upstream jobs is replicated to Hanger's dependency engine.
+- Click on ***Add*** button to add the selected parents.
+- Click on ***Close*** if you want to cancel the operation.
+
+Once the *job* has some *parent*, you may need to change some dependencies's settings.
+
+- On side menu, access the ***Job*** option.
+- Select the *job* that you want to configure.
+- Click on ***Edit*** button.
+- If the *job* needs to be executed more than once a day, but only after all the dependencies are completed again, it is necessary to select which dependencies will be ***Blockers***. For that, you just need to check the ***Blocker*** option.
+- Click on ***Build history*** button, represented by the "***+***" symbol, to view the *job's* build history.
+- You also may need to change some dependency's scope. You can do that by selecting the scope that you want on ***Scope*** field.
+	- We can say that scopes are like *job* execution categories, that is, the scope determines the type of execution of the *job* or dependency. There is three Scopes options in the Hanger:
+
+		- ***FULL***: Identifies that all dependencies with FULL or PARTIAL scope must be met before the job can be executed.
+		- ***PARTIAL***: Identifies that all dependencies with PARTIAL scope must be met before the job can be executed. The job will run with the partial scope, as not all of its dependencies have been met.
+		- ***OPTIONAL***: Identifies that the dependencies is optional, that is, whether it is answered or not, the job will run normally. If all dependencies for a job have the OPTIONAL scope, it will be executed as soon as the first dependency is met.
+	- In short, in this field just inform which of the scopes above the job has.
+
+- If you want to remove some parent from the mainly *job*, just click on ***Remove*** button.
+
+Finally, just run the *job* and view the Flow to confirm that everything went as expected.
+Note: on Flow is possible to see all the job dependencies in chain, as well as it execution process.
 
 ##### SHELL SCRIPT
 
@@ -497,18 +508,18 @@ If it is necessary execute the validation of the data from *job* execution, on t
 - On ***Description*** field, inform checkup description.
 - On ***Connection*** field, select in which connection the validation will be executed.
 - Define in which scope the validation will be executed. For that, select one of the ***Scope*** options:
-	> ***FULL***: the *job* checkup will be executed only when all the dependencies with FULL and PARTIAL scope are concluded.
-	> ***PARTIAL***: the *job* checkup will be executed only when all the dependencies with PARTIAL scope are concluded.
-	> ***ANYONE***: the *job* checkup will be executed always when the dependencies with FULL or PARTIAL scope are concluded.
+	- ***FULL***: the *job* checkup will be executed only when all the dependencies with FULL and PARTIAL scope are concluded.
+	- ***PARTIAL***: the *job* checkup will be executed only when all the dependencies with PARTIAL scope are concluded.
+	- ***ANYONE***: the *job* checkup will be executed always when the dependencies with FULL or PARTIAL scope are concluded.
 - Define the SQL validation instruction on ***SQL Select Statement*** field. The resultset must return only an integer value.
 - Select the condition on ***Condition***.
 - Define the expected result on Threshold field. Is it possible to reference the result of another ckeckup, using the following sintax: ***${<checkup ID>}***.
 - On ***On fail*** field, select the action that will be executed, whether the validation fails. The available options are:
-	> ***NOTHING***: just block the chain execution.
-	> ***REBUILD***: if it is a pos validation, the job is executed again. Otherwise, it has the same effect of NOTHING.
-	> ***REBUILD_MESH***:  if it is a pos validation, all the job dependencies and the dependencies of each dependency are executed again. Otherwise, it has the same effect of NOTHING.
-	> ***REBUILD_TRIGGER***: if it is a pos validation, all the specific dependencies are executed again by clicking on Add Trigger button. Otherwise, it has the same effect of NOTHING.
-	> ***LOG_AND_CONTINUE***: record the checkup execution result and notify the selected Slack channels Slack. However, it does not block the chain execution.
+	- ***NOTHING***: just block the chain execution.
+	- ***REBUILD***: if it is a pos validation, the job is executed again. Otherwise, it has the same effect of NOTHING.
+	- ***REBUILD_MESH***:  if it is a pos validation, all the job dependencies and the dependencies of each dependency are executed again. Otherwise, it has the same effect of NOTHING.
+	- ***REBUILD_TRIGGER***: if it is a pos validation, all the specific dependencies are executed again by clicking on Add Trigger button. Otherwise, it has the same effect of NOTHING.
+	- ***LOG_AND_CONTINUE***: record the checkup execution result and notify the selected Slack channels Slack. However, it does not block the chain execution.
 
 	***Note***: To actions like ***NOTHING*** or ***LOG_AND_CONTINUE*** there is not attempts number.
 
@@ -537,20 +548,32 @@ This option allows to relate an specific e-mail to the current *job*.
 	> If you want to see more details, click on e-mail's subject and the page will be redirected to the informations about the chosen e-mail.
 
 ##### CREATE
+- On ***Job*** side menu option, click on the ***down arrow*** and choose the ***Add job*** option.
+- On top, select the ***Create*** option to create a *job* directely by Hanger.
+- On ***Server*** field, inform the chosen Jenkins instance.
+	> To add a new *job*, you must have at least one registered server.
+- Select the *job* template on ***Template*** field.
+- Inform the *job* name on ***Name*** field.
+- Click on ***Next*** button to continue.
+- After that, the proccess is pretty similar to the ***Import*** option.
 
 ##### BUILD 
 This option allows to run a *job*.  
 
 ##### SEE
-Permite visualizar as configurações do *job*. Na página de visualização as seguintes ações estão disponíveis:
+*See* option allows to view the *job* configurantion.
 
-- Clique no botão ***Add Job***, representado pelo ícone **+**, para adicionar um novo *job*. 
-- Clique no botão ***Edit*** para editar o *job*. 
-- Clique no botão ***Delete*** para deletar o *job*.
-- Clique no botão ***Propagation*** para analisar quais *jobs* são impactados pelo *job* na cadeia de dependências. 
-- Clique no botão ***Flow*** para analisar quais *jobs* fazem parte da cadeia de dependência do *job*. 
-- Clique no botão ***Build*** para executar o *job*.
-- Clique no botão ***Build mesh*** para executar toda a cadeia de dependência do *job*. 
+- On side menu, click on ***Job***.
+- Select the chosen *job* and click on ***See*** button.
+
+On view page this actions are available:
+
+- Click on ***Edit*** button to edit the job.
+- Click on ***Delete*** button to delete the job.
+- Click on ***Propagation*** button to analyze which jobs are impacted by the job on dependencies chain.
+- Click on ***Flow*** button to analyze which jobs that are part of the job dependencies chain.
+- Click on ***Build*** button to execute the job.
+- Click on ***Build mesh*** button to execute the job dependencies chain.
 
 ##### EDIT 
 Allows to edit the *job* settings.
@@ -558,21 +581,19 @@ Allows to edit the *job* settings.
 ##### DELETE
 Allows to delete a *job*.
 
-##### HEATMAP
-Permite a distribuição do trabalho em um período de tempo específico.
-- Selecione a data que será analisada no campo ***Period***.
-- Selecione o intervalo que será analisado no campo ***Interval***.
-- Clique no botão ***Filter***, será exibido o modal ***Job Filter*** no qual será possível escolher quais *jobs* serão analisados. 
+##### SHELL SCRIPT TEMPLATE 
+This option allows to create shell scripts template for the *job*.
 
 ##### GANTT
-Permite analisar a carga de trabalho durante um intervalo de tempo.
-- Selecione a data de início da análise no campo ***From***.
-- Selecione a data de fim da análise no campo ***To***.
-- Selecione a fase que será analisada no campo ***Phase***.
-- Clique no botão ***Filter***. 
+This option allows to view the behavior of a *job*, that is, whether or not it has queued and its execution time, in graph format.
 
-##### REFRESH
-Permite atualizar a lista de *jobs* do Hanger. Por questões de performance o Hanger mantém o máximo possível de informação em memória, sincronizando os dados com o banco de dados somente quando necessário; por meio da opção ***Refresh*** é possível forçar a sincronização imediata destes dados.
+- On ***Job*** side menu option, click on the ***down arrow*** and choose the ***Gantt*** option.
+- The ***Gantt*** page will be displayed.
+
+To view the behavior of the requested job, you must:
+- On ***Period*** field, define the period to be analyzed.
+- On ***Job*** field, select the job to be analyzed.
+- Click on ***Filter*** button.
 
 ## Log
 *Logs* are records of the executed activities by all the Hanger system users. To use the *Log* option, follow these steps.

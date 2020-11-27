@@ -221,6 +221,11 @@
                     server = null;
                 }
 
+                // Show control buttons and hide loading bar.
+                $("#modalConfirmUpdate").show();
+                $("#modalDontConfirmUpdate").show();
+                $("#modal_wait").hide();
+
                 $("#modalUpdate").modal({backdrop: 'static', keyboard: false});
             }
 
@@ -240,12 +245,19 @@
                 $.ajax({
                     type: "GET",
                     url: url,
-                    timeout: 100000,
                     success: function (result) {
                         location.reload();
                     },
-                    error: function (e) {
-                        alert("Error updating plugin. " + e);
+                    error: function (xhr) {
+                        var responseText = "";
+
+                        if (xhr.responseText !== undefined) {
+                            responseText = xhr.responseText;
+                        }
+
+                        toastr.error("Error updating plugin. " + responseText);
+
+                        $("#modalUpdate").modal('hide');
                     }
                 });
             });

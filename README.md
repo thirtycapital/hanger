@@ -21,8 +21,7 @@ Using [Maven](https://maven.apache.org/):
 ##### CONFIGURATION
 
 - Create the ~/.hanger/hanger.properties file with the follow content:
- 
-```
+
 # Hanger MySQL
 spring.datasource.url=jdbc:mysql://<host>:<port>/<db>
 spring.datasource.driver-class-name=com.mysql.jdbc.Driver
@@ -120,8 +119,8 @@ Using [Apache Tomcat](http://tomcat.apache.org/):
 
 *Search* is the faster way to find and to access *job* status informations on Hanger. To use it, read below:
 
-- On the side menu, click on Search.
-- A search screen and a button Search with a magnifying glass symbol will be shown.
+- On the side menu, click on ***Search***.
+- A search screen and a button ***Search*** with a magnifying glass symbol will be shown.
 - Write the content to be searched and click on the button, it can be part of the name, full name or the *job* alias.
 
 ## Flow
@@ -188,7 +187,7 @@ Shows the glossary of all the possible status of a *job* with the following info
 - ***Description*:** Status description.
 
 ## Server
-***Servers*** are Jenkins instances that will be managed by Hanger. 
+*Servers* are Jenkins instances that will be managed by Hanger. 
 
 - To access the ***Server*** main page, on side menu, click on the ***Server*** option.
 - All the servers will be displayed.
@@ -205,7 +204,7 @@ Allows to add a new Jenkins instance
 - Click on ***Save*** button to save.
 
 ##### IMPORT
-This option allows to import all the jobs registered on Jenkins.
+This option allows to import all the *jobs* registered on Jenkins.
 
 - On side menu, click on ***Server*** option.
 - Select the chosen server and click on ***Import*** button.
@@ -489,10 +488,19 @@ Once the *job* has some *parent*, you may need to change some dependencies's set
 
 - If you want to remove some parent from the mainly *job*, just click on ***Remove*** button.
 
-Finally, just run the *job* and view the Flow to confirm that everything went as expected.
-Note: on Flow is possible to see all the job dependencies in chain, as well as it execution process.
+Finally, just run the *job* and view the *Flow* to confirm that everything went as expected.
+
+Note: on ***Flow*** is possible to see all the *job's* dependencies in chain, as well as it execution process.
 
 ##### SHELL SCRIPT
+This option allows to apply a template on the *job*.
+On the ***Add job*** page, click on ***Shell Script button*** button, if you want to apply shell script commands on the *job*.
+
+- A text area named ***Shell Script*** will be created.
+- Inform the shell script commands that you want.
+- Click on ***Remove*** button to delete the shell script, if it is necessary.
+
+***Note***: rather than create the shell script commands, you can apply a ***Shell Script template*** by clicking on the ***up arrow*** button, then select the template that you want to use.
 
 ##### SUBJECT
 On the ***Add job*** page, click on ***Subject*** button, if you want to classify the job in one or more subjects. The ***Subject*** modal will be displayed that allows to select one or more subjects for the *job*.
@@ -513,7 +521,7 @@ If it is necessary execute the validation of the data from *job* execution, on t
 	- ***ANYONE***: the *job* checkup will be executed always when the dependencies with FULL or PARTIAL scope are concluded.
 - Define the SQL validation instruction on ***SQL Select Statement*** field. The resultset must return only an integer value.
 - Select the condition on ***Condition***.
-- Define the expected result on Threshold field. Is it possible to reference the result of another ckeckup, using the following sintax: ***${<checkup ID>}***.
+- Define the expected result on Threshold field. Is it possible to reference the result of another ckeckup, using the following sintax: ***${checkup ID}***.
 - On ***On fail*** field, select the action that will be executed, whether the validation fails. The available options are:
 	- ***NOTHING***: just block the chain execution.
 	- ***REBUILD***: if it is a pos validation, the job is executed again. Otherwise, it has the same effect of NOTHING.
@@ -582,7 +590,19 @@ Allows to edit the *job* settings.
 Allows to delete a *job*.
 
 ##### SHELL SCRIPT TEMPLATE 
-This option allows to create shell scripts template for the *job*.
+This option allows to create shell scripts template for the *job*. You can use it in any *job* that you want.
+
+- On ***Job*** side menu option, click on the ***down arrow*** and choose the ***Shell Script template*** option.
+- All the available templates will be displayed.
+- You can view the template details by clicking on ***See*** button.
+- If you want to edit a template, just click on ***Edit*** button. This process is similar to ***Add template***.
+- You can remove a template by clicking on ***Delete*** button.
+
+If you want to create a new template, click on ***Add template*** option.
+- On ***Name*** field, inform the server name.
+- You can describe the template on ***Description*** field.
+- On ***Template*** text area, inform the shell script commands that you want.
+- At the end, click on ***Save*** button to save.
 
 ##### GANTT
 This option allows to view the behavior of a *job*, that is, whether or not it has queued and its execution time, in graph format.

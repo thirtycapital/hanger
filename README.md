@@ -21,7 +21,7 @@ Using [Maven](https://maven.apache.org/):
 ##### CONFIGURATION
 
 - Create the ~/.hanger/hanger.properties file with the follow content:
-
+```
 # Hanger MySQL
 spring.datasource.url=jdbc:mysql://<host>:<port>/<db>
 spring.datasource.driver-class-name=com.mysql.jdbc.Driver

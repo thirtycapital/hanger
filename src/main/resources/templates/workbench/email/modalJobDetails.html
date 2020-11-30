@@ -30,7 +30,10 @@
                                 <tbody>
                                     <tr th:each="jobDetail : ${jobDetails}">
                                         <td>
-                                            <img class="status" th:src="@{'/images/' + ${jobDetail.status} + '.png'}" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}"></img>
+                                            <th:block th:switch="${jobDetail.status}">
+                                                <span th:case="${T(br.com.dafiti.hanger.option.Status).SUCCESS}" class="label label-success" th:attr="alt=${jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
+                                                <span th:case="${T(br.com.dafiti.hanger.option.Status).FAILURE}" class="label label-danger" th:attr="alt=${jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
+                                            </th:block>
                                         </td>
                                         <td th:text="${jobDetail.job.server.name}">
                                             Server

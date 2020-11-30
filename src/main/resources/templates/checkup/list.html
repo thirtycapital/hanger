@@ -66,8 +66,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="approval, approvalStat : ${approvals}" th:unless="${approvalStat.index > 9}">                                
-                                <td><img class="status" th:src="@{'/images/' + ${ approval.approved ? 'APPROVED' : 'DISAPPROVED' } + '.png' }" th:attr="title=${ approval.approved ? 'APPROVED' : 'DISAPPROVED' }"></img></td>
+                            <tr th:each="approval, approvalStat : ${approvals}" th:unless="${approvalStat.index > 9}">    
+                                <td>
+                                    <th:block th:switch="${approval.approved}">
+                                        <span th:case="true" class="label label-success" th:title="APPROVED" th:text="APPROVED"></span>
+                                        <span th:case="false" class="label label-danger" th:title="DISAPPROVED" th:text="DISAPPROVED"></span>
+                                    </th:block>
+                                </td>
                                 <td th:text="${#dates.format(approval.createdAt, 'yyyy-MM-dd HH:mm:ss')}" ></td>
                                 <td th:text="${approval.user.firstName + ' ' + approval.user.lastName}" ></td>
                                 <td class="nowrap-pre" th:text="${approval.description}"></td>                            
@@ -102,7 +107,12 @@
 
                         <tbody>
                             <tr class="checkup-row" th:each="checkupLog, checkupLogStat : ${checkup.log}" th:unless="${checkupLogStat.index > 49}">
-                                <td><img class="status" th:src="@{'/images/' + ${ checkupLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="title=${ checkupLog.success ? 'SUCCESS' : 'FAILURE' }"></img></td>                                 
+                                <td>
+                                    <th:block th:switch="${checkupLog.success}">
+                                        <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
+                                        <span th:case="false" class="label label-danger" th:title="FAILURE" th:text="FAILURE"></span>
+                                    </th:block>
+                                </td>                               
                                 <td th:text="${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}"></td>        
                                 <td th:text="${checkupLog.scope}"></td>  
                                 <td>
@@ -151,7 +161,12 @@
                                             </thead>
                                             <tbody>
                                                 <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}"> 
-                                                    <td style="width:5%"><img class="hanger-img-sm" th:src="@{'/images/' + ${ commandLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="alt=${ commandLog.success }"></img></td>
+                                                    <td>
+                                                        <th:block th:switch="${commandLog.success}">
+                                                            <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
+                                                            <span th:case="false" class="label label-danger" th:title="FAILURE" th:text="FAILURE"></span>
+                                                        </th:block>
+                                                    </td>
                                                     <td>
                                                         <a th:inline="text" th:href="@{'/checkup/log/' + ${commandLog.id}}">
                                                             [[${ (commandLogStat.index + 1) + '° ' + commandLog.commandType}]]

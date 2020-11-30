@@ -180,13 +180,14 @@ public class SubjectDetailsService {
     /**
      * Return list of filtered jobs based on list of status
      *
-     * @param subject Subject.
+     * @param status
      * @param jobs Subject jobs.
      * @return Subject details.
      */
     public List<Job> getFilteredJobs(
             List<Job> jobs,
             List<String> status) {
+        
         List<Job> filteredJobs = new ArrayList();
 
         for (Job job : jobs) {

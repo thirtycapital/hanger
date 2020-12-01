@@ -428,7 +428,7 @@ Allows to edit a subject. This process is pretty similar to Add Subject.
 - Fill in the information accordingly and, at the end, click on ***Save*** to save.
 
 ##### ADD SUBJECT
-Permite adicionar um novo assunto.
+Allows to add a new subject.
 
 - On ***Subject*** side menu option, click on the ***down arrow*** and choose the ***Add subject*** option.
 - On ***Subject*** field, inform the subject name.

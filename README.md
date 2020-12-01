@@ -24,7 +24,7 @@ Using [Maven](https://maven.apache.org/):
 ```
 # Hanger MySQL
 spring.datasource.url=jdbc:mysql://<host>:<port>/<db>
-spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.datasource.username=<user>
 spring.datasource.password=<password>
 spring.datasource.validationQuery=SELECT 1
@@ -37,10 +37,6 @@ hanger.anonymous.access=true
 
 # Hanger watchdog cron execution
 hanger.watchdog.cron=Cron expression (example: 0 20 6-23 * * *)
- 
-# Slack bot token
-slackBotToken=<Token of your bot>
-webHookUrl=<WebHook URL>
  
 # Log
 logging.level.root=INFO

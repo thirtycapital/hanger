@@ -182,19 +182,19 @@ public class ConfigurationService {
                 5,
                 255,
                 "*"), true);
-        
+
         this.save(new Configuration(
-                "Token of bots app",
+                "Bot token",
                 "SLACK_BOT_TOKEN",
                 "",
-                "text",
+                "password",
                 slackGroup,
                 5,
                 255,
                 "*"), true);
-        
+
         this.save(new Configuration(
-                "URL of Incoming WebHooks",
+                "Incoming WebHooks URL",
                 "SLACK_WEBHOOK_URL",
                 "",
                 "text",

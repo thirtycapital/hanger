@@ -51,6 +51,23 @@ logging.level.org.hibernate.SQL=WARN
 # Timezone
 spring.jackson.time-zone=America/Sao_Paulo
 ```
+- Create a database on Mysql/MariaDB and an user with full permition only for the database that will receive the Hanger's metadata.
+
+```
+# Example to execution using Mysql/MariaDB root/admin user
+
+# Create a database named hanger
+CREATE DATABASE hanger default character set utf8 default collate utf8_bin;
+
+# Create an user named hanger
+CREATE USER hanger@localhost IDENTIFIED BY 'SetYourPassword';
+
+# Frees hanger user access to the database which has the same name
+GRANT ALL PRIVILEGES on hanger.* to 'hanger'@'localhost' identified by 'SetYourPassword';
+
+# Update permitions
+FLUSH PRIVILEGES;
+```		
 
 > To enable the slack integration, follow these documents:
 > - Habilitar Slack bot e pegar token.
@@ -63,7 +80,7 @@ Using [Apache Tomcat](http://tomcat.apache.org/):
 
 ##### TROUBLESHOOTING
 
-> If there is a problem running a job through Hanger, verify that the *Jenkins URL* field is set correctly in Jenkins:
+> If there is a problem running a *job* through Hanger, verify that the *Jenkins URL* field is set correctly in Jenkins:
 > - Access Jenkins and go to the *Manage Jenkins* menu.
 > - Click on *Configure System* option.
 > - Setup the correct *Jenkins URL* on *Jenkins Location* section. 
@@ -71,7 +88,7 @@ Using [Apache Tomcat](http://tomcat.apache.org/):
 > If there are permission issues between Hanger and Jenkins (Error 403), check if the option *Prevent site from intrusion* is checked and uncheck it:
 > - Access Jenkins and go to the *Manage Jenkins* menu.
 > - Click on *Configure Global Security* option.
-> - On *CSRF Protection* section, uncheck the *Prevent site from hacking* option.
+> - On *CSRF Protection* section, uncheck the *Prevent site from intrusion* option.
 
 ## Monitor
 *Monitor* is where the freight of Hanger is observed. The *dashboard* is organized as follows:
@@ -81,19 +98,21 @@ Using [Apache Tomcat](http://tomcat.apache.org/):
 	- At the left side of the *subject* name is displayed an icon that indcates that the logged user is subscribed. However, the icon only appears if the *subject* is not mandatory. A *subject* is defined as mandatory if the user wants that the *subject* is visible to all other Hanger users. 
 	- To the right of the subject's name, the total number of *jobs* contained in it is informed.
 	- Click under the chosen subject name and a list of subject jobs will be displayed with the following information:
-			- **Status:** job status.
-			- **Server:** Jenkins instance in which the job is executed.
-			- **Job:** job name.
-			- **Warning:** number of warning on job chain.
-			- **Link:** link to redirect to job on Jenkins.
-			- **Check-Up:** link to redirect to checkup execution list.
-			- **Updated:** job execution date.
-			- **Scope:** job execution scope.
-		- Click on job name to be directed to the job dependency chain named ***Flow***. 
+
+		- **Status:** *job* status.
+		- **Server:** Jenkins instance in which the *job* is executed.
+		- **Job:** *job* name.
+		- **Warning:** number of warning on *job* chain.
+		- **Link:** link to redirect to *job* on Jenkins.
+		- **Check-Up:** link to redirect to checkup execution list.
+		- **Updated:** *job* execution date.
+		- **Scope:** *job* execution scope.
+
+		- Click on *job* name to be directed to the *job* dependency chain named ***Flow***. 
 		- Click on the displayed number on warning column and a list with all the jobs with problems and its respective status will be shown. 
 		- Click on ***Build*** button to run a *job*.
 		- Click on ***See*** button to see the *job* details. 
-		- Click on ***Remove*** button to remove a job from a subject 
+		- Click on ***Remove*** button to remove a *job* from a subject 
 		- Click on the ***Add Job*** option to add a *job* to the *subject*.
 
 - On ***HOME*** tab the progress from each *subject* and the count of *jobs* by status will be displayed:
@@ -111,13 +130,13 @@ Using [Apache Tomcat](http://tomcat.apache.org/):
 		- **Running:** total of jobs that are running.
 		- **Warning:** total of jobs with alerts on dependency chain. 
 		- **Failure:** total of jobs with failures or with problems on data validation. 
-		- **Checkup:** health check validation of all the job checkups.
+		- **Checkup:** health check validation of all the *job* checkups.
 
 - On ***ALL*** tab are displayed all the registered jobs on Hanger and its respective status.
 
 ## Search
 
-*Search* is the faster way to find and to access *job* status informations on Hanger. To use it, read below:
+*Search* is the faster way to find and to access *job* status informations on Hanger.
 
 - On the side menu, click on ***Search***.
 - A search screen and a button ***Search*** with a magnifying glass symbol will be shown.
@@ -125,7 +144,7 @@ Using [Apache Tomcat](http://tomcat.apache.org/):
 
 ## Flow
 
-*Flow* is a graphical representation of a job's dependency chain.
+*Flow* is a graphical representation of a *job's* dependency chain.
 
 Each *job* represented on flow has a  status and the follow information:
 
@@ -133,35 +152,35 @@ Each *job* represented on flow has a  status and the follow information:
 - Link to *job* on Jenkins.
 - Link to Jenkins console.
 - Link to the *job* validation results page. 
-	- Click on ***CHECKUP*** link and the page with the result of the last ten job checkups will be displayed.
-	- Click on ***View*** button to see the job configuration.
-	- Click on ***Flow*** button to be redirected to job dependency chain.
+	- Click on ***CHECKUP*** link and the page with the result of the last ten *job* checkups will be displayed.
+	- Click on ***View*** button to see the *job* configuration.
+	- Click on ***Flow*** button to be redirected to *job* dependency chain.
 - Jenkins instance in which the *job* is executed.
 - *Job* execution date.
 - *Job* scope.
 - Click on *job* status with the right button and a list will be displayed with the following options:
 	- **Flow:** Shortcut to the selected *job flow*.
 	- **Propagation:** Shortcut to the selected *job propagation*. 	
-	- **Build history:**  Shows a list with the complete execution history of the selected job. The list contains these fields:
+	- **Build history:**  Shows a list with the complete execution history of the selected *job*. The list contains these fields:
 		- **Start:** Start date and time of execution.
 		- **Finish:** Final date and time of execution.
 		- **Duration in minutes:** Execution duration in minutes.
 		- **Efficiency:**  Shows the percentage that the execution was queued.
 	- **Actions:**
-		- **Build:** Allows to execute the selected job. 
-		- **Build Mesh:** Allows to execute all he selected job chain.
-		- **Parent:** Shows a list with all the Jenkins available servers, where it is possible to add one or more parents to the current job:	
+		- **Build:** Allows to execute the selected *job*. 
+		- **Build Mesh:** Allows to execute all he selected *job* chain.
+		- **Parent:** Shows a list with all the Jenkins available servers, where it is possible to add one or more parents to the current *job*:	
 			- Click on the chosen server.
 			- A screen with all the available jobs in that server will be displayed.
 			- It is possible to select the jobs on the list or simply type the name of the jobs on Jobs field (comma-separated).
 			- Click on Add to conclude the action.
-		- **Children:**  Shows a list with all the Jenkins available servers, where it is possible to add one or more children to the current job:
+		- **Children:**  Shows a list with all the Jenkins available servers, where it is possible to add one or more children to the current *job*:
 			- Click on the chosen server.
 			- A screen with all the available jobs in that server will be displayed.
 			- It is possible to select the jobs on the list or simply type the name of the jobs on Jobs field (comma-separated).
 			- Click on Add to conclude the action.
 
-		- **Disable:** Allows to disable/enable a job.
+		- **Disable:** Allows to disable/enable a *job*.
 
 During the Flow view, the available options are:
 
@@ -172,13 +191,13 @@ Zoom out the flow.
 Zoom in the flow.
 
 ##### EXPAND ALL
-Expand all the job dependency chain.
+Expand all the *job* dependency chain.
 
 ##### COLLPASE ALL
 Close all the dependency chain of *job*.
 
 ##### APPROVAL
-Redirect to job approbation page. However, this option only will be available if the *job* status is BLOCKED or UNHEALTHY.
+Redirect to *job* approbation page. However, this option only will be available if the *job* status is BLOCKED or UNHEALTHY.
 
 ##### GLOSSARY
 Shows the glossary of all the possible status of a *job* with the following information:
@@ -209,7 +228,7 @@ This option allows to import all the *jobs* registered on Jenkins.
 - On side menu, click on ***Server*** option.
 - Select the chosen server and click on ***Import*** button.
 - A confirmation message will be displayed. Click on ***Yes*** to confirm or click on ***No*** to cancel the operation.
-- After the importation of all jobs, a message will be displayed on top informing that the jobs have been synced.
+- After the importation of all *jobs*, a message will be displayed on top informing that the *jobs* have been synced.
 
 ##### CONNECT
 This option allows to test the connection of a registered Jenkins instance.
@@ -330,7 +349,7 @@ Allows to view all the saved queries.
 This button allows to open a query and play it.
 
 ##### SEE
-This button allows to view the query deitails.
+This button allows to view the query details.
 
 ***Note:*** On this page, you can click on ***Open in workbench*** button to execute the query o ***Workbench*** main page.
  
@@ -417,7 +436,7 @@ Permite adicionar um novo assunto.
 - On ***Subscription*** section, check the option ***Mandatory***, if you want that the subject can be seen on monitor by all the users. Some subjects are required and can not be removed from monitor, so, these subjects are shown with the subscription checkbox disabled.
 - Check the option ***Slack notification***, if you want to receive notifications of jobs belonging to this subject on slack.
 - Click on ***Slack Channel*** button to define the channel that the notifications will be sent. A modal will be displayed and you just only have to select the chosen channels and click on ***Add***.
-- Click on ***Swinlanes*** button to group the jobs that is in the same subject, by using *regexp*. This is a very useful resource when to subdivide the jobs.
+- Click on ***Swinlanes*** button to group the *jobs* that is in the same subject, by using *regexp*. This is a very useful resource when to subdivide the *jobs*.
 - At the end, click on ***Save***.
 
 ***Note:*** if no channel is selected in the ***Slack channels*** modal, the channel configured on the ***Configuration*** tab will be used for notification of this *job*.
@@ -428,11 +447,11 @@ Allows to remove a subject.
 - On ***Subject*** main page, select a subject that you want to remove and click on ***Delete*** button.
 
 ## Jobs
-On Hanger, *Jobs* are references to [Jenkins](https://jenkins.io/) jobs.
+On Hanger, *Jobs* are references to [Jenkins](https://jenkins.io/) *jobs*.
 
 - To access the ***Job*** main page, on side menu, click on the ***Job*** option.
 - All the jobs will be displayed.
-- If you want to edit a specific job, click on ***Edit*** button.
+- If you want to edit a specific *job*, click on ***Edit*** button.
 
 ##### ADD JOB
 Allows to add a new *job*. You can import a *job* from Jenkins or create a new one by Hanger.
@@ -445,14 +464,14 @@ Allows to add a new *job*. You can import a *job* from Jenkins or create a new o
 - Select the *job* on ***Name*** field.
 - Click on ***Next*** button to continue.
 - On ***Alias*** field it is possible to define a suggestive name for the *job*. The defined alias will replace the *job* name on mainly Hanger functionalities. 
-- If you want, on ***Description*** field, define the job description.
+- If you want, on ***Description*** field, define the *job* description.
 	> You can use ***Markdown*** to type the description text.
-- On ***Time Restriction*** field, inform the allowed period in [cron](http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html) format to execute the job.
-- Define the content of the ***Eagerness*** field of the job between 0 and 12 hours. For a job dependency to be considered attended it must have been successfully carried out at least once a day. If some dependency wants to be executed before midnight, the ***Eagerness*** field must be filled with the number of hours, before midnight, so that, if the job runs successfully, the dependency is considered fulfilled.
-- If you want to define a minimum interval to reexcute the job, write the minutes on ***Rebuild Interval*** field.
-- On section ***Options***, check the option ***Enabled*** to enable the job or uncheck to disable it. 
-- Check the ***Rebuildable*** option if it is necessary to execute the job more than once a day. When this option is checked, the job will be executed for the first time when all the dependencies are catered and will be executed again always when, during the day all the dependencies are successfully catered. If it is necesssary to execute the job again only when all the dependencies are successfully catered again, select which dependencies will be blockers on parents list. For default, a job can be executed only once a day.
-- Check the option ***Build on any parent scope*** to allow that the job can be pushed, regardless of the parents execution scope.
+- On ***Time Restriction*** field, inform the allowed period in [cron](http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html) format to execute the *job*.
+- Define the content of the ***Eagerness*** field of the *job* between 0 and 12 hours. For a *job* dependency to be considered attended it must have been successfully carried out at least once a day. If some dependency wants to be executed before midnight, the ***Eagerness*** field must be filled with the number of hours, before midnight, so that, if the *job* runs successfully, the dependency is considered fulfilled.
+- If you want to define a minimum interval to reexcute the *job*, write the minutes on ***Rebuild Interval*** field.
+- On section ***Options***, check the option ***Enabled*** to enable the *job* or uncheck to disable it. 
+- Check the ***Rebuildable*** option if it is necessary to execute the *job* more than once a day. When this option is checked, the *job* will be executed for the first time when all the dependencies are catered and will be executed again always when, during the day all the dependencies are successfully catered. If it is necesssary to execute the *job* again only when all the dependencies are successfully catered again, select which dependencies will be blockers on parents list. For default, a *job* can be executed only once a day.
+- Check the option ***Build on any parent scope*** to allow that the *job* can be pushed, regardless of the parents execution scope.
 - Click on ***Parent*** button if you want to add a dependency to the current *job*.
 - Click on ***Shell Script*** button if you want to define or change the *job* shell script.
 - Click on ***Subject*** button to classify the *job* in one or more subjects.
@@ -466,8 +485,8 @@ A dependency is nothing more than a *job* defined as the *parent* of another spe
 
 - On the ***Add job*** page, click on ***Parent*** button.
 - A modal will be displayed.
-- Select the jobs that you want to define as *parents* for the current job.
-- Check the ***Import upstream project*** option, if the jobs on Jenkins have upstream jobs, so that the list of dependencies represented by Jenkins upstream jobs is replicated to Hanger's dependency engine.
+- Select the *jobs* that you want to define as *parents* for the current *job*.
+- Check the ***Import upstream project*** option, if the *jobs* on Jenkins have upstream *jobs*, so that the list of dependencies represented by Jenkins upstream *jobs* is replicated to Hanger's dependency engine.
 - Click on ***Add*** button to add the selected parents.
 - Click on ***Close*** if you want to cancel the operation.
 
@@ -481,10 +500,10 @@ Once the *job* has some *parent*, you may need to change some dependencies's set
 - You also may need to change some dependency's scope. You can do that by selecting the scope that you want on ***Scope*** field.
 	- We can say that scopes are like *job* execution categories, that is, the scope determines the type of execution of the *job* or dependency. There is three Scopes options in the Hanger:
 
-		- ***FULL***: Identifies that all dependencies with FULL or PARTIAL scope must be met before the job can be executed.
-		- ***PARTIAL***: Identifies that all dependencies with PARTIAL scope must be met before the job can be executed. The job will run with the partial scope, as not all of its dependencies have been met.
-		- ***OPTIONAL***: Identifies that the dependencies is optional, that is, whether it is answered or not, the job will run normally. If all dependencies for a job have the OPTIONAL scope, it will be executed as soon as the first dependency is met.
-	- In short, in this field just inform which of the scopes above the job has.
+		- ***FULL***: Identifies that all dependencies with FULL or PARTIAL scope must be met before the *job* can be executed.
+		- ***PARTIAL***: Identifies that all dependencies with PARTIAL scope must be met before the *job* can be executed. The *job* will run with the partial scope, as not all of its dependencies have been met.
+		- ***OPTIONAL***: Identifies that the dependencies is optional, that is, whether it is answered or not, the *job* will run normally. If all dependencies for a *job* have the OPTIONAL scope, it will be executed as soon as the first dependency is met.
+	- In short, in this field just inform which of the scopes above the *job* has.
 
 - If you want to remove some parent from the mainly *job*, just click on ***Remove*** button.
 
@@ -503,7 +522,7 @@ On the ***Add job*** page, click on ***Shell Script button*** button, if you wan
 ***Note***: rather than create the shell script commands, you can apply a ***Shell Script template*** by clicking on the ***up arrow*** button, then select the template that you want to use.
 
 ##### SUBJECT
-On the ***Add job*** page, click on ***Subject*** button, if you want to classify the job in one or more subjects. The ***Subject*** modal will be displayed that allows to select one or more subjects for the *job*.
+On the ***Add job*** page, click on ***Subject*** button, if you want to classify the *job* in one or more subjects. The ***Subject*** modal will be displayed that allows to select one or more subjects for the *job*.
 
 - After select the chosen subjects, click on ***Add*** button to add it.
 - A section called ***Subjects*** will be created, where it is possible to manage the *job* subjects.
@@ -524,8 +543,8 @@ If it is necessary execute the validation of the data from *job* execution, on t
 - Define the expected result on Threshold field. Is it possible to reference the result of another ckeckup, using the following sintax: ***${checkup ID}***.
 - On ***On fail*** field, select the action that will be executed, whether the validation fails. The available options are:
 	- ***NOTHING***: just block the chain execution.
-	- ***REBUILD***: if it is a pos validation, the job is executed again. Otherwise, it has the same effect of NOTHING.
-	- ***REBUILD_MESH***:  if it is a pos validation, all the job dependencies and the dependencies of each dependency are executed again. Otherwise, it has the same effect of NOTHING.
+	- ***REBUILD***: if it is a pos validation, the *job* is executed again. Otherwise, it has the same effect of NOTHING.
+	- ***REBUILD_MESH***:  if it is a pos validation, all the *job* dependencies and the dependencies of each dependency are executed again. Otherwise, it has the same effect of NOTHING.
 	- ***REBUILD_TRIGGER***: if it is a pos validation, all the specific dependencies are executed again by clicking on Add Trigger button. Otherwise, it has the same effect of NOTHING.
 	- ***LOG_AND_CONTINUE***: record the checkup execution result and notify the selected Slack channels Slack. However, it does not block the chain execution.
 
@@ -535,13 +554,13 @@ If it is necessary execute the validation of the data from *job* execution, on t
 - If it is necessary to execute some comand when the checkup fails, click on ***Add Command*** button. The new section, ***Script on failure*** will be displayed:
 	> Select the action between ***SHELL*** or ***SQL*** to be executed.
 	> On ***Script*** field, inform the action to be executed.
-- A checkup can be executed as a pre validation or a pos validation. Pre validations happens when all the dependencies have been fullfilled and immediately before of the job execution, while pos validations happen after the job execution. To define the type of a checkup, click on toggle and chose between ***Pre-validation*** e ***Post-validation***.
-- On ***Retries***, define the number of attempts of job execution.
+- A checkup can be executed as a pre validation or a pos validation. Pre validations happens when all the dependencies have been fullfilled and immediately before of the *job* execution, while pos validations happen after the *job* execution. To define the type of a checkup, click on toggle and chose between ***Pre-validation*** e ***Post-validation***.
+- On ***Retries***, define the number of attempts of *job* execution.
 - If it is necessary, select an approver for the checkup on ***Approver*** field.
 - At the end, click on ***Save*** button to save.
 
 ##### SLACK
-If you want to receive notifications about the job executions, click on ***Slack*** button.
+If you want to receive notifications about the *job* executions, click on ***Slack*** button.
 
 - On the ***Add job*** page, define the channel that the notifications will be sent. The modal ***Slack*** will be displayed. Then, select one or more channels on Slack that the notifications must be sent.
 	> If no channels are selected on ***Slack*** modal, the configured channel on ***Configuration*** side menu option, will be used as default channel to this *job* notification.
@@ -576,12 +595,12 @@ This option allows to run a *job*.
 
 On view page this actions are available:
 
-- Click on ***Edit*** button to edit the job.
-- Click on ***Delete*** button to delete the job.
-- Click on ***Propagation*** button to analyze which jobs are impacted by the job on dependencies chain.
-- Click on ***Flow*** button to analyze which jobs that are part of the job dependencies chain.
-- Click on ***Build*** button to execute the job.
-- Click on ***Build mesh*** button to execute the job dependencies chain.
+- Click on ***Edit*** button to edit the *job*.
+- Click on ***Delete*** button to delete the *job*.
+- Click on ***Propagation*** button to analyze which *jobs* are impacted by the *job* on dependencies chain.
+- Click on ***Flow*** button to analyze which *jobs* that are part of the *job* dependencies chain.
+- Click on ***Build*** button to execute the *job*.
+- Click on ***Build mesh*** button to execute the *job* dependencies chain.
 
 ##### EDIT 
 Allows to edit the *job* settings.
@@ -610,9 +629,9 @@ This option allows to view the behavior of a *job*, that is, whether or not it h
 - On ***Job*** side menu option, click on the ***down arrow*** and choose the ***Gantt*** option.
 - The ***Gantt*** page will be displayed.
 
-To view the behavior of the requested job, you must:
+To view the behavior of the requested *job*, you must:
 - On ***Period*** field, define the period to be analyzed.
-- On ***Job*** field, select the job to be analyzed.
+- On ***Job*** field, select the *job* to be analyzed.
 - Click on ***Filter*** button.
 
 ## Log
@@ -632,8 +651,11 @@ Each logs table field has a meaning:
 ## User
 *Users* are the users of Hanger.
 
+- On side menu, click on ***User*** option.
+- All the Hanger users will be displayed.
+
 ##### ADD USER
-Adiciona um novo usuário.
+This option allows to add a new user on Hanger.
 
 - On ***User*** side menu option, click on the ***down arrow*** and choose the ***Add user*** option.
 - On ***E-mail*** field, inform the user e-mail address.
@@ -651,7 +673,7 @@ Adiciona um novo usuário.
 
 **ADMIN:** this user can execute all the operations in Hanger, except create, edit or delete other users.
 
-**USER:** this user can build a job and approve jobs that are in their name on ***Approval*** section.
+**USER:** this user can build a *job* and approve *jobs* that are in their name on ***Approval*** section.
 
 ##### EDIT
 Allows to edit an user. This process is pretty similar to Add user.
@@ -672,7 +694,7 @@ This option allows the user to have their own Glove api access key. The generate
 - A new token will generated and you can view it by clicking again on ***API Token*** menu option.
 
 ##### CHANGE PASSWORD
-This option allows the user to change their own password. For this:
+This option allows the user to change their own password.
 
 - On ***User*** side menu option, click on the ***down arrow*** and choose the ***Change password*** option.
 - Fill in the information accordingly and click on ***Save*** button to save.
@@ -687,7 +709,7 @@ In *Configuration* are all the global Hanger configurations. To set according to
 - Write the password on the ***Password*** field.
 - On Log Retention field it is possible to define, in days, the period for cleaning the approvals and data validation log.
 - On ***Default Channel*** field, inform the default channel that will be used by Slack.
-- On ***Schema and table searcheble*** field, define the maximum number of entities allowed on Workbench.
+- On ***Schema and table searchable*** field, define the maximum number of entities allowed on Workbench.
 - Set the allowed domains to send e-mails on the ***E-mail filter (RegExp)*** field. If it is empty, any domain is allowed.  
 - Define the maximum number of rows per query on the ***Max rows per query field***.
 - Click on ***Update Logo*** button to change the tool logo to any image file.

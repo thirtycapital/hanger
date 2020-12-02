@@ -43,8 +43,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import static net.bytebuddy.implementation.FixedValue.value;
-import static org.apache.tomcat.jni.Lock.name;
 import org.joda.time.LocalDate;
 import org.json.JSONObject;
 

@@ -440,7 +440,6 @@ public class JenkinsService {
                         //Escape special characters.
                         shellScripts = shellScripts.replaceAll("\\\\", "\\\\\\\\");
                         shellScripts = shellScripts.replaceAll("\\$", "\\\\\\$");
-                        
 
                         //Identifies if job has builders tag for update shell script
                         if ((config.contains("<builders>"))) {
@@ -611,7 +610,7 @@ public class JenkinsService {
         @CacheEvict(value = "serverJobs", allEntries = true),
         @CacheEvict(value = "jobShellScript", allEntries = true)
     })
-    public void refreshCache() {
+    public void refresh() {
     }
 
     /**

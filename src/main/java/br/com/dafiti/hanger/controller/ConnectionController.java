@@ -360,6 +360,6 @@ public class ConnectionController {
     public void evictConnection(
             @PathVariable(name = "id") Connection connection) {
 
-        connectionService.evictConnection(connection);
+        connectionService.refreshConnection(connection);
     }
 }

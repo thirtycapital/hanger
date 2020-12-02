@@ -319,7 +319,7 @@ public class JobController {
      * @return boolean with status of job build.
      */
     private boolean jobBuild(Job job) {
-        return jobBuild(job,false);
+        return jobBuild(job, false);
     }
 
     /**
@@ -413,7 +413,7 @@ public class JobController {
 
         try {
             jobService.saveAndRefreshCache(job);
-            jenkinsService.refreshCache();
+            jenkinsService.refresh();
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
             this.modelDefault(model, job);
@@ -930,7 +930,7 @@ public class JobController {
     }
 
     /**
-     * Refresh job cache
+     * Refresh system cache
      *
      * @param model Model
      * @param redirectAttributes
@@ -945,8 +945,9 @@ public class JobController {
 
         try {
             jobService.refresh();
-            jenkinsService.refreshCache();
+            jenkinsService.refresh();
             slackService.refresh();
+            connectionService.refresh();
 
             redirectAttributes.addFlashAttribute("successMessage", "Cache updated successfully!");
         } catch (Exception ex) {

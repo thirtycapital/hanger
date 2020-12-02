@@ -612,14 +612,24 @@ public class ConnectionService {
     }
 
     /**
+     * Refresh all connections cache.
+     *
+     */
+    @Caching(evict = {
+        @CacheEvict(value = "tables", allEntries = true)
+    })
+    public void refresh() {
+    }
+
+    /**
      * Refresh connection cache.
      *
-     * @param connection
+     * @param connection Connection.
      */
     @Caching(evict = {
         @CacheEvict(value = "tables", key = "#connection")
     })
-    public void evictConnection(Connection connection) {
+    public void refreshConnection(Connection connection) {
     }
 
     /**

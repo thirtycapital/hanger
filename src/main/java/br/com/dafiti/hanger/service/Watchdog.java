@@ -23,6 +23,7 @@
  */
 package br.com.dafiti.hanger.service;
 
+import br.com.dafiti.hanger.model.AuditorData;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import java.util.stream.Collectors;
@@ -53,6 +54,7 @@ public class Watchdog {
     private final SlackService slackService;
     private final ConnectionService connectionService;
     private final JenkinsService jenkinsServive;
+    private final AuditorService auditorService;
 
     private static final Logger LOG = LogManager.getLogger(Watchdog.class.getName());
 
@@ -64,7 +66,8 @@ public class Watchdog {
             JobBuildPushService jobBuildPushService,
             SlackService slackService,
             ConnectionService connectionService,
-            JenkinsService jenkinsServive) {
+            JenkinsService jenkinsServive,
+            AuditorService auditorService) {
 
         this.jobService = jobService;
         this.jobDetailsService = jobDetailsService;
@@ -73,6 +76,7 @@ public class Watchdog {
         this.slackService = slackService;
         this.connectionService = connectionService;
         this.jenkinsServive = jenkinsServive;
+        this.auditorService = auditorService;
     }
 
     /**
@@ -159,16 +163,26 @@ public class Watchdog {
         try {
             jobBuildService.build(job);
 
+            //Log on console. 
             LOG.log(Level.INFO, "The watchdog catched job ".concat(job.getName()));
 
+            //Log on auditor. 
+            auditorService.publish("WATCHDOG",
+                    new AuditorData()
+                            .addData("name", job.getName())
+                            .getData());
+
+            //Log on Slack.
             message
                     .append(":dog: The watchdog catched job ")
                     .append("*")
                     .append(job.getDisplayName())
                     .append("*");
         } catch (Exception ex) {
+            //Log on console. 
             LOG.log(Level.ERROR, "The watchdog fail building " + job.getName(), ex);
 
+            //Log on Slack.
             message
                     .append(":hotdog: The watchdog fail building ")
                     .append("*")

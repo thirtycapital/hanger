@@ -157,7 +157,7 @@ Each *job* represented on flow has a  status and the follow information:
 - Click on *job* status with the right button and a list will be displayed with the following options:
 	- **Flow:** Shortcut to the selected *job flow*.
 	- **Propagation:** Shortcut to the selected *job propagation*. 	
-	- **Build history:**  Shows a list with the complete execution history of the selected *job*. The list contains these fields:
+	- **Build history:**  Shows a list, limited by the Log retention configuration parameter, with the complete execution history of the selected *job*. The list contains these fields:
 		- **Start:** Start date and time of execution.
 		- **Finish:** Final date and time of execution.
 		- **Duration in minutes:** Execution duration in minutes.

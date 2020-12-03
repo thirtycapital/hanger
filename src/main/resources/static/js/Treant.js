@@ -1259,7 +1259,7 @@
             this.children = [];
 
             //https://github.com/fperucic/treant-js/issues/73
-            //ATENCAO - As duas linhas abaixo foram incluídas para corrigir o erro apontado no issue acima.
+            //ATENCAO - As duas linhas abaixo foram incluídas para corrigir o erro apontado no issue acima. 
             this.X = 0;
             this.Y = 0;
 

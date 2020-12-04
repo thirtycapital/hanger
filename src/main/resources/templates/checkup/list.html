@@ -90,6 +90,15 @@
                             <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
                         </a>
                     </legend>
+
+                    <div th:if="${checkup.description != null and checkup.description != ''}">
+                        <div class="form-group">
+                            <div 
+                                class="italic" 
+                                th:utext="${checkup.getHTMLDescription()}"></div>
+                        </div>
+                    </div>
+
                     <table th:id="'table_paginated_clean' + ${checkup.id}" class="table table-hover">
                         <thead>
                             <tr>

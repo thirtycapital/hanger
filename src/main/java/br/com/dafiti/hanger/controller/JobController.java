@@ -444,18 +444,22 @@ public class JobController {
             Model model) {
 
         try {
-            //Identify if import or create a new job.
-            if (importJob) {
-                job.setName(importJobName);
-                job.setShellScript(jenkinsService.getShellScript(job));
-            } else {
-                job.setName(newJobName);
-                jenkinsService.clone(job, template);
-                job.setShellScript(jenkinsService.getShellScript(job, template));
-            }
+            if (jenkinsService.isRunning(job.getServer())) {
+                //Identify if import or create a new job.
+                if (importJob) {
+                    job.setName(importJobName);
+                    job.setShellScript(jenkinsService.getShellScript(job));
+                } else {
+                    job.setName(newJobName);
+                    jenkinsService.clone(job, template);
+                    job.setShellScript(jenkinsService.getShellScript(job, template));
+                }
 
-            job.setAssignedNode(jenkinsService.getAssignedNode(job));
-            model.addAttribute("readOnly", true);
+                job.setAssignedNode(jenkinsService.getAssignedNode(job));
+                model.addAttribute("readOnly", true);
+            } else {
+                throw new URISyntaxException("Server is not running", "Jenkins");
+            }
 
         } catch (URISyntaxException | IOException ex) {
             job.setServer(null);

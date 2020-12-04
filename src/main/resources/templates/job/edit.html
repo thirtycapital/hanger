@@ -89,6 +89,12 @@
 
                             // Refresh component.
                             $('#select-template').selectpicker('refresh');
+                            
+                            // For new jobs, select template is required.
+                            $("#select-job").attr("required", "true");
+
+                            // Refresh component.
+                            $('#select-job').selectpicker('refresh');
 
                             // Button Next appear on import operation.
                             $('#partial_load_job').prop('disabled', false);
@@ -114,7 +120,13 @@
 
                             // Refresh component.
                             $('#select-template').selectpicker('refresh');
-
+                            
+                            // When is import, select template is not required.
+                            $('#select-job').removeAttr("required");
+                            
+                            // Refresh component.
+                            $('#select-job').selectpicker('refresh');
+                           
                             // Loads template list of jenkins
                             loadTemplateList();
                         }

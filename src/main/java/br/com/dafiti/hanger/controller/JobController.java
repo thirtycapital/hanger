@@ -978,6 +978,31 @@ public class JobController {
     }
 
     /**
+     * Update notification plugin for a specific server.
+     *
+     * @param server Server
+     * @return Job list
+     */
+    @GetMapping(path = "/maintenance/plugin/{id}")
+    @ResponseBody
+    public boolean pluginMaintenance(
+            @PathVariable(value = "id") Server server) {
+        List<Job> jobs = jobService.findByServer(server);
+
+        auditorService.publish("PLUGIN_MAINTENANCE",
+                new AuditorData()
+                        .addData("server", server.getName())
+                        .getData());
+
+        jobs.forEach(job -> {
+            LOG.log(Level.INFO, "Updating plugin for: " + job.getName());
+            jenkinsService.updateJob(job);
+        });
+
+        return true;
+    }
+
+    /**
      * Default model.
      *
      * @param model Model

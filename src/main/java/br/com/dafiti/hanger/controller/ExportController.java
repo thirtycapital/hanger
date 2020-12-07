@@ -90,6 +90,6 @@ public class ExportController {
     public HttpEntity<?> dowload(
             @PathVariable(name = "file") String file) throws IOException {
 
-        return this.exportService.dowload(file);
+        return this.exportService.download(file);
     }
 }

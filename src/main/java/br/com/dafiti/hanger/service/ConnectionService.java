@@ -24,10 +24,10 @@
 package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.exception.Message;
+import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.Connection;
+import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.option.Database;
-import br.com.dafiti.hanger.option.EntityType;
-import br.com.dafiti.hanger.option.Event;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.repository.ConnectionRepository;
 import br.com.dafiti.hanger.security.PasswordCryptor;
@@ -42,12 +42,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -68,22 +69,24 @@ public class ConnectionService {
     private final ConnectionRepository connectionRepository;
     private final PasswordCryptor passwordCryptor;
     private final JdbcTemplate jdbcTemplate;
-    private final EventLogService eventLogService;
     private final ConfigurationService configurationService;
     private final Map<String, PreparedStatement> inflight;
+    private final AuditorService auditorService;
+
+    private static final Logger LOG = LogManager.getLogger(ConnectionService.class.getName());
 
     @Autowired
     public ConnectionService(
             ConnectionRepository connectionRepository,
             PasswordCryptor passwordCryptor,
             JdbcTemplate jdbcTemplate,
-            EventLogService eventLogService,
+            AuditorService auditorService,
             ConfigurationService configurationService) {
 
         this.connectionRepository = connectionRepository;
         this.passwordCryptor = passwordCryptor;
         this.jdbcTemplate = jdbcTemplate;
-        this.eventLogService = eventLogService;
+        this.auditorService = auditorService;
         this.configurationService = configurationService;
         this.inflight = new HashMap();
     }
@@ -112,7 +115,7 @@ public class ConnectionService {
     }
 
     public Connection load(Long id) {
-        return connectionRepository.findOne(id);
+        return connectionRepository.findById(id).get();
     }
 
     @Caching(evict = {
@@ -128,7 +131,7 @@ public class ConnectionService {
     @Caching(evict = {
         @CacheEvict(value = "connections", allEntries = true)})
     public void delete(Long id) {
-        connectionRepository.delete(id);
+        connectionRepository.deleteById(id);
     }
 
     /**
@@ -147,7 +150,7 @@ public class ConnectionService {
 
                 switch (connection.getTarget()) {
                     case MYSQL:
-                        driver = new com.mysql.jdbc.Driver();
+                        driver = new com.mysql.cj.jdbc.Driver();
                         properties.setProperty("loginTimeout", "5000");
                         properties.setProperty("connectTimeout", "5000");
                         break;
@@ -157,6 +160,11 @@ public class ConnectionService {
                         break;
                     case POSTGRES:
                         driver = new org.postgresql.Driver();
+                        properties.setProperty("loginTimeout", "5");
+                        properties.setProperty("connectTimeout", "5");
+                        break;
+                    case REDSHIFT:
+                        driver = new com.amazon.redshift.jdbc42.Driver();
                         properties.setProperty("loginTimeout", "5");
                         properties.setProperty("connectTimeout", "5");
                         break;
@@ -194,9 +202,7 @@ public class ConnectionService {
                     | InstantiationException
                     | IllegalAccessException ex) {
 
-                Logger.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.SEVERE, "Fail getting datasource " + connection.getName(), ex);
+                LOG.log(Level.ERROR, "Fail getting datasource " + connection.getName(), ex);
             }
         }
 
@@ -219,23 +225,62 @@ public class ConnectionService {
                     running = true;
                 }
             } catch (SQLException ex) {
-                Logger.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.SEVERE, "Fail testing connection to " + connection.getName(), ex);
+                LOG.log(Level.ERROR, "Fail testing connection to " + connection.getName(), ex);
             } finally {
                 try {
                     if (datasource.getConnection() != null) {
                         datasource.getConnection().close();
                     }
                 } catch (SQLException ex) {
-                    Logger.getLogger(
-                            ConnectionService.class.getName())
-                            .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
+                    LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
                 }
             }
         }
 
         return running;
+    }
+
+    /**
+     * Get catalogs.
+     *
+     * @param connection Connection
+     * @return Database metadata
+     */
+    @Cacheable(value = "catalogs", key = "#connection")
+    public List<Entity> getCatalogs(Connection connection) {
+        List catalog = new ArrayList();
+        DataSource datasource = this.getDataSource(connection);
+
+        try {
+            ResultSet catalogs = datasource.getConnection()
+                    .getMetaData()
+                    .getCatalogs();
+
+            while (catalogs.next()) {
+                String catalogName = catalogs.getString("TABLE_CAT");
+
+                if (catalogName != null && !catalogName.isEmpty()) {
+
+                    catalog.add(
+                            new Entity(
+                                    catalogName,
+                                    "",
+                                    "",
+                                    "",
+                                    connection.getTarget()));
+                }
+            }
+        } catch (SQLException ex) {
+            LOG.log(Level.ERROR, "Fail getting metadata of " + connection.getName(), ex);
+        } finally {
+            try {
+                datasource.getConnection().close();
+            } catch (SQLException ex) {
+                LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
+            }
+        }
+
+        return catalog;
     }
 
     /**
@@ -266,36 +311,18 @@ public class ConnectionService {
                                     catalogName,
                                     schemaName,
                                     "",
+                                    "",
                                     connection.getTarget()));
                 }
             }
 
-            if (schema.isEmpty()) {
-                ResultSet catalogs = datasource.getConnection()
-                        .getMetaData()
-                        .getCatalogs();
-
-                while (catalogs.next()) {
-                    schema.add(
-                            new Entity(
-                                    catalogs.getString("TABLE_CAT"),
-                                    null,
-                                    "",
-                                    connection.getTarget()
-                            ));
-                }
-            }
         } catch (SQLException ex) {
-            Logger.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.SEVERE, "Fail getting metadata of " + connection.getName(), ex);
+            LOG.log(Level.ERROR, "Fail getting metadata of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                Logger.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
+                LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -333,20 +360,17 @@ public class ConnectionService {
                                     tables.getString("TABLE_CAT"),
                                     tables.getString("TABLE_SCHEM"),
                                     tables.getString("TABLE_NAME"),
+                                    tables.getString("TABLE_TYPE"),
                                     connection.getTarget()));
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.SEVERE, "Fail getting tables of " + connection.getName(), ex);
+            LOG.log(Level.ERROR, "Fail getting tables of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                Logger.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
+                LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -392,16 +416,12 @@ public class ConnectionService {
                                 columns.getString("REMARKS")));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.SEVERE, "Fail getting columns of " + connection.getName(), ex);
+            LOG.log(Level.ERROR, "Fail getting columns of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                Logger.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
+                LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -438,16 +458,12 @@ public class ConnectionService {
                                 tables.getString("COLUMN_NAME")));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.SEVERE, "Fail getting primary key of " + connection.getName(), ex);
+            LOG.log(Level.ERROR, "Fail getting primary key of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                Logger.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
+                LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -459,13 +475,13 @@ public class ConnectionService {
      *
      * @param connection Connection.
      * @param query Query.
-     * @param principal Principal.
+     * @param user User.
      * @return QueryResultSet instance.
      */
     public QueryResultSet getQueryResultSet(
             Connection connection,
             String query,
-            Principal principal) {
+            User user) {
 
         QueryResultSet queryResultSet = new QueryResultSet();
         DataSource datasource = this.getDataSource(connection);
@@ -498,7 +514,7 @@ public class ConnectionService {
                         ResultSet.CONCUR_READ_ONLY);
 
                 //Salves the statement being executed.
-                inflight.put(principal.getName(), preparedStatement);
+                inflight.put(user.getUsername(), preparedStatement);
 
                 return preparedStatement;
             }, (ResultSet resultSet) -> {
@@ -509,11 +525,16 @@ public class ConnectionService {
                     //Retrives the metadata. 
                     ResultSetMetaData metaData = resultSet.getMetaData();
 
-                    //Identifies the metadata columns. 
                     for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                        //Extracts columns name.
                         queryResultSet
                                 .getHeader()
                                 .add(metaData.getColumnName(i));
+
+                        //Extracts columns data type. 
+                        queryResultSet
+                                .getType()
+                                .put(metaData.getColumnName(i), metaData.getColumnTypeName(i));
                     }
                 }
 
@@ -530,15 +551,16 @@ public class ConnectionService {
                         .add(resultSetRow);
 
                 //Removes the statement from inflight when a query finishes.
-                inflight.remove(principal.getName());
+                inflight.remove(user.getUsername());
             });
 
-            //Logs
-            eventLogService.log(
-                    EntityType.CONNECTION,
-                    Event.QUERY,
-                    principal.getName(),
-                    "[" + connection.getName() + "] " + query);
+            //Log.
+            auditorService.publish(
+                    "QUERY",
+                    new AuditorData()
+                            .addData("connection", connection.getName())
+                            .addData("sql", query)
+                            .getData());
 
             //Gets query elapsed time.
             queryResultSet.setElapsedTime(watch.getTotalTimeMillis());
@@ -548,17 +570,13 @@ public class ConnectionService {
         } catch (DataAccessException ex) {
             queryResultSet.setError(new Message().getErrorMessage(ex));
 
-            Logger.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.SEVERE, "Query error: ", ex);
+            LOG.log(Level.ERROR, "Query error: ", ex);
         } finally {
             try {
                 //Close the connection. 
                 jdbcTemplate.getDataSource().getConnection().close();
             } catch (SQLException ex) {
-                Logger.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.SEVERE, "Fail closing connection: ", ex);
+                LOG.log(Level.ERROR, "Fail closing connection: ", ex);
             }
         }
 
@@ -586,9 +604,7 @@ public class ConnectionService {
                 //Removes the statements from inflight when a cancel commend is sent.
                 inflight.remove(principal.getName());
             } catch (SQLException ex) {
-                Logger.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.SEVERE, "Fail aborting query ", ex);
+                LOG.log(Level.ERROR, "Fail aborting query ", ex);
             }
         }
 
@@ -596,14 +612,24 @@ public class ConnectionService {
     }
 
     /**
+     * Refresh all connections cache.
+     *
+     */
+    @Caching(evict = {
+        @CacheEvict(value = "tables", allEntries = true)
+    })
+    public void refresh() {
+    }
+
+    /**
      * Refresh connection cache.
      *
-     * @param connection
+     * @param connection Connection.
      */
     @Caching(evict = {
         @CacheEvict(value = "tables", key = "#connection")
     })
-    public void evictConnection(Connection connection) {
+    public void refreshConnection(Connection connection) {
     }
 
     /**
@@ -698,16 +724,12 @@ public class ConnectionService {
                                 indexes.getInt("CARDINALITY")));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(
-                    ConnectionService.class.getName())
-                    .log(Level.SEVERE, "Fail getting indexes of " + connection.getName(), ex);
+            LOG.log(Level.ERROR, "Fail getting indexes of " + connection.getName(), ex);
         } finally {
             try {
                 datasource.getConnection().close();
             } catch (SQLException ex) {
-                Logger.getLogger(
-                        ConnectionService.class.getName())
-                        .log(Level.SEVERE, "Fail closing connection", ex.getMessage());
+                LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
             }
         }
 
@@ -722,17 +744,20 @@ public class ConnectionService {
         private String catalog;
         private String schema;
         private String table;
+        private String type;
         private Database target;
 
         public Entity(
                 String catalog,
                 String schema,
                 String table,
+                String type,
                 Database target) {
 
             this.catalog = catalog;
             this.schema = schema;
             this.table = table;
+            this.type = type;
             this.target = target;
         }
 
@@ -758,6 +783,14 @@ public class ConnectionService {
 
         public void setTable(String table) {
             this.table = table;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
         }
 
         public Database getTarget() {
@@ -876,6 +909,7 @@ public class ConnectionService {
 
         String error = new String();
         List<String> header = new ArrayList();
+        Map<String, String> type = new HashMap();
         List<QueryResultSetRow> row = new ArrayList();
         long elapsedTime = 0;
 
@@ -885,6 +919,14 @@ public class ConnectionService {
 
         public void setHeader(List<String> header) {
             this.header = header;
+        }
+
+        public Map<String, String> getType() {
+            return type;
+        }
+
+        public void setType(Map<String, String> type) {
+            this.type = type;
         }
 
         public List<QueryResultSetRow> getRow() {

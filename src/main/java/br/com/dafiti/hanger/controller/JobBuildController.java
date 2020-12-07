@@ -59,17 +59,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping("/build")
 public class JobBuildController {
-    
+
     private final JobService jobService;
     private final JobBuildGraphService jobBuildGraphService;
     private final ConfigurationService configurationService;
-    
+
     @Autowired
     public JobBuildController(
             JobBuildGraphService jobBuildGraphService,
             JobService jobService,
             ConfigurationService configurationService) {
-        
+
         this.jobBuildGraphService = jobBuildGraphService;
         this.jobService = jobService;
         this.configurationService = configurationService;
@@ -90,7 +90,7 @@ public class JobBuildController {
                         new Date()
                 )
         );
-        
+
         model.addAttribute("detail",
                 jobBuildGraphService.getJobBuildDetail(
                         Phase.STARTED,
@@ -98,7 +98,7 @@ public class JobBuildController {
                         new Date()
                 )
         );
-        
+
         model.addAttribute("total",
                 jobBuildGraphService.getJobBuildTotal(
                         Phase.STARTED,
@@ -106,7 +106,7 @@ public class JobBuildController {
                         new Date()
                 )
         );
-        
+
         return "build/heatmap";
     }
 
@@ -125,7 +125,7 @@ public class JobBuildController {
             @RequestParam("dateFrom") @DateTimeFormat(pattern = "yyyy-MM-dd") Date dateFrom,
             @RequestParam("dateTo") @DateTimeFormat(pattern = "yyyy-MM-dd") Date dateTo,
             Model model) {
-        
+
         model.addAttribute("filter",
                 new JobBuildMetricFilter(
                         phase,
@@ -133,7 +133,7 @@ public class JobBuildController {
                         dateTo
                 )
         );
-        
+
         model.addAttribute("detail",
                 jobBuildGraphService.getJobBuildDetail(
                         phase,
@@ -141,7 +141,7 @@ public class JobBuildController {
                         dateTo
                 )
         );
-        
+
         model.addAttribute("total",
                 jobBuildGraphService.getJobBuildTotal(
                         phase,
@@ -149,7 +149,7 @@ public class JobBuildController {
                         dateTo
                 )
         );
-        
+
         return "build/heatmap";
     }
 
@@ -184,7 +184,7 @@ public class JobBuildController {
     public Map<String, List> ganttFilter(
             @RequestBody JobBuildGanttFilter filter,
             Model model) {
-        
+
         Map<String, List> data = new HashMap<>();
         data.put("data",
                 jobBuildGraphService.getDHTMLXGanttData(
@@ -193,7 +193,7 @@ public class JobBuildController {
                         filter.getTo()
                 )
         );
-        
+
         return data;
     }
 
@@ -208,25 +208,27 @@ public class JobBuildController {
     public String history(
             @PathVariable(value = "id") Job job,
             Model model) {
-        
+
+        //Identifies the retention period. 
+        String retentionPeriod = configurationService
+                .findByParameter("LOG_RETENTION_PERIOD")
+                .getValue();
+
         model.addAttribute("job", job);
         model.addAttribute("history",
                 jobBuildGraphService.findBuildHistory(
                         Arrays.asList(job),
                         LocalDate
                                 .now()
-                                .minusDays(Integer.valueOf(
-                                        configurationService
-                                                .findByParameter("LOG_RETENTION_PERIOD")
-                                                .getValue()
-                                ))
+                                .minusDays(Integer.valueOf(retentionPeriod))
                                 .toDate(),
                         new Date()
                 ).stream()
                         .sorted(Comparator.comparing(JobBuildMetric::getStartDate).reversed())
+                        .limit(Integer.valueOf(retentionPeriod))
                         .collect(Collectors.toList())
         );
-        
+
         return "build/modalBuildHistory::history";
     }
 }

@@ -34,8 +34,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +54,8 @@ public class JobBuildPushService {
     private final JobStatusService jobStatusService;
     private final JobNotificationService jobNotificationService;
 
+    private static final Logger LOG = LogManager.getLogger(JobBuildPushService.class.getName());
+    
     @Autowired
     public JobBuildPushService(
             JobBuildService jobBuildService,
@@ -131,8 +134,7 @@ public class JobBuildPushService {
                     jobNotificationService.notify(childJob, true);
 
                     //Fail log.
-                    Logger.getLogger(EyeService.class.getName())
-                            .log(Level.SEVERE, "Fail building job: " + childJob.getName(), ex);
+                    LOG.log(Level.ERROR, "Fail building job: " + childJob.getName(), ex);
                 }
             }
         });
@@ -199,7 +201,7 @@ public class JobBuildPushService {
                 }
 
                 //Log the full dependencies status.
-                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "FULL -> Job={0}, scope={1}, ready={2}, dependencies={3}", new Object[]{job.getName(), scope, ready, all});
+                LOG.log(Level.INFO, "FULL -> Job={}, scope={}, ready={}, dependencies={}", new Object[]{job.getName(), scope, ready, all});
             } else {
                 //Identify if all dependencies was built successfully.
                 for (Map.Entry<Job, Boolean> entry : all.entrySet()) {
@@ -237,10 +239,10 @@ public class JobBuildPushService {
                 }
 
                 //Log the partial dependencies status.
-                Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "PARTIAL -> job={0}, scope={1}, ready={2}, partials={3}, dependencies={4}", new Object[]{job.getName(), scope, ready, partial, all});
+                LOG.log(Level.INFO, "PARTIAL -> job={}, scope={}, ready={}, partials={}, dependencies={}", new Object[]{job.getName(), scope, ready, partial, all});
             }
         } else {
-            Logger.getLogger(JobBuildPushService.class.getName()).log(Level.INFO, "Job {0} is not buildable", new Object[]{job.getName()});
+            LOG.log(Level.INFO, "Job {} is not buildable", new Object[]{job.getName()});
         }
 
         return new PushInfo(ready, scope);

@@ -66,8 +66,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="approval, approvalStat : ${approvals}" th:unless="${approvalStat.index > 9}">                                
-                                <td><img class="status" th:src="@{'/images/' + ${ approval.approved ? 'APPROVED' : 'DISAPPROVED' } + '.png' }" th:attr="title=${ approval.approved ? 'APPROVED' : 'DISAPPROVED' }"></img></td>
+                            <tr th:each="approval, approvalStat : ${approvals}" th:unless="${approvalStat.index > 9}">    
+                                <td>
+                                    <th:block th:switch="${approval.approved}">
+                                        <span th:case="true" class="label label-success" th:title="APPROVED" th:text="APPROVED"></span>
+                                        <span th:case="false" class="label label-danger" th:title="DISAPPROVED" th:text="DISAPPROVED"></span>
+                                    </th:block>
+                                </td>
                                 <td th:text="${#dates.format(approval.createdAt, 'yyyy-MM-dd HH:mm:ss')}" ></td>
                                 <td th:text="${approval.user.firstName + ' ' + approval.user.lastName}" ></td>
                                 <td class="nowrap-pre" th:text="${approval.description}"></td>                            
@@ -82,19 +87,28 @@
                     <legend class="space-top" th:inline="text">
                         [[${ checkup.name + '  |  ' + ( checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION' ) + '  |  ' + checkup.action}]]
                         <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Open the query in workbench" target="_blank">
-                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
                         </a>
                     </legend>
+
+                    <div th:if="${checkup.description != null and checkup.description != ''}">
+                        <div class="form-group">
+                            <div 
+                                class="italic" 
+                                th:utext="${checkup.getHTMLDescription()}"></div>
+                        </div>
+                    </div>
+
                     <table th:id="'table_paginated_clean' + ${checkup.id}" class="table table-hover">
                         <thead>
                             <tr>
                                 <th style="width:5%" class="img-sort">Status</th> 
                                 <th style="width:10%">Date</th> 
                                 <th style="width:5%">Scope</th> 
-                                <th style="width:25%">SQL</th>
-                                <th style="width:15%">Result</th>
+                                <th style="width:30%">SQL</th>
+                                <th style="width:5%">Result</th>
                                 <th style="width:10%" class="no-sort"></th>    
-                                <th style="width:10%">Threshold</th>     
+                                <th style="width:5%">Threshold</th>     
                                 <th style="width:10%">Action</th> 
                                 <th class="no-sort"></th>
                             </tr>
@@ -102,7 +116,12 @@
 
                         <tbody>
                             <tr class="checkup-row" th:each="checkupLog, checkupLogStat : ${checkup.log}" th:unless="${checkupLogStat.index > 49}">
-                                <td><img class="status" th:src="@{'/images/' + ${ checkupLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="title=${ checkupLog.success ? 'SUCCESS' : 'FAILURE' }"></img></td>                                 
+                                <td>
+                                    <th:block th:switch="${checkupLog.success}">
+                                        <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
+                                        <span th:case="false" class="label label-danger" th:title="FAILURE" th:text="FAILURE"></span>
+                                    </th:block>
+                                </td>                               
                                 <td th:text="${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}"></td>        
                                 <td th:text="${checkupLog.scope}"></td>  
                                 <td>
@@ -140,19 +159,28 @@
                                 <td th:text="${checkupLog.conditional}"></td>  
                                 <td th:text="${checkupLog.threshold}"></td>  
                                 <td th:text="${checkupLog.success ? '' : checkupLog.action}"></td>   
-                                <td>
-                                    <div th:if="${checkup.command}">
-                                        <table  class="table borderless">
+                                <td>                                   
+                                    <div th:if="${not #lists.isEmpty(checkupLog.commandLog)}">
+                                        <table class="table borderless">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width:10%" class="img-sort">Status</th> 
+                                                    <th class="no-sort">Command</th>
+                                                </tr>
+                                            </thead>
                                             <tbody>
-                                                <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}" th:remove="tag"> 
-                                                    <tr>
-                                                        <td style="width:5%"><img class="hanger-img-sm" th:src="@{'/images/' + ${ commandLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="alt=${ commandLog.success }"></img></td>
-                                                        <td>
-                                                            <a th:inline="text" th:href="@{'/checkup/log/' + ${commandLog.id}}">
-                                                                [[${ (commandLogStat.index + 1) + '. ' + commandLog.commandType}]]
-                                                            </a>
-                                                        </td>
-                                                    </tr>
+                                                <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}"> 
+                                                    <td>
+                                                        <th:block th:switch="${commandLog.success}">
+                                                            <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
+                                                            <span th:case="false" class="label label-danger" th:title="FAILURE" th:text="FAILURE"></span>
+                                                        </th:block>
+                                                    </td>
+                                                    <td>
+                                                        <a th:inline="text" th:href="@{'/checkup/log/' + ${commandLog.id}}">
+                                                            [[${ (commandLogStat.index + 1) + '° ' + commandLog.commandType}]]
+                                                        </a>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>

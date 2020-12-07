@@ -35,13 +35,16 @@ import br.com.dafiti.hanger.repository.JobRepository;
 import static com.cronutils.model.CronType.QUARTZ;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -59,6 +62,8 @@ public class JobService {
     private final JobParentService jobParentService;
     private final JenkinsService jenkinsService;
     private final JobStatusService jobStatusService;
+
+    private static final Logger LOG = LogManager.getLogger(JobService.class.getName());
 
     @Autowired
     public JobService(
@@ -83,7 +88,7 @@ public class JobService {
     }
 
     public Job load(Long id) {
-        return jobRepository.findOne(id);
+        return jobRepository.findById(id).get();
     }
 
     public List<Job> findBySubjectOrderByName(Subject subject) {
@@ -100,6 +105,10 @@ public class JobService {
 
     public List<Job> findByNameContainingOrAliasContaining(String search) {
         return jobRepository.findByNameContainingOrAliasContaining(search, search);
+    }
+
+    public List<Job> findByServer(Server server) {
+        return jobRepository.findByServer(server);
     }
 
     @Cacheable(value = "job_count")
@@ -170,6 +179,7 @@ public class JobService {
             }
         }
 
+        jenkinsService.updateShellScript(job);
         jenkinsService.updateJob(job);
         return this.save(job);
     }
@@ -180,7 +190,7 @@ public class JobService {
         @CacheEvict(value = "job_count_by_subject", allEntries = true),
         @CacheEvict(value = "propagation", allEntries = true)})
     public void delete(Long id) {
-        jobRepository.delete(id);
+        jobRepository.deleteById(id);
     }
 
     @Caching(evict = {
@@ -526,9 +536,7 @@ public class JobService {
         if (!childs.isEmpty()) {
             for (JobParent child : childs) {
                 if (!propagation.contains(job)) {
-                    Logger.getLogger(
-                            JobService.class.getName())
-                            .log(Level.INFO, "{0} {1}", new Object[]{StringUtils.repeat(".", level), child.getJob().getName()});
+                    LOG.log(Level.INFO, StringUtils.repeat(".", level) + child.getJob().getName());
 
                     this.getPropagation(child.getJob(), propagation, level);
                 }
@@ -546,7 +554,7 @@ public class JobService {
      * @param server Server
      * @param childrenJobList
      * @param parentUpstream ParentUpstream
-     * @param rebuildable Identify if should make a job rebuildable. 
+     * @param rebuildable Identify if should make a job rebuildable.
      * @param error errors
      * @throws Exception
      */
@@ -571,10 +579,10 @@ public class JobService {
                 ArrayList parentList = new ArrayList();
                 parentList.add(job.getName());
 
-                if(rebuildable){
-                   jobChild.setRebuild(rebuildable);
+                if (rebuildable) {
+                    jobChild.setRebuild(rebuildable);
                 }
-                
+
                 this.addParent(jobChild, job.getServer(), parentList, false, error);
                 this.save(jobChild);
 
@@ -593,5 +601,36 @@ public class JobService {
      */
     public HashSet<JobParent> getChildrenlist(Job job) {
         return jobParentService.findByParent(job);
+    }
+
+    /**
+     * Get list of only existing jobs at Jenkins.
+     *
+     * @param server Server
+     * @return
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    public List<String> listNonExistsJobs(Server server) throws URISyntaxException, IOException {
+        List<String> listJobServer = this.jenkinsService.listJob(server);
+        Iterable<Job> listJob = this.listFromCache();
+        List<String> list = new ArrayList<>();
+
+        for (String jobServer : listJobServer) {
+            boolean jobExists = false;
+
+            for (Job job : listJob) {
+                if (jobServer.equalsIgnoreCase(job.getName())) {
+                    jobExists = true;
+                    break;
+                }
+            }
+
+            if (!jobExists) {
+                list.add(jobServer);
+            }
+        }
+
+        return list;
     }
 }

@@ -39,14 +39,25 @@ public class JobBuildMetric {
     private Date queueDate;
     private Date startDate;
     private Date finishDate;
+    private boolean success;
 
-    public JobBuildMetric(Job job, int hour, Long build) {
+    public JobBuildMetric(
+            Job job,
+            int hour,
+            Long build) {
+
         this.job = job;
         this.hour = hour;
         this.build = build;
     }
 
-    public JobBuildMetric(Job job, Date queueDate, Date startDate, Date finishDate) {
+    public JobBuildMetric(
+            Job job,
+            Date queueDate,
+            Date startDate,
+            Date finishDate,
+            boolean success) {
+
         this.job = job;
         this.queueDate = queueDate;
 
@@ -57,6 +68,7 @@ public class JobBuildMetric {
         }
 
         this.finishDate = finishDate;
+        this.success = success;
     }
 
     public Job getJob() {
@@ -65,6 +77,14 @@ public class JobBuildMetric {
 
     public void setJob(Job job) {
         this.job = job;
+    }
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 
     public int getHour() {

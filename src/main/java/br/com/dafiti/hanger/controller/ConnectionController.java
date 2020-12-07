@@ -30,7 +30,6 @@ import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -167,8 +166,14 @@ public class ConnectionController {
             Model model) {
 
         try {
+            List<ConnectionService.Entity> entity = connectionService.getSchemas(connection);
+            
+            if (entity.isEmpty()) {
+                entity = connectionService.getCatalogs(connection);
+            }
+            
             model.addAttribute("connection", connection);
-            model.addAttribute("metadata", connectionService.getSchemas(connection));
+            model.addAttribute("metadata", entity);
         } catch (Exception ex) {
             model.addAttribute("errorMessage", "Fail listing schema " + new Message().getErrorMessage(ex));
         }
@@ -355,6 +360,6 @@ public class ConnectionController {
     public void evictConnection(
             @PathVariable(name = "id") Connection connection) {
 
-        connectionService.evictConnection(connection);
+        connectionService.refreshConnection(connection);
     }
 }

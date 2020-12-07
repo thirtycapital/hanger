@@ -59,6 +59,7 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.OrderBy;
+import org.json.JSONObject;
 
 /**
  *
@@ -67,7 +68,7 @@ import org.hibernate.annotations.OrderBy;
 @Entity
 @Table(indexes = {
     @Index(name = "IDX_name", columnList = "name", unique = false)})
-public class Job extends Tracker implements Serializable {
+public class Job extends Tracker<Job> implements Serializable {
 
     private Long id;
     private Server server;
@@ -75,6 +76,7 @@ public class Job extends Tracker implements Serializable {
     private String alias;
     private String description;
     private String timeRestriction;
+    private String assignedNode;
     private int retry;
     private int tolerance;
     private int wait;
@@ -84,6 +86,8 @@ public class Job extends Tracker implements Serializable {
     private List<Subject> subject = new ArrayList();
     private List<JobCheckup> checkup = new ArrayList();
     private List<JobApproval> approval = new ArrayList();
+    private List<WorkbenchEmail> email = new ArrayList();
+    private List<String> shellScript = new ArrayList();
     private Set<String> channel = new HashSet();
     private boolean enabled = true;
     private boolean notify;
@@ -105,7 +109,7 @@ public class Job extends Tracker implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -245,6 +249,46 @@ public class Job extends Tracker implements Serializable {
         this.approval.add(approval);
     }
 
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @JoinTable(name = "job_workbench_email",
+            joinColumns = {
+                @JoinColumn(name = "job_id", referencedColumnName = "id")},
+            inverseJoinColumns = {
+                @JoinColumn(name = "workbench_email_id", referencedColumnName = "id")})
+    public List<WorkbenchEmail> getEmail() {
+        return email;
+    }
+
+    public void setEmail(List<WorkbenchEmail> email) {
+        this.email = email;
+    }
+
+    public void addEmail(WorkbenchEmail email) {
+        this.email.add(email);
+    }
+
+    @Transient
+    public List<String> getShellScript() {
+        return shellScript;
+    }
+
+    public void setShellScript(List<String> shellScript) {
+        this.shellScript = shellScript;
+    }
+
+    public void addShellScript(String shellScript) {
+        this.shellScript.add(shellScript);
+    }
+
+    @Transient
+    public String getAssignedNode() {
+        return assignedNode;
+    }
+
+    public void setAssignedNode(String assignedNode) {
+        this.assignedNode = assignedNode;
+    }
+
     public boolean isRebuild() {
         return rebuild;
     }
@@ -371,32 +415,6 @@ public class Job extends Tracker implements Serializable {
     }
 
     @Override
-    public String toString() {
-        StringBuilder job = new StringBuilder();
-        StringBuilder jobParent = new StringBuilder();
-
-        for (JobParent parents : this.parent) {
-            if (jobParent.length() != 0) {
-                jobParent.append(",");
-            }
-
-            jobParent.append("{");
-            jobParent.append("\"name\":").append(parents.getParent().getName()).append("\",");
-            jobParent.append("\"scope\":").append(parents.getScope()).append("\"");
-            jobParent.append("}");
-        }
-
-        job.append("{\n");
-        job.append("    \"job\": {\n");
-        job.append("        \"name\":").append("\"").append(this.name).append("\"\n");
-        job.append("        \"parent\":").append("[").append(jobParent.toString()).append("]\n");
-        job.append("    }\n");
-        job.append("}");
-
-        return job.toString();
-    }
-
-    @Override
     public int hashCode() {
         int hash = 3;
         hash = 53 * hash + Objects.hashCode(this.id);
@@ -419,5 +437,16 @@ public class Job extends Tracker implements Serializable {
         }
 
         return Objects.equals(this.id, other.id);
+    }
+
+    @Override
+    public String toString() {
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("name", name);
+        object.put("alias", alias);
+        object.put("description", description);
+        object.put("enabled", enabled);
+        return object.toString(2);
     }
 }

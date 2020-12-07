@@ -47,13 +47,14 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import java.util.stream.Collectors;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -77,6 +78,8 @@ public class JobCheckupService {
     private final MailService mailService;
     private final JobStatusService jobStatusService;
     private final SlackService slackService;
+
+    private static final Logger LOG = LogManager.getLogger(JobBuildPushService.class.getName());
 
     @Autowired
     public JobCheckupService(
@@ -119,7 +122,7 @@ public class JobCheckupService {
      * @return JobCheckup.
      */
     public JobCheckup load(Long id) {
-        return jobCheckupRepository.findOne(id);
+        return jobCheckupRepository.findById(id).get();
     }
 
     /**
@@ -137,7 +140,7 @@ public class JobCheckupService {
      * @param id JobCheckup ID.
      */
     public void delete(Long id) {
-        jobCheckupRepository.delete(id);
+        jobCheckupRepository.deleteById(id);
     }
 
     /**
@@ -181,7 +184,7 @@ public class JobCheckupService {
         //Identifies if the job has checkup.
         if (!job.getCheckup().isEmpty()) {
             //Log the job status before checkup evaluation.
-            Logger.getLogger(JobCheckupService.class.getName()).log(Level.INFO, "{0} status before checkup evaluation", new Object[]{job.getName()});
+            LOG.log(Level.INFO, "{} status before checkup evaluation", new Object[]{job.getName()});
 
             //Filters checkup by scope.
             List<JobCheckup> checkups = job.getCheckup()
@@ -240,9 +243,7 @@ public class JobCheckupService {
                         this.save(checkup);
 
                         //Identifies if should retry.
-                        if (retry < job.getRetry()
-                                || job.getRetry() == 0) {
-
+                        if (retry < (job.getRetry() == 0 ? 1 : job.getRetry())) {
                             if (!validated && !log) {
                                 //Increases the retry counter.
                                 retryService.increase(job);
@@ -279,7 +280,7 @@ public class JobCheckupService {
             }
 
             //Log the job status after checkup evaluation.
-            Logger.getLogger(JobCheckupService.class.getName()).log(Level.INFO, "{0} status after checkup evaluation", new Object[]{job.getName()});
+            LOG.log(Level.INFO, "{} status after checkup evaluation", new Object[]{job.getName()});
         }
 
         return validated;
@@ -296,14 +297,14 @@ public class JobCheckupService {
         switch (checkup.getAction()) {
             case REBUILD:
                 try {
-                    //Rebuild the job.
-                    jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
-                    jenkinsService.build(job);
-                } catch (Exception ex) {
-                    Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building job: " + job.getName(), ex);
-                }
+                //Rebuild the job.
+                jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
+                jenkinsService.build(job);
+            } catch (Exception ex) {
+                LogManager.getLogger(EyeService.class).log(Level.ERROR, "Fail building job: " + job.getName(), ex);
+            }
 
-                break;
+            break;
             case REBUILD_MESH:
                 HashSet<Job> parent = jobService.getMeshParent(job);
                 jobService.rebuildMesh(job);
@@ -314,7 +315,7 @@ public class JobCheckupService {
                         jenkinsService.build(meshParent);
                     }
                 } catch (Exception ex) {
-                    Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building job mesh: " + job.getName(), ex);
+                    LogManager.getLogger(EyeService.class).log(Level.ERROR, "Fail building job mesh: " + job.getName(), ex);
                 }
 
                 break;
@@ -337,7 +338,7 @@ public class JobCheckupService {
                         }
                     }
                 } catch (Exception ex) {
-                    Logger.getLogger(EyeService.class.getName()).log(Level.SEVERE, "Fail building trigger: " + job.getName(), ex);
+                    LogManager.getLogger(EyeService.class).log(Level.ERROR, "Fail building trigger: " + job.getName(), ex);
                 }
 
                 break;
@@ -370,7 +371,7 @@ public class JobCheckupService {
                 //Close the connection. 
                 jdbcTemplate.getDataSource().getConnection().close();
             } catch (SQLException ex) {
-                Logger.getLogger(JobCheckupService.class.getName()).log(Level.SEVERE, "Fail closing connection ", ex);
+                LOG.log(Level.ERROR, "Fail closing connection ", ex);
             }
         }
 
@@ -422,13 +423,13 @@ public class JobCheckupService {
         } catch (DataAccessException ex) {
             success = false;
             log = ex.getMessage();
-            Logger.getLogger(JobCheckupService.class.getName()).log(Level.SEVERE, "Fail executing SQL command ", ex);
+            LOG.log(Level.ERROR, "Fail executing SQL command ", ex);
         } finally {
             try {
                 //Close the connection.
                 jdbcTemplate.getDataSource().getConnection().close();
             } catch (SQLException ex) {
-                Logger.getLogger(JobCheckupService.class.getName()).log(Level.SEVERE, "Fail closing connection ", ex);
+                LOG.log(Level.ERROR, "Fail closing connection ", ex);
             }
 
             try {
@@ -444,7 +445,7 @@ public class JobCheckupService {
                     jobCheckupLog.addCommandLog(commandLog);
                 }
             } catch (Exception ex) {
-                Logger.getLogger(JobCheckupService.class.getName()).log(Level.SEVERE, "Fail recording sql command log " + ex.getMessage(), ex);
+                LOG.log(Level.ERROR, "Fail recording sql command log " + ex.getMessage(), ex);
             }
         }
 
@@ -507,7 +508,7 @@ public class JobCheckupService {
         } catch (IOException ex) {
             success = false;
             log = ex.getMessage();
-            Logger.getLogger(JobCheckupService.class.getName()).log(Level.SEVERE, "Fail executing shell command " + ex.getMessage(), ex);
+            LOG.log(Level.ERROR, "Fail executing shell command " + ex.getMessage(), ex);
         } finally {
             try {
                 //Define the command log.
@@ -522,7 +523,7 @@ public class JobCheckupService {
                     jobCheckupLog.addCommandLog(commandLog);
                 }
             } catch (Exception ex) {
-                Logger.getLogger(JobCheckupService.class.getName()).log(Level.SEVERE, "Fail recording shell command log " + ex.getMessage(), ex);
+                LOG.log(Level.ERROR, "Fail recording shell command log " + ex.getMessage(), ex);
             }
         }
 
@@ -551,18 +552,18 @@ public class JobCheckupService {
         try {
             finalValue = Float.parseFloat(value);
         } catch (NumberFormatException ex) {
-            Logger.getLogger(JobCheckupService.class.getName()).log(Level.SEVERE, "Fail converting value " + value + " to float", ex);
+            LOG.log(Level.ERROR, "Fail converting value " + value + " to float", ex);
         }
 
         //Try to convert the threshold to float. 
         try {
             finalThreshold = Float.parseFloat(threshold);
         } catch (NumberFormatException ex) {
-            Logger.getLogger(JobCheckupService.class.getName()).log(Level.SEVERE, "Fail converting threshold " + threshold + " to float", ex);
+            LOG.log(Level.ERROR, "Fail converting threshold " + threshold + " to float", ex);
         }
 
         //Log the checkup value and threshold.
-        Logger.getLogger(JobCheckupService.class.getName()).log(Level.INFO, "Checkup {0} evaluated with value {1} and threshold {2}", new Object[]{checkup.getName(), finalValue, finalThreshold});
+        LOG.log(Level.INFO, "Checkup {} evaluated with value {} and threshold {}", new Object[]{checkup.getName(), finalValue, finalThreshold});
 
         //Check if the threshold is numeric.
         if (finalValue != null && finalThreshold != null) {
@@ -636,7 +637,7 @@ public class JobCheckupService {
 
         //Identifies if the job has approver. 
         if (job.getApprover() != null) {
-            Blueprint blueprint = new Blueprint(job.getApprover().getEmail(), "Nick Checkup failure", "checkupFailure");
+            Blueprint blueprint = new Blueprint(job.getApprover().getEmail(), "Hanger Checkup failure", "checkupFailure");
             blueprint.addVariable("approver", job.getApprover().getFirstName());
             blueprint.addVariable("job", job.getName());
             blueprint.addVariable("checkup", checkup.getDescription());

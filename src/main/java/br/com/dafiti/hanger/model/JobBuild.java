@@ -25,6 +25,7 @@ package br.com.dafiti.hanger.model;
 
 import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Status;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -43,6 +44,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import org.joda.time.LocalDate;
+import org.json.JSONObject;
 
 /**
  *
@@ -62,7 +64,7 @@ public class JobBuild implements Serializable {
     private Date date;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -73,6 +75,7 @@ public class JobBuild implements Serializable {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "job_id", referencedColumnName = "id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    @JsonIgnore
     public Job getJob() {
         return job;
     }
@@ -154,11 +157,12 @@ public class JobBuild implements Serializable {
 
     @Override
     public String toString() {
-        return "JobBuild{"
-                + "id=" + id
-                + ", number=" + number
-                + ", phase=" + phase
-                + ", status=" + status
-                + ", date=" + date + '}';
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("number", number);
+        object.put("phase", phase);
+        object.put("status", status);
+        object.put("date", date);
+        return object.toString(2);
     }
 }

@@ -71,7 +71,6 @@ public class SubjectDetailsService {
             List<Job> subjectJobs) {
 
         int building = 0;
-        int running = 0;
         int success = 0;
         int warning = 0;
         int failure = 0;
@@ -96,7 +95,7 @@ public class SubjectDetailsService {
                             if ((jobBuild.getPhase().equals(Phase.STARTED) || jobBuild.getPhase().equals(Phase.QUEUED))
                                     && jobBuild.getStatus().equals(Status.SUCCESS)) {
 
-                                running += 1;
+                                building += 1;
 
                                 //Identify success jobs.
                             } else if (jobBuild.getPhase().equals(Phase.FINALIZED)
@@ -136,7 +135,6 @@ public class SubjectDetailsService {
         return new SubjectDetails(
                 subject,
                 building,
-                running,
                 success,
                 warning,
                 failure,
@@ -177,5 +175,103 @@ public class SubjectDetailsService {
         });
 
         return subjectSummary;
+    }
+
+    /**
+     * Return list of filtered jobs based on list of status
+     *
+     * @param status
+     * @param jobs Subject jobs.
+     * @return Subject details.
+     */
+    public List<Job> getFilteredJobs(
+            List<Job> jobs,
+            List<String> status) {
+        
+        List<Job> filteredJobs = new ArrayList();
+
+        for (Job job : jobs) {
+            if (job.isEnabled()) {
+                //total += 1;
+                JobStatus jobStatus = job.getStatus();
+
+                if (jobStatus != null) {
+                    JobBuild jobBuild = jobStatus.getBuild();
+
+                    //Identify building jobs.
+                    if (jobStatus.getFlow().equals(Flow.REBUILD)) {
+                        if (status.contains("BUILDING")) {
+                            filteredJobs.add(job);
+                        }
+                    } else if (jobBuild != null) {
+                        int lastBuild = Days.daysBetween(new LocalDate(jobStatus.getDate()), new LocalDate()).getDays();
+
+                        if (lastBuild == 0) {
+                            //Identify running jobs.
+                            if ((jobBuild.getPhase().equals(Phase.STARTED) || jobBuild.getPhase().equals(Phase.QUEUED))
+                                    && jobBuild.getStatus().equals(Status.SUCCESS)) {
+
+                                if (status.contains("BUILDING")) {
+                                    filteredJobs.add(job);
+                                }
+
+                                //Identify success jobs.
+                            } else if (jobBuild.getPhase().equals(Phase.FINALIZED)
+                                    && jobBuild.getStatus().equals(Status.SUCCESS)
+                                    && (jobStatus.getFlow().equals(Flow.NORMAL) || jobStatus.getFlow().equals(Flow.APPROVED))) {
+
+                                if (jobNotificationService.isNotified(job)) {
+                                    if (status.contains("WARNING")) {
+                                        filteredJobs.add(job);
+                                    }
+                                } else {
+                                    if (status.contains("SUCCESS")) {
+                                        filteredJobs.add(job);
+                                    }
+                                }
+
+                                //Identify unhealthy jobs.
+                            } else if (jobBuild.getPhase().equals(Phase.FINALIZED)
+                                    && jobBuild.getStatus().equals(Status.SUCCESS)
+                                    && (jobStatus.getFlow().equals(Flow.UNHEALTHY) || jobStatus.getFlow().equals(Flow.DISAPPROVED) || jobStatus.getFlow().equals(Flow.BLOCKED))) {
+
+                                if (status.contains("FAILURE")) {
+                                    filteredJobs.add(job);
+                                }
+
+                                //Identify failure jobs.
+                            } else if (jobBuild.getStatus().equals(Status.FAILURE)
+                                    || jobBuild.getStatus().equals(Status.ABORTED)
+                                    || jobStatus.getFlow().equals(Flow.ERROR)) {
+
+                                if (status.contains("FAILURE")) {
+                                    filteredJobs.add(job);
+                                }
+
+                                //Identify warning jobs.
+                            } else if (jobNotificationService.isNotified(job)) {
+                                if (status.contains("WARNING")) {
+                                    filteredJobs.add(job);
+                                }
+                            }
+                        } else {
+                            if (status.contains("WAITING")) {
+                                filteredJobs.add(job);
+                            }
+                        }
+                    } else {
+                        if (status.contains("WAITING")) {
+                            filteredJobs.add(job);
+                        }
+                    }
+                } else {
+                    if (status.contains("WAITING")) {
+                        filteredJobs.add(job);
+                    }
+                }
+            }
+        }
+
+        return filteredJobs;
     }
 }

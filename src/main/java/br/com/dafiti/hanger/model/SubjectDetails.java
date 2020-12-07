@@ -32,7 +32,6 @@ public class SubjectDetails {
     private Subject subject;
     private int waiting;
     private int building;
-    private int running;
     private int success;
     private int warning;
     private int failure;
@@ -46,7 +45,6 @@ public class SubjectDetails {
     public SubjectDetails(
             Subject subject,
             int building,
-            int running,
             int success,
             int warning,
             int failure,
@@ -55,16 +53,15 @@ public class SubjectDetails {
         this.subject = subject;
         this.total = total;
         this.building = building;
-        this.running = running;
         this.success = success;
         this.warning = warning;
         this.failure = failure;
-        this.waiting = total - (building + running + success + warning);
+        this.waiting = total - (building + success + warning + failure);
 
         this.successPercent = (int) (((float) success / (total == 0 ? 1 : total)) * 100);
         this.warningPercent = (int) (((float) (warning) / (total == 0 ? 1 : total)) * 100);
         this.failurePercent = (int) (((float) (failure) / (total == 0 ? 1 : total)) * 100);
-        this.buildingPercent = (int) (((float) (building + running) / (total == 0 ? 1 : total)) * 100);
+        this.buildingPercent = (int) (((float) building / (total == 0 ? 1 : total)) * 100);
         this.waitingPercent = (int) (100 - (this.successPercent + this.warningPercent + this.failurePercent + this.buildingPercent));
     }
 
@@ -90,14 +87,6 @@ public class SubjectDetails {
 
     public void setBuilding(int building) {
         this.building = building;
-    }
-
-    public int getRunning() {
-        return running;
-    }
-
-    public void setRunning(int running) {
-        this.running = running;
     }
 
     public int getSuccess() {

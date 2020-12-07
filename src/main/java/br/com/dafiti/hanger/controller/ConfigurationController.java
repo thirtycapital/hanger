@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import br.com.dafiti.hanger.model.Configuration;
 import br.com.dafiti.hanger.service.ConfigurationGroupService;
 import br.com.dafiti.hanger.service.ConfigurationService;
+import br.com.dafiti.hanger.service.ServerService;
 
 /**
  *
@@ -46,13 +47,17 @@ public class ConfigurationController {
 
     private final ConfigurationService configurationService;
     private final ConfigurationGroupService configurationGroupService;
+    private final ServerService serverService;
 
     @Autowired
-    public ConfigurationController(ConfigurationService configurationService,
-            ConfigurationGroupService configurationGroupService) {
+    public ConfigurationController(
+            ConfigurationService configurationService,
+            ConfigurationGroupService configurationGroupService,
+            ServerService serverService) {
 
         this.configurationService = configurationService;
         this.configurationGroupService = configurationGroupService;
+        this.serverService = serverService;
     }
 
     /**
@@ -96,6 +101,7 @@ public class ConfigurationController {
     @RequestMapping(path = "/edit")
     public String edit(Model model) {
         model.addAttribute("configurationGroup", configurationGroupService.list());
+        model.addAttribute("servers", serverService.list());
         return "configuration/edit";
     }
 }

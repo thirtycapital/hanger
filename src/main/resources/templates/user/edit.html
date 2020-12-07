@@ -7,7 +7,6 @@
     </head>
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
-
         <script th:inline="javascript">
             //<![CDATA[
             $(document).ready(
@@ -90,7 +89,6 @@
         </script>
 
         <div class="container-fluid main-content">
-            <h3 class="page-title">User</h3>
             <div>
                 <form class="form-horizontal" 
                       th:object="${user}"                      
@@ -268,7 +266,7 @@
                                           aria-hidden="true"></span>
                                     Save
                                 </button>  
-                                
+
                                 <button id="modal_wait" 
                                         type="button" 
                                         class="btn btn-generic btn-sm btn-space" 
@@ -291,16 +289,31 @@
                                 <button type="button" 
                                         class="btn btn-generic btn-sm pull-right"
                                         th:id="modal_add_privileges"
-                                        th:classappend="${#authorization.expression('hasRole(''HERO'')') ? '':'dispDef'}">
+                                        th:classappend="${#authorization.expression('hasRole(''HERO'')') ? '':'dispDef'}"
+                                        th:disabled="*{username == #httpServletRequest.remoteUser}">
                                     <span class="glyphicon glyphicon-equalizer" 
                                           aria-hidden="true"></span>
                                     Privileges
-                                </button>
+                                </button>                                
                             </div>
                         </div>
-                    </div>                    
+                    </div>                   
 
                     <hr/>
+
+                    <!-- Identifies if user is authenticated -->
+                    <div sec:authorize="isAuthenticated()">
+                        <!-- Identifies if user has API access -->
+                        <div sec:authorize="hasRole('HERO') or hasPermission('API','read')">                                                    
+                            <a href="#" 
+                               title="Get API Token" 
+                               th:id="modal_api_token"
+                               data-toggle="tooltip" 
+                               data-placement="top">
+                                <span class="glyphicon glyphicon-log-in"></span> API Token
+                            </a>                            
+                        </div>
+                    </div>
 
                     <div th:if="*{ updatedAt != null }">
                         <!--Tracker-->
@@ -312,7 +325,7 @@
                     </div>
 
                     <!--Modal--> 
-                    <div id="modalHolder"/>
+                    <div id="modalHolder"></div>
                 </form>
             </div>
         </div>        
@@ -427,6 +440,26 @@
                 document.getElementsByName("btn_change_password_")[0].id = "btn_change_password_" + id;
                 $("#modal_changepassword").modal('show');
             }
+
+            /**
+             * Show api token modal. 
+             * @returns {undefined}
+             */
+            $("#modal_api_token").click(function () {
+                var url = /*[[@{/user/modal/apiToken/}]]*/ "/user/modal/apiToken/";
+
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    success: function (result) {
+                        $("#modalHolder").html(result);
+                        $("#modalAPIToken").modal({backdrop: 'static', keyboard: false});
+                    },
+                    error: function (e) {
+                        alert("Error getting api token: " + e.responseText);
+                    }
+                });
+            });
         </script>
     </body>
 </html>

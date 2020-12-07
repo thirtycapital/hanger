@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Objects;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -37,8 +38,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import org.json.JSONObject;
+import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  *
@@ -47,7 +51,7 @@ import javax.persistence.Transient;
  * @author Fernando Saga
  */
 @Entity
-public class WorkbenchEmail extends Tracker implements Serializable {
+public class WorkbenchEmail extends Tracker<WorkbenchEmail> implements Serializable {
 
     private Long id;
     private String query;
@@ -55,6 +59,7 @@ public class WorkbenchEmail extends Tracker implements Serializable {
     private String content;
     private String externalRecipient;
     private List<String> recipient;
+    private List<Job> job;
     private Connection connection;
     private User user;
 
@@ -69,7 +74,7 @@ public class WorkbenchEmail extends Tracker implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -106,6 +111,7 @@ public class WorkbenchEmail extends Tracker implements Serializable {
         this.query = query.trim();
     }
 
+    @NotEmpty
     public String getSubject() {
         return subject;
     }
@@ -162,5 +168,52 @@ public class WorkbenchEmail extends Tracker implements Serializable {
         });
 
         return recipients;
+    }
+
+    @ManyToMany(mappedBy = "email")
+    public List<Job> getJob() {
+        return job;
+    }
+
+    public void setJob(List<Job> job) {
+        this.job = job;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final WorkbenchEmail other = (WorkbenchEmail) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("query", query);
+        object.put("subject", subject);
+        object.put("content", content);
+        object.put("externalRecipient", externalRecipient);
+        object.put("recipient", recipient);
+        object.put("connection", connection.getName());
+        return object.toString(2);
     }
 }

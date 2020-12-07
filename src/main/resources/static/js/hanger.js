@@ -1,10 +1,29 @@
 $(document).ready(function () {
 
     $('.tbList').toggleClass("dispDef");
-    
+
     $('[data-toggle="tooltip"]').tooltip();
 
     $('#table').DataTable({
+        "paging": false,
+        "info": false,
+        "order": [],
+        "columnDefs": [{
+                "targets": 'no-sort',
+                "orderable": false
+            },
+            {
+                targets: 'img-sort',
+                "type": "alt-string"
+            },
+            {
+                targets: 'no-search',
+                "searchable": false
+            }
+        ]
+    });
+
+    $('[id^=table_search]').DataTable({
         "paging": false,
         "info": false,
         "order": [],
@@ -143,11 +162,11 @@ $(document).ready(function () {
             }
         ]
     });
-    
+
     $('#table_workbench_email').DataTable({
         "paging": false,
         "bLengthChange": false,
-        "info": false,        
+        "info": false,
         "columnDefs": [{
                 "targets": 'no-sort',
                 "orderable": false

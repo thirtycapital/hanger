@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
     <head lang="en" th:replace="base/header :: head">
         <title>Hanger</title>
     </head>
@@ -20,14 +20,42 @@
                         <span class="badge" th:text="${subjects.jobCount}"></span>
                     </a>
                 </li>
-                <li role="presentation" th:classappend="${#httpServletRequest.getRequestURI().endsWith('all') ? 'active home':''}">
-                    <a th:href="@{'/detail/' + all}" title="ALL">
-                        ALL 
+                <li role="presentation" th:classappend="${#httpServletRequest.getRequestURI().endsWith('filter') ? 'active home':''}">
+                    <a th:href="@{'/detail/' + filter}" title="ALL">
+                        ALL
                         <span class="badge" th:text="${all}"></span>
-                    </a>
+                    </a>                    
                 </li>
             </ul>
 
+            <div class="tab-content" th:if="${#httpServletRequest.getRequestURI().endsWith('filter')}">
+                <form class="form-horizontal" th:action="@{/detail/filter}" method="POST">
+                    <div class="space-top">
+                        <div class="form-group">                            
+                            <div class="col-md-12">
+                                <select class="selectpicker form-control" 
+                                        name="status"
+                                        data-live-search="true"  
+                                        data-actions-box="true"
+                                        multiple="true" 
+                                        th:checked="SUCCESS">
+
+                                    <option value="SUCCESS">SUCCESS</option>
+                                    <option value="WAITING">WAITING</option>
+                                    <option value="BUILDING">BUILDING</option>
+                                    <option value="WARNING">WARNING</option>
+                                    <option value="FAILURE">FAILURE</option>                                    
+                                </select>                                
+                            </div>                        
+                        </div>
+                        <button type="submit" 
+                                class="btn btn-generic" 
+                                id="filter">
+                            <span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Filter
+                        </button>  
+                    </div>             
+                </form>
+            </div>
             <hr/>
 
             <div class="tab-content">
@@ -40,21 +68,20 @@
                     <table id="table_clean" class="table">
                         <thead>
                             <tr>
-                                <th></th>                                
-                                <th class="no-sort"></th>  
-                                <th><img class="hanger-img-sm" th:src="@{'/images/SUCCESS.png'}" alt="SUCCESS" title="SUCCESS"></img></th>
-                                <th><img class="hanger-img-sm" th:src="@{'/images/WAITING.png'}" alt="WAITING" title="WAITING"></img></th>
-                                <th><img class="hanger-img-sm" th:src="@{'/images/REBUILD.png'}" alt="BUILDING" title="BUILDING"></img></th> 
-                                <th><img class="hanger-img-sm" th:src="@{'/images/RUNNING.png'}" alt="RUNNING" title="RUNNING"></img></th>                                
-                                <th><img class="hanger-img-sm" th:src="@{'/images/WARNING.png'}" alt="WARNING" title="WARNING"></img></th> 
-                                <th><img class="hanger-img-sm" th:src="@{'/images/FAILURE.png'}" alt="FAILURE" title="FAILURE"></img></th> 
+                                <th>Subject</th>                                
+                                <th class="no-sort">Status</th>  
+                                <th><span class="label label-success" title="SUCCESS">SUCCESS</span></th>
+                                <th><span class="label label-neutral" title="WAITING">WAITING</span></th>
+                                <th><span class="label label-primary" title="BUILDING">BUILDING</span></th> 
+                                <th><span class="label label-warning" title="WARNING">WARNING</span></th> 
+                                <th><span class="label label-danger" title="FAILURE">FAILURE</span></th> 
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:each="subjects : ${subjectDetails}">
                                 <td><a th:href="@{'/detail/' + ${subjects.subject.id}}" th:text="${subjects.subject.name}" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
 
-                                <td width="18.5%">
+                                <td width="22.5%">
                                     <div class="progress">
                                         <div class="progress-bar progress-bar-success" th:inline="text" th:attr="style='width:' +  ${ subjects.successPercent } + '%'" title="SUCCESS">
                                             <span class="sr-only"></span> [[${subjects.successPercent}]]%
@@ -77,7 +104,6 @@
                                 <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.success}> 0 ? ${subjects.success} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
                                 <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.waiting} > 0 ? ${subjects.waiting} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
                                 <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.building} > 0 ? ${subjects.building} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
-                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.running} > 0 ? ${subjects.running} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
                                 <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.warning} > 0 ? ${subjects.warning} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
                                 <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.failure} > 0 ? ${subjects.failure} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
                             </tr>
@@ -87,7 +113,10 @@
 
                 <div th:if="${#httpServletRequest.getRequestURI().contains('/detail/') }">
                     <div th:if="${currentSubject.description != null and currentSubject.description != ''}">
-                        <div th:utext="${currentSubject.getHTMLDescription()}"></div>
+                        <div 
+                            class="italic" 
+                            th:utext="${currentSubject.getHTMLDescription()}"></div>
+                        <hr>
                     </div>
 
                     <!-- Job details list-->
@@ -131,14 +160,18 @@
             <div class="form-group">
                 <div sec:authorize="isAuthenticated()"> 
                     <div th:if="${#httpServletRequest.getRequestURI().contains('/detail/') 
-                         and not #httpServletRequest.getRequestURI().contains('/all')}">
+                         and not #httpServletRequest.getRequestURI().contains('/filter')}">
 
                         <hr/>
 
+                        <a th:href="@{'/subject/edit/' + ${currentSubject.id}}" class="btn btn-link btn-sm">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit subject
+                        </a>
+
                         <button id="add_job" 
-                                class="btn btn-generic btn-sm btn-home" 
+                                class="btn btn-link btn-sm btn-home" 
                                 th:attr="onclick='addJobModal(' + ${currentSubject.id} + ');'">
-                            <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Add Job
+                            <span class="glyphicon glyphicon-magnet" aria-hidden="true"></span> Add job
                         </button>
 
                         <button id="wait" 
@@ -152,6 +185,12 @@
                 </div>
             </div>
         </div>
+
+        <a href="#" class="back_top">
+            <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+        </a>
+
+
         <script th:inline="javascript">
             /**
              * Define ajax start behavior. 
@@ -211,6 +250,21 @@
 
                 $("#modalRemoveJobFromSubject").modal();
             }
+
+            // Exibe ou oculta o botão
+            $(window).scroll(function () {
+                if (jQuery(this).scrollTop() > 100) {
+                    jQuery('.back_top').fadeIn(100);
+                } else {
+                    jQuery('.back_top').fadeOut(100);
+                }
+            });
+
+            // Faz animação para subir
+            $('.back_top').click(function (event) {
+                event.preventDefault();
+                $('html, body').animate({scrollTop: 0}, 400);
+            });
         </script>
     </body>
 </html>

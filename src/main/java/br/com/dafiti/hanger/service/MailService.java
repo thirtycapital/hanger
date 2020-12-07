@@ -23,21 +23,25 @@
  */
 package br.com.dafiti.hanger.service;
 
+import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.Blueprint;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Async;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
-import org.thymeleaf.templateresolver.TemplateResolver;
+import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  *
@@ -48,10 +52,20 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 public class MailService {
 
     private final ConfigurationService configurationService;
+    private final ApplicationContext applicationContext;
+    private final AuditorService auditorService;
+
+    private static final Logger LOG = LogManager.getLogger(MailService.class.getName());
 
     @Autowired
-    public MailService(ConfigurationService configurationService) {
+    public MailService(
+            ConfigurationService configurationService,
+            ApplicationContext applicationContext,
+            AuditorService auditorService) {
+
         this.configurationService = configurationService;
+        this.applicationContext = applicationContext;
+        this.auditorService = auditorService;
     }
 
     /**
@@ -67,14 +81,13 @@ public class MailService {
 
             if (blueprint.getRecipients().size() > 0) {
                 for (String recipient : blueprint.getRecipients()) {
-                    mail.addTo(recipient);
+                    mail.addBcc(recipient);
                 }
             }
 
             this.send(blueprint, mail);
         } catch (EmailException ex) {
-            Logger.getLogger(MailService.class.getName())
-                    .log(Level.SEVERE, "Fail sending e-mail", ex);
+            LOG.log(Level.ERROR, "Fail sending e-mail", ex);
         }
     }
 
@@ -83,15 +96,21 @@ public class MailService {
      *
      * @param blueprint Blueprint
      * @param mail
-     * @return 
+     * @return
      */
     public boolean send(Blueprint blueprint, HtmlEmail mail) {
-        
+
         boolean sent = true;
         String host = configurationService.getValue("EMAIL_HOST");
         int port = Integer.valueOf(configurationService.getValue("EMAIL_PORT"));
         String email = configurationService.getValue("EMAIL_ADDRESS");
         String password = configurationService.getValue("EMAIL_PASSWORD");
+
+        auditorService.publish("SEND_EMAIL",
+                new AuditorData()
+                        .addData("to", mail.getBccAddresses().toString())
+                        .addData("javascript", blueprint.toString())
+                        .getData());
 
         try {
             mail.setHostName(host);
@@ -103,17 +122,16 @@ public class MailService {
             mail.setSubject(blueprint.getSubject());
             mail.setHtmlMsg(this.getTemplateHTMLOf(blueprint.getPath(), blueprint.getTemplate(), blueprint.getVariables()));
 
-            //Check if blueprint has attachment.
             if (blueprint.getFile() != null) {
                 mail.attach(blueprint.getFile());
             }
 
             mail.send();
         } catch (EmailException ex) {
-            Logger.getLogger(MailService.class.getName()).log(Level.SEVERE, "Fail sending e-mail", ex);
+            LOG.log(Level.ERROR, "Fail sending e-mail", ex);
             sent = false;
         }
-        
+
         return sent;
     }
 
@@ -127,10 +145,11 @@ public class MailService {
      */
     private String getTemplateHTMLOf(String path, String template, HashMap<String, Object> variables) {
         //Define the template resolver. 
-        TemplateResolver resolver = new ClassLoaderTemplateResolver();
-        resolver.setPrefix(path + (!path.endsWith("/") ? '/' : ""));
+        SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
+        resolver.setApplicationContext(applicationContext);
+        resolver.setPrefix("classpath:" + path + (!path.endsWith("/") ? '/' : ""));
         resolver.setSuffix(".html");
-        resolver.setTemplateMode("HTML5");
+        resolver.setTemplateMode(TemplateMode.HTML);
 
         //Define the template engine. 
         TemplateEngine engine = new TemplateEngine();

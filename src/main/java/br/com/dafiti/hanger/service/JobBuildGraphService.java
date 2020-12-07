@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -46,10 +45,12 @@ import org.springframework.stereotype.Service;
 public class JobBuildGraphService {
 
     private final JobBuildRepository jobBuildRepository;
+    private final AuditorService auditorService;
 
     @Autowired
-    public JobBuildGraphService(JobBuildRepository jobBuildRepository) {
+    public JobBuildGraphService(JobBuildRepository jobBuildRepository, AuditorService auditorService) {
         this.jobBuildRepository = jobBuildRepository;
+        this.auditorService = auditorService;
     }
 
     /**
@@ -156,13 +157,12 @@ public class JobBuildGraphService {
             Date startDate,
             Date endDate) {
 
-        List<JobBuildMetric> metrics;
+        List<JobBuildMetric> metrics = new ArrayList();
 
-        if (job == null || job.isEmpty()) {
-            metrics = jobBuildRepository.findBuildHistory(startDate, endDate);
-        } else {
+        if (job != null && !job.isEmpty()) {
             metrics = jobBuildRepository.findBuildHistory(job, startDate, endDate);
         }
+
         return metrics;
     }
 
@@ -179,46 +179,51 @@ public class JobBuildGraphService {
             Date dateFrom,
             Date dateTo) {
 
+        auditorService.publish("GANTT_RUN");
+
         Long surrogateID = 0L;
         List<DHTMLXGantt> data = new ArrayList();
-        List<JobBuildMetric> metrics = this.findBuildHistory(jobs, dateFrom, dateTo);
 
-        //Add all parents to gantt.
-        for (Job job : jobs) {
-            for (JobBuildMetric metric : metrics) {
-                if (job.getId().equals(metric.getJob().getId())) {
-                    data.add(new DHTMLXGantt(
-                            metric.getJob().getId().toString(),
-                            metric.getJob().getDisplayName(),
-                            metric.getQueueDate().toString(),
-                            0L,
-                            1.0,
-                            true,
-                            "",
-                            "#D6DBE1",
-                            ""
-                    ));
-                    
-                    break;
+        //Add all parents to gantt. 
+        if (jobs != null) {
+            List<JobBuildMetric> metrics = this.findBuildHistory(jobs, dateFrom, dateTo);
+
+            for (Job job : jobs) {
+                for (JobBuildMetric metric : metrics) {
+                    if (job.getId().equals(metric.getJob().getId())) {
+                        data.add(new DHTMLXGantt(
+                                metric.getJob().getId().toString(),
+                                metric.getJob().getDisplayName(),
+                                metric.getQueueDate().toString(),
+                                0L,
+                                1.0,
+                                true,
+                                "",
+                                "#D6DBE1",
+                                ""
+                        ));
+
+                        break;
+                    }
                 }
             }
-        }
 
-        //Add all children in the gantt.
-        for (JobBuildMetric metric : metrics) {
-            surrogateID++;
+            //Add all children in the gantt.
+            for (JobBuildMetric metric : metrics) {
+                surrogateID++;
 
-            data.add(new DHTMLXGantt(
-                    surrogateID + "_",
-                    metric.getQueueDate().toString().substring(0, 16) + " - " + metric.getFinishDate().toString().substring(0, 16),
-                    metric.getQueueDate().toString(),
-                    metric.getDurationTimeInMinutes(),
-                    metric.getQueuePercentage(),
-                    true,
-                    metric.getJob().getId().toString(),
-                    "",
-                    "#E5E8EC"
-            ));
+                data.add(new DHTMLXGantt(
+                        surrogateID + "_",
+                        metric.getQueueDate().toString().substring(0, 16) + " - " + metric.getFinishDate().toString().substring(0, 16),
+                        metric.getQueueDate().toString(),
+                        metric.getDurationTimeInMinutes(),
+                        metric.getQueuePercentage(),
+                        true,
+                        metric.getJob().getId().toString(),
+                        metric.isSuccess() ? "#3DB9D3" : "#DD424A",
+                        "#E5E8EC"
+                ));
+            }
         }
 
         return data;

@@ -85,38 +85,6 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
     /**
      * Get job build history.
      *
-     * @param startDate Start Date
-     * @param endDate End Date
-     * @return Build information by number.
-     */
-    @Query("select "
-            + "new br.com.dafiti.hanger.model.JobBuildMetric "
-            + "( "
-            + "     b.job "
-            + "     , min( b.date ) "
-            + "     , case when max(case when b.phase = 'STARTED' then b.date end) is null then now() else max(case when b.phase = 'STARTED' then b.date end) end"
-            + "     , case when max(case when b.phase = 'FINALIZED' then b.date end) is null then now() else max(case when b.phase = 'FINALIZED' then b.date end) end"
-            + ") "
-            + "from "
-            + "     JobBuild b "
-            + "where b.job in ( "
-            + "     select "
-            + "         b_.job "
-            + "     from JobBuild b_ "
-            + "     where "
-            + "         b_.number = b.number "
-            + "     and "
-            + "         b_.date between :startdate and :enddate"
-            + "     group by b_.job "
-            + ")"
-            + "group by b.job,  b.number")
-    List<JobBuildMetric> findBuildHistory(
-            @Param("startdate") Date startDate,
-            @Param("enddate") Date endDate);
-
-    /**
-     * Get job build history.
-     *
      * @param job Job list filter
      * @param startDate Start Date
      * @param endDate End Date
@@ -129,21 +97,14 @@ public interface JobBuildRepository extends CrudRepository<JobBuild, Long> {
             + "     , min( b.date ) "
             + "     , case when max(case when b.phase = 'STARTED' then b.date end) is null then now() else max(case when b.phase = 'STARTED' then b.date end) end"
             + "     , case when max(case when b.phase = 'FINALIZED' then b.date end) is null then now() else max(case when b.phase = 'FINALIZED' then b.date end) end"
+            + "     , case when min( b.status ) = 'SUCCESS' then true else false end"
             + ") "
-            + "from JobBuild b "
-            + "where b.job in ( "
-            + "     select "
-            + "         b_.job "
-            + "     from JobBuild b_ "
-            + "     where "
-            + "         b_.number = b.number "
+            + " from JobBuild b "
+            + " where "
+            + "     b.job in (:job) "
             + "     and "
-            + "         b_.date between :startdate and :enddate"
-            + "     and "
-            + "        b_.job in(:job)"
-            + "     group by b_.job "
-            + ") "
-            + "group by b.job,  b.number")
+            + "     b.date between :startdate and :enddate"
+            + " group by b.job,  b.number")
     List<JobBuildMetric> findBuildHistory(
             @Param("job") List<Job> job,
             @Param("startdate") Date startDate,

@@ -6,18 +6,16 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <h3 class="page-title">Gantt</h3>
             <form th:action="@{/subject/save}" method="post">
                 <div class="row space-top">
                     <div class="form-group col-md-3" style="padding-left: 0">
                         <label>Period</label>
                         <input type="text" 
-                               class="form-control" 
+                               class="form-control date-range" 
                                maxlength="50" 
                                name="daterange" 
                                id="daterange"
-                               readonly="readonly"
-                               style="cursor:pointer"/>
+                               readonly="readonly" />
 
                         <span id="help_period" class="help-block" style="display: none">You must choose a date</span>
 

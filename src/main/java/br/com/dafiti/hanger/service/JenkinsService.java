@@ -35,9 +35,14 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -52,6 +57,8 @@ import org.springframework.stereotype.Service;
 public class JenkinsService {
 
     private final HttpServletRequest request;
+
+    private static final Logger LOG = LogManager.getLogger(JenkinsService.class.getName());
 
     @Autowired
     public JenkinsService(HttpServletRequest request) {
@@ -96,7 +103,7 @@ public class JenkinsService {
                 jenkins.close();
             }
         } catch (URISyntaxException ex) {
-            Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail checking if a server is running!", ex);
+            LOG.log(Level.ERROR, "Fail checking if a server is running!", ex);
         }
 
         return running;
@@ -120,6 +127,8 @@ public class JenkinsService {
                 for (String job : jenkins.getJobs().keySet()) {
                     jobs.add(job);
                 }
+            } else {
+                throw new URISyntaxException("Jenkins is not running", "Can't import Jenkins job list");
             }
 
             jenkins.close();
@@ -195,11 +204,11 @@ public class JenkinsService {
                         try {
                             built = (jobWithDetails.build(true) != null);
                         } catch (IOException ex) {
-                            Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail building job: " + job.getName(), ex);
+                            LOG.log(Level.ERROR, "Fail building job: " + job.getName(), ex);
                             try {
                                 built = (jobWithDetails.build(new HashMap(), true) != null);
                             } catch (IOException e) {
-                                Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail building parametrized job: " + job.getName(), ex);
+                                LOG.log(Level.ERROR, "Fail building parametrized job: " + job.getName(), ex);
                                 throw ex;
                             }
                         } finally {
@@ -241,11 +250,59 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (URISyntaxException | IOException ex) {
-                Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail getting upstream projects!", ex);
+                LOG.log(Level.ERROR, "Fail getting upstream projects!", ex);
             }
         }
 
         return upstreamProjects;
+    }
+
+    /**
+     * Retrieves one or more shell script commands related to a job.
+     *
+     * @param job Job
+     * @return
+     */
+    public List<String> getShellScript(Job job) {
+        return this.getShellScript(job, job.getName());
+    }
+
+    /**
+     * Retrieves one or more shell script commands related to a job.
+     *
+     * @param job Job
+     * @param jobName Name of job to get configuration from
+     * @return Shell script list.
+     */
+    public List<String> getShellScript(Job job, String jobName) {
+        JenkinsServer jenkins;
+        List<String> shellScripts = new ArrayList();
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning() && jobName != null) {
+                        String config = jenkins.getJobXml(jobName);
+
+                        if (config != null) {
+                            Document document = Jsoup.parse(config);
+
+                            document.getElementsByTag("hudson.tasks.Shell").forEach(element -> {
+                                shellScripts.add(element.wholeText().trim());
+                            });
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                LOG.log(Level.ERROR, "Fail getting shell script from job " + jobName + "!", ex);
+            }
+        }
+
+        return shellScripts;
     }
 
     /**
@@ -274,7 +331,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail identifying if a job is in queue!", ex);
+                LOG.log(Level.ERROR, "Fail identifying if a job is in queue!", ex);
             }
         }
 
@@ -322,7 +379,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail identifying if a job is building!", ex);
+                LOG.log(Level.ERROR, "Fail identifying if a job is building!", ex);
             }
         }
 
@@ -351,7 +408,82 @@ public class JenkinsService {
                         jenkins.close();
                     }
                 } catch (URISyntaxException | IOException ex) {
-                    Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail renaming a job!", ex);
+                    LOG.log(Level.ERROR, "Fail renaming a job!", ex);
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates job shell script on jenkins.
+     *
+     * @param job Job
+     */
+    public void updateShellScript(Job job) {
+        JenkinsServer jenkins;
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        String name = job.getName();
+                        String config = jenkins.getJobXml(name);
+
+                        String shellScripts = "";
+
+                        for (String shellScript : job.getShellScript()) {
+                            shellScripts += "<hudson.tasks.Shell>\n<command>" + shellScript + "</command>\n</hudson.tasks.Shell>\n";
+                        }
+
+                        //Escape special characters.
+                        shellScripts = shellScripts.replaceAll("\\\\", "\\\\\\\\");
+                        shellScripts = shellScripts.replaceAll("\\$", "\\\\\\$");
+
+                        //Identifies if job has builders tag for update shell script
+                        if ((config.contains("<builders>"))) {
+                            config = config.replaceAll("(?s)<builders>(.*)</builders>", "<builders>" + shellScripts + "</builders>");
+                        } else if (job.getShellScript().size() > 0) {
+                            config = config.replaceAll("(?s)<builders/>", "<builders>" + shellScripts + "</builders>");
+                        }
+
+                        //Update Jenkins job. 
+                        jenkins.updateJob(name, config, true);
+                    }
+                }
+            } catch (URISyntaxException | IOException ex) {
+                LOG.log(Level.WARN, "Fail updating Jenkins job shell script!", ex);
+            }
+        }
+    }
+
+    /**
+     * Clone a job template from jenkins.
+     *
+     * @param job Job
+     * @param template
+     * @throws java.net.URISyntaxException
+     * @throws java.io.IOException
+     */
+    public void clone(Job job, String template) throws URISyntaxException, IOException {
+        JenkinsServer jenkins;
+
+        if (job != null) {
+            jenkins = this.getJenkinsServer(job.getServer());
+
+            if (jenkins != null) {
+                if (jenkins.isRunning()) {
+                    if (!this.exists(job)) {
+                        String config = jenkins.getJobXml(template);
+
+                        //Update Jenkins job. 
+                        jenkins.createJob(job.getName(), config, true);
+                    } else {
+                        throw new URISyntaxException(job.getName(), "The job already exists on Jenkins");
+                    }
+                } else {
+                    throw new URISyntaxException(job.getName(), "Jenkins is not running, can't create a new job");
                 }
             }
         }
@@ -423,12 +555,19 @@ public class JenkinsService {
 
                         //Update Jenkins job. 
                         jenkins.updateJob(name, config, true);
+
+                        //Identifies if should enable or disable a job on Jenkins. 
+                        if (job.isEnabled()) {
+                            jenkins.enableJob(name, true);
+                        } else {
+                            jenkins.disableJob(name, true);
+                        }
                     }
 
                     jenkins.close();
                 }
             } catch (URISyntaxException | IOException ex) {
-                Logger.getLogger(JenkinsService.class.getName()).log(Level.WARNING, "Fail updating Jenkins job!", ex);
+                LOG.log(Level.WARN, "Fail updating Jenkins job!", ex);
             }
         }
     }
@@ -458,7 +597,7 @@ public class JenkinsService {
                 jenkins.close();
             }
         } catch (URISyntaxException | IOException ex) {
-            Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail getting plugin list!", ex);
+            LOG.log(Level.ERROR, "Fail getting plugin list!", ex);
         }
 
         return notification;
@@ -468,8 +607,10 @@ public class JenkinsService {
      * Clean the job list cache.
      */
     @Caching(evict = {
-        @CacheEvict(value = "serverJobs", allEntries = true)})
-    public void refreshCache() {
+        @CacheEvict(value = "serverJobs", allEntries = true),
+        @CacheEvict(value = "jobShellScript", allEntries = true)
+    })
+    public void refresh() {
     }
 
     /**
@@ -498,10 +639,87 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                Logger.getLogger(JenkinsService.class.getName()).log(Level.SEVERE, "Fail identifying if a job exists!", ex);
+                LOG.log(Level.ERROR, "Fail identifying if a job exists!", ex);
             }
         }
 
         return exists;
+    }
+
+    /**
+     * Get Jenkins template list.
+     *
+     * @param server Server
+     * @return Job list
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    //@Cacheable(value = "serverTemplates", key = "#server.id")
+    public List<String> listTemplates(Server server) throws URISyntaxException, IOException {
+        List<String> templates = new ArrayList();
+        JenkinsServer jenkins = this.getJenkinsServer(server);
+
+        if (jenkins != null) {
+            if (jenkins.isRunning()) {
+                String prefix = "TEMPLATE_";
+
+                Map<String, String> filteredJobs = jenkins
+                        .getJobs()
+                        .entrySet()
+                        .stream()
+                        .filter(map -> map.getValue().getName().startsWith(prefix))
+                        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue().getName()));
+
+                filteredJobs.keySet().forEach((job) -> {
+                    templates.add(job);
+                });
+
+            } else {
+                throw new URISyntaxException("Jenkins is not running", "Can't import Jenkins template list");
+            }
+            jenkins.close();
+        }
+
+        return templates;
+    }
+
+    /**
+     * Retrieves a string with nodes that executes the job
+     *
+     * @param job Job
+     * @return Shell script list.
+     */
+    public String getAssignedNode(Job job) {
+        JenkinsServer jenkins;
+        StringBuffer assignedNode = new StringBuffer();
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning() && job.getName() != null) {
+                        String config = jenkins.getJobXml(job.getName());
+
+                        if (config != null) {
+                            Document document = Jsoup.parse(config);
+
+                            document.getElementsByTag("assignedNode").forEach(element -> {
+                                assignedNode.append(element
+                                        .wholeText()
+                                        .trim()
+                                        .replaceAll("\\|\\|", "\\,"));
+                            });
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                LOG.log(Level.ERROR, "Fail getting assigned node from job " + job.getName() + "!", ex);
+            }
+        }
+
+        return assignedNode.toString();
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2018 Dafiti Group
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -8,10 +8,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -19,20 +19,24 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  */
 package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Command;
+import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.JobCheckup;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.Server;
 import br.com.dafiti.hanger.model.Subject;
+import br.com.dafiti.hanger.model.Template;
+import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.service.ConnectionService;
+import br.com.dafiti.hanger.service.AuditorService;
 import br.com.dafiti.hanger.service.FlowService;
 import br.com.dafiti.hanger.service.JenkinsService;
 import br.com.dafiti.hanger.service.JobApprovalService;
@@ -44,7 +48,10 @@ import br.com.dafiti.hanger.service.RetryService;
 import br.com.dafiti.hanger.service.ServerService;
 import br.com.dafiti.hanger.service.SlackService;
 import br.com.dafiti.hanger.service.SubjectService;
+import br.com.dafiti.hanger.service.TemplateService;
 import br.com.dafiti.hanger.service.UserService;
+import br.com.dafiti.hanger.service.WorkbenchEmailService;
+import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -52,10 +59,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -93,6 +102,11 @@ public class JobController {
     private final FlowService flowService;
     private final JobApprovalService jobApprovalService;
     private final JobDetailsService jobDetailsService;
+    private final AuditorService auditorService;
+    private final WorkbenchEmailService workbenchEmailService;
+    private final TemplateService templateService;
+
+    private static final Logger LOG = LogManager.getLogger(JobController.class.getName());
 
     @Autowired
     public JobController(JobService jobService,
@@ -107,7 +121,10 @@ public class JobController {
             SlackService slackService,
             FlowService flowService,
             JobApprovalService jobApprovalService,
-            JobDetailsService jobDetailsService) {
+            JobDetailsService jobDetailsService,
+            AuditorService auditorService,
+            WorkbenchEmailService workbenchEmailService,
+            TemplateService templateService) {
 
         this.jobService = jobService;
         this.serverService = serverService;
@@ -122,6 +139,9 @@ public class JobController {
         this.flowService = flowService;
         this.jobApprovalService = jobApprovalService;
         this.jobDetailsService = jobDetailsService;
+        this.auditorService = auditorService;
+        this.workbenchEmailService = workbenchEmailService;
+        this.templateService = templateService;
     }
 
     /**
@@ -149,6 +169,31 @@ public class JobController {
     }
 
     /**
+     * List job of a server.
+     *
+     * @param server Server
+     * @return Job list modal
+     */
+    @GetMapping(path = "/list/{serverID}")
+    @ResponseBody
+    public List<String> listJobServer(
+            @PathVariable(value = "serverID") Server server) {
+        List<String> jobs = null;
+
+        if (server != null) {
+            try {
+                jobs = jobService.listNonExistsJobs(server);
+            } catch (URISyntaxException | IOException ex) {
+                LOG.log(Level.ERROR,
+                        "Fail listing jobs from server " + server.getName(),
+                        ex);
+            }
+        }
+
+        return jobs;
+    }
+
+    /**
      * Edit a job.
      *
      * @param model Model
@@ -156,8 +201,12 @@ public class JobController {
      * @return job edit
      */
     @GetMapping(path = "/edit/{id}")
-    public String edit(Model model, @PathVariable(value = "id") Job job) {
-        model.addAttribute("children", jobService.getChildrenlist(job));
+    public String edit(
+            Model model,
+            @PathVariable(value = "id") Job job) {
+
+        job.setShellScript(jenkinsService.getShellScript(job));
+        job.setAssignedNode(jenkinsService.getAssignedNode(job));
         this.modelDefault(model, job);
         return "job/edit";
     }
@@ -199,7 +248,8 @@ public class JobController {
             Model model,
             @PathVariable(value = "id") Job job) {
 
-        model.addAttribute("children", jobService.getChildrenlist(job));
+        job.setShellScript(jenkinsService.getShellScript(job));
+        job.setAssignedNode(jenkinsService.getAssignedNode(job));
         this.modelDefault(model, job, false);
         return "job/view";
     }
@@ -229,7 +279,7 @@ public class JobController {
      * Build a job.
      *
      * @param job Job
-     * @return Identifies if the job was buit sucessfully.
+     * @return Identifies if the job was built successfully.
      */
     @GetMapping(path = "/build/silently/{id}")
     @ResponseBody
@@ -242,15 +292,16 @@ public class JobController {
      *
      * @param model
      * @param job
-     * @return Identifies if the job was buit sucessfully.
+     * @return Identifies if the job was built successfully.
      */
+    @ApiOperation(value = "Build a job")
     @PostMapping(path = "/api/build/{id}")
     @ResponseBody
     public ResponseEntity build(
             Model model,
             @PathVariable(value = "id") Job job) {
 
-        if (jobBuild(job)) {
+        if (jobBuild(job, true)) {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body("OK");
@@ -268,7 +319,23 @@ public class JobController {
      * @return boolean with status of job build.
      */
     private boolean jobBuild(Job job) {
+        return jobBuild(job, false);
+    }
+
+    /**
+     * Build a job.
+     *
+     * @param job Job
+     * @param api Identifies api build.
+     * @return boolean with status of job build.
+     */
+    private boolean jobBuild(Job job, boolean api) {
         boolean built = false;
+
+        auditorService.publish(api ? "API_BUILD_JOB" : "BUILD_JOB",
+                new AuditorData()
+                        .addData("name", job.getName())
+                        .getData());
 
         retryService.remove(job);
 
@@ -281,8 +348,9 @@ public class JobController {
             } else {
                 jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
             }
+
         } catch (Exception ex) {
-            Logger.getLogger(JobController.class.getName()).log(Level.SEVERE, "Fail building job " + job.getName() + " manually", ex);
+            LOG.log(Level.ERROR, "Fail building job " + job.getName() + " manually", ex);
         }
 
         return built;
@@ -301,9 +369,16 @@ public class JobController {
             @PathVariable(value = "id") Job job) {
 
         try {
-            HashSet<Job> parent = jobService.getMeshParent(job);
             retryService.remove(job);
             jobService.rebuildMesh(job);
+
+            HashSet<Job> parent = jobService.getMeshParent(job);
+
+            auditorService.publish("BUILD_MESH",
+                    new AuditorData()
+                            .addData("name", job.getName())
+                            .addData("javascript", parent.toString())
+                            .getData());
 
             for (Job meshParent : parent) {
                 retryService.remove(meshParent);
@@ -328,18 +403,17 @@ public class JobController {
      * Save a job.
      *
      * @param job Job
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job view
      */
     @PostMapping(path = "/save")
     public String save(
             @Valid @ModelAttribute Job job,
-            BindingResult bindingResult,
             Model model) {
 
         try {
             jobService.saveAndRefreshCache(job);
+            jenkinsService.refresh();
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
             this.modelDefault(model, job);
@@ -353,20 +427,43 @@ public class JobController {
      * Save a job.
      *
      * @param job Job
-     * @param bindingResult BindingResult
-     * @param model Model
+     * @param importJob
+     * @param newJobName
+     * @param template
+     * @param importJobName
+     * @param model
      * @return Job edit
      */
     @PostMapping(path = "/save", params = {"partial_load_job"})
     public String loadJob(
             @Valid @ModelAttribute Job job,
-            BindingResult bindingResult,
+            @RequestParam(name = "importJob", required = false) boolean importJob,
+            @RequestParam(name = "jobName", required = false) String newJobName,
+            @RequestParam(name = "select-template", required = false) String template,
+            @RequestParam(name = "select-job", required = false) String importJobName,
             Model model) {
 
         try {
-            model.addAttribute("jobs", jenkinsService.listJob(job.getServer()));
+            if (jenkinsService.isRunning(job.getServer())) {
+                //Identify if import or create a new job.
+                if (importJob) {
+                    job.setName(importJobName);
+                    job.setShellScript(jenkinsService.getShellScript(job));
+                } else {
+                    job.setName(newJobName);
+                    jenkinsService.clone(job, template);
+                    job.setShellScript(jenkinsService.getShellScript(job, template));
+                }
+
+                job.setAssignedNode(jenkinsService.getAssignedNode(job));
+                model.addAttribute("readOnly", true);
+            } else {
+                throw new URISyntaxException("Server is not running", "Jenkins");
+            }
+
         } catch (URISyntaxException | IOException ex) {
-            model.addAttribute("errorMessage", "Fail listing jobs from Jenkins: " + ex.getMessage());
+            job.setServer(null);
+            model.addAttribute("errorMessage", "Fail: " + ex.getMessage());
         } finally {
             this.modelDefault(model, job);
         }
@@ -379,7 +476,6 @@ public class JobController {
      *
      * @param job Job
      * @param subjectsID Subject ID list
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -387,7 +483,6 @@ public class JobController {
     public String addSubject(
             @Valid @ModelAttribute Job job,
             @RequestParam(value = "subjects", required = false) String subjectsID,
-            BindingResult bindingResult,
             Model model) {
 
         if (subjectsID != null) {
@@ -412,7 +507,6 @@ public class JobController {
      *
      * @param job Job
      * @param index index
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -420,7 +514,6 @@ public class JobController {
     public String removeSubject(
             @ModelAttribute Job job,
             @RequestParam(value = "partial_remove_subject", required = false) int index,
-            BindingResult bindingResult,
             Model model) {
 
         job.getSubject().remove(index);
@@ -430,13 +523,85 @@ public class JobController {
     }
 
     /**
+     * Add a shell script.
+     *
+     * @param job Job
+     * @param template
+     * @param parameters
+     * @param model Model
+     * @return Job edit
+     */
+    @PostMapping(path = "/save", params = {"partial_add_job_shell_script"})
+    public String addShellScript(
+            @Valid @ModelAttribute Job job,
+            @RequestParam(name = "templateID", required = false) Template template,
+            @RequestParam(name = "templateParameters", required = false) JSONArray parameters,
+            Model model) {
+
+        String shellScript = "";
+
+        if (template != null) {
+            shellScript = templateService.setParameters(
+                    template.getModel(),
+                    parameters
+            );
+        }
+
+        job.addShellScript(shellScript);
+        this.modelDefault(model, job);
+
+        return "job/edit";
+    }
+
+    /**
+     * Remove a shell script.
+     *
+     * @param job Job
+     * @param index index
+     * @param model Model
+     * @return Job edit
+     */
+    @PostMapping(path = "/save", params = {"partial_remove_job_shell_script"})
+    public String removeShellScript(
+            @ModelAttribute Job job,
+            @RequestParam(value = "partial_remove_job_shell_script", required = false) int index,
+            Model model) {
+
+        job.getShellScript().remove(index);
+        this.modelDefault(model, job);
+
+        return "job/edit";
+    }
+
+    /**
+     *
+     * @param template
+     * @param model
+     * @return
+     */
+    @GetMapping(path = "/modal/template/{id}")
+    public String shellScriptTemplateModal(
+            @PathVariable(value = "id") Template template,
+            Model model) {
+
+        try {
+            model.addAttribute("template", template);
+            model.addAttribute("parameters", templateService.getParameters(template.getModel()));
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", "Fail getting parameters " + new Message().getErrorMessage(ex));
+        }
+
+        return "job/modalShellScriptTemplate::parameter";
+    }
+
+    /**
      * Add a parent.
      *
      * @param job Job
      * @param parentServer Parent server
      * @param parentJobList Parent Job List
      * @param parentUpstream Parent Upstream
-     * @param bindingResult bindingResult
+     * @param bindingResult
      * @param model model
      * @return Job edit
      */
@@ -471,7 +636,6 @@ public class JobController {
      *
      * @param job Job
      * @param index Index
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -479,7 +643,6 @@ public class JobController {
     public String removeParent(
             @Valid @ModelAttribute Job job,
             @RequestParam("partial_remove_parent") int index,
-            BindingResult bindingResult,
             Model model) {
 
         job.getParent().remove(index);
@@ -493,7 +656,7 @@ public class JobController {
      *
      * @param job Job
      * @param slackChannelList Slack channel list.
-     * @param bindingResult BindingResult
+     * @param bindingResult
      * @param model Model
      * @return Job edit.
      */
@@ -520,7 +683,6 @@ public class JobController {
      *
      * @param job Job
      * @param slackChannel Slack channel
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -528,7 +690,6 @@ public class JobController {
     public String removeSlackChannel(
             @ModelAttribute Job job,
             @RequestParam(value = "partial_remove_slack_channel", required = false) String slackChannel,
-            BindingResult bindingResult,
             Model model) {
 
         job.getChannel().remove(slackChannel);
@@ -541,14 +702,12 @@ public class JobController {
      * Add a checkup.
      *
      * @param job Job
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
     @PostMapping(path = "/save", params = {"partial_add_job_checkup"})
     public String addCheckup(
             @Valid @ModelAttribute Job job,
-            BindingResult bindingResult,
             Model model) {
 
         job.addCheckup(new JobCheckup());
@@ -563,7 +722,6 @@ public class JobController {
      *
      * @param job Job
      * @param index Index
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -571,7 +729,6 @@ public class JobController {
     public String removeCheckup(
             @ModelAttribute Job job,
             @RequestParam("partial_remove_job_checkup") int index,
-            BindingResult bindingResult,
             Model model) {
 
         job.getCheckup().remove(index);
@@ -586,7 +743,6 @@ public class JobController {
      * @param job Job
      * @param checkupIndex Checkup
      * @param triggers Triggers
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -595,7 +751,6 @@ public class JobController {
             @Valid @ModelAttribute Job job,
             @RequestParam("partial_add_job_checkup_trigger") int checkupIndex,
             @RequestParam(value = "triggers", required = false) List<String> triggers,
-            BindingResult bindingResult,
             Model model) {
 
         try {
@@ -614,7 +769,6 @@ public class JobController {
      *
      * @param job Job
      * @param checkupTriggerIndex Index
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -622,7 +776,6 @@ public class JobController {
     public String removeTrigger(
             @Valid @ModelAttribute Job job,
             @RequestParam("partial_remove_job_checkup_trigger") List<Integer> checkupTriggerIndex,
-            BindingResult bindingResult,
             Model model) {
 
         if (checkupTriggerIndex.size() == 2) {
@@ -641,7 +794,6 @@ public class JobController {
      *
      * @param job Job
      * @param checkupIndex Index
-     * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit
      */
@@ -649,7 +801,6 @@ public class JobController {
     public String addJobCheckupCommand(
             @Valid @ModelAttribute Job job,
             @RequestParam("partial_add_job_checkup_command") int checkupIndex,
-            BindingResult bindingResult,
             Model model) {
 
         job.getCheckup().get(checkupIndex).addCommand(new Command());
@@ -662,7 +813,6 @@ public class JobController {
      *
      * @param job Job
      * @param checkupCommandIndex
-     * @param bindingResult
      * @param model Model
      * @return Job edit
      */
@@ -670,7 +820,6 @@ public class JobController {
     public String removeJobCheckupCommand(
             @Valid @ModelAttribute Job job,
             @RequestParam("partial_remove_job_checkup_command") List<Integer> checkupCommandIndex,
-            BindingResult bindingResult,
             Model model) {
 
         if (checkupCommandIndex.size() == 2) {
@@ -679,6 +828,58 @@ public class JobController {
             job.getCheckup().get(checkupIndex).getCommand().remove(commandIndex);
         }
 
+        this.modelDefault(model, job);
+
+        return "job/edit";
+    }
+
+    /**
+     * Add e-mail list.
+     *
+     * @param job
+     * @param emailList
+     * @param bindingResult BindingResult
+     * @param model Model
+     * @return Subject edit
+     */
+    @PostMapping(path = "/save", params = {"partial_add_email"})
+    public String addEmailList(
+            @Valid @ModelAttribute Job job,
+            @RequestParam(value = "emailList", required = false) List<WorkbenchEmail> emailList,
+            BindingResult bindingResult,
+            Model model) {
+
+        try {
+            emailList.forEach((email) -> {
+                job.addEmail(email);
+            });
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+        } finally {
+            this.modelDefault(model, job);
+        }
+
+        return "job/edit";
+
+    }
+
+    /**
+     * Remove an e-mail.
+     *
+     * @param job Job
+     * @param index index
+     * @param bindingResult BindingResult
+     * @param model Model
+     * @return Job edit
+     */
+    @PostMapping(path = "/save", params = {"partial_remove_email"})
+    public String removeEmail(
+            @ModelAttribute Job job,
+            @RequestParam(value = "partial_remove_email", required = false) int index,
+            BindingResult bindingResult,
+            Model model) {
+
+        job.getEmail().remove(index);
         this.modelDefault(model, job);
 
         return "job/edit";
@@ -721,18 +922,43 @@ public class JobController {
     }
 
     /**
-     * Refresh job cache
+     * E-mail list modal.
      *
      * @param model Model
+     * @return E-mail list modal
+     */
+    @GetMapping(path = "/modal/email")
+    public String emailListModal(Model model) {
+        model.addAttribute("emails", workbenchEmailService.list());
+        return "job/modalEmailList::email";
+    }
+
+    /**
+     * Refresh system cache
+     *
+     * @param model Model
+     * @param redirectAttributes
      * @return Job list template.
      */
     @GetMapping(path = "/refresh/")
-    public String refreshCache(Model model) {
-        jobService.refresh();
-        jenkinsService.refreshCache();
+    public String refreshCache(
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
-        model.addAttribute("jobs", jobService.listFromCache());
-        return "job/list";
+        auditorService.publish("REFRESH_CACHE");
+
+        try {
+            jobService.refresh();
+            jenkinsService.refresh();
+            slackService.refresh();
+            connectionService.refresh();
+
+            redirectAttributes.addFlashAttribute("successMessage", "Cache updated successfully!");
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Fail update cache: " + ex.toString());
+        }
+
+        return "redirect:/configuration/edit";
     }
 
     /**
@@ -745,12 +971,37 @@ public class JobController {
     public boolean pluginMaintenance() {
         List<Job> jobs = (List) jobService.list();
 
-        for (Job job : jobs) {
-            Logger.getLogger(
-                    JobController.class.getName())
-                    .log(Level.INFO, "Updating plugin for: {0}", job.getName());
+        auditorService.publish("PLUGIN_MAINTENANCE");
+
+        jobs.forEach(job -> {
+            LOG.log(Level.INFO, "Updating plugin for: " + job.getName());
             jenkinsService.updateJob(job);
-        }
+        });
+
+        return true;
+    }
+
+    /**
+     * Update notification plugin for a specific server.
+     *
+     * @param server Server
+     * @return Job list
+     */
+    @GetMapping(path = "/maintenance/plugin/{id}")
+    @ResponseBody
+    public boolean pluginMaintenance(
+            @PathVariable(value = "id") Server server) {
+        List<Job> jobs = jobService.findByServer(server);
+
+        auditorService.publish("PLUGIN_MAINTENANCE",
+                new AuditorData()
+                        .addData("server", server.getName())
+                        .getData());
+
+        jobs.forEach(job -> {
+            LOG.log(Level.INFO, "Updating plugin for: " + job.getName());
+            jenkinsService.updateJob(job);
+        });
 
         return true;
     }
@@ -770,7 +1021,7 @@ public class JobController {
      *
      * @param model Model
      * @param job Job
-     * @param checkpuIndex int
+     * @param checkupIndex int
      */
     private void modelDefault(Model model, Job job, int checkupIndex) {
         model.addAttribute("expanded", checkupIndex);
@@ -790,11 +1041,22 @@ public class JobController {
         model.addAttribute("subjects", subjectService.list());
         model.addAttribute("connections", connectionService.list());
         model.addAttribute("users", userService.list(true));
+        model.addAttribute("templates", templateService.list());
+
+        if (job.getId() != null) {
+            model.addAttribute("children", jobService.getChildrenlist(job));
+        }
 
         if (jobList) {
             if (!job.getCheckup().isEmpty()) {
                 model.addAttribute("triggers", jobService.getMesh(job, false));
             }
+        }
+
+        if (job.getServer() != null) {
+            model.addAttribute("connected", jenkinsService.isRunning(job.getServer()));
+        } else {
+            model.addAttribute("connected", false);
         }
     }
 
@@ -836,7 +1098,7 @@ public class JobController {
      * @param server Server
      * @param jobList Parent or Children Job List
      * @param children Identify if propagation or flow
-     * @param rebuildable Identify if should make all childs rebuildable.
+     * @param rebuildable Identify if should make all children rebuildable.
      * @param principal Logged User.
      * @param model model
      * @param request
@@ -896,11 +1158,27 @@ public class JobController {
             @PathVariable(value = "job") Job job,
             @PathVariable(value = "enable") boolean enabled) {
 
-        // If enabled, disable job, if disabled, enable it.
         job.setEnabled(!enabled);
-        jobService.save(job);
+        jobService.saveAndRefreshCache(job);
 
         return "flow/display";
+    }
+
+    /**
+     * Related email modal.
+     *
+     * @param job Job
+     * @param model Model
+     * @return flow modal
+     */
+    @GetMapping(path = "/emails/{id}")
+    public String relatedEmailModal(
+            @PathVariable("id") Job job,
+            Model model) {
+
+        this.modelDefault(model, job);
+
+        return "flow/modalEmails::emails";
     }
 
     /**

@@ -34,6 +34,11 @@ import br.com.dafiti.hanger.service.UserService;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
@@ -61,6 +66,8 @@ public class MonitorController {
     private final SubjectDetailsService subjectDetailsService;
     private final UserService userService;
 
+    private static final Logger LOG = LogManager.getLogger(MonitorController.class.getName());
+
     @Autowired
     public MonitorController(
             JobService jobService,
@@ -85,9 +92,7 @@ public class MonitorController {
     @GetMapping(path = {"/", "/home"})
     public String subjectDetail(Model model) {
         model.addAttribute("subjectDetails", subjectDetailsService.getDetailsOf(subjectService.findBySubscription()));
-
         modelDefault(model);
-
         return "monitor/monitor";
     }
 
@@ -110,11 +115,8 @@ public class MonitorController {
         Subject subject = new Subject();
         List<Job> jobs = new ArrayList();
 
-        if (id.equalsIgnoreCase("all")) {
-            jobs = (List) jobService.list();
-        } else if (StringUtils.isNumeric(id)) {
+        if (StringUtils.isNumeric(id)) {
             subject = subjectService.load(Long.valueOf(id));
-
             if (subject != null) {
                 jobs = jobService.findBySubjectOrderByName(subject);
             }
@@ -124,6 +126,89 @@ public class MonitorController {
         modelDetails(model, subject, principal, jobs);
 
         return "monitor/monitor";
+    }
+
+    @PostMapping("/detail/filter")
+    public String jobFilter(
+            Principal principal,
+            Model model,
+            HttpServletRequest request,
+            @RequestParam(value = "status", required = false, defaultValue = "") List<String> status) {
+        List<Job> jobs;
+
+        if (status.size() > 0) {
+            jobs = subjectDetailsService.getFilteredJobs((List) jobService.list(), status);
+        } else {
+            jobs = (List) jobService.list();
+        }
+
+        modelDefault(model);
+        modelDetails(model, new Subject(), principal, jobs);
+
+        return "monitor/monitor";
+    }
+
+    /**
+     * Model details
+     *
+     * @param model Model
+     * @param subject Subject
+     * @param jobs Jobs
+     */
+    private void modelDetails(
+            Model model,
+            Subject subject,
+            Principal principal,
+            List<Job> jobs) {
+
+        model.addAttribute("currentSubject", subject);
+
+        if (principal != null || jobs != null) {
+            Map<String, List<JobDetails>> swimlanes = new TreeMap();
+            Map<String, String> rules = subject.getSwimlane();
+            List<JobDetails> jobDetails = jobDetailsService.getDetailsOf(jobs, principal);
+
+            //Sorts details. 
+            jobDetails = jobDetails
+                    .stream()
+                    .sorted((a, b) -> (a.getJob().getName().compareTo(b.getJob().getName())))
+                    .sorted((a, b) -> a.getStatus().toString().compareTo(b.getStatus().toString())).collect(Collectors.toList());
+
+            //Classify each job detail in a swimlane. 
+            for (JobDetails jobDetail : jobDetails) {
+                boolean classified = false;
+
+                //Identifies if the job detail match any swimlanes criteria. 
+                for (Entry<String, String> entry : rules.entrySet()) {
+                    if (jobDetail.getJob().getName().matches(entry.getValue())) {
+                        if (swimlanes.containsKey(entry.getKey())) {
+                            swimlanes.get(entry.getKey()).add(jobDetail);
+                        } else {
+                            List<JobDetails> details = new ArrayList();
+                            details.add(jobDetail);
+                            swimlanes.put(entry.getKey(), details);
+                        }
+
+                        classified = true;
+                        break;
+                    }
+                }
+
+                //Classify in ALL job detail that dont match any criteria.
+                if (!classified) {
+                    if (swimlanes.containsKey("ALL")) {
+                        swimlanes.get("ALL").add(jobDetail);
+                    } else {
+                        List<JobDetails> details = new ArrayList();
+                        details.add(jobDetail);
+                        swimlanes.put("ALL", details);
+                    }
+                }
+            }
+
+            model.addAttribute("rules", rules);
+            model.addAttribute("swimlanes", swimlanes);
+        }
     }
 
     /**
@@ -212,29 +297,5 @@ public class MonitorController {
         model.addAttribute("subjectSummary", subjectDetailsService.getSummaryOf(subjectService.findBySubscription()));
         model.addAttribute("loggedIn", userService.getLoggedIn());
         model.addAttribute("subjects", subjectService.findBySubscription());
-    }
-
-    /**
-     * Model details
-     *
-     * @param model Model
-     * @param subject Subject
-     * @param jobs Jobs
-     */
-    private void modelDetails(
-            Model model,
-            Subject subject,
-            Principal principal,
-            List<Job> jobs) {
-
-        model.addAttribute("currentSubject", subject);
-
-        if (principal != null || jobs != null) {
-            List<JobDetails> jobDetails = jobDetailsService.getDetailsOf(jobs, principal);
-            model.addAttribute("jobDetails", jobDetails
-                    .stream()
-                    .sorted((a, b) -> (a.getJob().getName().compareTo(b.getJob().getName())))
-                    .sorted((a, b) -> a.getStatus().toString().compareTo(b.getStatus().toString())).collect(Collectors.toList()));
-        }
     }
 }

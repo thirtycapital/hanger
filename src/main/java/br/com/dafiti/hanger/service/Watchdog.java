@@ -23,8 +23,9 @@
  */
 package br.com.dafiti.hanger.service;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import br.com.dafiti.hanger.model.AuditorData;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -35,6 +36,9 @@ import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.option.Status;
 import br.com.dafiti.hanger.service.JobBuildPushService.PushInfo;
+import org.apache.logging.log4j.Logger;
+import org.joda.time.LocalDateTime;
+import org.joda.time.Minutes;
 
 /**
  *
@@ -50,6 +54,9 @@ public class Watchdog {
     private final SlackService slackService;
     private final ConnectionService connectionService;
     private final JenkinsService jenkinsServive;
+    private final AuditorService auditorService;
+
+    private static final Logger LOG = LogManager.getLogger(Watchdog.class.getName());
 
     @Autowired
     public Watchdog(
@@ -59,7 +66,8 @@ public class Watchdog {
             JobBuildPushService jobBuildPushService,
             SlackService slackService,
             ConnectionService connectionService,
-            JenkinsService jenkinsServive) {
+            JenkinsService jenkinsServive,
+            AuditorService auditorService) {
 
         this.jobService = jobService;
         this.jobDetailsService = jobDetailsService;
@@ -68,28 +76,23 @@ public class Watchdog {
         this.slackService = slackService;
         this.connectionService = connectionService;
         this.jenkinsServive = jenkinsServive;
+        this.auditorService = auditorService;
     }
 
     /**
-     * Watchdog patrols at every minute past every 30th hour.
+     * Watchdog patrols at every 1 hour.
      */
-    @Scheduled(cron = "0 0 0-23 * * *")
+    @Scheduled(cron = "${hanger.watchdog.cron}")
     public void patrol() {
-        Logger.getLogger(
-                Watchdog.class.getName())
-                .log(Level.INFO, "The watchdog is patrolling jobs!");
+        LOG.log(Level.INFO, "The watchdog is patrolling jobs!");
 
         jobPatrol();
 
-        Logger.getLogger(
-                Watchdog.class.getName())
-                .log(Level.INFO, "The watchdog is patrolling connections!");
+        LOG.log(Level.INFO, "The watchdog is patrolling connections!");
 
         connectionPatrol();
 
-        Logger.getLogger(
-                Watchdog.class.getName())
-                .log(Level.INFO, "The watchdog patrol is finished!");
+        LOG.log(Level.INFO, "The watchdog patrol is finished!");
     }
 
     /**
@@ -111,7 +114,13 @@ public class Watchdog {
                         boolean onlyOptionalorDisabled = job
                                 .getParent()
                                 .stream()
-                                .filter(jobParent -> !jobParent.getScope().equals(Scope.OPTIONAL) && jobParent.getJob().isEnabled())
+                                .filter(jobParent
+                                        -> !jobParent.getScope().equals(Scope.OPTIONAL)
+                                && jobParent.getJob().isEnabled()
+                                //Identify if job parent ran in the last 10 minutes.
+                                && Minutes.minutesBetween(
+                                        new LocalDateTime(jobParent.getParent().getStatus().getBuild().getDate()),
+                                        new LocalDateTime()).getMinutes() >= 10)
                                 .collect(Collectors.toList())
                                 .isEmpty();
 
@@ -124,6 +133,7 @@ public class Watchdog {
                 //Identify job running forever.
                 if (status.equals(Status.REBUILD)
                         || status.equals(Status.RUNNING)) {
+
                     JobStatus jobStatus = job.getStatus();
 
                     if (jobStatus != null) {
@@ -133,9 +143,7 @@ public class Watchdog {
                             if (!jenkinsServive.isBuilding(job, jobBuild.getNumber())) {
                                 this.catcher(job);
                             } else {
-                                Logger.getLogger(
-                                        Watchdog.class.getName())
-                                        .log(Level.INFO, "The watchdog just sniffed the job {0} with build number {1}", new Object[]{job.getName(), jobBuild.getNumber()});
+                                LOG.log(Level.INFO, "The watchdog just sniffed the job {} with build number {}", new Object[]{job.getName(), jobBuild.getNumber()});
                             }
                         }
                     }
@@ -155,19 +163,26 @@ public class Watchdog {
         try {
             jobBuildService.build(job);
 
-            Logger.getLogger(
-                    Watchdog.class.getName())
-                    .log(Level.INFO, "The watchdog catched job ".concat(job.getName()));
+            //Log on console. 
+            LOG.log(Level.INFO, "The watchdog catched job ".concat(job.getName()));
+
+            //Log on auditor. 
+            auditorService.publish("WATCHDOG",
+                    new AuditorData()
+                            .addData("name", job.getName())
+                            .getData());
+
+            //Log on Slack.
             message
                     .append(":dog: The watchdog catched job ")
                     .append("*")
                     .append(job.getDisplayName())
                     .append("*");
         } catch (Exception ex) {
-            Logger.getLogger(
-                    Watchdog.class.getName())
-                    .log(Level.SEVERE, "The watchdog fail building " + job.getName(), ex);
+            //Log on console. 
+            LOG.log(Level.ERROR, "The watchdog fail building " + job.getName(), ex);
 
+            //Log on Slack.
             message
                     .append(":hotdog: The watchdog fail building ")
                     .append("*")

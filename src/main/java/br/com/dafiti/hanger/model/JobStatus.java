@@ -32,11 +32,13 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import org.json.JSONObject;
 
 /**
  *
@@ -53,7 +55,7 @@ public class JobStatus implements Serializable {
     private Date failureTimestamp;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -136,11 +138,12 @@ public class JobStatus implements Serializable {
 
     @Override
     public String toString() {
-        return "JobStatus{"
-                + "id=" + id
-                + ", date=" + date
-                + ", flow=" + flow
-                + ", scope=" + scope
-                + ", failureTimestamp=" + failureTimestamp + '}';
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("date", date);
+        object.put("flow", flow);
+        object.put("scope", scope);
+        object.put("failureTimestamp", failureTimestamp);
+        return object.toString(2);
     }
 }

@@ -42,10 +42,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import br.com.dafiti.hanger.exception.Message;
+import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.Blueprint;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.Privilege;
 import br.com.dafiti.hanger.model.User;
+import br.com.dafiti.hanger.service.AuditorService;
 import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.JwtService;
 import br.com.dafiti.hanger.service.MailService;
@@ -70,6 +72,7 @@ public class UserController {
     private final JobService jobService;
     private final PrivilegeService privilegeService;
     private final JwtService jwtService;
+    private final AuditorService auditorService;
 
     @Autowired
     public UserController(
@@ -79,7 +82,8 @@ public class UserController {
             JobService jobService,
             SessionRegistry sessionRegistry,
             PrivilegeService privilegeService,
-            JwtService jwtService) {
+            JwtService jwtService,
+            AuditorService auditorService) {
 
         this.userService = userService;
         this.roleService = roleService;
@@ -87,6 +91,7 @@ public class UserController {
         this.jobService = jobService;
         this.privilegeService = privilegeService;
         this.jwtService = jwtService;
+        this.auditorService = auditorService;
     }
 
     /**
@@ -553,6 +558,11 @@ public class UserController {
             User user = userService.findByUsername(principal.getName());
 
             if (user != null) {
+                auditorService.publish("API_REFRESH_TOKEN",
+                        new AuditorData()
+                                .addData("name", user.getUsername())
+                                .getData());
+
                 user.setTokenCreatedAt(new Date());
                 userService.save(user);
             }

@@ -219,7 +219,8 @@ public class SubjectController {
     public String addSlackChannel(
             @Valid @ModelAttribute Subject subject,
             @RequestParam(value = "slackChannelList", required = false) Set<String> slackChannelList,
-            BindingResult bindingResult, Model model) {
+            BindingResult bindingResult,
+            Model model) {
 
         try {
             subject.getChannel().addAll(slackChannelList);
@@ -255,8 +256,58 @@ public class SubjectController {
     }
 
     /**
+     *
+     * @param subject Subject.
+     * @param key Swimlane name.
+     * @param value Criteria expression.
+     * @param bindingResult
+     * @param model
+     * @return Subject edit template.
+     */
+    @PostMapping(path = "/save", params = {"partial_add_swimlane"})
+    public String addSwimlane(
+            @Valid @ModelAttribute Subject subject,
+            @RequestParam(value = "key", required = false) String key,
+            @RequestParam(value = "value", required = false) String value,
+            BindingResult bindingResult,
+            Model model) {
+
+        try {
+            //Identifies if the criteria is a valid regexp.
+            "DUMMY".matches(value);
+            subject.getSwimlane().put(key.toUpperCase(), value);
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+        } finally {
+            model.addAttribute("subject", subject);
+        }
+
+        return "subject/edit";
+    }
+
+    /**
+     *
+     * @param subject Subject
+     * @param key Swimlane name.
+     * @param bindingResult
+     * @param model
+     * @return Subject edit template.
+     */
+    @PostMapping(path = "/save", params = {"partial_remove_swimlane"})
+    public String removeSwimlane(
+            @ModelAttribute Subject subject,
+            @RequestParam(value = "partial_remove_swimlane", required = false) String key,
+            BindingResult bindingResult,
+            Model model) {
+
+        subject.getSwimlane().remove(key);
+        model.addAttribute("subject", subject);
+        return "subject/edit";
+    }
+
+    /**
      * Subscribe logged user in a subject.
-     * 
+     *
      * @param response
      * @param request
      * @param model
@@ -284,7 +335,7 @@ public class SubjectController {
 
     /**
      * Unsubscribe logged user in a subject.
-     * 
+     *
      * @param response
      * @param request
      * @param model

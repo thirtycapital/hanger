@@ -21,8 +21,12 @@
                                         <div class="alert alert-info" role="alert">
                                             <span id="token" th:text="${'Bearer ' + token}"></span>
                                         </div>  
+                                        
+                                        <a th:href="@{/swagger-ui/}" title="API Docs" target="_blank">
+                                            <span class="glyphicon glyphicon-file"></span> API Docs
+                                        </a>
                                     </div>
-                                </div>                                
+                                </div>    
                             </div>
                             <div class="modal-footer">                                
                                 <button type="button" class="btn btn-generic btn-sm" data-dismiss="modal">

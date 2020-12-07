@@ -30,7 +30,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.CrudRepository;
 
 public interface JobCheckupLogRepository extends CrudRepository<JobCheckupLog, Long> {
-
+    
     @Modifying
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void deleteByDateBefore(Date date);

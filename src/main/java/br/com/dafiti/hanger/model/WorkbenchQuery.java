@@ -24,6 +24,7 @@
 package br.com.dafiti.hanger.model;
 
 import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,13 +32,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import org.json.JSONObject;
 
 /**
  *
  * @author Helio Leal
  */
 @Entity
-public class WorkbenchQuery extends Tracker implements Serializable {
+public class WorkbenchQuery extends Tracker<WorkbenchQuery> implements Serializable {
 
     private Long id;
     private String name;
@@ -56,7 +58,7 @@ public class WorkbenchQuery extends Tracker implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
         return id;
     }
@@ -108,5 +110,41 @@ public class WorkbenchQuery extends Tracker implements Serializable {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 37 * hash + Objects.hashCode(this.id);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final WorkbenchQuery other = (WorkbenchQuery) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        JSONObject object = new JSONObject();
+        object.put("id", id);
+        object.put("name", name);
+        object.put("query", query);
+        object.put("shared", shared);
+        object.put("connection", connection.getName());
+        return object.toString(2);
     }
 }

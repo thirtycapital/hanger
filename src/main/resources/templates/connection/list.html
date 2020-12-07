@@ -1,37 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
     <head lang="en" th:replace="base/header :: head">
         <title>Hanger</title>
     </head>
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <table>
-                <tr>
-                    <th>
-                        <h3 class="page-title">Connection</h3>
-                    </th>
-                    <th class="btn-action">
-                        <a th:href="@{'/connection/add/'}" title="Add Connection">
-                            <span class="glyphicon glyphicon-plus"></span>
-                        </a>
-                    </th>
-                    <div sec:authorize="isAuthenticated()">
-                        <th class="btn-action">
-                            <a th:href="@{'/workbench/workbench/'}" title="Workbench">
-                                <span class="glyphicon glyphicon-chevron-right"></span>
-                            </a>
-                        </th>                        
-
-                        <th class="btn-action">
-                            <a href="#" title="Test" th:id="modal_test_connections">
-                                <span class="glyphicon glyphicon-flash"></span>
-                            </a>
-                        </th>
-                    </div>
-                </tr>            
-            </table>
-
             <div th:if="${ errorMessage != null }" class="form-group">
                 <div class="alert alert-danger" role="alert">
                     <span th:text="${errorMessage}"></span>
@@ -45,14 +19,15 @@
             </div>
 
             <!--AJAX Parent modal --> 
-            <div id="modalHolder"/>
+            <div id="modalHolder"></div>
 
             <table id="table" class="table table-hover">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th style="width:30%">Name</th>
-                        <th style="width:70%">Driver</th>
+                        <th style="width:18%">Name</th>
+                        <th style="width:60%">Description</th>
+                        <th style="width:10%">Driver</th>
                         <th class="no-sort"></th>
                         <th class="no-sort"></th>
                         <th class="no-sort"></th>
@@ -63,10 +38,11 @@
                     <tr th:each="connection : ${connections}">
                         <td th:text="${connection.id}">#</td>
                         <td th:text="${connection.name}">Name</td>
+                        <td th:text="${connection.description}">Name</td>
                         <td th:text="${connection.target}">Driver</td>
                         <td>
                             <a th:href="@{'/connection/test/' + ${connection.id}}" class="btn btn-generic btn-xs">
-                                <span class="glyphicon glyphicon-link" aria-hidden="true"></span> Connect
+                                <span class="glyphicon glyphicon-flash" aria-hidden="true"></span> Check
                             </a>
                         </td>
                         <td>
@@ -111,6 +87,16 @@
                     </tr>
                 </tbody>
             </table>
+
+            <div sec:authorize="isAuthenticated()">
+                <hr/>                
+                <tr>
+                    <a href="#" title="Test" th:id="modal_test_connections">
+                        <span class="glyphicon glyphicon-flash"></span> Check all connections
+                    </a>
+                </tr>            
+            </div>
+
             <center>
                 <button id="modal_wait" type="button" class="btn btn-default btn-sm" style="display:none;">
                     <img th:src="@{'/images/ajax-loader.gif'}"></img>

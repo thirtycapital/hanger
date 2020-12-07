@@ -18,8 +18,8 @@
                             <table id="table" class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th style="width:20%">Start</th>
-                                        <th style="width:20%">Finish</th>
+                                        <th style="width:15%">Start</th>
+                                        <th style="width:15%">Finish</th>
                                         <th>Total duration <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Total duration in minutes"></span></th>
                                         <th>Build time <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Build time in minutes"></span></th>
                                         <th style="width:38%">Efficiency</th>
@@ -36,7 +36,7 @@
                                                 <div class="progress-bar progress-bar-neutral" th:inline="text" th:attr="style='width:' +  ${ history.getQueuePercentage() * 100 } + '%'" title="WAITING">
                                                     <span class="sr-only"></span> [[${#numbers.formatDecimal((history.getQueuePercentage() * 100), 0, 0)}]]%
                                                 </div>
-                                                <div class="progress-bar progress-bar-effectiveness" th:inline="text" th:attr="style='width:' + ${ 100 - ((history.getQueuePercentage() * 100)) } + '%'" title="BUILDING">
+                                                <div  class="progress-bar" th:classappend="${history.isSuccess} ? progress-bar-effectiveness : progress-bar-danger" th:inline="text" th:attr="style='width:' + ${ 100 - ((history.getQueuePercentage() * 100)) } + '%'" title="BUILDING">
                                                     <span class="sr-only"></span> [[${#numbers.formatDecimal(100 - ((history.getQueuePercentage() * 100)), 0, 0)}]]% 
                                                 </div>
                                             </div>

@@ -81,7 +81,12 @@
                             <tbody>
                                 <tr th:each="checkupLog, checkupLogStat : ${checkup.log}" th:unless="${checkupLogStat.index >= 5}">
                                     <td th:text="${checkup.id}"></td>  
-                                    <td><img class="status" th:src="@{'/images/' + ${ checkupLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="title=${ checkupLog.success ? 'SUCCESS' : 'FAILURE' }"></img></td>                                 
+                                    <td>
+                                        <th:block th:switch="${checkupLog.success}">
+                                            <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
+                                            <span th:case="false" class="label label-danger" th:title="FAILURE" th:text="FAILURE"></span>
+                                        </th:block>
+                                    </td>
                                     <td th:text="${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}"></td>                                                      
                                     <td>
                                         <span th:text="${#strings.length(checkupLog.query) > 65 ? #strings.substring(checkupLog.query,0,65) : checkupLog.query}"></span>                                
@@ -119,7 +124,12 @@
                                             <table  class="table borderless">
                                                 <tbody>
                                                     <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}" th:remove="tag">
-                                                        <td style="width:5%"><img class="hanger-img-sm" th:src="@{'/images/' + ${ commandLog.success ? 'SUCCESS' : 'FAILURE' } + '.png' }" th:attr="alt=${ commandLog.success }"></img></td>
+                                                        <td>
+                                                            <th:block th:switch="${commandLog.success}">
+                                                                <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
+                                                                <span th:case="false" class="label label-danger" th:title="FAILURE" th:text="FAILURE"></span>
+                                                            </th:block>
+                                                        </td>
                                                         <td>
                                                             <a th:inline="text" th:href="@{'/checkup/log/' + ${commandLog.id}}">
                                                                 [[${ (commandLogStat.index + 1) + '. ' + commandLog.commandType}]]

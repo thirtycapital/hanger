@@ -24,19 +24,29 @@
 package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.exception.Message;
+import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.Connection;
+import br.com.dafiti.hanger.model.Job;
+import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.WorkbenchEmail;
 import br.com.dafiti.hanger.model.User;
+import br.com.dafiti.hanger.service.AuditorService;
+import br.com.dafiti.hanger.service.ConnectionService;
+import br.com.dafiti.hanger.service.JobDetailsService;
 import br.com.dafiti.hanger.service.WorkbenchEmailService;
 import br.com.dafiti.hanger.service.UserService;
+import io.swagger.annotations.ApiOperation;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,13 +67,23 @@ public class WorkbenchEmailController {
 
     private final UserService userService;
     private final WorkbenchEmailService workbenchEmailService;
+    private final ConnectionService connectionService;
+    private final JobDetailsService jobDetailsService;
+    private final AuditorService auditorService;
 
     @Autowired
     public WorkbenchEmailController(
             UserService userService,
-            WorkbenchEmailService workbenchEmailService) {
+            WorkbenchEmailService workbenchEmailService,
+            ConnectionService connectionService,
+            JobDetailsService jobDetailsService,
+            AuditorService auditorService) {
+
         this.userService = userService;
         this.workbenchEmailService = workbenchEmailService;
+        this.connectionService = connectionService;
+        this.jobDetailsService = jobDetailsService;
+        this.auditorService = auditorService;
     }
 
     /**
@@ -121,7 +141,7 @@ public class WorkbenchEmailController {
     public String save(@Valid @ModelAttribute WorkbenchEmail workbenchEmail)
             throws IOException {
         workbenchEmailService.save(workbenchEmail);
-        return "redirect:/email/list/";
+        return "redirect:/email/stored/";
     }
 
     /**
@@ -148,7 +168,7 @@ public class WorkbenchEmailController {
             redirectAttributes.addFlashAttribute("errorMessage",
                     new Message().getErrorMessage(exception));
         }
-        return "redirect:/workbench/workbench/";
+        return "redirect:/workbench/studio/";
     }
 
     /**
@@ -177,10 +197,16 @@ public class WorkbenchEmailController {
      * @return
      * @throws java.io.IOException
      */
-    @PostMapping(path = "api/send/{id}")
+    @ApiOperation(value = "Send a workbench saved e-mail")
+    @PostMapping(path = "/api/send/{id}")
     public ResponseEntity send(
             @PathVariable(name = "id") WorkbenchEmail workbenchEmail,
             Principal principal) throws IOException, Exception {
+
+        auditorService.publish("API_SEND_EMAIL",
+                new AuditorData()
+                        .addData("name", workbenchEmail.getSubject())
+                        .getData());
 
         if (workbenchEmailService.toEmail(workbenchEmail, principal)) {
             return ResponseEntity
@@ -200,7 +226,7 @@ public class WorkbenchEmailController {
      * @param principal Principal
      * @return
      */
-    @GetMapping(path = "/list")
+    @GetMapping(path = "/stored")
     public String list(Model model, Principal principal) {
         if (principal != null) {
             User user = userService.findByUsername(principal.getName());
@@ -256,5 +282,112 @@ public class WorkbenchEmailController {
     private void modelDefault(Model model, WorkbenchEmail workbenchEmail) {
         model.addAttribute("users", userService.list());
         model.addAttribute("email", workbenchEmail);
+        model.addAttribute("connections", connectionService.list());
+    }
+
+    /**
+     * Edit a WorkbenchEmail.
+     *
+     * @param model
+     * @param id
+     * @return WorkbenchEmail edit template.
+     */
+    @GetMapping(path = "/edit/{id}")
+    public String edit(
+            Model model,
+            @PathVariable(value = "id") Long id) {
+        modelDefault(model, workbenchEmailService.load(id));
+        return "workbench/email/edit";
+    }
+
+    /**
+     * Save a WorkbenchEmail.
+     *
+     * @param workbenchEmail WorkbenchEmail
+     * @param bindingResult BindingResult
+     * @param principal
+     * @param model Model
+     * @return WorkbenchEmail edit template.
+     */
+    @PostMapping(path = "/save")
+    public String saveEmail(
+            @Valid @ModelAttribute WorkbenchEmail workbenchEmail,
+            BindingResult bindingResult,
+            Model model,
+            Principal principal) {
+
+        if (bindingResult.hasErrors()) {
+            modelDefault(model, workbenchEmail);
+            return "workbench/email/edit";
+        }
+
+        try {
+            modelDefault(model, workbenchEmail);
+            workbenchEmailService.save(workbenchEmail);
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+        }
+
+        return "redirect:/email/view/" + workbenchEmail.getId();
+    }
+
+    /**
+     * Add a WorkbenchEmail.
+     *
+     * @param model Model
+     * @param principal Principal
+     * @return
+     */
+    @GetMapping(path = "/add")
+    public String add(Model model, Principal principal) {
+        User user = userService.findByUsername(principal.getName());
+
+        if (user != null) {
+            WorkbenchEmail workbenchEmail = new WorkbenchEmail();
+            workbenchEmail.setUser(user);
+            modelDefault(model, workbenchEmail);
+        }
+
+        return "workbench/email/edit";
+    }
+
+    /**
+     * View a WorkbenchEmail.
+     *
+     * @param model Model
+     * @param id Long workbenchemail id
+     * @return
+     */
+    @GetMapping(path = "/view/{id}")
+    public String view(
+            Model model,
+            @PathVariable(value = "id") Long id) {
+        modelDefault(model, workbenchEmailService.load(id));
+        return "workbench/email/view";
+    }
+
+    /**
+     * E-mail details modal.
+     *
+     * @param email
+     * @param model Model
+     * @return E-mail detail modal
+     */
+    @GetMapping(path = "/modal/detail/{id}")
+    public String emailDetailModal(
+            @PathVariable("id") WorkbenchEmail email,
+            Model model) {
+        email = workbenchEmailService.load(email.getId());
+
+        if (email != null) {
+            List<Job> jobs = email.getJob();
+
+            List<JobDetails> jobDetails = jobDetailsService.getDetailsOf(jobs);
+            model.addAttribute("jobDetails", jobDetails
+                    .stream()
+                    .sorted((a, b) -> (a.getJob().getName().compareTo(b.getJob().getName())))
+                    .collect(Collectors.toList()));
+        }
+        return "workbench/email/modalJobDetails::detail";
     }
 }

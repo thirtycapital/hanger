@@ -79,7 +79,7 @@ Using [Apache Tomcat](http://tomcat.apache.org/):
 
 ##### TROUBLESHOOTING
 
-> If there is a problem running a *job* through Hanger, verify that the *Jenkins URL* field is set correctly in Jenkins:
+> If there is a problem running a *job* through Hanger, verify if *Jenkins URL* field is set correctly in Jenkins:
 > - Access Jenkins and go to the *Manage Jenkins* menu.
 > - Click on *Configure System* option.
 > - Setup the correct *Jenkins URL* on *Jenkins Location* section. 

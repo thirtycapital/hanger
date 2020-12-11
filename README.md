@@ -43,7 +43,7 @@ FLUSH PRIVILEGES;
 
 ```
 # Hanger MySQL
-spring.datasource.url=jdbc:mysql://<host>:<port>/<db>
+spring.datasource.url=jdbc:mysql://<host>:<port>/<db>?serverTimezone=GMT-3
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.datasource.username=<user>
 spring.datasource.password=<password>
@@ -66,6 +66,7 @@ logging.level.org.hibernate.SQL=WARN
  
 # Timezone
 spring.jackson.time-zone=America/Sao_Paulo
+spring.jpa.properties.hibername.jdbc.time_zone=GMT-3
 ```
 
 > To enable the slack integration, follow these documents:

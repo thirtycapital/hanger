@@ -20,6 +20,25 @@ Using [Maven](https://maven.apache.org/):
 
 ##### CONFIGURATION
 
+- Create a database on Mysql/MariaDB and an user with full permition only for the database that will receive the Hanger's metadata.
+
+```
+# Example to run using Mysql/MariaDB root/admin user
+
+# Create a database named hanger
+CREATE DATABASE hanger default character set utf8 default collate utf8_bin;
+
+# Create an user named hanger
+CREATE USER hanger@localhost IDENTIFIED BY 'SetYourPassword';
+
+# Releases hanger user access to the database which has the same name
+GRANT ALL PRIVILEGES on hanger.* to 'hanger'@'localhost' identified by 'SetYourPassword';
+
+# Update permitions
+FLUSH PRIVILEGES;
+```		
+
+
 - Create the ~/.hanger/hanger.properties file with the follow content:
 
 ```
@@ -37,7 +56,7 @@ hanger.encrypt.key=<Any key>
 hanger.anonymous.access=true
 
 # Hanger watchdog cron execution
-hanger.watchdog.cron=Cron expression (example: 0 20 6-23 * * *)
+hanger.watchdog.cron=Cron expression (Example: 0 20 6-23 * * *. For more details visit: http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html)
  
 # Log
 logging.level.root=INFO
@@ -48,23 +67,6 @@ logging.level.org.hibernate.SQL=WARN
 # Timezone
 spring.jackson.time-zone=America/Sao_Paulo
 ```
-- Create a database on Mysql/MariaDB and an user with full permition only for the database that will receive the Hanger's metadata.
-
-```
-# Example to execution using Mysql/MariaDB root/admin user
-
-# Create a database named hanger
-CREATE DATABASE hanger default character set utf8 default collate utf8_bin;
-
-# Create an user named hanger
-CREATE USER hanger@localhost IDENTIFIED BY 'SetYourPassword';
-
-# Frees hanger user access to the database which has the same name
-GRANT ALL PRIVILEGES on hanger.* to 'hanger'@'localhost' identified by 'SetYourPassword';
-
-# Update permitions
-FLUSH PRIVILEGES;
-```		
 
 > To enable the slack integration, follow these documents:
 > - Habilitar Slack bot e pegar token.
@@ -77,7 +79,7 @@ Using [Apache Tomcat](http://tomcat.apache.org/):
 
 ##### TROUBLESHOOTING
 
-> If there is a problem running a *job* through Hanger, verify that the *Jenkins URL* field is set correctly in Jenkins:
+> If there is a problem running a *job* through Hanger, verify if *Jenkins URL* field is set correctly in Jenkins:
 > - Access Jenkins and go to the *Manage Jenkins* menu.
 > - Click on *Configure System* option.
 > - Setup the correct *Jenkins URL* on *Jenkins Location* section. 
@@ -88,7 +90,7 @@ Using [Apache Tomcat](http://tomcat.apache.org/):
 > - On *CSRF Protection* section, uncheck the *Prevent site from intrusion* option.
 
 ## Monitor
-*Monitor* is where the freight of Hanger is observed. The *dashboard* is organized as follows:
+*Monitor* is where the processes are monitored. The *dashboard* is organized as follows:
 
 - On top are shown all the available *subjects* and a filter option:
 

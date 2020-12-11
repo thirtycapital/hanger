@@ -102,48 +102,52 @@ public class Watchdog {
         Iterable<Job> jobs = jobService.list();
 
         for (Job job : jobs) {
-            //Identify if job is enabled.
+            //Identify if a job is enabled.
             if (job.isEnabled()) {
+                boolean pushable = false;
                 Status status = jobDetailsService.getDetailsOf(job).getStatus();
 
-                //Identify job waiting forever. 
-                if (status.equals(Status.WAITING)) {
-                    PushInfo push = jobBuildPushService.getPushInfo(job);
-
-                    if (push.isReady()) {
-                        boolean onlyOptionalorDisabled = job
-                                .getParent()
-                                .stream()
-                                .filter(jobParent
-                                        -> !jobParent.getScope().equals(Scope.OPTIONAL)
-                                && jobParent.getJob().isEnabled()
-                                //Identify if job parent ran in the last 10 minutes.
-                                && Minutes.minutesBetween(
-                                        new LocalDateTime(jobParent.getParent().getStatus().getBuild().getDate()),
-                                        new LocalDateTime()).getMinutes() >= 10)
-                                .collect(Collectors.toList())
-                                .isEmpty();
-
-                        if (!onlyOptionalorDisabled) {
-                            this.catcher(job);
-                        }
-                    }
-                }
-
-                //Identify job running forever.
-                if (status.equals(Status.REBUILD)
+                //Identify if a job is a watchdog candidate. 
+                if (status.equals(Status.WAITING)
+                        || status.equals(Status.REBUILD)
                         || status.equals(Status.RUNNING)) {
 
-                    JobStatus jobStatus = job.getStatus();
+                    //Identify if a job is pushable. 
+                    pushable = !job.getParent().stream().filter(
+                            jobParent -> !jobParent.getScope().equals(Scope.OPTIONAL)
+                            && jobParent.getJob().isEnabled()
+                            && Minutes.minutesBetween(
+                                    new LocalDateTime(jobParent.getParent().getStatus().getBuild().getDate()),
+                                    new LocalDateTime()
+                            ).getMinutes() >= 10
+                    ).collect(Collectors.toList()).isEmpty();
 
-                    if (jobStatus != null) {
-                        JobBuild jobBuild = jobStatus.getBuild();
+                    //Identify if a job is waiting forever. 
+                    if (status.equals(Status.WAITING)) {
+                        PushInfo push = jobBuildPushService.getPushInfo(job);
 
-                        if (jobBuild != null) {
-                            if (!jenkinsServive.isBuilding(job, jobBuild.getNumber())) {
+                        if (push.isReady()) {
+                            if (pushable) {
                                 this.catcher(job);
-                            } else {
-                                LOG.log(Level.INFO, "The watchdog just sniffed the job {} with build number {}", new Object[]{job.getName(), jobBuild.getNumber()});
+                            }
+                        }
+                    }
+
+                    //Identify a job is running forever.
+                    if (status.equals(Status.REBUILD)
+                            || status.equals(Status.RUNNING)) {
+                        
+                        JobStatus jobStatus = job.getStatus();
+
+                        if (jobStatus != null) {
+                            JobBuild jobBuild = jobStatus.getBuild();
+
+                            if (jobBuild != null) {
+                                if (pushable && !jenkinsServive.isBuilding(job, jobBuild.getNumber())) {
+                                    this.catcher(job);
+                                } else {
+                                    LOG.log(Level.INFO, "The watchdog just sniffed the job {} with build number {}", new Object[]{job.getName(), jobBuild.getNumber()});
+                                }
                             }
                         }
                     }

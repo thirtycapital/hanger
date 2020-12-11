@@ -56,7 +56,7 @@ hanger.encrypt.key=<Any key>
 hanger.anonymous.access=true
 
 # Hanger watchdog cron execution
-hanger.watchdog.cron=Cron expression (example: 0 20 6-23 * * *)
+hanger.watchdog.cron=Cron expression (Example: 0 20 6-23 * * *. For more details visit: http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html)
  
 # Log
 logging.level.root=INFO
@@ -90,7 +90,7 @@ Using [Apache Tomcat](http://tomcat.apache.org/):
 > - On *CSRF Protection* section, uncheck the *Prevent site from intrusion* option.
 
 ## Monitor
-*Monitor* is where the freight of Hanger is observed. The *dashboard* is organized as follows:
+*Monitor* is where the processes are monitored. The *dashboard* is organized as follows:
 
 - On top are shown all the available *subjects* and a filter option:
 

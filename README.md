@@ -20,6 +20,25 @@ Using [Maven](https://maven.apache.org/):
 
 ##### CONFIGURATION
 
+- Create a database on Mysql/MariaDB and an user with full permition only for the database that will receive the Hanger's metadata.
+
+```
+# Example to run using Mysql/MariaDB root/admin user
+
+# Create a database named hanger
+CREATE DATABASE hanger default character set utf8 default collate utf8_bin;
+
+# Create an user named hanger
+CREATE USER hanger@localhost IDENTIFIED BY 'SetYourPassword';
+
+# Releases hanger user access to the database which has the same name
+GRANT ALL PRIVILEGES on hanger.* to 'hanger'@'localhost' identified by 'SetYourPassword';
+
+# Update permitions
+FLUSH PRIVILEGES;
+```		
+
+
 - Create the ~/.hanger/hanger.properties file with the follow content:
 
 ```
@@ -48,23 +67,6 @@ logging.level.org.hibernate.SQL=WARN
 # Timezone
 spring.jackson.time-zone=America/Sao_Paulo
 ```
-- Create a database on Mysql/MariaDB and an user with full permition only for the database that will receive the Hanger's metadata.
-
-```
-# Example to execution using Mysql/MariaDB root/admin user
-
-# Create a database named hanger
-CREATE DATABASE hanger default character set utf8 default collate utf8_bin;
-
-# Create an user named hanger
-CREATE USER hanger@localhost IDENTIFIED BY 'SetYourPassword';
-
-# Frees hanger user access to the database which has the same name
-GRANT ALL PRIVILEGES on hanger.* to 'hanger'@'localhost' identified by 'SetYourPassword';
-
-# Update permitions
-FLUSH PRIVILEGES;
-```		
 
 > To enable the slack integration, follow these documents:
 > - Habilitar Slack bot e pegar token.

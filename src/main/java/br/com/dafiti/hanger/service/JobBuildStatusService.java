@@ -35,13 +35,19 @@ import static com.cronutils.model.CronType.QUARTZ;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Minutes;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -50,6 +56,15 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class JobBuildStatusService {
+
+    private final ConcurrentHashMap<Long, LocalDateTime> build;
+
+    private static final Logger LOG = LogManager.getLogger(JobBuildStatusService.class.getName());
+
+    @Autowired
+    public JobBuildStatusService() {
+        this.build = new ConcurrentHashMap();
+    }
 
     /**
      * Identifies if a job is partially or fully built.
@@ -123,7 +138,7 @@ public class JobBuildStatusService {
                     built = (jobBuild.getPhase().equals(Phase.FINALIZED)
                             && jobBuild.getStatus().equals(Status.SUCCESS)
                             && (jobStatus.getFlow().equals(Flow.NORMAL) || jobStatus.getFlow().equals(Flow.APPROVED)));
-                    
+
                     if (built) {
                         //Idenfity if any scope can push a job build.
                         if (!anyScope) {
@@ -147,31 +162,31 @@ public class JobBuildStatusService {
         boolean buildable = job.isEnabled();
 
         if (buildable) {
-            //Identify if it is within the job execution period defined by a cron.
+            //Identifies if it is within the job execution period defined by a cron.
             buildable = isTimeRestrictionMatch(job.getTimeRestriction());
 
             if (buildable) {
                 //Get the status of each child.
                 JobStatus jobStatus = job.getStatus();
 
-                //Identify if the job has status.
+                //Identifies if the job has status.
                 buildable = (jobStatus == null);
 
                 if (!buildable) {
                     JobBuild jobBuild = jobStatus.getBuild();
 
-                    //Identify if the job was never trigger.
+                    //Identifies if the job was never trigger.
                     buildable = (jobBuild == null);
 
                     if (!buildable) {
                         //Get the job build date. 
                         Date jobBuildDate = jobBuild.getDate();
 
-                        //Identify if the job was not built today.
+                        //Identifies if the job was not built today.
                         buildable = Days.daysBetween(new LocalDate(jobBuildDate), new LocalDate()).getDays() != 0;
 
                         if (!buildable) {
-                            //Identify if the job was not built in the antecipation tolerance interval today.
+                            //Identifies if the job was not built in the antecipation tolerance interval today.
                             if (job.getTolerance() != 0) {
                                 buildable = Days.daysBetween(
                                         new LocalDate(new DateTime(jobBuildDate).plusHours(job.getTolerance())),
@@ -181,21 +196,21 @@ public class JobBuildStatusService {
                     }
 
                     if (!buildable) {
-                        //Identify if the job was not built fully.
+                        //Identifies if the job was not built fully.
                         buildable = (jobStatus.getScope() == Scope.PARTIAL);
 
                         if (!buildable) {
-                            //Identify if the job can be rebuilt along the day. 
+                            //Identifies if the job can be rebuilt along the day. 
                             buildable = job.isRebuild();
 
                             if (buildable) {
-                                //Identify if should wait all parents be built before rebuild. 
+                                //Identifies if should wait all parents be built before rebuild. 
                                 if (job.isRebuildBlocked()) {
                                     boolean blocked;
                                     List<JobParent> parents = job.getParent();
 
                                     for (JobParent parent : parents) {
-                                        //Identify if a parent is a rebuild blocker. 
+                                        //Identifies if a parent is a rebuild blocker. 
                                         if (parent.isBlocker()) {
                                             blocked = this.isBuilt(parent.getParent(), jobBuild.getDate(), false);
 
@@ -208,11 +223,12 @@ public class JobBuildStatusService {
                                 }
 
                                 if (buildable) {
-                                    //Identify if it is in waiting time.
+                                    //Identifies if it is in waiting time.
                                     if (job.getWait() != 0) {
-                                        buildable = Minutes.minutesBetween(new DateTime(
-                                                jobBuild.getDate()),
-                                                new DateTime()).getMinutes() >= job.getWait();
+                                        buildable = Minutes
+                                                .minutesBetween(
+                                                        new DateTime(jobBuild.getDate()),
+                                                        new DateTime()).getMinutes() >= job.getWait();
                                     }
                                 }
                             }
@@ -220,9 +236,23 @@ public class JobBuildStatusService {
                     }
 
                     if (!buildable) {
-                        //Identify if the job has any problem or is a rebuild mesh.
-                        buildable = jobStatus.getFlow().equals(Flow.ERROR)
-                                || jobStatus.getFlow().equals(Flow.REBUILD);
+                        //Identifies if it has any problem or is a rebuild mesh.
+                        buildable = jobStatus.getFlow().equals(Flow.ERROR) || jobStatus.getFlow().equals(Flow.REBUILD);
+                    }
+                }
+
+                if (buildable) {
+                    Long id = job.getId();
+
+                    //Identifies if the job was very recently (30 seconds).
+                    if (build.containsKey(id)) {
+                        buildable = SECONDS.between(build.get(id), LocalDateTime.now()) > 30;
+
+                        if (!buildable) {
+                            LOG.info(job.getName() + " build blocked by duplicate build protection engine");
+                        }
+                    } else {
+                        build.put(id, LocalDateTime.now());
                     }
                 }
             }

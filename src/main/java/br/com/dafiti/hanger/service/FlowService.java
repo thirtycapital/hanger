@@ -243,6 +243,9 @@ public class FlowService {
             case RUNNING:
                 label = "label label-primary";
                 break;
+            case PARTIAL:
+                label = "label label-partial";
+                break;
             case SUCCESS:
             case APPROVED:
                 label = "label label-success";
@@ -303,7 +306,7 @@ public class FlowService {
         if (parent == null) {
             //Define the job scope paragraph.
             P jobBuildScope = new P();
-            jobBuildScope.appendText(jobDetails.getScope() == null ? "" : job.getServer().getName() + " | " + jobDetails.getScope());
+            jobBuildScope.appendText(jobDetails.getScope() == null ? "" : job.getServer().getName() + (jobDetails.getScope().isEmpty() ? "" : " | " + jobDetails.getScope()));
             jobBuildScope.setCSSClass("node-scope");
 
             node.append(jobBuildScope.write());
@@ -323,7 +326,7 @@ public class FlowService {
             //Define the job scope paragraph.
             P jobBuildScope = new P();
             jobBuildScope.appendText((scope == null
-                    ? (jobDetails.getScope() == null ? "" : job.getServer().getName() + " | " + jobDetails.getScope())
+                    ? (jobDetails.getScope() == null ? "" : job.getServer().getName() + (jobDetails.getScope().isEmpty() ? "" : " | " + jobDetails.getScope()))
                     : (job.getServer().getName() + " | " + scope.toString() + (job.isRebuild() ? " | REBUILD " + (job.getWait() != 0 ? "once every " + job.getWait() + " min" : "") : ""))) + (parent.isRebuildBlocked() && isBlocker ? " | BLOCKER" : ""));
             jobBuildScope.setCSSClass("node-scope");
 

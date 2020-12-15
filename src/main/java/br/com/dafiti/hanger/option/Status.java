@@ -43,5 +43,6 @@ public enum Status {
     DISABLED,
     UNSTABLE,
     CHECKUP,
-    RESTRICTED;
+    RESTRICTED,
+    PARTIAL;
 }

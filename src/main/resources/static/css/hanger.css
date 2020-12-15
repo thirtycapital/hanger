@@ -46,20 +46,38 @@ label {
 }
 
 .label-success {
-    background-color: #20b2aa;
+    color: #006644;
+    background-color: #E3FCEF;
 }
 
 .label-warning {
-    background-color: #ffa500;
+    background-color: #fff8eb;
+    color: #b87700;
 }
 
 .label-danger {
-    background-color: #dd424a;
+    background-color: #fbe8e9;
+    color: #dd424a;
 }
 
-.label-neutral {
-    background-color: #e5e8ec;
-    color: #808080;
+.label-neutral, .label-default{
+    background-color: #f6f6f6;
+    color: #6c6c6c;
+}
+
+.label-primary{
+    background-color: #fefded;
+    color: #c4b000;  
+}
+
+.label-partial{
+    color: #006644;
+    background: #E3FCEF;     
+}
+
+.label-info {
+    background-color: #ebfcff;
+    color: #00869d;
 }
 
 legend{
@@ -414,7 +432,7 @@ code[class*="language-free"] {
 
 .Treant .collapse-switch { width: 10px; height: 100%; border: none; left: 1px; background: #F4F5F7; }
 .Treant .node.collapsed {  border: dotted; border-color: #999999; border-width: 1px }
-.Treant .node.collapsed .collapse-switch { background: #337ab7; }
+.Treant .node.collapsed .collapse-switch { background: #F4F5F7;}
 
 .status {
     width: 25px;
@@ -1114,9 +1132,4 @@ label.radio-generic:hover
     color: #818182;
     background-color: #f6faff;
     border-color: #eee;
-}
-
-.label-primary{
-    background-color: #F6F558;
-    color: #373E46;  
 }

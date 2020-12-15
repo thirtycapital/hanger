@@ -52,6 +52,7 @@
                                                 <span th:case="${T(br.com.dafiti.hanger.option.Status).CHECKUP}" class="label label-warning" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
                                                 <span th:case="${T(br.com.dafiti.hanger.option.Status).RESTRICTED}" class="label label-neutral" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
                                                 <span th:case="${T(br.com.dafiti.hanger.option.Status).WAITING}" class="label label-neutral" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
+                                                <span th:case="${T(br.com.dafiti.hanger.option.Status).PARTIAL}" class="label label-partial" th:attr="alt=${jobDetail.status}" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
                                             </th:block>
                                         </td>
                                         <td th:text="${jobDetail.job.server.name}">

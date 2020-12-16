@@ -163,6 +163,6 @@ public class JobBuild implements Serializable {
         object.put("phase", phase);
         object.put("status", status);
         object.put("date", date);
-        return object.toString(2);
+        return object.toString();
     }
 }

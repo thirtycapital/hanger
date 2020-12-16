@@ -55,7 +55,7 @@ public class JobBuildPushService {
     private final JobNotificationService jobNotificationService;
 
     private static final Logger LOG = LogManager.getLogger(JobBuildPushService.class.getName());
-    
+
     @Autowired
     public JobBuildPushService(
             JobBuildService jobBuildService,
@@ -239,7 +239,7 @@ public class JobBuildPushService {
                 }
 
                 //Log the partial dependencies status.
-                LOG.log(Level.INFO, "PARTIAL -> job={}, scope={}, ready={}, partials={}, dependencies={}", new Object[]{job.getName(), scope, ready, partial, all});
+                LOG.log(Level.INFO, "PARTIAL -> job={}, scope={}, ready={}, partial={}, full={}", new Object[]{job.getName(), scope, ready, partial, all});
             }
         } else {
             LOG.log(Level.INFO, "Job {} is not buildable", new Object[]{job.getName()});

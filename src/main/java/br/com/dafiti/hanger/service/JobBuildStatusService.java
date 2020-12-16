@@ -158,7 +158,7 @@ public class JobBuildStatusService {
      * @param job Job
      * @return Identify if can build a job
      */
-    public boolean isBuildable(Job job) {
+    public synchronized boolean isBuildable(Job job) {
         boolean buildable = job.isEnabled();
 
         if (buildable) {
@@ -244,12 +244,14 @@ public class JobBuildStatusService {
                 if (buildable) {
                     Long id = job.getId();
 
-                    //Identifies if the job was very recently (30 seconds).
+                    //Identifies if the job was built very recently (10 seconds).
                     if (build.containsKey(id)) {
-                        buildable = SECONDS.between(build.get(id), LocalDateTime.now()) > 30;
+                        buildable = SECONDS.between(build.get(id), LocalDateTime.now()) > 10;
 
                         if (!buildable) {
-                            LOG.info(job.getName() + " build blocked by duplicate build protection engine");
+                            LOG.info("Job " + job.getName() + " duplicated build protection (Locked at " + build.get(id) + ")!");
+                        } else {
+                            build.put(id, LocalDateTime.now());
                         }
                     } else {
                         build.put(id, LocalDateTime.now());

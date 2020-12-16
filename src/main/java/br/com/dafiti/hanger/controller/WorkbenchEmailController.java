@@ -138,8 +138,10 @@ public class WorkbenchEmailController {
      * @throws java.io.IOException
      */
     @PostMapping(path = "/modal", params = {"save"})
-    public String save(@Valid @ModelAttribute WorkbenchEmail workbenchEmail)
+    public String save(
+            @Valid @ModelAttribute WorkbenchEmail workbenchEmail)
             throws IOException {
+
         workbenchEmailService.save(workbenchEmail);
         return "redirect:/email/stored/";
     }
@@ -223,19 +225,11 @@ public class WorkbenchEmailController {
      * List emails.
      *
      * @param model Model
-     * @param principal Principal
      * @return
      */
     @GetMapping(path = "/stored")
-    public String list(Model model, Principal principal) {
-        if (principal != null) {
-            User user = userService.findByUsername(principal.getName());
-
-            if (user != null) {
-                model.addAttribute("workbenchEmailList",
-                        this.workbenchEmailService.findByUser(user));
-            }
-        }
+    public String list(Model model) {
+        model.addAttribute("workbenchEmailList", this.workbenchEmailService.list());
         return "workbench/email/list";
     }
 
@@ -244,21 +238,19 @@ public class WorkbenchEmailController {
      *
      * @param id Long
      * @param model Model
-     * @param principal Principal
      * @return
      */
     @GetMapping(path = "/delete/{id}")
     public String delete(
             @PathVariable(name = "id") Long id,
-            Model model,
-            Principal principal) {
+            Model model) {
+
         try {
             workbenchEmailService.delete(id);
         } catch (Exception ex) {
-            model.addAttribute("errorMessage",
-                    "Fail deleting mail: " + ex.getMessage());
+            model.addAttribute("errorMessage", "Fail deleting mail: " + ex.getMessage());
         }
-        return this.list(model, principal);
+        return "redirect:/email/stored/";
     }
 
     /**

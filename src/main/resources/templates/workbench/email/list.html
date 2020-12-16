@@ -56,20 +56,24 @@
                             </a>
                         </td>
                         <td>
-                            <a th:href="@{'/email/edit/' + ${workbenchEmail.id}}" class="btn btn-generic btn-xs">
-                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
-                            </a>
+                            <div th:if="${#authorization.expression('hasRole(''HERO'')') or workbenchEmail.user.username == #httpServletRequest.remoteUser}">
+                                <a th:href="@{'/email/edit/' + ${workbenchEmail.id}}" class="btn btn-generic btn-xs">
+                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                                </a>
+                            </div>
                         </td>
                         <td>
-                            <a class="btn btn-xs btn-delete" 
-                               data-toggle="modal" 
-                               th:attr="data-target='#'+${workbenchEmail.id}" 
-                               href="">
-                                <span 
-                                    class="glyphicon glyphicon-trash" 
-                                    aria-hidden="true"></span> 
-                                Delete
-                            </a>
+                            <div th:if="${#authorization.expression('hasRole(''HERO'')') or workbenchEmail.user.username == #httpServletRequest.remoteUser}">
+                                <a class="btn btn-xs btn-delete" 
+                                   data-toggle="modal" 
+                                   th:attr="data-target='#'+${workbenchEmail.id}" 
+                                   href="">
+                                    <span 
+                                        class="glyphicon glyphicon-trash" 
+                                        aria-hidden="true"></span> 
+                                    Delete
+                                </a>
+                            </div>
 
                             <!-- Model delete -->
                             <div class="modal fade" 

@@ -29,6 +29,11 @@ import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.repository.JobBuildRepository;
+import java.time.LocalDateTime;
+import static java.time.temporal.ChronoUnit.SECONDS;
+import java.util.concurrent.ConcurrentHashMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -45,6 +50,9 @@ public class JobBuildService {
     private final JobCheckupService checkupService;
     private final JobStatusService jobStatusService;
     private final JobNotificationService jobNotificationService;
+    private final ConcurrentHashMap<Long, LocalDateTime> build;
+
+    private static final Logger LOG = LogManager.getLogger(JobBuildService.class.getName());
 
     @Autowired
     public JobBuildService(
@@ -59,6 +67,7 @@ public class JobBuildService {
         this.checkupService = checkupService;
         this.jobStatusService = jobStatusService;
         this.jobNotificationService = jobNotificationService;
+        this.build = new ConcurrentHashMap();
     }
 
     /**
@@ -103,38 +112,57 @@ public class JobBuildService {
      * @throws java.net.URISyntaxException
      * @throws java.io.IOException
      */
-    public BuildInfo build(Job job) throws Exception {
+    public synchronized BuildInfo build(Job job) throws Exception {
         Scope scope;
+        boolean buildable;
         boolean built = false;
         boolean healthy = true;
 
-        //Identify if the job is waiting in queue. 
-        if (!jenkinsService.isInQueue(job)) {
+        //Identifies if the job is waiting in queue. 
+        buildable = !jenkinsService.isInQueue(job);
 
-            //Identify if the job has prevalidation.
-            if (checkupService.hasPrevalidation(job)) {
-                JobStatus jobStatus = job.getStatus();
+        if (buildable) {
+            //Identifies if the job was built recently (10 seconds).
+            if (build.containsKey(job.getId())) {
+                buildable = SECONDS.between(build.get(job.getId()), LocalDateTime.now()) > 10;
 
-                //Identify the job build scope.
-                if (jobStatus == null) {
-                    scope = Scope.FULL;
+                if (!buildable) {
+                    LOG.info("Job " + job.getName() + " duplicated build protection (Job built " + build.get(job.getId()) + ")!");
                 } else {
-                    scope = jobStatus.getScope();
+                    build.put(job.getId(), LocalDateTime.now());
                 }
-
-                //Evaluate prevalidation.
-                healthy = checkupService.evaluate(job, true, scope);
+            } else {
+                build.put(job.getId(), LocalDateTime.now());
             }
 
-            //Identify if job is healthy. 
-            if (healthy) {
-                built = jenkinsService.build(job);
+            if (buildable) {
+                //Identifies if it has prevalidation.
+                if (checkupService.hasPrevalidation(job)) {
+                    JobStatus jobStatus = job.getStatus();
 
-                if (!built) {
-                    jobStatusService.updateFlow(job.getStatus(), Flow.ERROR);
-                    jobNotificationService.notify(job, true);
+                    //Identifies what is the correct build scope.
+                    if (jobStatus == null) {
+                        scope = Scope.FULL;
+                    } else {
+                        scope = jobStatus.getScope();
+                    }
+
+                    //Prevalidation checkup.
+                    healthy = checkupService.evaluate(job, true, scope);
+                }
+
+                //Identifies if a job is healthy. 
+                if (healthy) {
+                    built = jenkinsService.build(job);
+
+                    if (!built) {
+                        jobStatusService.updateFlow(job.getStatus(), Flow.ERROR);
+                        jobNotificationService.notify(job, true);
+                    }
                 }
             }
+        } else {
+            LOG.info("Job " + job.getName() + " duplicated build protection (Job in queue)!");
         }
 
         return new BuildInfo(built, healthy);

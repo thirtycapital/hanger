@@ -35,19 +35,13 @@ import static com.cronutils.model.CronType.QUARTZ;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import static java.time.temporal.ChronoUnit.SECONDS;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Minutes;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -56,15 +50,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class JobBuildStatusService {
-
-    private final ConcurrentHashMap<Long, LocalDateTime> build;
-
-    private static final Logger LOG = LogManager.getLogger(JobBuildStatusService.class.getName());
-
-    @Autowired
-    public JobBuildStatusService() {
-        this.build = new ConcurrentHashMap();
-    }
 
     /**
      * Identifies if a job is partially or fully built.
@@ -158,7 +143,7 @@ public class JobBuildStatusService {
      * @param job Job
      * @return Identify if can build a job
      */
-    public synchronized boolean isBuildable(Job job) {
+    public boolean isBuildable(Job job) {
         boolean buildable = job.isEnabled();
 
         if (buildable) {
@@ -238,23 +223,6 @@ public class JobBuildStatusService {
                     if (!buildable) {
                         //Identifies if it has any problem or is a rebuild mesh.
                         buildable = jobStatus.getFlow().equals(Flow.ERROR) || jobStatus.getFlow().equals(Flow.REBUILD);
-                    }
-                }
-
-                if (buildable) {
-                    Long id = job.getId();
-
-                    //Identifies if the job was built very recently (10 seconds).
-                    if (build.containsKey(id)) {
-                        buildable = SECONDS.between(build.get(id), LocalDateTime.now()) > 10;
-
-                        if (!buildable) {
-                            LOG.info("Job " + job.getName() + " duplicated build protection (Locked at " + build.get(id) + ")!");
-                        } else {
-                            build.put(id, LocalDateTime.now());
-                        }
-                    } else {
-                        build.put(id, LocalDateTime.now());
                     }
                 }
             }

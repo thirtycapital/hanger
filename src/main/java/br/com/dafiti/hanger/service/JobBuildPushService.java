@@ -37,6 +37,8 @@ import java.util.Map;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joda.time.Days;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -216,7 +218,7 @@ public class JobBuildPushService {
                     ready = true;
                     scope = Scope.FULL;
                 } else {
-                    //Identify if partial dependencies was built successfully. 
+                    //Identifies if partial dependencies was built successfully. 
                     for (Map.Entry<Job, Boolean> entry : partial.entrySet()) {
                         ready = entry.getValue();
 
@@ -225,13 +227,18 @@ public class JobBuildPushService {
                         }
                     }
 
-                    //Identify the scope.
+                    //Identifies the scope.
                     if (ready) {
                         JobStatus jobStatus = job.getStatus();
 
                         //Identifies if the job are already in a partial scope.
                         if (jobStatus != null) {
-                            ready = (jobStatus.getScope() != Scope.PARTIAL);
+                            int lastBuild = Days.daysBetween(new LocalDate(jobStatus.getDate()), new LocalDate()).getDays();
+
+                            //Identifies if the job was built today. 
+                            if (lastBuild == 0) {
+                                ready = (jobStatus.getScope() != Scope.PARTIAL);
+                            }
                         }
 
                         scope = Scope.PARTIAL;

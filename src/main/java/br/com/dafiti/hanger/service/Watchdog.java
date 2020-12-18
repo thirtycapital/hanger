@@ -111,7 +111,9 @@ public class Watchdog {
                         //Identifies if parents were builded at least 10 minutes ago.
                         boolean buildable = !job.getParent().stream().filter(
                                 jobParent
-                                -> Minutes.minutesBetween(new LocalDateTime(jobParent.getParent().getStatus().getBuild().getDate()), new LocalDateTime()).getMinutes() >= 10
+                                -> jobParent.getParent().getStatus() != null
+                                && jobParent.getParent().getStatus().getBuild() != null
+                                && Minutes.minutesBetween(new LocalDateTime(jobParent.getParent().getStatus().getBuild().getDate()), new LocalDateTime()).getMinutes() >= 10
                         ).collect(Collectors.toList()).isEmpty();
 
                         if (buildable

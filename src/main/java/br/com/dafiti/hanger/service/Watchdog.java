@@ -81,6 +81,17 @@ public class Watchdog {
     }
 
     /**
+     * Canine Patrol
+     */
+    @Scheduled(cron = "${hanger.watchdog.cron}")
+    public void patrol() {
+        jobPatrol();
+        connectionPatrol();
+
+        LOG.log(Level.INFO, "The watchdog patrol is finished!");
+    }
+
+    /**
      * Looks for jobs problems.
      */
     private void jobPatrol() {
@@ -106,7 +117,7 @@ public class Watchdog {
                         if (buildable
                                 && jobBuildPushService.getPushInfo(job).isReady()) {
 
-                            this.catcher(job, true);
+                            this.catcher(job);
                         } else {
                             LOG.log(Level.INFO, "The watchdog just sniffed the job {}", new Object[]{job.getName()});
                         }
@@ -127,7 +138,7 @@ public class Watchdog {
                                         && !jenkinsServive.isBuilding(job, jobBuild.getNumber())
                                         && jobBuildStatusService.isBuildable(job)) {
 
-                                    this.catcher(job, false);
+                                    this.catcher(job);
                                 } else {
                                     LOG.log(Level.INFO, "The watchdog just sniffed the job {} with build number {}", new Object[]{job.getName(), jobBuild.getNumber()});
                                 }
@@ -163,15 +174,12 @@ public class Watchdog {
      *
      * @param job job
      */
-    private void catcher(Job job, boolean push) {
+    private void catcher(Job job) {
         StringBuilder message = new StringBuilder();
 
         try {
-            if (push) {
-                jobBuildPushService.push(job);
-            } else {
-                jobBuildService.build(job);
-            }
+            //Build a job. 
+            jobBuildService.build(job);
 
             //Log on console. 
             LOG.log(Level.INFO, "The watchdog catched job ".concat(job.getName()));
@@ -199,16 +207,5 @@ public class Watchdog {
                     .append(job.getDisplayName())
                     .append("*").toString());
         }
-    }
-
-    /**
-     * Watchdog patrols
-     */
-    @Scheduled(cron = "${hanger.watchdog.cron}")
-    public void patrol() {
-        jobPatrol();
-        connectionPatrol();
-
-        LOG.log(Level.INFO, "The watchdog patrol is finished!");
     }
 }

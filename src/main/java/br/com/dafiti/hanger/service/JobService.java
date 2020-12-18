@@ -189,6 +189,16 @@ public class JobService {
         @CacheEvict(value = "job_count", allEntries = true),
         @CacheEvict(value = "job_count_by_subject", allEntries = true),
         @CacheEvict(value = "propagation", allEntries = true)})
+    public Job enable(Job job) {
+        jenkinsService.updateJob(job);
+        return this.save(job);
+    }
+
+    @Caching(evict = {
+        @CacheEvict(value = "jobs", allEntries = true),
+        @CacheEvict(value = "job_count", allEntries = true),
+        @CacheEvict(value = "job_count_by_subject", allEntries = true),
+        @CacheEvict(value = "propagation", allEntries = true)})
     public void delete(Long id) {
         jobRepository.deleteById(id);
     }

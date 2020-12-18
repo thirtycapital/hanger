@@ -1159,7 +1159,7 @@ public class JobController {
             @PathVariable(value = "enable") boolean enabled) {
 
         job.setEnabled(!enabled);
-        jobService.saveAndRefreshCache(job);
+        jobService.enable(job);
 
         return "flow/display";
     }

@@ -412,7 +412,7 @@ public class JobController {
             Model model) {
 
         try {
-            jobService.saveAndRefreshCache(job);
+            jobService.saveAndUpdateJobConfig(job);
             jenkinsService.refresh();
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
@@ -1159,7 +1159,8 @@ public class JobController {
             @PathVariable(value = "enable") boolean enabled) {
 
         job.setEnabled(!enabled);
-        jobService.saveAndRefreshCache(job);
+        jobService.save(job);
+        jenkinsService.updateJob(job);
 
         return "flow/display";
     }

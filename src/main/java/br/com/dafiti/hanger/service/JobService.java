@@ -160,15 +160,20 @@ public class JobService {
         return jobRepository.save(job);
     }
 
+    /**
+     * Save a job and update its related job on Jenkins.
+     *
+     * @param job Job
+     * @return Job
+     */
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true),
         @CacheEvict(value = "job_count", allEntries = true),
         @CacheEvict(value = "job_count_by_subject", allEntries = true),
         @CacheEvict(value = "propagation", allEntries = true)})
-    public Job saveAndRefreshCache(Job job) {
+    public Job saveAndUpdateJobConfig(Job job) {
         Long id = job.getId();
 
-        //Identify if should update Jenkins job properties.  
         if (id != null) {
             Job previousVersion = this.load(id);
 
@@ -179,8 +184,12 @@ public class JobService {
             }
         }
 
+        //Update shell script plugin. 
         jenkinsService.updateShellScript(job);
+        
+        //Update name, notification plugin and enable/disable a job. 
         jenkinsService.updateJob(job);
+
         return this.save(job);
     }
 

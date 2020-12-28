@@ -108,19 +108,19 @@
                                 <td width="22.5%">
                                     <div class="progress">
                                         <div class="progress-bar progress-bar-success" th:inline="text" th:attr="style='width:' +  ${ subjects.successPercent } + '%'" title="SUCCESS">
-                                            <span class="sr-only"></span> [[${subjects.successPercent}]]%
+                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.successPercent, 0, 0)}]]%
                                         </div>
                                         <div class="progress-bar progress-bar-building" th:inline="text" th:attr="style='width:' +  ${ subjects.buildingPercent } + '%'" title="BUILDING">
-                                            <span class="sr-only"></span> [[${subjects.buildingPercent}]]%
+                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.buildingPercent, 0, 0)}]]%
                                         </div>
                                         <div class="progress-bar progress-bar-warning" th:inline="text" th:attr="style='width:' + ${ subjects.warningPercent } + '%'" title="WARNING">
-                                            <span class="sr-only"></span> [[${subjects.warningPercent}]]% 
+                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.warningPercent, 0, 0)}]]% 
                                         </div>
                                         <div class="progress-bar progress-bar-danger" th:inline="text" th:attr="style='width:' + ${ subjects.failurePercent } + '%'" title="FAILURE">
-                                            <span class="sr-only"></span> [[${subjects.failurePercent}]]% 
+                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.failurePercent, 0, 0)}]]% 
                                         </div>
                                         <div class="progress-bar progress-bar-waiting" th:inline="text" th:attr="style='width:' + ${ subjects.waitingPercent } + '%'" title="WAITING">
-                                            <span class="sr-only"></span> [[${subjects.waitingPercent}]]% 
+                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.waitingPercent, 0, 0)}]]% 
                                         </div>
                                     </div>
                                 </td>

@@ -184,6 +184,7 @@ public class MonitorController {
             //Sorts details. 
             jobDetails = jobDetails
                     .stream()
+                    .parallel()
                     .filter(a -> status.isEmpty() || status.contains(a.getStatus().toString()))
                     .sorted((a, b) -> (a.getJob().getName().compareTo(b.getJob().getName())))
                     .sorted((a, b) -> a.getStatus().toString().compareTo(b.getStatus().toString())).collect(Collectors.toList());

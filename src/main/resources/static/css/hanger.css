@@ -804,13 +804,19 @@ h3.page-title {
     background-color: #337ab7;
 }
 
-.btn-approval {
+.btn-notice {
     color: #d65549;
     border: 1px solid #D8D8D8;    
     background-color: transparent;
 }
 
-.btn-approval:hover {
+.btn-notice:hover {
+    color: #ffffff;
+    border: 1px solid #D8D8D8;
+    background-color: #d65549;
+}
+
+.btn-notice:target {
     color: #ffffff;
     border: 1px solid #D8D8D8;
     background-color: #d65549;

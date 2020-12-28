@@ -68,12 +68,12 @@
                             </a>
 
                             <div class="btn-group pull-right dropup">
-                                <a class="btn btn-delete btn-space btn-sm" th:attr="onclick='modalUpdate();'">
+                                <a class="btn btn-notice btn-space btn-sm" th:attr="onclick='modalUpdate();'">
                                     <span class="glyphicon glyphicon-plane" aria-hidden="true"></span> 
                                     Update plugin
                                 </a>
 
-                                <button type="button" class="btn btn-generic btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <button type="button" class="btn btn-notice btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span class="caret"></span>
                                     <span class="sr-only"></span>
                                 </button>
@@ -105,8 +105,10 @@
                                     <span>Notification plugin</span>
                                 </h4>
                             </div>
-                            <div class="modal-body">
-                                <span>Are you sure you want to update the Notification Plugin for all jobs?</span>
+                            <div class="modal-body">      
+                                <div class="form-group">
+                                    <span class="alert alert-danger col-sm-12">Are you sure you want to update the Notification Plugin for all jobs?</span>
+                                </div>
                             </div>
                             <div class="modal-footer" id="buttons"> 
                                 <a id="modalConfirmUpdate" class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">

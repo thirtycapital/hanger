@@ -48,15 +48,15 @@
                                                 <span th:case="${T(br.com.dafiti.hanger.option.Status).PARTIAL}" class="label label-partial" th:attr="alt=${jobDetail.status}" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
                                             </th:block>     
                                         </td>
-                                        <td th:text="${jobs.job.server.name}">Server</td>
-                                        <td><a class="link" th:href="@{'/flow/job/'  + ${jobs.job.id}}" th:text="${jobs.job.name}"></a></td>
-                                        <td><a class="link" th:href="@{ ${jobs.job.server.url} + 'job/' + ${jobs.job.name}}" target="_blank"> +</a></td>
-                                        <td th:text="${jobs.buildTime}">Build time</td>
+                                        <td th:text="${jobDetail.job.server.name}">Server</td>
+                                        <td><a class="link" th:href="@{'/flow/job/'  + ${jobDetail.job.id}}" th:text="${jobDetail.job.name}"></a></td>
+                                        <td><a class="link" th:href="@{ ${jobDetail.job.server.url} + 'job/' + ${jobDetail.job.name}}" target="_blank"> +</a></td>
+                                        <td th:text="${jobDetail.buildTime}">Build time</td>
                                         <td>
                                             <div sec:authorize="isAuthenticated()">                            
                                                 <button class="btn btn-generic btn-xs pull-right" 
-                                                        th:if="${jobs.job.enabled}"
-                                                        th:attr="onclick='buildJob('+${jobs.job.id} + ', \'' + ${jobs.job.name} + '\');'">
+                                                        th:if="${jobDetail.job.enabled}"
+                                                        th:attr="onclick='buildJob('+${jobDetail.job.id} + ', \'' + ${jobDetail.job.name} + '\');'">
 
                                                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Build
                                                 </button>

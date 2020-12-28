@@ -44,6 +44,7 @@
                                     <th style="width:1%" class="no-sort"></th>
                                     <th style="width:1%" class="no-sort"></th>
                                     <th style="width:1%" class="no-sort"></th>
+                                    <th style="width:1%" class="no-sort"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -70,8 +71,15 @@
                                     </td>
                                     </td>
                                     <td th:text="${jobDetail.job.server.name}">Server</td>
-                                    <td>
-                                        <a class="link" th:href="@{'/flow/job/'  + ${jobDetail.job.id}}" th:text="${jobDetail.job.displayName}"></a>
+                                    <td>                                        
+                                        <button 
+                                            class="btn btn-link btn-sm hanger-no-border " 
+                                            th:text="${jobDetail.job.displayName}" 
+                                            title="Show relatives detail." 
+                                            th:id="'modal_parents_details_' + ${jobDetail.job.id}" 
+                                            th:attr="onclick='showParentsDetails(' + ${jobDetail.job.id} + ');'"
+                                            th:value="${jobDetail.job.id}">                                    
+                                        </button>
                                     </td>
                                     <div th:switch="${#lists.isEmpty(jobDetail.warning)}">
                                         <div th:case="true">
@@ -111,7 +119,12 @@
                                                 <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Build
                                             </button>
                                         </div>
-                                    </td>                            
+                                    </td>     
+                                    <td>
+                                        <a th:href="@{'/flow/job/'  + ${jobDetail.job.id}}" class="btn btn-generic btn-xs">
+                                            <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Flow
+                                        </a>  
+                                    </td>
                                     <td>
                                         <a th:href="@{'/job/view/' + ${jobDetail.job.id}}" class="btn btn-generic btn-xs">
                                             <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> See
@@ -201,6 +214,29 @@
                             },
                             error: function (e) {
                                 toastr.error('Error on building request of ' + name);
+                            }
+                        });
+                    }
+
+                    /**
+                     * Show the job parents details.
+                     * 
+                     * @param {type} id
+                     * @returns {undefined}
+                     */
+                    function showParentsDetails(id) {
+                        var url = /*[[@{/flow/modal/parents/details/}]]*/ "/flow/modal/parents/details/1";
+
+                        $.ajax({
+                            type: "GET",
+                            url: url + id,
+                            timeout: 30000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalParentsDetails").modal({backdrop: 'static', keyboard: false});
+                            },
+                            error: function (e) {
+                                alert("Fail loading job parents " + e);
                             }
                         });
                     }

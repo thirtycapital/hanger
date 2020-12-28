@@ -134,16 +134,9 @@ public class MonitorController {
             Model model,
             HttpServletRequest request,
             @RequestParam(value = "status", required = false, defaultValue = "") List<String> status) {
-        List<Job> jobs;
-
-        if (status.size() > 0) {
-            jobs = subjectDetailsService.getFilteredJobs((List) jobService.list(), status);
-        } else {
-            jobs = (List) jobService.list();
-        }
 
         modelDefault(model);
-        modelDetails(model, new Subject(), principal, jobs);
+        modelDetails(model, new Subject(), principal, (List) jobService.list(), status);
 
         return "monitor/monitor";
     }
@@ -153,6 +146,7 @@ public class MonitorController {
      *
      * @param model Model
      * @param subject Subject
+     * @param principal Principal
      * @param jobs Jobs
      */
     private void modelDetails(
@@ -160,6 +154,25 @@ public class MonitorController {
             Subject subject,
             Principal principal,
             List<Job> jobs) {
+
+        this.modelDetails(model, subject, principal, jobs, new ArrayList());
+    }
+
+    /**
+     * Model details
+     *
+     * @param model Model
+     * @param subject Subject
+     * @param principal Principal
+     * @param jobs Jobs
+     * @param status Status
+     */
+    private void modelDetails(
+            Model model,
+            Subject subject,
+            Principal principal,
+            List<Job> jobs,
+            List<String> status) {
 
         model.addAttribute("currentSubject", subject);
 
@@ -171,6 +184,7 @@ public class MonitorController {
             //Sorts details. 
             jobDetails = jobDetails
                     .stream()
+                    .filter(a -> status.isEmpty() || status.contains(a.getStatus().toString()))
                     .sorted((a, b) -> (a.getJob().getName().compareTo(b.getJob().getName())))
                     .sorted((a, b) -> a.getStatus().toString().compareTo(b.getStatus().toString())).collect(Collectors.toList());
 

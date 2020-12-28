@@ -39,7 +39,7 @@
                                     <th style="width:1.5%" class="no-sort"><span class="glyphicon glyphicon-link" title="Link"></span></th>
                                     <th style="width:1.5%"><span class="glyphicon glyphicon-heart-empty" title="Check-Up"></span></th>
                                     <th style="width:16%">Updated</th>
-                                    <th style="width:18%">Permission</th>
+                                    <th style="width:18%">Rule</th>
                                     <th style="width:1%" class="no-sort"></th>
                                     <th style="width:1%" class="no-sort"></th>
                                     <th style="width:1%" class="no-sort"></th>
@@ -109,7 +109,7 @@
                                         </div>                                
                                     </td>
                                     <td th:text="${jobDetail.buildTime}">Updated</td>
-                                    <td th:text="${jobDetail.scope}">Permission</td>
+                                    <td th:text="${jobDetail.scope}">Rule</td>
                                     <td>
                                         <div sec:authorize="isAuthenticated()">                            
                                             <button class="btn btn-generic btn-xs pull-right" 

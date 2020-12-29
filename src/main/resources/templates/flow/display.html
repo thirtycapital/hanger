@@ -85,6 +85,7 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <!--WAITING-->
                                 <tr>
                                     <td><span class="label label-neutral">WAITING</span></td>
                                     <td>Job was not built today yet</td>
@@ -97,6 +98,8 @@
                                     <td><span class="label label-default">DISABLED</span></td>
                                     <td>Job is disabled</td>
                                 </tr>   
+
+                                <!--SUCCESS-->
                                 <tr>
                                     <td><span class="label label-partial">PARTIAL</span></td>
                                     <td>Job builded with partial dependencies</td>
@@ -106,9 +109,15 @@
                                     <td>Job build finished successfully</td>
                                 </tr>
                                 <tr>
+                                    <td><span class="label label-success">UNSTABLE</span></td>
+                                    <td>Job build finished successfully but failed at least one time during the day</td>
+                                </tr>
+                                <tr>
                                     <td><span class="label label-success">APPROVED</span></td>
                                     <td>Unhealthy job approved to continue</td>
                                 </tr> 
+
+                                <!--RUNNING-->
                                 <tr>
                                     <td><span class="label label-primary">REBUILD</span></td>
                                     <td>Job is being prepared</td>
@@ -118,13 +127,11 @@
                                     <td>Job is running</td>
                                 </tr>
                                 <tr>
-                                    <td><span class="label label-info">UNSTABLE</span></td>
-                                    <td>Job build finished successfully but failed at least one time during the day</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="label label-warning">CHECKUP</span></td>
+                                    <td><span class="label label-primary">CHECKUP</span></td>
                                     <td>Job checkups are running</td>
                                 </tr>
+
+                                <!--FAILURE-->
                                 <tr>
                                     <td><span class="label label-danger">UNHEALTHY</span></td>
                                     <td>Post-validation job checkup failed</td>

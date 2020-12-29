@@ -40,29 +40,23 @@
                                         multiple="true" 
                                         th:checked="SUCCESS">
 
-                                    <!--neutral -->
+                                    <!--WAITING-->
                                     <option data-content="<span class='label label-neutral'>WAITING</span>" value="WAITING">WAITING</option>
                                     <option data-content="<span class='label label-neutral'>RESTRICTED</span>" value="RESTRICTED">RESTRICTED</option>
                                     <option data-content="<span class='label label-neutral'>DISABLED</span>" value="DISABLED">DISABLED</option> 
 
-                                    <!--partial -->
-                                    <option data-content="<span class='label label-partial'>PARTIAL</span>" value="PARTIAL">PARTIAL</option> 
-
-                                    <!--success -->
-                                    <option data-content="<span class='label label-success'>SUCCESS</span>" value="SUCCESS">SUCCESS</option>                                    
+                                    <!--SUCCESS-->
+                                    <option data-content="<span class='label label-success'>PARTIAL</span>" value="PARTIAL">PARTIAL</option> 
+                                    <option data-content="<span class='label label-success'>SUCCESS</span>" value="SUCCESS">SUCCESS</option>                                 
+                                    <option data-content="<span class='label label-success'>UNSTABLE</span>" value="UNSTABLE">UNSTABLE</option>
                                     <option data-content="<span class='label label-success'>APPROVED</span>" value="APPROVED">APPROVED</option> 
 
-                                    <!--info -->
-                                    <option data-content="<span class='label label-info'>UNSTABLE</span>" value="UNSTABLE">UNSTABLE</option>
-
-                                    <!--primary -->
-                                    <option data-content="<span class='label label-primary'>BUILDING</span>" value="BUILDING">BUILDING</option>
+                                    <!--RUNNING-->
+                                    <option data-content="<span class='label label-primary'>REBUILD</span>" value="REBUILD">REBUILD</option>
                                     <option data-content="<span class='label label-primary'>RUNNING</span>"  value="RUNNING">RUNNING</option>
+                                    <option data-content="<span class='label label-primary'>CHECKUP</span>" value="CHECKUP">CHECKUP</option> 
 
-                                    <!--warning -->
-                                    <option data-content="<span class='label label-warning'>CHECKUP</span>" value="CHECKUP">CHECKUP</option> 
-
-                                    <!--danger-->
+                                    <!--FAILURE-->
                                     <option data-content="<span class='label label-danger'>UNHEALTHY</span>" value="UNHEALTHY">UNHEALTHY</option> 
                                     <option data-content="<span class='label label-danger'>BLOCKED</span>" value="BLOCKED">BLOCKED</option> 
                                     <option data-content="<span class='label label-danger'>FAILURE</span>" value="FAILURE">FAILURE</option> 

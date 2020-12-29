@@ -109,12 +109,12 @@ public class Watchdog {
                     //Identifies jobs waiting forever. 
                     if (status.equals(Status.WAITING)) {
                         //Identifies if parents were builded at least 10 minutes ago.
-                        boolean buildable = !job.getParent().stream().filter(
-                                jobParent
-                                -> jobParent.getParent().getStatus() != null
-                                && jobParent.getParent().getStatus().getBuild() != null
-                                && Minutes.minutesBetween(new LocalDateTime(jobParent.getParent().getStatus().getBuild().getDate()), new LocalDateTime()).getMinutes() >= 10
-                        ).collect(Collectors.toList()).isEmpty();
+                        boolean buildable = !job.getParent().stream()
+                                .filter(
+                                        jobParent -> jobParent.getParent().getStatus() != null
+                                        && jobParent.getParent().getStatus().getBuild() != null
+                                        && Minutes.minutesBetween(new LocalDateTime(jobParent.getParent().getStatus().getBuild().getDate()), new LocalDateTime()).getMinutes() >= 10
+                                ).collect(Collectors.toList()).isEmpty();
 
                         if (buildable
                                 && jobBuildPushService.getPushInfo(job).isReady()) {

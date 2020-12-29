@@ -57,8 +57,8 @@
                                     <td>                                        
                                         <button 
                                             class="btn btn-link btn-sm hanger-no-border " 
-                                            th:text="${jobDetail.job.displayName}" 
-                                            title="Show relatives detail." 
+                                            th:text="${ #strings.abbreviate( jobDetail.job.displayName, 65 ) }" 
+                                            th:title="${'Show dependencies status of ' + jobDetail.job.displayName}" 
                                             th:id="'modal_parents_details_' + ${jobDetail.job.id}" 
                                             th:attr="onclick='showParentsDetails(' + ${jobDetail.job.id} + ');'"
                                             th:value="${jobDetail.job.id}">                                    

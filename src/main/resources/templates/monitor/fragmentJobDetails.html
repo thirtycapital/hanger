@@ -52,19 +52,24 @@
                                     <td>
                                         <th:block th:include="monitor/fragmentJobStatus :: jobStatus(${jobDetail})"></th:block>
                                     </td>
-                                    </td>
                                     <td th:text="${jobDetail.job.server.name}">Server</td>
-                                    <td>                                        
-                                        <button 
-                                            class="btn btn-link btn-sm hanger-no-border " 
-                                            th:text="${ #strings.abbreviate( jobDetail.job.displayName, 65 ) }" 
-                                            th:title="${'Show dependencies status of ' + jobDetail.job.displayName}" 
-                                            th:id="'modal_parents_details_' + ${jobDetail.job.id}" 
-                                            th:attr="onclick='showParentsDetails(' + ${jobDetail.job.id} + ');'"
-                                            th:value="${jobDetail.job.id}">                                    
-                                        </button>
-                                    </td>
-                                    <div th:switch="${#lists.isEmpty(jobDetail.warning)}">
+                                    <th:block th:switch="${ not #lists.isEmpty(jobDetail.job.parent)}"> 
+                                        <td th:case="true"> 
+                                            <button 
+                                                class="btn btn-link btn-sm hanger-no-border" 
+                                                th:text="${ #strings.abbreviate( jobDetail.job.displayName, 65 ) }" 
+                                                th:title="${'Show dependencies status of ' + jobDetail.job.displayName}" 
+                                                th:id="'modal_parents_details_' + ${jobDetail.job.id}" 
+                                                th:attr="onclick='showParentsDetails(' + ${jobDetail.job.id} + ');'"
+                                                th:value="${jobDetail.job.id}">                                    
+                                            </button>
+                                        </td>
+
+                                        <td th:case="false" 
+                                            th:text="${ #strings.abbreviate( jobDetail.job.displayName, 65 ) }"> Job 
+                                        </td>
+                                    </th:block>
+                                    <th:block th:switch="${#lists.isEmpty(jobDetail.warning)}">
                                         <div th:case="true">
                                             <div th:if="${#lists.isEmpty(jobDetail.warning)}">
                                                 <td></td>
@@ -80,7 +85,7 @@
                                                         th:value="${jobDetail.job.id}">[[${#lists.size(jobDetail.warning)}]]</button>
                                             </td>
                                         </div>
-                                    </div>
+                                    </th:block>
                                     <td>
                                         <a class="link node-link" th:href="@{ ${jobDetail.job.server.url} + 'job/' + ${jobDetail.job.name}}" target="_blank"> +</a>
                                     </td>

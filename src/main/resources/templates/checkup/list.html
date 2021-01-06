@@ -238,17 +238,17 @@
             var chart = new Chart(context, {
                 type: 'line',
                 data: {
-                    labels: labels,
+                    labels: labels.reverse(),
                     datasets: [{
                             label: 'Result',
-                            data: results,
+                            data: results.reverse(),
                             fill: false,
                             backgroundColor: '#337ab7',
                             borderColor: '#337ab7'
                         },
                         {
                             label: 'Threshold',
-                            data: thresholds,
+                            data: thresholds.reverse(),
                             fill: false,
                             backgroundColor: '#ececec',
                             borderColor: '#6C6C6C',

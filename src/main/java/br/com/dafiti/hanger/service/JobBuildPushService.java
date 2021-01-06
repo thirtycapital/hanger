@@ -154,7 +154,7 @@ public class JobBuildPushService {
         Map<Job, Boolean> all = new HashMap();
         Map<Job, Boolean> partial = new HashMap();
 
-        //Identify the job is getPushInfo.
+        //Identifies the job is getPushInfo.
         boolean built = jobBuildStatusService.isBuildable(job);
 
         if (built) {
@@ -162,33 +162,31 @@ public class JobBuildPushService {
             List<JobParent> parents = job.getParent();
 
             for (JobParent parent : parents) {
-                //Identify if the parent is optional. 
-                built = parent.getScope().equals(Scope.OPTIONAL);
+                //Identifies if the parent is enabled. 
+                if (parent.getParent().isEnabled()) {
+                    //Identifies if the parent is optional. 
+                    built = parent.getScope().equals(Scope.OPTIONAL);
 
-                //Identify if the parent is built.
-                if (!built) {
-                    built = jobBuildStatusService.isBuilt(parent.getParent(), job.isAnyScope());
-
+                    //Identifies if the parent is built.
                     if (!built) {
-                        //Identify if the parent is disabled.
-                        built = !(parent.getParent().isEnabled());
+                        built = jobBuildStatusService.isBuilt(parent.getParent(), job.isAnyScope());
                     }
-                }
 
-                //Record all parent build status.
-                all.put(parent.getParent(), built);
+                    //Record all parent build status.
+                    all.put(parent.getParent(), built);
 
-                //Record partial dependencies build status.
-                if (parent.getScope().equals(Scope.PARTIAL)) {
-                    partial.put(parent.getParent(), built);
+                    //Record partial dependencies build status.
+                    if (parent.getScope().equals(Scope.PARTIAL)) {
+                        partial.put(parent.getParent(), built);
+                    }
                 }
             }
 
-            //Identify if there are only healthy dependencies. 
+            //Identifies if there are only healthy dependencies. 
             boolean full = partial.isEmpty();
 
             if (full) {
-                //Identify if healthy dependencies was built successfully. 
+                //Identifies if healthy dependencies was built successfully. 
                 for (Map.Entry<Job, Boolean> entry : all.entrySet()) {
                     ready = entry.getValue();
 
@@ -197,7 +195,7 @@ public class JobBuildPushService {
                     }
                 }
 
-                //Identify the scope.
+                //Identifies the scope.
                 if (ready) {
                     scope = Scope.FULL;
                 }
@@ -205,7 +203,7 @@ public class JobBuildPushService {
                 //Log the full dependencies status.
                 LOG.log(Level.INFO, "FULL -> Job={}, scope={}, ready={}, dependencies={}", new Object[]{job.getName(), scope, ready, all});
             } else {
-                //Identify if all dependencies was built successfully.
+                //Identifies if all dependencies was built successfully.
                 for (Map.Entry<Job, Boolean> entry : all.entrySet()) {
                     full = entry.getValue();
 

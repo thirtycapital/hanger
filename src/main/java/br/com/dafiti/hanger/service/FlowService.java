@@ -239,37 +239,32 @@ public class FlowService {
         String label = "";
 
         switch (jobDetails.getStatus()) {
-            case REBUILD:
-            case RUNNING:
-                label = "label label-primary";
+            case WAITING:
+            case RESTRICTED:
+            case DISABLED:
+                label = "label label-neutral";
                 break;
+
             case PARTIAL:
-                label = "label label-partial";
-                break;
             case SUCCESS:
+            case UNSTABLE:
             case APPROVED:
                 label = "label label-success";
                 break;
-            case ABORTED:
-            case FAILURE:
-            case UNHEALTHY:
-            case ERROR:
-            case BLOCKED:
-            case DISAPPROVED:
-                label = "label label-danger";
-                break;
-            case DISABLED:
-                label = "label label-default";
-                break;
-            case UNSTABLE:
-                label = "label label-info";
-                break;
+
+            case REBUILD:
+            case RUNNING:
             case CHECKUP:
-                label = "label label-warning";
+                label = "label label-primary";
                 break;
-            case RESTRICTED:
-            case WAITING:
-                label = "label label-neutral";
+
+            case UNHEALTHY:
+            case BLOCKED:
+            case FAILURE:
+            case ABORTED:
+            case DISAPPROVED:
+            case ERROR:
+                label = "label label-danger";
                 break;
         }
 

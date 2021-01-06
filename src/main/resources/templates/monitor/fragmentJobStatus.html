@@ -22,7 +22,7 @@
                     <!--RUNNING-->
                     <span th:case="${T(br.com.dafiti.hanger.option.Status).REBUILD}" class="label label-primary" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
                     <span th:case="${T(br.com.dafiti.hanger.option.Status).RUNNING}" class="label label-primary" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                    <span th:case="${T(br.com.dafiti.hanger.option.Status).CHECKUP}" class="label label-warning" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
+                    <span th:case="${T(br.com.dafiti.hanger.option.Status).CHECKUP}" class="label label-primary" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
 
                     <!--FAILURE-->
                     <span th:case="${T(br.com.dafiti.hanger.option.Status).UNHEALTHY}" class="label label-danger" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>

@@ -125,7 +125,7 @@
 
                     <div class="tab-content">
                         <div th:id="'chart_tab' + ${checkup.id}" class="tab-pane fade active in">
-                            <canvas th:id="'chart' + ${checkup.id}" height='80'></canvas>
+                            <canvas th:id="'chart' + ${checkup.id}" height='60'></canvas>
                         </div>
 
                         <div th:id="'table_tab' + ${checkup.id}" class="tab-pane fade in">
@@ -229,9 +229,14 @@
             </div>
         </div>
         <script th:inline="javascript">
+            //START THYMELEAF MACRO
             /*<![CDATA[*/
-
+            
+            //START CHECKUP LOOP
             /*[# th:each="checkup, checkupStat : ${job.checkup}"]*/
+
+            //START CHECKUP ENABLED
+            /*[# th:if="${checkup.enabled}"]*/
 
             var chart = 'chart' + /*[[${checkup.id}]]*/;
             var context = document.getElementById(chart).getContext('2d');
@@ -318,6 +323,10 @@
             //Updates the graph. 
             chart.update();
 
+            //END CHECKUP ENABLED
+            /*[/]*/
+            
+            //END CHECKUP LOOP
             /*[/]*/
 
             Prism.plugins.NormalizeWhitespace.setDefaults({
@@ -331,6 +340,7 @@
                 new ClipboardJS('.btn-copy');
             });
 
+            //END THYMELEAF MACRO
             /*]]>*/
         </script>
     </body>

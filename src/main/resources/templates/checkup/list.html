@@ -117,7 +117,7 @@
 
                 <div class="tab-content">
                     <div th:id="'chart_tab' + ${checkup.id}" class="tab-pane fade active in">
-                        <canvas th:id="'chart' + ${checkup.id}" height='90'></canvas>
+                        <canvas th:id="'chart' + ${checkup.id}" height='80'></canvas>
                     </div>
 
                     <div th:id="'table_tab' + ${checkup.id}" class="tab-pane fade in">
@@ -244,7 +244,11 @@
                             data: results.reverse(),
                             fill: false,
                             backgroundColor: '#337ab7',
-                            borderColor: '#337ab7'
+                            borderColor: '#337ab7',
+                            datalabels: {
+                                align: 'end',
+                                anchor: 'end'
+                            }
                         },
                         {
                             label: 'Threshold',
@@ -252,16 +256,29 @@
                             fill: false,
                             backgroundColor: '#ececec',
                             borderColor: '#6C6C6C',
-                            borderDash: [5, 5]
+                            borderDash: [5, 5],
+                            datalabels: {
+                                display: false
+                            }
                         }]
                 },
                 options: {
                     scales: {
                         yAxes: [{
                                 ticks: {
-                                    beginAtZero: true
+                                    beginAtZero: true,
                                 }
                             }]
+                    },
+                    plugins: {
+                        datalabels: {
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function (value, context) {
+                                return Math.round(value * 100) / 100;
+                            }
+                        }
                     }
                 }
             });

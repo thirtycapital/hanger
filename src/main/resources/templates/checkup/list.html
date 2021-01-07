@@ -82,25 +82,32 @@
                 </fieldset>
             </div>
 
-            <div th:if="${not #lists.isEmpty(job.checkup) and not #lists.isEmpty(checkup.log) }" th:each="checkup, checkupStat : ${job.checkup}">  
-                <div th:if="${checkup.enabled}">  
-                    <fieldset>
-                        <legend class="space-top" th:inline="text">
+            <div th:if="${not #lists.isEmpty(job.checkup)}" th:each="checkup, checkupStat : ${job.checkup}">
+                <fieldset>
+                    <legend class="space-top" th:inline="text">                        
+                        <span th:style="${! checkup.enabled} ? 'color: #bebebe' : ''">
                             [[${ checkup.name + '  |  ' + ( checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION' ) + '  |  ' + checkup.conditional+ ' | ' + checkup.action }]]
+
+                            [# th:if="${!checkup.enabled}" ]
+                            [Disabled]
+                            [/]
+
                             <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Open the query in workbench" target="_blank">
                                 <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
                             </a>
-                        </legend>
-                    </fieldset>
+                        </span>
+                    </legend>
+                </fieldset>
 
-                    <div th:if="${checkup.description != null and checkup.description != ''}">
-                        <div class="form-group">
-                            <div 
-                                class="italic" 
-                                th:utext="${checkup.getHTMLDescription()}"></div>
-                        </div>
+                <div th:if="${checkup.description != null and checkup.description != '' and checkup.enabled}">
+                    <div class="form-group">
+                        <div 
+                            class="italic" 
+                            th:utext="${checkup.getHTMLDescription()}"></div>
                     </div>
+                </div>
 
+                <div th:if="${checkup.enabled and not #lists.isEmpty(checkup.log)}">
                     <div> 
                         <ul class="nav nav-pills">                    
                             <li class="active">
@@ -138,7 +145,7 @@
                                 </thead>
 
                                 <tbody>
-                                    <tr class="checkup-row" th:each="checkupLog, checkupLogStat : ${checkup.log}" th:unless="${checkupLogStat.index > 49}">
+                                    <tr class="checkup-row" th:each="checkupLog, checkupLogStat : ${checkup.log}" th:unless="${checkupLogStat.index > 29}">
                                         <td>
                                             <th:block th:switch="${checkupLog.success}">
                                                 <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
@@ -215,6 +222,10 @@
                         </div>
                     </div>
                 </div>
+
+                <div th:if="${checkup.enabled and #lists.isEmpty(checkup.log)}" class="alert alert-light">
+                    <span>No Data</span>
+                </div>
             </div>
         </div>
         <script th:inline="javascript">
@@ -230,7 +241,7 @@
             var thresholds = [];
             var statuses = [];
 
-            /*[# th:each="checkupLog, checkupLogStat : ${checkup.log}"]*/
+            /*[# th:each="checkupLog, checkupLogStat : ${checkup.log}" th:unless="${checkupLogStat.index > 29}"]*/
 
             labels.push(/*[[${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}]]*/);
             results.push(/*[[${checkupLog.value}]]*/);

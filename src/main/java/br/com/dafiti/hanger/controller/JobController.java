@@ -1161,7 +1161,7 @@ public class JobController {
         job.setEnabled(!enabled);
         jobService.save(job);
         jenkinsService.updateJob(job);
-
+      
         return "flow/display";
     }
 

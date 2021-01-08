@@ -236,7 +236,7 @@
             /*[# th:each="checkup, checkupStat : ${job.checkup}"]*/
 
             //START CHECKUP ENABLED
-            /*[# th:if="${checkup.enabled}"]*/
+            /*[# th:if="${checkup.enabled and not #lists.isEmpty(checkup.log)}"]*/
 
             var chart = 'chart' + /*[[${checkup.id}]]*/;
             var context = document.getElementById(chart).getContext('2d');

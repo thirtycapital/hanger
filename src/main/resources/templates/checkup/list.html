@@ -231,7 +231,7 @@
         <script th:inline="javascript">
             //START THYMELEAF MACRO
             /*<![CDATA[*/
-            
+
             //START CHECKUP LOOP
             /*[# th:each="checkup, checkupStat : ${job.checkup}"]*/
 
@@ -265,13 +265,14 @@
                             label: 'Result',
                             data: results.reverse(),
                             fill: false,
-                            backgroundColor: '#337ab7',
-                            borderColor: '#337ab7',
+                            backgroundColor: '#25CED1',
+                            borderColor: '#25CED1',
                             datalabels: {
                                 align: 'end',
                                 anchor: 'end'
                             },
                             pointBackgroundColor: pointBackgroundColors,
+                            pointBorderColor: pointBackgroundColors,
                             pointRadius: 5,
                             borderWidth: 1
                         },
@@ -282,7 +283,8 @@
                             backgroundColor: '#ececec',
                             borderColor: '#6C6C6C',
                             borderDash: [5, 5],
-                            borderWidth: 2,
+                            borderWidth: 1,
+                            pointRadius: 2,
                             datalabels: {
                                 display: false
                             }
@@ -305,6 +307,17 @@
                                 return Math.round(value * 100) / 100;
                             }
                         }
+                    },
+                    legend: {
+                        display: false
+                    },
+                    layout: {
+                        padding: {
+                            left: 10,
+                            right: 10,
+                            top: 30,
+                            bottom: 10
+                        }
                     }
                 }
             });
@@ -325,7 +338,7 @@
 
             //END CHECKUP ENABLED
             /*[/]*/
-            
+
             //END CHECKUP LOOP
             /*[/]*/
 

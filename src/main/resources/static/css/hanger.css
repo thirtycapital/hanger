@@ -46,20 +46,45 @@ label {
 }
 
 .label-success {
-    background-color: #20b2aa;
+    color: #006644;
+    background-color: #E3FCEF;
+    font-size: 11px;
 }
 
 .label-warning {
-    background-color: #ffa500;
+    background-color: #fff8eb;
+    color: #b87700;
+    font-size: 11px;
 }
 
 .label-danger {
-    background-color: #dd424a;
+    background-color: #fbe8e9;
+    color: #dd424a;
+    font-size: 11px;
 }
 
-.label-neutral {
-    background-color: #e5e8ec;
-    color: #808080;
+.label-neutral, .label-default{
+    background-color: #ececec;
+    color: #6c6c6c;
+    font-size: 11px;
+}
+
+.label-primary{
+    background-color: #fffdeb;
+    color: #c4b000;  
+    font-size: 11px;
+}
+
+.label-partial{
+    color: #006644;
+    background: #E3FCEF;  
+    font-size: 11px;
+}
+
+.label-info {
+    background-color: #ebfcff;
+    color: #00869d;
+    font-size: 11px;
 }
 
 legend{
@@ -414,7 +439,7 @@ code[class*="language-free"] {
 
 .Treant .collapse-switch { width: 10px; height: 100%; border: none; left: 1px; background: #F4F5F7; }
 .Treant .node.collapsed {  border: dotted; border-color: #999999; border-width: 1px }
-.Treant .node.collapsed .collapse-switch { background: #337ab7; }
+.Treant .node.collapsed .collapse-switch { background: #F4F5F7;}
 
 .status {
     width: 25px;
@@ -752,7 +777,7 @@ input[type=radio]:checked + img {
 
 h3.page-title {
     color:#373e46;
-    font-size: 25px;
+    font-size: 20px;
 }
 
 .btn-delete {
@@ -779,13 +804,13 @@ h3.page-title {
     background-color: #337ab7;
 }
 
-.btn-approval {
+.btn-notice {
     color: #d65549;
     border: 1px solid #D8D8D8;    
     background-color: transparent;
 }
 
-.btn-approval:hover {
+.btn-notice:hover {
     color: #ffffff;
     border: 1px solid #D8D8D8;
     background-color: #d65549;
@@ -1114,9 +1139,4 @@ label.radio-generic:hover
     color: #818182;
     background-color: #f6faff;
     border-color: #eee;
-}
-
-.label-primary{
-    background-color: #F6F558;
-    color: #373E46;  
 }

@@ -39,7 +39,8 @@
                                     <th style="width:1.5%" class="no-sort"><span class="glyphicon glyphicon-link" title="Link"></span></th>
                                     <th style="width:1.5%"><span class="glyphicon glyphicon-heart-empty" title="Check-Up"></span></th>
                                     <th style="width:16%">Updated</th>
-                                    <th style="width:18%">Scope</th>
+                                    <th style="width:18%">Rule</th>
+                                    <th style="width:1%" class="no-sort"></th>
                                     <th style="width:1%" class="no-sort"></th>
                                     <th style="width:1%" class="no-sort"></th>
                                     <th style="width:1%" class="no-sort"></th>
@@ -49,30 +50,26 @@
                             <tbody>
                                 <tr th:each="jobDetail : ${swimlane.value}">
                                     <td>
-                                        <th:block th:switch="${jobDetail.status}">
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).REBUILD}" class="label label-primary" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).RUNNING}" class="label label-primary" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).SUCCESS}" class="label label-success" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).ABORTED}" class="label label-danger" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).FAILURE}" class="label label-danger" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).UNHEALTHY}" class="label label-danger" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).ERROR}" class="label label-danger" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).BLOCKED}" class="label label-danger" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).APPROVED}" class="label label-success" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).DISAPPROVED}" class="label label-danger" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).DISABLED}" class="label label-default" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).UNSTABLE}" class="label label-info" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).CHECKUP}" class="label label-warning" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).RESTRICTED}" class="label label-neutral" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                            <span th:case="${T(br.com.dafiti.hanger.option.Status).WAITING}" class="label label-neutral" th:attr="alt=${ jobDetail.status }" th:title="${jobDetail.status}" th:text="${jobDetail.status}"></span>
-                                        </th:block>
-                                    </td>
+                                        <th:block th:include="monitor/fragmentJobStatus :: jobStatus(${jobDetail})"></th:block>
                                     </td>
                                     <td th:text="${jobDetail.job.server.name}">Server</td>
-                                    <td>
-                                        <a class="link" th:href="@{'/flow/job/'  + ${jobDetail.job.id}}" th:text="${jobDetail.job.displayName}"></a>
-                                    </td>
-                                    <div th:switch="${#lists.isEmpty(jobDetail.warning)}">
+                                    <th:block th:switch="${ not #lists.isEmpty(jobDetail.job.parent)}"> 
+                                        <td th:case="true"> 
+                                            <button 
+                                                class="btn btn-link btn-sm hanger-no-border" 
+                                                th:text="${ #strings.abbreviate( jobDetail.job.displayName, 65 ) }" 
+                                                th:title="${'Show dependencies status of ' + jobDetail.job.displayName}" 
+                                                th:id="'modal_parents_details_' + ${jobDetail.job.id}" 
+                                                th:attr="onclick='showParentsDetails(' + ${jobDetail.job.id} + ');'"
+                                                th:value="${jobDetail.job.id}">                                    
+                                            </button>
+                                        </td>
+
+                                        <td th:case="false" 
+                                            th:text="${ #strings.abbreviate( jobDetail.job.displayName, 65 ) }"> Job 
+                                        </td>
+                                    </th:block>
+                                    <th:block th:switch="${#lists.isEmpty(jobDetail.warning)}">
                                         <div th:case="true">
                                             <div th:if="${#lists.isEmpty(jobDetail.warning)}">
                                                 <td></td>
@@ -88,7 +85,7 @@
                                                         th:value="${jobDetail.job.id}">[[${#lists.size(jobDetail.warning)}]]</button>
                                             </td>
                                         </div>
-                                    </div>
+                                    </th:block>
                                     <td>
                                         <a class="link node-link" th:href="@{ ${jobDetail.job.server.url} + 'job/' + ${jobDetail.job.name}}" target="_blank"> +</a>
                                     </td>
@@ -100,7 +97,7 @@
                                         </div>                                
                                     </td>
                                     <td th:text="${jobDetail.buildTime}">Updated</td>
-                                    <td th:text="${jobDetail.scope}">Scope</td>
+                                    <td th:text="${jobDetail.scope}">Rule</td>
                                     <td>
                                         <div sec:authorize="isAuthenticated()">                            
                                             <button class="btn btn-generic btn-xs pull-right" 
@@ -110,7 +107,12 @@
                                                 <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Build
                                             </button>
                                         </div>
-                                    </td>                            
+                                    </td>     
+                                    <td>
+                                        <a th:href="@{'/flow/job/'  + ${jobDetail.job.id}}" class="btn btn-generic btn-xs">
+                                            <span class="glyphicon glyphicon-random" aria-hidden="true"></span> Flow
+                                        </a>  
+                                    </td>
                                     <td>
                                         <a th:href="@{'/job/view/' + ${jobDetail.job.id}}" class="btn btn-generic btn-xs">
                                             <span class="glyphicon glyphicon-unchecked" aria-hidden="true"></span> See
@@ -129,7 +131,7 @@
                                     </td>
                                     <td>
                                         <div th:if="${jobDetail.approval}">
-                                            <a class="btn btn-approval btn-xs pull-right" th:href="@{'/approval/approval/'+${jobDetail.job.id} }" title="Approval" target="_blank">
+                                            <a class="btn btn-notice btn-xs pull-right" th:href="@{'/approval/approval/'+${jobDetail.job.id} }" title="Approval" target="_blank">
                                                 <span class="glyphicon glyphicon-check"></span> Approval
                                             </a>
                                         </div>
@@ -200,6 +202,29 @@
                             },
                             error: function (e) {
                                 toastr.error('Error on building request of ' + name);
+                            }
+                        });
+                    }
+
+                    /**
+                     * Show the job parents details.
+                     * 
+                     * @param {type} id
+                     * @returns {undefined}
+                     */
+                    function showParentsDetails(id) {
+                        var url = /*[[@{/flow/modal/parents/details/}]]*/ "/flow/modal/parents/details/1";
+
+                        $.ajax({
+                            type: "GET",
+                            url: url + id,
+                            timeout: 30000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalParentsDetails").modal({backdrop: 'static', keyboard: false});
+                            },
+                            error: function (e) {
+                                alert("Fail loading job parents " + e);
                             }
                         });
                     }

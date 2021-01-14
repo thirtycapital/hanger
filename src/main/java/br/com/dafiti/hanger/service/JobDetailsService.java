@@ -29,6 +29,7 @@ import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.JobStatus;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Phase;
+import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.option.Status;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
@@ -145,16 +146,22 @@ public class JobDetailsService {
                             break;
 
                         default:
-                            //Identify if the build is running. 
+                            //Identifies if the build is running. 
                             if (jobBuild.getPhase().equals(Phase.FINALIZED)
                                     || (jobBuild.getStatus().equals(Status.FAILURE) || jobBuild.getStatus().equals(Status.ABORTED))) {
 
                                 status = jobBuild.getStatus();
 
                                 if (jobBuild.getStatus().equals(Status.SUCCESS)) {
-                                    if (jobStatus.getFailureTimestamp() != null) {
-                                        if (Days.daysBetween(new LocalDate(jobStatus.getFailureTimestamp()), new LocalDate()).getDays() == 0) {
-                                            status = Status.UNSTABLE;
+                                    //Identifies it was builded partially.
+                                    if (jobStatus.getScope().equals(Scope.PARTIAL)) {
+                                        status = Status.PARTIAL;
+                                    } else {
+                                        //Identifies if fail at least once today. 
+                                        if (jobStatus.getFailureTimestamp() != null) {
+                                            if (Days.daysBetween(new LocalDate(jobStatus.getFailureTimestamp()), new LocalDate()).getDays() == 0) {
+                                                status = Status.UNSTABLE;
+                                            }
                                         }
                                     }
                                 }
@@ -243,9 +250,8 @@ public class JobDetailsService {
 
             //Identifi if the job scope. 
             scope
-                    .append(jobStatus.getScope().toString())
-                    .append(job.isAnyScope() ? " | FREE SCOPE " : "")
-                    .append(job.isRebuild() ? " | REBUILD " + (job.isRebuildBlocked() ? "after all blockers ready " : "") + (job.getWait() != 0 ? "once every " + job.getWait() + " min" : "") : "")
+                    .append(job.isAnyScope() ? " FREE SCOPE " : "")
+                    .append(job.isRebuild() ? " REBUILD " + (job.isRebuildBlocked() ? "after all blockers ready " : "") + (job.getWait() != 0 ? "once every " + job.getWait() + " min" : "") : "")
                     .append((job.getTimeRestriction() == null || job.getTimeRestriction().isEmpty()) ? "" : " " + job.getTimeRestrictionDescription().toLowerCase());
 
             //Identify the number of build retries. 

@@ -48,6 +48,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.util.StringUtils;
 
 /**
  *
@@ -434,12 +435,17 @@ public class JenkinsService {
                         String shellScripts = "";
 
                         for (String shellScript : job.getShellScript()) {
+                            //Escape special characteres. 
+                            shellScript = shellScript
+                                    .replaceAll("\\\\", "\\\\\\\\")
+                                    .replaceAll("\\$", "\\\\\\$");
+
+                            //Escape XML reserverd characteres. 
+                            shellScript = StringUtils.escapeXml(shellScript);
+
+                            //Define a hudson.tasks.shell command tag. 
                             shellScripts += "<hudson.tasks.Shell>\n<command>" + shellScript + "</command>\n</hudson.tasks.Shell>\n";
                         }
-
-                        //Escape special characters.
-                        shellScripts = shellScripts.replaceAll("\\\\", "\\\\\\\\");
-                        shellScripts = shellScripts.replaceAll("\\$", "\\\\\\$");
 
                         //Identifies if job has builders tag for update shell script
                         if ((config.contains("<builders>"))) {

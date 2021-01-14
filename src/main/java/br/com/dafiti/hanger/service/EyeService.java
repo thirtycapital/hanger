@@ -201,7 +201,7 @@ public class EyeService {
                     LOG.log(Level.INFO, "[" + uuid + "] Job e-mails sent sucessfully");
 
                     //Log the job children build push.
-                    LOG.log(Level.INFO, "[" + uuid + "] Lob children build pushed");
+                    LOG.log(Level.INFO, "[" + uuid + "] Job children build pushed");
 
                     //Push all jobs dependents on a job build. 
                     jobBuildPushService.push(job);

@@ -55,6 +55,9 @@ hanger.encrypt.key=<Any key>
 # Hanger Anonymous Access
 hanger.anonymous.access=true
 
+# Security
+hanger.maximum.sessions=1
+
 # Hanger watchdog cron execution
 hanger.watchdog.cron=Cron expression (Example: 0 20 6-23 * * *. For more details visit: http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html)
  

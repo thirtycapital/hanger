@@ -239,34 +239,32 @@ public class FlowService {
         String label = "";
 
         switch (jobDetails.getStatus()) {
-            case REBUILD:
-            case RUNNING:
-                label = "label label-primary";
+            case WAITING:
+            case RESTRICTED:
+            case DISABLED:
+                label = "label label-neutral";
                 break;
+
+            case PARTIAL:
             case SUCCESS:
+            case UNSTABLE:
             case APPROVED:
                 label = "label label-success";
                 break;
-            case ABORTED:
-            case FAILURE:
-            case UNHEALTHY:
-            case ERROR:
-            case BLOCKED:
-            case DISAPPROVED:
-                label = "label label-danger";
-                break;
-            case DISABLED:
-                label = "label label-default";
-                break;
-            case UNSTABLE:
-                label = "label label-info";
-                break;
+
+            case REBUILD:
+            case RUNNING:
             case CHECKUP:
-                label = "label label-warning";
+                label = "label label-primary";
                 break;
-            case RESTRICTED:
-            case WAITING:
-                label = "label label-neutral";
+
+            case UNHEALTHY:
+            case BLOCKED:
+            case FAILURE:
+            case ABORTED:
+            case DISAPPROVED:
+            case ERROR:
+                label = "label label-danger";
                 break;
         }
 
@@ -303,7 +301,7 @@ public class FlowService {
         if (parent == null) {
             //Define the job scope paragraph.
             P jobBuildScope = new P();
-            jobBuildScope.appendText(jobDetails.getScope() == null ? "" : job.getServer().getName() + " | " + jobDetails.getScope());
+            jobBuildScope.appendText(jobDetails.getScope() == null ? "" : job.getServer().getName() + (jobDetails.getScope().isEmpty() ? "" : " | " + jobDetails.getScope()));
             jobBuildScope.setCSSClass("node-scope");
 
             node.append(jobBuildScope.write());
@@ -323,7 +321,7 @@ public class FlowService {
             //Define the job scope paragraph.
             P jobBuildScope = new P();
             jobBuildScope.appendText((scope == null
-                    ? (jobDetails.getScope() == null ? "" : job.getServer().getName() + " | " + jobDetails.getScope())
+                    ? (jobDetails.getScope() == null ? "" : job.getServer().getName() + (jobDetails.getScope().isEmpty() ? "" : " | " + jobDetails.getScope()))
                     : (job.getServer().getName() + " | " + scope.toString() + (job.isRebuild() ? " | REBUILD " + (job.getWait() != 0 ? "once every " + job.getWait() + " min" : "") : ""))) + (parent.isRebuildBlocked() && isBlocker ? " | BLOCKER" : ""));
             jobBuildScope.setCSSClass("node-scope");
 

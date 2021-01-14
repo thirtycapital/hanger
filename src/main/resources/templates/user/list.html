@@ -61,7 +61,7 @@
                             error: function (e) {
                             }
                         });
-                    });                    
+                    });
                 })
             </script> 
 
@@ -101,7 +101,6 @@
                         <td th:text="${user.roles[0].name}"></td>
                         <td>
                             <div 
-                                class="form-group" 
                                 th:if="${#authorization.expression('hasRole(''HERO'')') or user.username == #httpServletRequest.remoteUser}">
 
                                 <a th:href="@{'/user/edit/' + ${user.id}}" class="btn btn-generic btn-xs">
@@ -110,10 +109,7 @@
                             </div>
                         </td>
                         <td th:each="role : ${user.roles}">
-                            <div 
-                                class="form-group" 
-                                th:if="${#authorization.expression('hasRole(''HERO'')') and user.username != #httpServletRequest.remoteUser}">
-
+                            <div th:if="${#authorization.expression('hasRole(''HERO'')') and user.username != #httpServletRequest.remoteUser}">
                                 <a class="btn btn-xs btn-delete" data-toggle="modal" th:attr="onclick='modalDelete(' + ${user.id} + ',\'' + ${user.username} + '\');'" href="">
                                     <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>Delete
                                 </a>

@@ -40,11 +40,29 @@
                                         multiple="true" 
                                         th:checked="SUCCESS">
 
-                                    <option value="SUCCESS">SUCCESS</option>
-                                    <option value="WAITING">WAITING</option>
-                                    <option value="BUILDING">BUILDING</option>
-                                    <option value="WARNING">WARNING</option>
-                                    <option value="FAILURE">FAILURE</option>                                    
+                                    <!--WAITING-->
+                                    <option data-content="<span class='label label-neutral'>WAITING</span>" value="WAITING">WAITING</option>
+                                    <option data-content="<span class='label label-neutral'>RESTRICTED</span>" value="RESTRICTED">RESTRICTED</option>
+                                    <option data-content="<span class='label label-neutral'>DISABLED</span>" value="DISABLED">DISABLED</option> 
+
+                                    <!--SUCCESS-->
+                                    <option data-content="<span class='label label-success'>PARTIAL</span>" value="PARTIAL">PARTIAL</option> 
+                                    <option data-content="<span class='label label-success'>SUCCESS</span>" value="SUCCESS">SUCCESS</option>                                 
+                                    <option data-content="<span class='label label-success'>UNSTABLE</span>" value="UNSTABLE">UNSTABLE</option>
+                                    <option data-content="<span class='label label-success'>APPROVED</span>" value="APPROVED">APPROVED</option> 
+
+                                    <!--RUNNING-->
+                                    <option data-content="<span class='label label-primary'>REBUILD</span>" value="REBUILD">REBUILD</option>
+                                    <option data-content="<span class='label label-primary'>RUNNING</span>"  value="RUNNING">RUNNING</option>
+                                    <option data-content="<span class='label label-primary'>CHECKUP</span>" value="CHECKUP">CHECKUP</option> 
+
+                                    <!--FAILURE-->
+                                    <option data-content="<span class='label label-danger'>UNHEALTHY</span>" value="UNHEALTHY">UNHEALTHY</option> 
+                                    <option data-content="<span class='label label-danger'>BLOCKED</span>" value="BLOCKED">BLOCKED</option> 
+                                    <option data-content="<span class='label label-danger'>FAILURE</span>" value="FAILURE">FAILURE</option> 
+                                    <option data-content="<span class='label label-danger'>ABORTED</span>" value="ABORTED">ABORTED</option>
+                                    <option data-content="<span class='label label-danger'>DISAPPROVED</span>" value="DISAPPROVED">DISAPPROVED</option> 
+                                    <option data-content="<span class='label label-danger'>ERROR</span>" value="ERROR">ERROR</option> 
                                 </select>                                
                             </div>                        
                         </div>
@@ -84,19 +102,19 @@
                                 <td width="22.5%">
                                     <div class="progress">
                                         <div class="progress-bar progress-bar-success" th:inline="text" th:attr="style='width:' +  ${ subjects.successPercent } + '%'" title="SUCCESS">
-                                            <span class="sr-only"></span> [[${subjects.successPercent}]]%
+                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.successPercent, 0, 0)}]]%
                                         </div>
                                         <div class="progress-bar progress-bar-building" th:inline="text" th:attr="style='width:' +  ${ subjects.buildingPercent } + '%'" title="BUILDING">
-                                            <span class="sr-only"></span> [[${subjects.buildingPercent}]]%
+                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.buildingPercent, 0, 0)}]]%
                                         </div>
                                         <div class="progress-bar progress-bar-warning" th:inline="text" th:attr="style='width:' + ${ subjects.warningPercent } + '%'" title="WARNING">
-                                            <span class="sr-only"></span> [[${subjects.warningPercent}]]% 
+                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.warningPercent, 0, 0)}]]% 
                                         </div>
                                         <div class="progress-bar progress-bar-danger" th:inline="text" th:attr="style='width:' + ${ subjects.failurePercent } + '%'" title="FAILURE">
-                                            <span class="sr-only"></span> [[${subjects.failurePercent}]]% 
+                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.failurePercent, 0, 0)}]]% 
                                         </div>
                                         <div class="progress-bar progress-bar-waiting" th:inline="text" th:attr="style='width:' + ${ subjects.waitingPercent } + '%'" title="WAITING">
-                                            <span class="sr-only"></span> [[${subjects.waitingPercent}]]% 
+                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.waitingPercent, 0, 0)}]]% 
                                         </div>
                                     </div>
                                 </td>

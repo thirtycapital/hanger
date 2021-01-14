@@ -67,8 +67,10 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private JwtService jwtService;
 
     @Autowired
-    private @Value("${hanger.anonymous.access:true}")
-    boolean anonymousEnabled;
+    private @Value("${hanger.anonymous.access:true}") boolean anonymousEnabled;
+
+    @Autowired
+    private @Value("${hanger.maximum.sessions:1}") int maximumSessions;
 
     @Autowired
     private CustomPermissionEvaluator customPermissionEvaluator;
@@ -162,7 +164,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
             http
                     .sessionManagement()
-                    .maximumSessions(1)
+                    .maximumSessions(maximumSessions)
                     .sessionRegistry(sessionRegistry());
         }
     }

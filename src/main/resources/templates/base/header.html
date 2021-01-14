@@ -59,7 +59,8 @@
         <script th:src="@{/js/context-menu.min.js}"></script>
         <script th:src="@{/js/jstree.min.js}"></script>
         <script th:src="@{/js/clipboard.min.js}"></script>
-
+        <script th:src="@{/js/chart.js}"></script>
+        <script th:src="@{/js/chartjs-plugin-datalabels.js}"></script>
         <!--HEAD FRAGMENT END-->
     </head>
     <body>
@@ -236,9 +237,9 @@
                                 <!--Picks the version from pom.xml-->
                                 v[[${@environment.getProperty('application-version')}]]
                             </a>
-                            
+
                             <span style="color:#eee">|</span> 
-                            
+
                             <a href="https://github.com/dafiti-group/hanger"
                                target="_blank"
                                class="documentation"

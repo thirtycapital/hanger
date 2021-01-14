@@ -36,11 +36,11 @@ public class SubjectDetails {
     private int warning;
     private int failure;
     private int total;
-    private int waitingPercent;
-    private int successPercent;
-    private int warningPercent;
-    private int failurePercent;
-    private int buildingPercent;
+    private float waitingPercent;
+    private float successPercent;
+    private float warningPercent;
+    private float failurePercent;
+    private float buildingPercent;
 
     public SubjectDetails(
             Subject subject,
@@ -58,11 +58,11 @@ public class SubjectDetails {
         this.failure = failure;
         this.waiting = total - (building + success + warning + failure);
 
-        this.successPercent = (int) (((float) success / (total == 0 ? 1 : total)) * 100);
-        this.warningPercent = (int) (((float) (warning) / (total == 0 ? 1 : total)) * 100);
-        this.failurePercent = (int) (((float) (failure) / (total == 0 ? 1 : total)) * 100);
-        this.buildingPercent = (int) (((float) building / (total == 0 ? 1 : total)) * 100);
-        this.waitingPercent = (int) (100 - (this.successPercent + this.warningPercent + this.failurePercent + this.buildingPercent));
+        this.successPercent = (((float) success / (total == 0 ? 1 : total)) * 100);
+        this.warningPercent = (((float) (warning) / (total == 0 ? 1 : total)) * 100);
+        this.failurePercent = (((float) (failure) / (total == 0 ? 1 : total)) * 100);
+        this.buildingPercent = (((float) building / (total == 0 ? 1 : total)) * 100);
+        this.waitingPercent = (100 - (this.successPercent + this.warningPercent + this.failurePercent + this.buildingPercent));
     }
 
     public Subject getSubject() {
@@ -105,46 +105,6 @@ public class SubjectDetails {
         this.warning = warning;
     }
 
-    public int getTotal() {
-        return total;
-    }
-
-    public void setTotal(int total) {
-        this.total = total;
-    }
-
-    public int getWaitingPercent() {
-        return waitingPercent;
-    }
-
-    public void setWaitingPercent(int waitingPercent) {
-        this.waitingPercent = waitingPercent;
-    }
-
-    public int getSuccessPercent() {
-        return successPercent;
-    }
-
-    public void setSuccessPercent(int successPercent) {
-        this.successPercent = successPercent;
-    }
-
-    public int getWarningPercent() {
-        return warningPercent;
-    }
-
-    public void setWarningPercent(int warningPercent) {
-        this.warningPercent = warningPercent;
-    }
-
-    public int getBuildingPercent() {
-        return buildingPercent;
-    }
-
-    public void setBuildingPercent(int buildingPercent) {
-        this.buildingPercent = buildingPercent;
-    }
-
     public int getFailure() {
         return failure;
     }
@@ -153,11 +113,51 @@ public class SubjectDetails {
         this.failure = failure;
     }
 
-    public int getFailurePercent() {
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
+    public float getWaitingPercent() {
+        return waitingPercent;
+    }
+
+    public void setWaitingPercent(float waitingPercent) {
+        this.waitingPercent = waitingPercent;
+    }
+
+    public float getSuccessPercent() {
+        return successPercent;
+    }
+
+    public void setSuccessPercent(float successPercent) {
+        this.successPercent = successPercent;
+    }
+
+    public float getWarningPercent() {
+        return warningPercent;
+    }
+
+    public void setWarningPercent(float warningPercent) {
+        this.warningPercent = warningPercent;
+    }
+
+    public float getBuildingPercent() {
+        return buildingPercent;
+    }
+
+    public void setBuildingPercent(float buildingPercent) {
+        this.buildingPercent = buildingPercent;
+    }
+
+    public float getFailurePercent() {
         return failurePercent;
     }
 
-    public void setFailurePercent(int failurePercent) {
+    public void setFailurePercent(float failurePercent) {
         this.failurePercent = failurePercent;
     }
 }

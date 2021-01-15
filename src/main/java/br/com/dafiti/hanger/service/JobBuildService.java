@@ -112,7 +112,7 @@ public class JobBuildService {
      * @throws java.net.URISyntaxException
      * @throws java.io.IOException
      */
-    public synchronized BuildInfo build(Job job) throws Exception {
+    public BuildInfo build(Job job) throws Exception {
         Scope scope;
         boolean buildable;
         boolean built = false;

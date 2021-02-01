@@ -69,12 +69,22 @@ public class MailService {
     }
 
     /**
-     * Send a mail with a HTML blueprint.
+     * Send mail with a HTML blueprint.
      *
      * @param blueprint blueprint
      */
     @Async
     public void send(Blueprint blueprint) {
+        this.send(blueprint, null);
+    }
+
+    /**
+     * Send mail with a HTML blueprint and extra log.
+     *
+     * @param blueprint blueprint
+     * @param log Extra log information.
+     */
+    public void send(Blueprint blueprint, String log) {
 
         try {
             HtmlEmail mail = new HtmlEmail();
@@ -85,7 +95,7 @@ public class MailService {
                 }
             }
 
-            this.send(blueprint, mail);
+            this.send(blueprint, mail, log);
         } catch (EmailException ex) {
             LOG.log(Level.ERROR, "Fail sending e-mail", ex);
         }
@@ -96,9 +106,10 @@ public class MailService {
      *
      * @param blueprint Blueprint
      * @param mail
+     * @param log Extra log information.
      * @return
      */
-    public boolean send(Blueprint blueprint, HtmlEmail mail) {
+    public boolean send(Blueprint blueprint, HtmlEmail mail, String log) {
 
         boolean sent = true;
         String host = configurationService.getValue("EMAIL_HOST");
@@ -106,11 +117,16 @@ public class MailService {
         String email = configurationService.getValue("EMAIL_ADDRESS");
         String password = configurationService.getValue("EMAIL_PASSWORD");
 
-        auditorService.publish("SEND_EMAIL",
-                new AuditorData()
-                        .addData("to", mail.getBccAddresses().toString())
-                        .addData("javascript", blueprint.toString())
-                        .getData());
+        AuditorData auditorData = new AuditorData();
+
+        if (log != null) {
+            auditorData.addData("log", log);
+        }
+
+        auditorData.addData("to", mail.getBccAddresses().toString());
+        auditorData.addData("javascript", blueprint.toString());
+
+        auditorService.publish("SEND_EMAIL", auditorData.getData());
 
         try {
             mail.setHostName(host);

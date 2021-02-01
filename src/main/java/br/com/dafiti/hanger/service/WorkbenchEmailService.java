@@ -134,7 +134,7 @@ public class WorkbenchEmailService {
      */
     public boolean toEmail(WorkbenchEmail email, Principal principal)
             throws Exception {
-        return toEmail(email, userService.findByUsername(principal.getName()));
+        return toEmail(email, userService.findByUsername(principal.getName()), null);
     }
 
     /**
@@ -142,10 +142,11 @@ public class WorkbenchEmailService {
      *
      * @param email WorkbenchEmail
      * @param user User
+     * @param log extra log information.
      * @return
      * @throws java.io.IOException
      */
-    public boolean toEmail(WorkbenchEmail email, User user)
+    public boolean toEmail(WorkbenchEmail email, User user, String log)
             throws IOException, Exception {
         boolean sent = false;
 
@@ -181,7 +182,7 @@ public class WorkbenchEmailService {
                 }
             }
 
-            sent = this.mailService.send(blueprint, mail);
+            sent = this.mailService.send(blueprint, mail, log);
 
             //Delete temp file.
             Files.deleteIfExists(file.toPath());
@@ -207,7 +208,7 @@ public class WorkbenchEmailService {
                     User user = userService.findByEmail(email);
                     if (user != null) {
                         for (WorkbenchEmail workBenchEmail : job.getEmail()) {
-                            this.toEmail(workBenchEmail, user);
+                            this.toEmail(workBenchEmail, user, job.getName());
                         }
                     }
                 }

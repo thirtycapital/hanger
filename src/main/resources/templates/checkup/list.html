@@ -292,9 +292,17 @@
                 },
                 options: {
                     scales: {
+                        xAxes: [{
+                                gridLines: {
+                                    display: false
+                                },
+                                ticks: {
+                                    fontStyle: "bold"
+                                }
+                            }],
                         yAxes: [{
                                 ticks: {
-                                    beginAtZero: true,
+                                    beginAtZero: true
                                 }
                             }]
                     },
@@ -314,7 +322,7 @@
                     layout: {
                         padding: {
                             left: 10,
-                            right: 10,
+                            right: 30,
                             top: 30,
                             bottom: 10
                         }

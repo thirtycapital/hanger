@@ -235,6 +235,7 @@ public class JobCheckupService {
                         }
 
                         //Defines the checkup status. 
+                        jobCheckupLog.setThreshold(this.getMacro(checkup.getThreshold()));
                         jobCheckupLog.setValue(value);
                         jobCheckupLog.setSuccess(validated);
 

@@ -388,6 +388,47 @@ public class JenkinsService {
     }
 
     /**
+     * Get estimated duration of a job.
+     *
+     * @param job Job
+     * @return estimated duration of a job
+     */
+    public long getEstimatedDuration(Job job) {
+        JenkinsServer jenkins;
+        long duration = 0;
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
+
+                        if (jobWithDetails != null) {
+                            Build lastSuccessfulBuild = jobWithDetails.getLastSuccessfulBuild();
+
+                            if (lastSuccessfulBuild != null) {
+                                BuildWithDetails details = lastSuccessfulBuild.details();
+
+                                if (details != null) {
+                                    duration = details.getEstimatedDuration();
+                                }
+                            }
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                LOG.log(Level.ERROR, "Fail identifying job estimated duration!", ex);
+            }
+        }
+
+        return duration;
+    }
+
+    /**
      * Rename a job.
      *
      * @param job Job

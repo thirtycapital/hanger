@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Minutes;
+import org.joda.time.Seconds;
 
 /**
  *
@@ -133,8 +134,13 @@ public class Watchdog {
                             JobBuild jobBuild = jobStatus.getBuild();
 
                             if (jobBuild != null) {
+                                long duration = jenkinsServive.getEstimatedDuration(job);
+
                                 //Identifies if its building or running for at least 10 minutes. 
-                                boolean buildable = (Minutes.minutesBetween(new LocalDateTime(jobBuild.getDate()), new LocalDateTime()).getMinutes() >= 10);
+                                boolean buildable = (Seconds
+                                        .secondsBetween(
+                                                new LocalDateTime(jobBuild.getDate()),
+                                                new LocalDateTime()).getSeconds() >= (duration < 1800 ? 1800 : duration));
 
                                 if (buildable
                                         && !jenkinsServive.isBuilding(job, jobBuild.getNumber())
@@ -142,7 +148,7 @@ public class Watchdog {
 
                                     this.catcher(job);
                                 } else {
-                                    LOG.log(Level.INFO, "The watchdog just sniffed the job {} with build number {}", new Object[]{job.getName(), jobBuild.getNumber()});
+                                    LOG.log(Level.INFO, "The watchdog just sniffed the job {} with build number {} ( Estimated job duration {} )", new Object[]{job.getName(), jobBuild.getNumber(), duration});
                                 }
                             }
                         }

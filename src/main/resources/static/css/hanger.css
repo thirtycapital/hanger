@@ -88,7 +88,7 @@ label {
 }
 
 legend{
-    color: black;
+    color: #373e46;
     font-weight: bold;
     font-size: 15px;
 }
@@ -777,7 +777,8 @@ input[type=radio]:checked + img {
 
 h3.page-title {
     color:#373e46;
-    font-size: 20px;
+    font-size: 15px;
+    font-weight: bold;
 }
 
 .btn-delete {

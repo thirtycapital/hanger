@@ -86,16 +86,20 @@
                 <fieldset>
                     <legend class="space-top" th:inline="text">                        
                         <span th:style="${! checkup.enabled} ? 'color: #bebebe' : ''">
-                            [[${ checkup.name + '  |  ' + ( checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION' ) + '  |  ' + checkup.conditional+ ' | ' + checkup.action }]]
+                            [[${ checkup.name }]]
 
                             [# th:if="${!checkup.enabled}" ]
                             [Disabled]
                             [/]
-
-                            <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Open the query in workbench" target="_blank">
-                                <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-                            </a>
                         </span>
+
+                        <span class="label label-default" th:text="${checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION'}"></span>
+                        <span class="label label-default" th:text="${checkup.conditional}"></span>
+                        <span class="label label-warning" th:text="${checkup.action}"></span>
+
+                        <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Open the query in workbench" target="_blank">
+                            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                        </a>
                     </legend>
                 </fieldset>
 

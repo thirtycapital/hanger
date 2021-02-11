@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -391,7 +392,7 @@ public class JenkinsService {
      * Get estimated duration of a job.
      *
      * @param job Job
-     * @return estimated duration of a job
+     * @return estimated duration of a job in seconds
      */
     public long getEstimatedDuration(Job job) {
         JenkinsServer jenkins;
@@ -412,7 +413,7 @@ public class JenkinsService {
                                 BuildWithDetails details = lastSuccessfulBuild.details();
 
                                 if (details != null) {
-                                    duration = details.getEstimatedDuration();
+                                    duration = TimeUnit.MILLISECONDS.toSeconds(details.getEstimatedDuration());
                                 }
                             }
                         }

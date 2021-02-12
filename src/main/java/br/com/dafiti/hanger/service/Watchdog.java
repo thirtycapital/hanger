@@ -122,7 +122,7 @@ public class Watchdog {
 
                             this.catcher(job);
                         } else {
-                            LOG.log(Level.INFO, "The watchdog just sniffed the job {}", new Object[]{job.getName()});
+                            LOG.log(Level.INFO, "The watchdog just sniffed waiting the job {}", new Object[]{job.getName()});
                         }
                     }
 
@@ -148,7 +148,7 @@ public class Watchdog {
 
                                     this.catcher(job);
                                 } else {
-                                    LOG.log(Level.INFO, "The watchdog just sniffed the job {} with build number {} ( Estimated job duration {} )", new Object[]{job.getName(), jobBuild.getNumber(), duration});
+                                    LOG.log(Level.INFO, "The watchdog just sniffed building the job {} with build number {} (Estimated job duration {})", new Object[]{job.getName(), jobBuild.getNumber(), duration});
                                 }
                             }
                         }

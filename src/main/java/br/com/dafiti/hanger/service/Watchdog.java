@@ -137,13 +137,14 @@ public class Watchdog {
                             JobBuild jobBuild = jobStatus.getBuild();
 
                             if (jobBuild != null) {
-                                long duration = jenkinsServive.getEstimatedDuration(job);
-
-                                //Identifies if its building or running for at least 30 minutes. 
-                                boolean buildable = (Seconds
+                                int duration = (int) jenkinsServive.getEstimatedDuration(job);
+                                int interval = Seconds
                                         .secondsBetween(
                                                 new LocalDateTime(jobBuild.getDate()),
-                                                new LocalDateTime()).getSeconds() >= (duration < 1800 ? 1800 : duration));
+                                                new LocalDateTime()).getSeconds();
+
+                                //Identifies if its building or running for at least 30 minutes. 
+                                boolean buildable = (interval >= (duration < 1800 ? 1800 : duration));
 
                                 if (buildable
                                         && !jenkinsServive.isBuilding(job, jobBuild.getNumber())
@@ -151,7 +152,7 @@ public class Watchdog {
 
                                     this.catcher(job, status);
                                 } else {
-                                    LOG.log(Level.INFO, "The watchdog just sniffed {} job {} with build number {} (Estimated job duration {} s)", new Object[]{status, job.getName(), jobBuild.getNumber(), duration});
+                                    LOG.log(Level.INFO, "The watchdog just sniffed {} job {} with build number {} (Estimated job duration {} s | Interval {} s)", new Object[]{status, job.getName(), jobBuild.getNumber(), duration, interval});
                                 }
                             }
                         }

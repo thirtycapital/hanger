@@ -201,6 +201,7 @@ public class Watchdog {
             auditorService.publish("WATCHDOG",
                     new AuditorData()
                             .addData("name", job.getName())
+                            .addData("status", status.toString())
                             .getData());
 
             //Log on Slack.

@@ -114,7 +114,9 @@ public class Watchdog {
                                 .filter(
                                         jobParent -> jobParent.getParent().getStatus() != null
                                         && jobParent.getParent().getStatus().getBuild() != null
-                                        && Minutes.minutesBetween(new LocalDateTime(jobParent.getParent().getStatus().getBuild().getDate()), new LocalDateTime()).getMinutes() >= 30
+                                        && Minutes.minutesBetween(
+                                                new LocalDateTime(jobParent.getParent().getStatus().getBuild().getDate()), 
+                                                new LocalDateTime()).getMinutes() >= 30
                                 ).collect(Collectors.toList()).isEmpty();
 
                         if (buildable

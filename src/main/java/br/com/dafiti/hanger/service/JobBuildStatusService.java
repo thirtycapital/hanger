@@ -178,7 +178,6 @@ public class JobBuildStatusService {
                                         new LocalDate()).getDays() != 0;
                             }
 
-                            /*TODO - Validar esta mudança*/
                             if (!buildable) {
                                 //Identify if the job build is finalized and successfully. 
                                 buildable = !(jobBuild.getPhase().equals(Phase.FINALIZED)

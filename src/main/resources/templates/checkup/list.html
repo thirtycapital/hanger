@@ -12,31 +12,11 @@
                         <h3 class="page-title">[[${job.name}]]</h3>
                     </th>
 
-                    <th class="btn-action">
-                        <a th:href="@{'/job/view/' + ${job.id}}" title="View">
-                            <span class="glyphicon glyphicon-eye-open"></span>
+                    <th th:if="${approval}"class="btn-action">
+                        <a th:href="@{'/approval/approval/' + ${job.id}}" title="Approval">
+                            <span class="glyphicon glyphicon-check"></span>
                         </a>
-                    </th>
-
-                    <th class="btn-action">
-                        <a th:href="@{'/flow/job/' + ${job.id}}" title="Flow">
-                            <span class="glyphicon glyphicon-random"></span>
-                        </a>
-                    </th>
-
-                    <th class="btn-action">
-                        <a th:href="@{'/propagation/job/' + ${job.id}}" title="Propagation">
-                            <span class="glyphicon glyphicon-transfer"></span>
-                        </a>
-                    </th>
-
-                    <div th:if="${approval}">
-                        <th class="btn-action">
-                            <a th:href="@{'/approval/approval/' + ${job.id}}" title="Approval">
-                                <span class="glyphicon glyphicon-check"></span>
-                            </a>
-                        </th>                        
-                    </div>
+                    </th>                       
                 </tr>
             </table>
 
@@ -231,7 +211,22 @@
                     <span>No Data</span>
                 </div>
             </div>
+
+            <hr/>  
+
+            <a th:href="@{'/job/view/' + ${job.id}}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-eye-open"></span> Open job
+            </a>
+
+            <a th:href="@{'/flow/job/' + ${job.id}}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-random"></span> Open job flow
+            </a>
+
+            <a th:href="@{'/propagation/job/' + ${job.id}}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-transfer"></span> Open job propagation
+            </a>
         </div>
+
         <script th:inline="javascript">
             //START THYMELEAF MACRO
             /*<![CDATA[*/

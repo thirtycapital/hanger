@@ -1140,3 +1140,22 @@ label.radio-generic:hover
     background-color: #f6faff;
     border-color: #eee;
 }
+
+.div_subject_options{
+    display: inline-block;
+}
+
+.div_edit_subject{
+    width: 15%;
+}
+
+.div_add_job_button{
+    float: right;
+    width: 15%;
+}
+
+.div_subscription_checkbox{
+    width: 15%;
+    float: right;
+}
+

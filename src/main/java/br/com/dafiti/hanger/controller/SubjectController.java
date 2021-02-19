@@ -332,7 +332,7 @@ public class SubjectController {
 
         subjectService.save(subject);
     }
-
+    
     /**
      * Unsubscribe logged user in a subject.
      *

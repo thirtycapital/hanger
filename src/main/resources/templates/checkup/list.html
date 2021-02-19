@@ -5,11 +5,13 @@
     </head>
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
-        <div class="container-fluid main-content">
+        <div class="container-fluid main-content space-top">
             <table>
                 <tr>
-                    <th th:inline="text">
-                        <h3 class="page-title">[[${job.name}]]</h3>
+                    <th>
+                        <a th:href="@{'/job/view/' + ${job.id}}">
+                            <span class="span-field" th:text="${job.name}"></span>
+                        </a>
                     </th>
 
                     <th th:if="${approval}"class="btn-action">
@@ -213,10 +215,6 @@
             </div>
 
             <hr/>  
-
-            <a th:href="@{'/job/view/' + ${job.id}}" class="btn btn-link btn-sm">
-                <span class="glyphicon glyphicon-eye-open"></span> Open job
-            </a>
 
             <a th:href="@{'/flow/job/' + ${job.id}}" class="btn btn-link btn-sm">
                 <span class="glyphicon glyphicon-random"></span> Flow

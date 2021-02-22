@@ -9,20 +9,18 @@
             <table>
                 <tr>
                     <th>
-                        <a th:href="@{'/job/view/' + ${job.id}}">
+                        <a th:href="@{'/job/view/' + ${job.id}}" class="space-right">
                             <span class="span-field" th:text="${job.name}"></span>
                         </a>
-                    </th>
 
-                    <th th:if="${approval}"class="btn-action">
-                        <a th:href="@{'/approval/approval/' + ${job.id}}" title="Approval">
-                            <span class="glyphicon glyphicon-check"></span>
+                        <a th:if="${approval}" th:href="@{'/approval/approval/' + ${job.id}}" class="btn btn-notice btn-sm">
+                            <span class="glyphicon glyphicon-check"></span> Approval
                         </a>
-                    </th>                       
+                    </th>                      
                 </tr>
             </table>
-            
-            <hr>
+
+            <hr/>
 
             <div th:if="${ errorMessage != null }" class="form-group">
                 <div class="alert alert-danger" role="alert">
@@ -75,136 +73,136 @@
                 <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Open the query in workbench" target="_blank">
                     <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
                 </a>
-                
+
                 <hr>
 
-                <div th:if="${checkup.description != null and checkup.description != '' and checkup.enabled}">
-                    <div class="form-group">
-                        <div 
-                            class="italic" 
-                            th:utext="${checkup.getHTMLDescription()}"></div>
-                    </div>
-                </div>
-
-                <div th:if="${checkup.enabled and not #lists.isEmpty(checkup.log)}">
-                    <div> 
-                        <ul class="nav nav-pills">                    
-                            <li class="active">
-                                <a data-toggle="tab" th:href="'#chart_tab' + ${checkup.id}">
-                                    <span class="glyphicon glyphicon-signal" title="Chart"></span>
-                                </a>  
-                            </li>
-                            <li>
-                                <a data-toggle="tab" th:href="'#table_tab' + ${checkup.id}">
-                                    <span class="glyphicon glyphicon-th-list" title="Table"></span>
-                                </a>                                
-                            </li>
-                        </ul>
+                    <div th:if="${checkup.description != null and checkup.description != '' and checkup.enabled}">
+                        <div class="form-group">
+                            <div 
+                                class="italic" 
+                                th:utext="${checkup.getHTMLDescription()}"></div>
+                        </div>
                     </div>
 
-                    <div class="tab-content">
-                        <div th:id="'chart_tab' + ${checkup.id}" class="tab-pane fade active in">
-                            <canvas th:id="'chart' + ${checkup.id}" height='60'></canvas>
+                    <div th:if="${checkup.enabled and not #lists.isEmpty(checkup.log)}">
+                        <div> 
+                            <ul class="nav nav-pills">                    
+                                <li class="active">
+                                    <a data-toggle="tab" th:href="'#chart_tab' + ${checkup.id}">
+                                        <span class="glyphicon glyphicon-signal" title="Chart"></span>
+                                    </a>  
+                                </li>
+                                <li>
+                                    <a data-toggle="tab" th:href="'#table_tab' + ${checkup.id}">
+                                        <span class="glyphicon glyphicon-th-list" title="Table"></span>
+                                    </a>                                
+                                </li>
+                            </ul>
                         </div>
 
-                        <div th:id="'table_tab' + ${checkup.id}" class="tab-pane fade in">
-                            <table th:id="'table_paginated_clean' + ${checkup.id}" class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th style="width:5%" class="img-sort">Status</th> 
-                                        <th style="width:10%">Date</th> 
-                                        <th style="width:5%">Scope</th> 
-                                        <th style="width:30%">SQL</th>
-                                        <th style="width:5%">Result</th>
-                                        <th style="width:10%" class="no-sort"></th>    
-                                        <th style="width:5%">Threshold</th>     
-                                        <th style="width:10%">Action</th> 
-                                        <th class="no-sort"></th>
-                                    </tr>
-                                </thead>
+                        <div class="tab-content">
+                            <div th:id="'chart_tab' + ${checkup.id}" class="tab-pane fade active in">
+                                <canvas th:id="'chart' + ${checkup.id}" height='60'></canvas>
+                            </div>
 
-                                <tbody>
-                                    <tr class="checkup-row" th:each="checkupLog, checkupLogStat : ${checkup.log}" th:unless="${checkupLogStat.index > 29}">
-                                        <td>
-                                            <th:block th:switch="${checkupLog.success}">
-                                                <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
-                                                <span th:case="false" class="label label-danger" th:title="FAILURE" th:text="FAILURE"></span>
-                                            </th:block>
-                                        </td>                               
-                                        <td th:text="${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}"></td>        
-                                        <td th:text="${checkupLog.scope}"></td>  
-                                        <td>
-                                            <span th:text="${#strings.length(checkupLog.query) > 65 ? #strings.substring(checkupLog.query,0,65) : checkupLog.query}"></span>                                
-                                            <div class="btn-group" 
-                                                 th:if="${#strings.length(checkupLog.query) > 65}">                                    
-                                                <button class="dropdown-toggle close" 
-                                                        data-toggle="dropdown">...</button>
-                                                <ul class="dropdown-menu">                                                
-                                                    <li>
-                                                        <pre class="line-numbers">
+                            <div th:id="'table_tab' + ${checkup.id}" class="tab-pane fade in">
+                                <table th:id="'table_paginated_clean' + ${checkup.id}" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:5%" class="img-sort">Status</th> 
+                                            <th style="width:10%">Date</th> 
+                                            <th style="width:5%">Scope</th> 
+                                            <th style="width:30%">SQL</th>
+                                            <th style="width:5%">Result</th>
+                                            <th style="width:10%" class="no-sort"></th>    
+                                            <th style="width:5%">Threshold</th>     
+                                            <th style="width:10%">Action</th> 
+                                            <th class="no-sort"></th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr class="checkup-row" th:each="checkupLog, checkupLogStat : ${checkup.log}" th:unless="${checkupLogStat.index > 29}">
+                                            <td>
+                                                <th:block th:switch="${checkupLog.success}">
+                                                    <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
+                                                    <span th:case="false" class="label label-danger" th:title="FAILURE" th:text="FAILURE"></span>
+                                                </th:block>
+                                            </td>                               
+                                            <td th:text="${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}"></td>        
+                                            <td th:text="${checkupLog.scope}"></td>  
+                                            <td>
+                                                <span th:text="${#strings.length(checkupLog.query) > 65 ? #strings.substring(checkupLog.query,0,65) : checkupLog.query}"></span>                                
+                                                <div class="btn-group" 
+                                                     th:if="${#strings.length(checkupLog.query) > 65}">                                    
+                                                    <button class="dropdown-toggle close" 
+                                                            data-toggle="dropdown">...</button>
+                                                    <ul class="dropdown-menu">                                                
+                                                        <li>
+                                                            <pre class="line-numbers">
                                                     <code class="language-sql" th:text="${checkupLog.query}"></code>
-                                                        </pre>
-                                                    </li>  
-                                                </ul>
-                                            </div>
-                                            <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${checkupLog.query}">
-                                                <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="copy"></span>
-                                            </a>
-                                        </td>  
-                                        <td>
-                                            <span th:text="${#strings.length(checkupLog.value) > 35 ? #strings.substring(checkupLog.value,0,35) : checkupLog.value}"></span>                                
-                                            <div class="btn-group" th:if="${#strings.length(checkupLog.value) > 35}">                                    
-                                                <button class="dropdown-toggle close" 
-                                                        data-toggle="dropdown">...</button>
-                                                <ul class="dropdown-menu">                                                
-                                                    <li>
-                                                        <pre class="line-numbers">
+                                                            </pre>
+                                                        </li>  
+                                                    </ul>
+                                                </div>
+                                                <a class="btn-copy" href="javascript:;" th:attr="data-clipboard-text=${checkupLog.query}">
+                                                    <span class="glyphicon glyphicon-duplicate icon-copy" aria-hidden="true" title="copy"></span>
+                                                </a>
+                                            </td>  
+                                            <td>
+                                                <span th:text="${#strings.length(checkupLog.value) > 35 ? #strings.substring(checkupLog.value,0,35) : checkupLog.value}"></span>                                
+                                                <div class="btn-group" th:if="${#strings.length(checkupLog.value) > 35}">                                    
+                                                    <button class="dropdown-toggle close" 
+                                                            data-toggle="dropdown">...</button>
+                                                    <ul class="dropdown-menu">                                                
+                                                        <li>
+                                                            <pre class="line-numbers">
                                                     <code class="language-sql" th:text="${checkupLog.value}"></code>
-                                                        </pre>
-                                                    </li>  
-                                                </ul>
-                                            </div>
-                                        </td> 
-                                        <td th:text="${checkupLog.conditional}"></td>  
-                                        <td th:text="${checkupLog.threshold}"></td>  
-                                        <td th:text="${checkupLog.success ? '' : checkupLog.action}"></td>   
-                                        <td>                                   
-                                            <div th:if="${not #lists.isEmpty(checkupLog.commandLog)}">
-                                                <table class="table borderless">
-                                                    <thead>
-                                                        <tr>
-                                                            <th style="width:10%" class="img-sort">Status</th> 
-                                                            <th class="no-sort">Command</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}"> 
-                                                            <td>
-                                                                <th:block th:switch="${commandLog.success}">
-                                                                    <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
-                                                                    <span th:case="false" class="label label-danger" th:title="FAILURE" th:text="FAILURE"></span>
-                                                                </th:block>
-                                                            </td>
-                                                            <td>
-                                                                <a th:inline="text" th:href="@{'/checkup/log/' + ${commandLog.id}}">
-                                                                    [[${ (commandLogStat.index + 1) + '° ' + commandLog.commandType}]]
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </td>                                
-                                    </tr>
-                                </tbody>
-                            </table>
+                                                            </pre>
+                                                        </li>  
+                                                    </ul>
+                                                </div>
+                                            </td> 
+                                            <td th:text="${checkupLog.conditional}"></td>  
+                                            <td th:text="${checkupLog.threshold}"></td>  
+                                            <td th:text="${checkupLog.success ? '' : checkupLog.action}"></td>   
+                                            <td>                                   
+                                                <div th:if="${not #lists.isEmpty(checkupLog.commandLog)}">
+                                                    <table class="table borderless">
+                                                        <thead>
+                                                            <tr>
+                                                                <th style="width:10%" class="img-sort">Status</th> 
+                                                                <th class="no-sort">Command</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}"> 
+                                                                <td>
+                                                                    <th:block th:switch="${commandLog.success}">
+                                                                        <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
+                                                                        <span th:case="false" class="label label-danger" th:title="FAILURE" th:text="FAILURE"></span>
+                                                                    </th:block>
+                                                                </td>
+                                                                <td>
+                                                                    <a th:inline="text" th:href="@{'/checkup/log/' + ${commandLog.id}}">
+                                                                        [[${ (commandLogStat.index + 1) + '° ' + commandLog.commandType}]]
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </td>                                
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div th:if="${checkup.enabled and #lists.isEmpty(checkup.log)}" class="alert alert-light">
-                    <span>No Data</span>
-                </div>
+                    <div th:if="${checkup.enabled and #lists.isEmpty(checkup.log)}" class="alert alert-light">
+                        <span>No Data</span>
+                    </div>
             </div>
 
             <hr/>  

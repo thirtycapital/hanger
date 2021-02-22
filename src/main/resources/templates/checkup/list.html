@@ -10,7 +10,7 @@
                 <tr>
                     <th>
                         <a th:href="@{'/job/view/' + ${job.id}}" class="space-right">
-                            <span class="span-field" th:text="${job.name}"></span>
+                            <span th:text="${job.name}"></span>
                         </a>
 
                         <a th:if="${approval}" th:href="@{'/approval/approval/' + ${job.id}}" class="btn btn-notice btn-sm">

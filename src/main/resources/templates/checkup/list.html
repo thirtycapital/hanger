@@ -21,6 +21,8 @@
                     </th>                       
                 </tr>
             </table>
+            
+            <hr>
 
             <div th:if="${ errorMessage != null }" class="form-group">
                 <div class="alert alert-danger" role="alert">
@@ -64,26 +66,17 @@
                 </fieldset>
             </div>
 
-            <div th:if="${not #lists.isEmpty(job.checkup)}" th:each="checkup, checkupStat : ${job.checkup}">
-                <fieldset>
-                    <legend class="space-top" th:inline="text">                        
-                        <span th:style="${! checkup.enabled} ? 'color: #bebebe' : ''">
-                            [[${ checkup.name }]]
+            <div class="space-top" th:if="${not #lists.isEmpty(job.checkup)}" th:each="checkup, checkupStat : ${job.checkup}">
+                <span class="label label-info" th:text="${checkup.enabled ?  checkup.name : checkup.name + ' [DISABLED]'}"></span>
+                <span class="label label-default" th:text="${checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION'}"></span>
+                <span class="label label-default" th:text="${checkup.conditional}"></span>
+                <span class="label label-default" th:text="${checkup.action}"></span>
 
-                            [# th:if="${!checkup.enabled}" ]
-                            [Disabled]
-                            [/]
-                        </span>
-
-                        <span class="label label-default" th:text="${checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION'}"></span>
-                        <span class="label label-default" th:text="${checkup.conditional}"></span>
-                        <span class="label label-warning" th:text="${checkup.action}"></span>
-
-                        <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Open the query in workbench" target="_blank">
-                            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-                        </a>
-                    </legend>
-                </fieldset>
+                <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Open the query in workbench" target="_blank">
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                </a>
+                
+                <hr>
 
                 <div th:if="${checkup.description != null and checkup.description != '' and checkup.enabled}">
                     <div class="form-group">
@@ -271,7 +264,7 @@
                             pointBackgroundColor: pointBackgroundColors,
                             pointBorderColor: pointBackgroundColors,
                             pointRadius: 4,
-                            borderWidth: 1
+                            borderWidth: 2
                         },
                         {
                             label: 'Threshold',

@@ -180,33 +180,29 @@
                     <div th:if="${#httpServletRequest.getRequestURI().contains('/detail/') 
                          and not #httpServletRequest.getRequestURI().contains('/filter')}" class="div_subject_options">
 
-                        <div class="div_edit_subject">
                             <a th:href="@{'/subject/edit/' + ${currentSubject.id}}" class="btn btn-link btn-sm">
                                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit subject
                             </a>
-                        </div><!--
-
-                        --><div class="div_add_job_button">
+                        
                             <button id="add_job" 
                                     class="btn btn-link btn-sm btn-home" 
                                     th:attr="onclick='addJobModal(' + ${currentSubject.id} + ');'">
                                 <span class="glyphicon glyphicon-magnet" aria-hidden="true"></span> Add job
                             </button>
-                        </div><!--
-
-                        --><div th:switch="${currentSubject.mandatory}" class="div_subscription_checkbox">
+                        
+                        <div th:switch="${currentSubject.mandatory}" class="div_subscription_checkbox">
                             <div th:case="true">
                             </div>
                             <div th:case="false">
-                                <label>
+                                <!--<label>-->
                                     <input  
                                         name="subscribe"
                                         type="checkbox" 
                                         th:id="subscribe" 
                                         th:value="${currentSubject.id}" 
                                         th:checked="${#lists.contains(currentSubject.user, loggedIn)}"
-                                        th:disabled="${!#authorization.expression('isAuthenticated()')}"/>
-                                </label> Subscription
+                                        th:disabled="${!#authorization.expression('isAuthenticated()')}"/>Subscription
+<!--                                </label> Subscription-->
                             </div>
                         </div>
 

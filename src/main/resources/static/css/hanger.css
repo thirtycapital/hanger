@@ -1145,17 +1145,7 @@ label.radio-generic:hover
     display: inline-block;
 }
 
-.div_edit_subject{
-    width: 15%;
-}
-
-.div_add_job_button{
-    float: right;
-    width: 15%;
-}
-
 .div_subscription_checkbox{
-    width: 15%;
     float: right;
 }
 

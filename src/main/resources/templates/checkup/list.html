@@ -64,7 +64,7 @@
                 </fieldset>
             </div>
 
-            <div class="space-top" th:if="${not #lists.isEmpty(job.checkup)}" th:each="checkup, checkupStat : ${job.checkup}">
+            <div th:if="${not #lists.isEmpty(job.checkup)}" th:each="checkup, checkupStat : ${job.checkup}">
                 <span class="label label-info" th:text="${checkup.enabled ?  checkup.name : checkup.name + ' [DISABLED]'}"></span>
                 <span class="label label-default" th:text="${checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION'}"></span>
                 <span class="label label-default" th:text="${checkup.conditional}"></span>

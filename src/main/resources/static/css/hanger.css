@@ -8,6 +8,7 @@
 
 .italic{
     font-style: italic;
+    background-color: #F4F5F7;
 }
 
 div.dataTables_filter input{

@@ -190,29 +190,29 @@
                                 <span class="glyphicon glyphicon-magnet" aria-hidden="true"></span> Add job
                             </button>
                         
-                        <div th:switch="${currentSubject.mandatory}" class="div_subscription_checkbox">
-                            <div th:case="true">
+                            <div th:switch="${currentSubject.mandatory}" class="div_subscription_checkbox">
+                                <div th:case="true">
+                                </div>
+                                <div th:case="false">
+                                    <label class="subscription_label">
+                                        <input  
+                                            name="subscribe"
+                                            type="checkbox" 
+                                            th:id="subscribe" 
+                                            th:value="${currentSubject.id}" 
+                                            th:checked="${#lists.contains(currentSubject.user, loggedIn)}"
+                                            th:disabled="${!#authorization.expression('isAuthenticated()')}"/> Subscription
+                                   </label> 
+                                </div>
                             </div>
-                            <div th:case="false">
-                                <!--<label>-->
-                                    <input  
-                                        name="subscribe"
-                                        type="checkbox" 
-                                        th:id="subscribe" 
-                                        th:value="${currentSubject.id}" 
-                                        th:checked="${#lists.contains(currentSubject.user, loggedIn)}"
-                                        th:disabled="${!#authorization.expression('isAuthenticated()')}"/>Subscription
-<!--                                </label> Subscription-->
-                            </div>
-                        </div>
 
-                        <button id="wait" 
-                                type="button" 
-                                class="btn btn-generic btn-sm pull-right btn-space" 
-                                style="display:none;">
+                            <button id="wait" 
+                                    type="button" 
+                                    class="btn btn-generic btn-sm pull-right btn-space" 
+                                    style="display:none;">
 
-                            <img th:src="@{'/images/ajax-loader.gif'}"></img>
-                        </button>
+                                <img th:src="@{'/images/ajax-loader.gif'}"></img>
+                            </button>
                     </div>
                 </div>
             </div>

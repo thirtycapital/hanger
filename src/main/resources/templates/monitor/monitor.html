@@ -134,8 +134,6 @@
                         <li th:if="${swimlane.key != 'ALL'}" th:each="swimlane, swimlaneStat: ${swimlanes}">
                             <a th:href="${'#' + swimlane.key}" th:text="${swimlane.key}" class="pager-item"></a>
                         </li>
-                        
-                        <hr th:if="${#lists.size(swimlanes) > 0}"/>
                     </ul>  
 
                     <div th:if="${currentSubject.description != null and currentSubject.description != ''}">

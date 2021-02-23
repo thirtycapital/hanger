@@ -757,9 +757,9 @@ input[type=radio]:checked + img {
 
 .pager-item{
     color: #337ab7;
-    margin-left: 1px;
-    padding: 1px 5px !important;
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 10px;
 }   
 
 .thin-line{

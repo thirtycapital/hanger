@@ -130,11 +130,19 @@
                 </div>
 
                 <div th:if="${#httpServletRequest.getRequestURI().contains('/detail/') }">
+                    <ul th:if="${not #lists.isEmpty(swimlanes)}" class="pager">
+                        <li th:if="${swimlane.key != 'ALL'}" th:each="swimlane, swimlaneStat: ${swimlanes}">
+                            <a th:href="${'#' + swimlane.key}" th:text="${swimlane.key}" class="pager-item"></a>
+                        </li>
+                        
+                        <hr th:if="${#lists.size(swimlanes) > 0}"/>
+                    </ul>  
+
                     <div th:if="${currentSubject.description != null and currentSubject.description != ''}">
                         <div 
                             class="italic" 
                             th:utext="${currentSubject.getHTMLDescription()}"></div>
-                        <hr>
+                        <hr/>
                     </div>
 
                     <!-- Job details list-->

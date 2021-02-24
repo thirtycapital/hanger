@@ -1141,10 +1141,6 @@ label.radio-generic:hover
     border-color: #eee;
 }
 
-.div_subject_options{
-    display: inline-block;
-}
-
 .div_subscription_checkbox{
     float: right;
     text-align: right;

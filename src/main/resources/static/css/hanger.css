@@ -12,6 +12,10 @@
     padding: 10px;
 }
 
+.italic > p{
+    margin: 0 0 0px;
+}
+
 div.dataTables_filter input{
     border: 0;
     outline: 0;

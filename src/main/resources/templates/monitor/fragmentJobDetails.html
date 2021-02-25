@@ -60,7 +60,8 @@
                                         </td>
 
                                         <td th:case="false" 
-                                            th:text="${ #strings.abbreviate( jobDetail.job.displayName, 65 ) }"> Job 
+                                            th:text="${ #strings.abbreviate( jobDetail.job.displayName, 65 ) }"
+                                            th:title="${jobDetail.job.displayName}"> Job 
                                         </td>
                                     </th:block>
                                     <th:block th:switch="${#lists.isEmpty(jobDetail.warning)}">

@@ -15,9 +15,10 @@
                             class="space-top swinlane" 
                             th:text="${swimlane.key}"
                             data-toggle="tooltip" 
-                            data-placement="left"
-                            th:title="${rules.get(swimlane.key)}">
+                            data-placement="left">
                         </legend>
+
+                        <label th:if="${swimlane.key != 'ALL'}" th:inline="text" class="label-edit-information">[[*{rules.get(swimlane.key)}]]</label>
 
                         <table 
                             th:id="'table_search_' + ${swimlaneStat.index}" 

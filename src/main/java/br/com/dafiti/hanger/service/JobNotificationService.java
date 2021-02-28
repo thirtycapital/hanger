@@ -100,90 +100,93 @@ public class JobNotificationService {
      * @param setup Identify if is a setup.
      */
     public void notify(Job job, boolean slack, boolean setup) {
-        JobStatus jobStatus = job.getStatus();
         Set<Job> pendencies = new HashSet();
         StringBuilder message = new StringBuilder();
 
-        if (jobStatus != null) {
-            JobBuild jobBuild = jobStatus.getBuild();
+        if (job.isEnabled()) {
+            JobStatus jobStatus = job.getStatus();
+            
+            if (jobStatus != null) {
+                JobBuild jobBuild = jobStatus.getBuild();
 
-            if (jobBuild != null) {
-                if ((jobStatus.getFlow().equals(Flow.NORMAL) || jobStatus.getFlow().equals(Flow.APPROVED))
-                        && jobBuild.getPhase().equals(Phase.FINALIZED)
-                        && jobBuild.getStatus().equals(Status.SUCCESS)
-                        && !setup) {
+                if (jobBuild != null) {
+                    if ((jobStatus.getFlow().equals(Flow.NORMAL) || jobStatus.getFlow().equals(Flow.APPROVED))
+                            && jobBuild.getPhase().equals(Phase.FINALIZED)
+                            && jobBuild.getStatus().equals(Status.SUCCESS)
+                            && !setup) {
 
-                    //Remove a warnig in case of success.  
-                    if (!warning.isEmpty()
-                            && warning.containsValue(job)) {
+                        //Remove a warnig in case of success.  
+                        if (!warning.isEmpty()
+                                && warning.containsValue(job)) {
 
-                        jobService.getPropagation(job, false).stream().forEach((child) -> {
-                            warning.remove(child, job);
-                        });
-                    }
+                            jobService.getPropagation(job, false).stream().forEach((child) -> {
+                                warning.remove(child, job);
+                            });
+                        }
 
-                    if (slack) {
-                        //Identifies if job notification is enabled.
-                        if (job.isNotify()) {
-                            if (job.getParent().isEmpty()) {
-                                message
-                                        .append(":star-struck: The job *")
-                                        .append(job.getDisplayName())
-                                        .append("* finished *successfully*");
-                            } else {
-                                job.getParent().stream().forEach((parent) -> {
-                                    if (!jobBuildStatusService.isBuilt(parent.getParent())) {
-                                        pendencies.add(parent.getParent());
-                                    }
-                                });
-
-                                if (pendencies.isEmpty()) {
+                        if (slack) {
+                            //Identifies if job notification is enabled.
+                            if (job.isNotify()) {
+                                if (job.getParent().isEmpty()) {
                                     message
                                             .append(":star-struck: The job *")
                                             .append(job.getDisplayName())
-                                            .append("* and its dependencies has finished *successfully*");
+                                            .append("* finished *successfully*");
                                 } else {
-                                    message
-                                            .append(":worried: The job *")
-                                            .append(job.getDisplayName())
-                                            .append("* has finished *successfully*, but the following dependencies was not finished yet: ");
-
-                                    pendencies.stream().forEach((parent) -> {
-                                        message
-                                                .append("\n         *")
-                                                .append(parent.getDisplayName())
-                                                .append("* ");
+                                    job.getParent().stream().forEach((parent) -> {
+                                        if (!jobBuildStatusService.isBuilt(parent.getParent())) {
+                                            pendencies.add(parent.getParent());
+                                        }
                                     });
-                                }
 
-                                if (warning.containsKey(job)) {
-                                    message
-                                            .append("\n(")
-                                            .append(warning.get(job).size())
-                                            .append(" warning(s) in the job flow!)");
+                                    if (pendencies.isEmpty()) {
+                                        message
+                                                .append(":star-struck: The job *")
+                                                .append(job.getDisplayName())
+                                                .append("* and its dependencies has finished *successfully*");
+                                    } else {
+                                        message
+                                                .append(":worried: The job *")
+                                                .append(job.getDisplayName())
+                                                .append("* has finished *successfully*, but the following dependencies was not finished yet: ");
+
+                                        pendencies.stream().forEach((parent) -> {
+                                            message
+                                                    .append("\n         *")
+                                                    .append(parent.getDisplayName())
+                                                    .append("* ");
+                                        });
+                                    }
+
+                                    if (warning.containsKey(job)) {
+                                        message
+                                                .append("\n(")
+                                                .append(warning.get(job).size())
+                                                .append(" warning(s) in the job flow!)");
+                                    }
                                 }
+                                slackService.send(message.toString(), job.getChannel());
                             }
-                            slackService.send(message.toString(), job.getChannel());
                         }
-                    }
-                } else if (jobStatus.getFlow().equals(Flow.ERROR)
-                        || (jobBuild.getPhase().equals(Phase.FINALIZED) && (jobBuild.getStatus().equals(Status.FAILURE) || jobBuild.getStatus().equals(Status.ABORTED)))) {
+                    } else if (jobStatus.getFlow().equals(Flow.ERROR)
+                            || (jobBuild.getPhase().equals(Phase.FINALIZED) && (jobBuild.getStatus().equals(Status.FAILURE) || jobBuild.getStatus().equals(Status.ABORTED)))) {
 
-                    //Put a warnig in case of error. 
-                    jobService.getPropagation(job, false).stream().forEach((child) -> {
-                        warning.remove(child, job);
-                        warning.put(child, job);
-                    });
+                        //Put a warnig in case of error. 
+                        jobService.getPropagation(job, false).stream().forEach((child) -> {
+                            warning.remove(child, job);
+                            warning.put(child, job);
+                        });
 
-                    if (slack) {
-                        //Identifies if job notification is enabled.
-                        if (job.isNotify()) {
-                            message
-                                    .append(":fire: Something wrong happened to the job *")
-                                    .append(job.getDisplayName())
-                                    .append("*");
+                        if (slack) {
+                            //Identifies if job notification is enabled.
+                            if (job.isNotify()) {
+                                message
+                                        .append(":fire: Something wrong happened to the job *")
+                                        .append(job.getDisplayName())
+                                        .append("*");
 
-                            slackService.send(message.toString(), job.getChannel());
+                                slackService.send(message.toString(), job.getChannel());
+                            }
                         }
                     }
                 }

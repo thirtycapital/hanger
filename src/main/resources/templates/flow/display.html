@@ -47,7 +47,7 @@
                 </div>
             </center>
 
-            <div class="chart dragscroll" id="flow" style="overflow-y: auto; margin-left: 225px; left: 0px"></div>
+            <div class="chart dragscroll" id="flow" style="overflow-y: auto; margin-left: 225px; left: 0px"></div> oioi
 
             <div id="zoom_control" class="btn-group-vertical" >
                 <button title="Zoom Out" role="button" id="zoom_in" class="btn btn-group-md"><span class="glyphicon glyphicon-zoom-in"></span></button>
@@ -191,6 +191,29 @@
                 </div>
             </div>
         </div>
+        
+        <!--Modal Abort-->
+        <div class="modal fade" id="abort" tabindex="-1" role="dialog" aria-labelledby="modalAbort">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalParentLabel">Attention</h4>
+                    </div>
+                    <div class="modal-body">
+                        <span>This action will abort the job execution. Are you sure?</span>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="#" id="abort" class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm">
+                            Yes
+                        </a>
+                        <a class="col-xs-5 col-sm-5 col-md-5 btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">
+                            No
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!--AJAX Parent modal --> 
         <div id="modalHolder"></div>
@@ -285,6 +308,11 @@
                 // Build Mesh confirm dialog.
                 var mesh = function () {
                     $("#mesh").modal({backdrop: 'static', keyboard: false});
+                };
+                
+                // Abort confirm dialog.
+                var abort = function () {
+                    $("#abort").modal({backdrop: 'static', keyboard: false});
                 };
 
                 var flow = function () {
@@ -413,8 +441,9 @@
                         label: 'Actions',
                         disabled: !isAuthenticated,
                         submenu: [
-                            {icon: 'glyphicon glyphicon-play', label: 'Build', action: build, },
+                            {icon: 'glyphicon glyphicon-play', label: 'Build', action: build },
                             {icon: 'glyphicon glyphicon-fast-backward', label: 'Build Mesh', action: mesh},
+                            {icon: 'glyphicon glyphicon-stop', label: 'Abort', action: abort},
                             {},
                             {icon: 'glyphicon glyphicon-plus', label: 'Parent', submenu: submenuParents},
                             {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren},
@@ -470,6 +499,62 @@
                     });
                 }
             }
+            
+            /**
+             * Start a hanger abort process.
+             * 
+             * @param {type} id job id.
+             * @param {type} url hanger url;
+             * @returns {undefined}
+             */
+            function abortJob(id, url) {
+
+                if (url) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "timeOut": timeout,
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + id,
+                        timeout: 30000,
+                        success: function (result) {
+                            console.log(result);
+                            if (result) {
+                                toastr.success('Job aborted successfully.');
+
+                                setTimeout(function () {
+                                    window.location.reload(1);
+                                }, timeout);
+
+                            } else {
+                                toastr.error('An error occurred while aborting.');
+                            }
+                        },
+                        error: function (e) {
+                            toastr.error('Error on aborting request.');
+                        }
+                    });
+                }
+            }
+            
+            /**
+             * Abort job.
+             */
+            $("#abort").click(function () {
+                // Close confirm modal.
+                $('#abort').modal('toggle');
+
+                var url = /*[[@{/job/abort/}]]*/ "/job/abort/";
+                abortJob(job, url);
+            });
 
             /**
              * Build mesh job chain.

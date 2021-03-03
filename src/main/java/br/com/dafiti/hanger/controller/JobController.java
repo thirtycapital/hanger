@@ -274,6 +274,27 @@ public class JobController {
 
         return "redirect:/flow/job/" + job.getId();
     }
+    
+    /**
+     * Abort job.
+     *
+     * @param redirectAttributes RedirectAttributes
+     * @param job Job
+     * @return flow
+     */
+    @GetMapping(path = "/abort/{id}")
+    public String abort(
+            RedirectAttributes redirectAttributes,
+            @PathVariable(value = "id") Job job) {
+
+        if (jobAbort(job)) {
+            redirectAttributes.addFlashAttribute("successMessage", "ok");
+        } else {
+            redirectAttributes.addFlashAttribute("errorMessage", "Fail aborting job!");
+        }
+
+        return "redirect:/flow/job/" + job.getId();
+    }
 
     /**
      * Build a job.
@@ -285,6 +306,18 @@ public class JobController {
     @ResponseBody
     public boolean build(@PathVariable(value = "id") Job job) {
         return jobBuild(job);
+    }
+    
+    /**
+     * Abort a job.
+     *
+     * @param job Job
+     * @return Identifies if the job was built successfully.
+     */
+    @GetMapping(path = "/abort/silently/{id}")
+    @ResponseBody
+    public boolean abort(@PathVariable(value = "id") Job job) {
+        return jobAbort(job);
     }
 
     /**
@@ -320,6 +353,16 @@ public class JobController {
      */
     private boolean jobBuild(Job job) {
         return jobBuild(job, false);
+    }
+    
+     /**
+     * Abort a job.
+     *
+     * @param job Job
+     * @return boolean with status of job abort.
+     */
+    private boolean jobAbort(Job job) {
+        return jobAbort(job);
     }
 
     /**

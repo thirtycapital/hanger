@@ -222,6 +222,47 @@ public class JenkinsService {
 
         return built;
     }
+    
+    /**
+     * Abort a Jenkins job.
+     *
+     * @param job Job
+     * @return Identify if job was built.
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    public boolean abort(Job job) throws Exception {
+        JenkinsServer jenkins;
+        boolean built = true;
+
+        if (job != null) {
+            jenkins = this.getJenkinsServer(job.getServer());
+
+            if (jenkins != null) {
+                if (jenkins.isRunning()) {
+                    JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
+
+                    if (jobWithDetails != null) {
+                        try {
+                            built = (jobWithDetails.build(false) != null);
+                        } catch (IOException ex) {
+                            LOG.log(Level.ERROR, "Fail aborting job: " + job.getName(), ex);
+                            try {
+                                built = (jobWithDetails.build(new HashMap(), false) != null);
+                            } catch (IOException e) {
+                                LOG.log(Level.ERROR, "Fail aborting parametrized job: " + job.getName(), ex);
+                                throw ex;
+                            }
+                        } finally {
+                            jenkins.close();
+                        }
+                    }
+                }
+            }
+        }
+
+        return built;
+    }
 
     /**
      * Get a Jenkins job upstream project list.

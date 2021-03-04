@@ -231,7 +231,7 @@ public class JenkinsService {
      * @throws URISyntaxException
      * @throws IOException
      */
-    public boolean abort(Job job) throws Exception {
+    public boolean abortJ(Job job) throws Exception {
         JenkinsServer jenkins;
         boolean built = true;
 
@@ -260,6 +260,25 @@ public class JenkinsService {
                 }
             }
         }
+
+        return built;
+    }
+    
+     /**
+     * Abort a Jenkins job.
+     *
+     * @param job Job
+     * @return Identify if job was aborted.
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    public boolean abort(Job job) throws Exception {
+        JenkinsServer jenkins;
+        boolean built = true;
+
+        
+       Build.BUILD_HAS_BEEN_CANCELLED.Stop(built);
+                        
 
         return built;
     }

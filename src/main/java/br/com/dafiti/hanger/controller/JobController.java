@@ -287,7 +287,7 @@ public class JobController {
             RedirectAttributes redirectAttributes,
             @PathVariable(value = "id") Job job) {
 
-        if (jobAbort(job)) {
+        if (jobAbort(job, true)) { //chega aqui
             redirectAttributes.addFlashAttribute("successMessage", "ok");
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "Fail aborting job!");
@@ -317,7 +317,7 @@ public class JobController {
     @GetMapping(path = "/abort/silently/{id}")
     @ResponseBody
     public boolean abort(@PathVariable(value = "id") Job job) {
-        return jobAbort(job);
+        return jobAbort(job, true);
     }
 
     /**
@@ -344,6 +344,31 @@ public class JobController {
                     .body("BAD_REQUEST");
         }
     }
+    
+    /**
+     * Abort a job.
+     *
+     * @param model
+     * @param job
+     * @return Identifies if the job was built successfully.
+     */
+    @ApiOperation(value = "Build a job")
+    @PostMapping(path = "/api/abort/{id}")
+    @ResponseBody
+    public ResponseEntity abort(
+            Model model,
+            @PathVariable(value = "id") Job job) {
+
+        if (jobAbort(job, true)) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body("OK");
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("BAD_REQUEST");
+        }
+    }
 
     /**
      * Build a job.
@@ -361,8 +386,8 @@ public class JobController {
      * @param job Job
      * @return boolean with status of job abort.
      */
-    private boolean jobAbort(Job job) {
-        return jobAbort(job);
+    private boolean jobAbort(Job job, boolean par) {
+        return jobAbort(job, false); //chega aqui
     }
 
     /**

@@ -82,7 +82,7 @@ public class Watchdog {
     }
 
     /**
-     * Canine Patrol
+     * Paw Patrol
      */
     @Scheduled(cron = "${hanger.watchdog.cron}")
     public void patrol() {
@@ -109,7 +109,7 @@ public class Watchdog {
                 if (status.equals(Status.WAITING) || status.equals(Status.REBUILD) || status.equals(Status.RUNNING)) {
                     //Identifies jobs waiting forever. 
                     if (status.equals(Status.WAITING)) {
-                        //Identifies if parents were builded at least 30 minutes ago.
+                        //Identifies if parents were built at least 30 minutes ago.
                         boolean buildable = !job.getParent().stream()
                                 .filter(
                                         jobParent -> jobParent.getParent().getStatus() != null

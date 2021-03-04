@@ -8,6 +8,12 @@
 
 .italic{
     font-style: italic;
+    background-color: #F4F5F7;
+    padding: 10px;
+}
+
+.italic > p{
+    margin: 0 0 0px;
 }
 
 div.dataTables_filter input{
@@ -88,9 +94,10 @@ label {
 }
 
 legend{
-    color: black;
+    color: #4682b4;
     font-weight: bold;
     font-size: 15px;
+    margin-bottom: 10px;
 }
 
 .swinlane{
@@ -757,9 +764,8 @@ input[type=radio]:checked + img {
 
 .pager-item{
     color: #337ab7;
-    margin-left: 1px;
-    padding: 1px 5px !important;
-    font-size: 12px;
+    font-size: 11px;
+    margin-bottom: 5px;
 }   
 
 .thin-line{
@@ -777,7 +783,8 @@ input[type=radio]:checked + img {
 
 h3.page-title {
     color:#373e46;
-    font-size: 20px;
+    font-size: 15px;
+    font-weight: bold;
 }
 
 .btn-delete {

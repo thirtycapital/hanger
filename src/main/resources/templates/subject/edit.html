@@ -53,27 +53,29 @@
 
                     <!--Swimlanes-->  
                     <div th:if="not ${subject.swimlane.isEmpty()}">  
-                        <label>Swimlanes</label> 
-                        <table class="table">
-                            <tr>
-                                <th style="width:20%">Swimlane</th>
-                                <th style="width:57.5%">Critéria</th>
-                                <th></th>
-                            </tr>
-                            <tr th:each="swimlane: ${subject.swimlane}">
-                                <td> 
-                                    <span th:text="${swimlane.key}"></span>
-                                </td>
-                                <td> 
-                                    <span th:text="${swimlane.value}"></span>
-                                </td>
-                                <td>
-                                    <button type="submit" name="partial_remove_swimlane" th:value="${swimlane.key}" class="btn btn-delete btn-xs">
-                                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove
-                                    </button>
-                                </td>
-                            </tr>
-                        </table>
+                        <fieldset>
+                            <legend>Swimlanes</legend> 
+                            <table class="table">
+                                <tr>
+                                    <th style="width:20%">Swimlane</th>
+                                    <th style="width:57.5%">Critéria</th>
+                                    <th></th>
+                                </tr>
+                                <tr th:each="swimlane: ${subject.swimlane}">
+                                    <td> 
+                                        <span th:text="${swimlane.key}"></span>
+                                    </td>
+                                    <td> 
+                                        <span th:text="${swimlane.value}"></span>
+                                    </td>
+                                    <td>
+                                        <button type="submit" name="partial_remove_swimlane" th:value="${swimlane.key}" class="btn btn-delete btn-xs">
+                                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </fieldset>
                     </div> 
 
                     <fieldset>

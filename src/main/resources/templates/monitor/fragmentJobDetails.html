@@ -7,13 +7,6 @@
         <div class="container">
             <!--Fragment-->
             <div th:fragment="jobDetails">
-
-                <ul th:if="${not #lists.isEmpty(swimlanes)}" class="pager">
-                    <li th:if="${swimlane.key != 'ALL'}" th:each="swimlane, swimlaneStat: ${swimlanes}">
-                        <a th:href="${'#' + swimlane.key}" th:text="${swimlane.key}" class="pager-item"></a>
-                    </li>
-                </ul>                
-
                 <div th:if="${not #lists.isEmpty(swimlanes)}" th:each="swimlane, swimlaneStat: ${swimlanes}">  
                     <fieldset th:if="${not #lists.isEmpty(swimlane.value)}" >
                         <legend 
@@ -22,9 +15,10 @@
                             class="space-top swinlane" 
                             th:text="${swimlane.key}"
                             data-toggle="tooltip" 
-                            data-placement="left"
-                            th:title="${rules.get(swimlane.key)}">
+                            data-placement="left">
                         </legend>
+
+                        <label th:if="${swimlane.key != 'ALL'}" th:inline="text" class="label-edit-information">[[*{rules.get(swimlane.key)}]]</label>
 
                         <table 
                             th:id="'table_search_' + ${swimlaneStat.index}" 
@@ -66,7 +60,8 @@
                                         </td>
 
                                         <td th:case="false" 
-                                            th:text="${ #strings.abbreviate( jobDetail.job.displayName, 65 ) }"> Job 
+                                            th:text="${ #strings.abbreviate( jobDetail.job.displayName, 65 ) }"
+                                            th:title="${jobDetail.job.displayName}"> Job 
                                         </td>
                                     </th:block>
                                     <th:block th:switch="${#lists.isEmpty(jobDetail.warning)}">

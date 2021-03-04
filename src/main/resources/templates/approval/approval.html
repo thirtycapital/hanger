@@ -6,42 +6,25 @@
     </head>
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
-        <div class="container-fluid main-content">
+        <div class="container-fluid main-content space-top">
             <table>
                 <tr>
-                    <th th:inline="text">
-                        <h3 class="page-title">[[${job.name}]]</h3>
-                    </th>
-
-                    <th class="btn-action">
-                        <a th:href="@{'/job/view/' + ${job.id}}" title="View">
-                            <span class="glyphicon glyphicon-eye-open"></span>
+                    <th>
+                        <a th:href="@{'/job/view/' + ${job.id}}" class="space-right">
+                            <span th:text="${job.name}"></span>
                         </a>
-                    </th>
-
-                    <th class="btn-action">
-                        <a th:href="@{'/flow/job/' + ${job.id}}" title="Flow">
-                            <span class="glyphicon glyphicon-random"></span>
-                        </a>
-                    </th>
-
-                    <th class="btn-action">
-                        <a th:href="@{'/propagation/job/' + ${job.id}}" title="Propagation">
-                            <span class="glyphicon glyphicon-transfer"></span>
-                        </a>
-                    </th>
+                    </th> 
                 </tr>
             </table>
 
-            <div class="space-top" th:if="${not #lists.isEmpty(job.checkup)}">
+            <hr/>
+
+            <div  th:if="${not #lists.isEmpty(job.checkup)}">
                 <form class="form-horizontal" th:method="post" th:action="@{'/approval/submit/' + ${job.id}}" th:object="${jobApproval}">
                     <div>
                         <div class="form-group">
                             <div class="col-sm-12">
-                                <fieldset>
-                                    <legend class="space-top">Approval</legend>
-                                    <textarea class="form-control" th:field="*{description}" required="true" rows="3" minlength="15" maxlength="65000"></textarea>
-                                </fieldset>
+                                <textarea class="form-control" th:field="*{description}" required="true" rows="5" minlength="15" maxlength="65000" placeholder="Why it should be approved or not?"></textarea>
                             </div>
                         </div>
 
@@ -52,7 +35,7 @@
                                     </span> 
                                     Approve
                                	</button>
-                                <button type="submit" class="btn btn-delete btn-sm" name="disapprove_job">
+                                <button type="submit" class="btn btn-notice btn-sm" name="disapprove_job">
                                     <span class="glyphicon glyphicon-thumbs-down">
                                     </span> 
                                     Disapprove
@@ -61,10 +44,23 @@
                         </div>
                     </div>
                 </form>
+
+                <hr/>
+                
                 <div th:each="checkup, checkupStat : ${job.checkup}" th:remove="tag">
                     <fieldset th:if="${not #lists.isEmpty(checkup.log)}" >
-                        <legend class="space-top" th:inline="text">[[${ checkup.name + '  |  ' + ( checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION' ) + '  |  ' + checkup.action}]]</legend>
-                        <table th:id="'table_clean' + ${checkup.id}" class="table table-hover">
+                        <span class="label label-info" th:text="${checkup.enabled ?  checkup.name : checkup.name + ' [DISABLED]'}"></span>
+                        <span class="label label-default" th:text="${checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION'}"></span>
+                        <span class="label label-default" th:text="${checkup.conditional}"></span>
+                        <span class="label label-default" th:text="${checkup.action}"></span>
+
+                        <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Open the query in workbench" target="_blank">
+                            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                        </a>
+
+                        <hr/>
+
+                        <table th:id="'table_paginated_clean_' + ${checkup.id}" class="table table-hover">
                             <thead>
                                 <tr>
                                     <th style="width:5%">#</th>
@@ -119,11 +115,17 @@
                                     </td>
                                     <td th:text="${checkupLog.conditional}"></td>
                                     <td th:text="${checkupLog.threshold}"></td>
-                                    <td>
-                                        <div th:if="${checkup.command}">
-                                            <table  class="table borderless">
+                                    <td>                                   
+                                        <div th:if="${not #lists.isEmpty(checkupLog.commandLog)}">
+                                            <table class="table borderless">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:10%" class="img-sort">Status</th> 
+                                                        <th class="no-sort">Command</th>
+                                                    </tr>
+                                                </thead>
                                                 <tbody>
-                                                    <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}" th:remove="tag">
+                                                    <tr th:each="commandLog, commandLogStat : ${checkupLog.commandLog}"> 
                                                         <td>
                                                             <th:block th:switch="${commandLog.success}">
                                                                 <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
@@ -132,7 +134,7 @@
                                                         </td>
                                                         <td>
                                                             <a th:inline="text" th:href="@{'/checkup/log/' + ${commandLog.id}}">
-                                                                [[${ (commandLogStat.index + 1) + '. ' + commandLog.commandType}]]
+                                                                [[${ (commandLogStat.index + 1) + '° ' + commandLog.commandType}]]
                                                             </a>
                                                         </td>
                                                     </tr>
@@ -146,6 +148,16 @@
                     </fieldset>
                 </div>
             </div>
+
+            <hr/>  
+
+            <a th:href="@{'/flow/job/' + ${job.id}}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-random"></span> Flow
+            </a>
+
+            <a th:href="@{'/propagation/job/' + ${job.id}}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-transfer"></span> Propagation
+            </a>
         </div>
         <script>
             Prism.plugins.NormalizeWhitespace.setDefaults({

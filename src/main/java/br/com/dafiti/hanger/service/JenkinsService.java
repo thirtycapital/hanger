@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -385,6 +386,47 @@ public class JenkinsService {
         }
 
         return isBuilding;
+    }
+
+    /**
+     * Get estimated duration of a job.
+     *
+     * @param job Job
+     * @return estimated duration of a job in seconds
+     */
+    public long getEstimatedDuration(Job job) {
+        JenkinsServer jenkins;
+        long duration = 0;
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
+
+                        if (jobWithDetails != null) {
+                            Build lastSuccessfulBuild = jobWithDetails.getLastSuccessfulBuild();
+
+                            if (lastSuccessfulBuild != null) {
+                                BuildWithDetails details = lastSuccessfulBuild.details();
+
+                                if (details != null) {
+                                    duration = TimeUnit.MILLISECONDS.toSeconds(details.getEstimatedDuration());
+                                }
+                            }
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                LOG.log(Level.ERROR, "Fail identifying job estimated duration!", ex);
+            }
+        }
+
+        return duration;
     }
 
     /**

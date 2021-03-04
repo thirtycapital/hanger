@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.LocalDateTime;
 import org.joda.time.Minutes;
+import org.joda.time.Seconds;
 
 /**
  *
@@ -81,7 +82,7 @@ public class Watchdog {
     }
 
     /**
-     * Canine Patrol
+     * Paw Patrol
      */
     @Scheduled(cron = "${hanger.watchdog.cron}")
     public void patrol() {
@@ -108,20 +109,23 @@ public class Watchdog {
                 if (status.equals(Status.WAITING) || status.equals(Status.REBUILD) || status.equals(Status.RUNNING)) {
                     //Identifies jobs waiting forever. 
                     if (status.equals(Status.WAITING)) {
-                        //Identifies if parents were builded at least 10 minutes ago.
+                        //Identifies if parents were built at least 30 minutes ago.
                         boolean buildable = !job.getParent().stream()
                                 .filter(
                                         jobParent -> jobParent.getParent().getStatus() != null
                                         && jobParent.getParent().getStatus().getBuild() != null
-                                        && Minutes.minutesBetween(new LocalDateTime(jobParent.getParent().getStatus().getBuild().getDate()), new LocalDateTime()).getMinutes() >= 10
+                                        && Minutes
+                                                .minutesBetween(
+                                                        new LocalDateTime(jobParent.getParent().getStatus().getBuild().getDate()),
+                                                        new LocalDateTime()).getMinutes() >= 30
                                 ).collect(Collectors.toList()).isEmpty();
 
                         if (buildable
                                 && jobBuildPushService.getPushInfo(job).isReady()) {
 
-                            this.catcher(job);
+                            this.catcher(job, status);
                         } else {
-                            LOG.log(Level.INFO, "The watchdog just sniffed the job {}", new Object[]{job.getName()});
+                            LOG.log(Level.INFO, "The watchdog just sniffed {} job {}", new Object[]{status, job.getName()});
                         }
                     }
 
@@ -133,16 +137,22 @@ public class Watchdog {
                             JobBuild jobBuild = jobStatus.getBuild();
 
                             if (jobBuild != null) {
-                                //Identifies if its building or running for at least 10 minutes. 
-                                boolean buildable = (Minutes.minutesBetween(new LocalDateTime(jobBuild.getDate()), new LocalDateTime()).getMinutes() >= 10);
+                                int duration = (int) jenkinsServive.getEstimatedDuration(job);
+                                int interval = Seconds
+                                        .secondsBetween(
+                                                new LocalDateTime(jobBuild.getDate()),
+                                                new LocalDateTime()).getSeconds();
+
+                                //Identifies if its building or running for at least 30 minutes. 
+                                boolean buildable = (interval >= (duration < 1800 ? 1800 : duration));
 
                                 if (buildable
                                         && !jenkinsServive.isBuilding(job, jobBuild.getNumber())
                                         && jobBuildStatusService.isBuildable(job)) {
 
-                                    this.catcher(job);
+                                    this.catcher(job, status);
                                 } else {
-                                    LOG.log(Level.INFO, "The watchdog just sniffed the job {} with build number {}", new Object[]{job.getName(), jobBuild.getNumber()});
+                                    LOG.log(Level.INFO, "The watchdog just sniffed {} job {} with build number {} (Estimated job duration {} s | Interval {} s)", new Object[]{status, job.getName(), jobBuild.getNumber(), duration, interval});
                                 }
                             }
                         }
@@ -174,9 +184,10 @@ public class Watchdog {
     /**
      * Catch a lost job.
      *
-     * @param job job
+     * @param Job job
+     * @param Status status
      */
-    private void catcher(Job job) {
+    private void catcher(Job job, Status status) {
         StringBuilder message = new StringBuilder();
 
         try {
@@ -184,12 +195,13 @@ public class Watchdog {
             jobBuildService.build(job);
 
             //Log on console. 
-            LOG.log(Level.INFO, "The watchdog catched job ".concat(job.getName()));
+            LOG.log(Level.INFO, "The watchdog catched " + status + " job " + job.getName());
 
             //Log on auditor. 
             auditorService.publish("WATCHDOG",
                     new AuditorData()
                             .addData("name", job.getName())
+                            .addData("status", status.toString())
                             .getData());
 
             //Log on Slack.

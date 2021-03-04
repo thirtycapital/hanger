@@ -235,6 +235,7 @@ public class JobCheckupService {
                         }
 
                         //Defines the checkup status. 
+                        jobCheckupLog.setThreshold(this.getMacro(checkup.getThreshold()));
                         jobCheckupLog.setValue(value);
                         jobCheckupLog.setSuccess(validated);
 
@@ -297,14 +298,14 @@ public class JobCheckupService {
         switch (checkup.getAction()) {
             case REBUILD:
                 try {
-                //Rebuild the job.
-                jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
-                jenkinsService.build(job);
-            } catch (Exception ex) {
-                LogManager.getLogger(EyeService.class).log(Level.ERROR, "Fail building job: " + job.getName(), ex);
-            }
+                    //Rebuild the job.
+                    jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
+                    jenkinsService.build(job);
+                } catch (Exception ex) {
+                    LogManager.getLogger(EyeService.class).log(Level.ERROR, "Fail building job: " + job.getName(), ex);
+                }
 
-            break;
+                break;
             case REBUILD_MESH:
                 HashSet<Job> parent = jobService.getMeshParent(job);
                 jobService.rebuildMesh(job);
@@ -642,7 +643,7 @@ public class JobCheckupService {
             blueprint.addVariable("job", job.getName());
             blueprint.addVariable("checkup", checkup.getDescription());
 
-            mailService.send(blueprint);
+            mailService.send(blueprint, checkup.getJob().getName());
         }
 
         //Identifies if checkup notification is enabled.

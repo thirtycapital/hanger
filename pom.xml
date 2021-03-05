@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.springframework</groupId>
     <artifactId>hanger</artifactId>
-    <version>0.11.4 [Makeup]</version>
+    <version>0.11.5 [Makeup]</version>
     <packaging>war</packaging>
 
     <parent>

@@ -27,6 +27,7 @@ import br.com.dafiti.hanger.model.Configuration;
 import br.com.dafiti.hanger.model.ConfigurationGroup;
 import br.com.dafiti.hanger.repository.ConfigurationRepository;
 import br.com.dafiti.hanger.security.PasswordCryptor;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -262,5 +263,13 @@ public class ConfigurationService {
         return Integer.valueOf(this
                 .findByParameter("WORKBENCH_MAX_ROWS")
                 .getValue());
+    }    
+    
+    public String getDataBaseTime() {
+        return this.configurationRepository.now();
+    }
+    
+    public String getServerTime() {
+        return new LocalDateTime().toString();
     }
 }

@@ -102,6 +102,8 @@ public class ConfigurationController {
     public String edit(Model model) {
         model.addAttribute("configurationGroup", configurationGroupService.list());
         model.addAttribute("servers", serverService.list());
+        model.addAttribute("databaseTime", configurationService.getDataBaseTime());
+        model.addAttribute("serverTime", configurationService.getServerTime());
         return "configuration/edit";
     }
 }

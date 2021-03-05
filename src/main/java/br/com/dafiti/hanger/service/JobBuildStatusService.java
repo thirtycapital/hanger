@@ -177,13 +177,6 @@ public class JobBuildStatusService {
                                         new LocalDate(new DateTime(jobBuildDate).plusHours(job.getTolerance())),
                                         new LocalDate()).getDays() != 0;
                             }
-
-                            if (!buildable) {
-                                //Identify if the job build is finalized and successfully. 
-                                buildable = !(jobBuild.getPhase().equals(Phase.FINALIZED)
-                                        && jobBuild.getStatus().equals(Status.SUCCESS)
-                                        && (jobStatus.getFlow().equals(Flow.NORMAL) || jobStatus.getFlow().equals(Flow.APPROVED)));
-                            }
                         }
                     }
 

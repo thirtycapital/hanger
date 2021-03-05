@@ -28,6 +28,8 @@ import br.com.dafiti.hanger.model.ConfigurationGroup;
 import br.com.dafiti.hanger.repository.ConfigurationRepository;
 import br.com.dafiti.hanger.security.PasswordCryptor;
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -270,6 +272,6 @@ public class ConfigurationService {
     }
     
     public String getServerTime() {
-        return new LocalDateTime().toString();
+        return new LocalDateTime().toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS"));
     }
 }

@@ -590,9 +590,12 @@
                                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Delete
                             </a>
 
+                            <!--
+                            // TODO - Reativar esta opção após resolução do chamado DENG-924.
                             <a th:if="*{enabled}" href="" data-toggle="modal" data-target="#mesh" class="btn btn-generic btn-sm pull-right btn-space">
                                 <span class="glyphicon glyphicon-fast-backward" aria-hidden="true"></span> Build mesh
                             </a>
+                            -->
 
                             <a th:if="*{enabled}" th:href="@{'/job/build/' + ${job.id}}" class="btn btn-generic btn-sm pull-right btn-space">
                                 <span class="glyphicon glyphicon-play" aria-hidden="true"></span> Build 

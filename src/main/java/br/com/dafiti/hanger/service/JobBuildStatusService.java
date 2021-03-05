@@ -222,7 +222,11 @@ public class JobBuildStatusService {
 
                     if (!buildable) {
                         //Identifies if it has any problem or is a rebuild mesh.
-                        buildable = jobStatus.getFlow().equals(Flow.ERROR) || jobStatus.getFlow().equals(Flow.REBUILD);
+                        buildable = jobStatus.getFlow().equals(Flow.ERROR);
+
+                        /*TODO*/
+                        //Incluir um status para que seja possível identificar BUILD MESH (DENG-924), era feito (jobStatus.getFlow().equals(Flow.REBUILD)).
+                        //buildable = jobStatus.getFlow().equals(Flow.ERROR) || jobStatus.getFlow().equals(Flow.REBUILD);
                     }
                 }
             }

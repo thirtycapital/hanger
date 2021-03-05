@@ -5,9 +5,25 @@
     </head>
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
-        <div class="container-fluid main-content">
+        <div class="container-fluid main-content">            
             <div>
                 <form id="configuration" class="form-horizontal space-top" th:object="${configurationGroup}" th:action="@{/configuration/save}" method="post">
+                    <div class="modal-body">  
+                        <div class="form-group">
+                            <div class="italic col-sm-10">
+                                <div>
+                                    <strong>Database time: </strong>
+                                    <span th:text="${databaseTime}"></span>
+                                </div>
+                                <div>
+                                    <strong>Server time: </strong>
+                                    <span th:text="${serverTime}"></span>
+                                </div>                
+                            </div>
+                        </div>
+                    </div>
+
+
 
                     <div th:if="${ errorMessage != null }">
                         <div class="alert alert-danger" role="alert">

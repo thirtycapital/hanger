@@ -177,13 +177,6 @@ public class JobBuildStatusService {
                                         new LocalDate(new DateTime(jobBuildDate).plusHours(job.getTolerance())),
                                         new LocalDate()).getDays() != 0;
                             }
-
-                            if (!buildable) {
-                                //Identify if the job build is finalized and successfully. 
-                                buildable = !(jobBuild.getPhase().equals(Phase.FINALIZED)
-                                        && jobBuild.getStatus().equals(Status.SUCCESS)
-                                        && (jobStatus.getFlow().equals(Flow.NORMAL) || jobStatus.getFlow().equals(Flow.APPROVED)));
-                            }
                         }
                     }
 
@@ -229,7 +222,11 @@ public class JobBuildStatusService {
 
                     if (!buildable) {
                         //Identifies if it has any problem or is a rebuild mesh.
-                        buildable = jobStatus.getFlow().equals(Flow.ERROR) || jobStatus.getFlow().equals(Flow.REBUILD);
+                        buildable = jobStatus.getFlow().equals(Flow.ERROR);
+
+                        /*TODO*/
+                        //Incluir um status para que seja possível identificar BUILD MESH (DENG-924), era feito (jobStatus.getFlow().equals(Flow.REBUILD)).
+                        //buildable = jobStatus.getFlow().equals(Flow.ERROR) || jobStatus.getFlow().equals(Flow.REBUILD);
                     }
                 }
             }

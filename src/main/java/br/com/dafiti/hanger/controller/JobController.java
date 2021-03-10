@@ -1161,7 +1161,7 @@ public class JobController {
         job.setEnabled(!enabled);
         jobService.save(job);
         jenkinsService.updateJob(job);
-      
+
         return "flow/display";
     }
 
@@ -1201,5 +1201,19 @@ public class JobController {
         }
 
         return isEnabled;
+    }
+
+    /**
+     * Abort a job execution.
+     *
+     * @param job Job
+     * @return Identifies if the job was built successfully.
+     */
+    @GetMapping(path = "/build/abort/{id}")
+    @ResponseBody
+    public boolean abort(@PathVariable(value = "id") Job job) {
+        JobDetails jobDetails = jobDetailsService.getDetailsOf(job);
+        return this.jenkinsService.abort(job, jobDetails.getBuildNumber());
+
     }
 }

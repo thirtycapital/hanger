@@ -770,4 +770,58 @@ public class JenkinsService {
 
         return assignedNode.toString();
     }
+    
+    /**
+     * 
+     * @param job
+     * @param number
+     * @return 
+     */
+    public boolean abort(Job job, int number) {
+        JenkinsServer jenkins;
+        boolean isBuilding = false;
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
+
+                        if (jobWithDetails != null) {
+                            //Identifies if the job is in queue. 
+                            isBuilding = jobWithDetails.isInQueue();
+
+                            if (!isBuilding) {
+                                Build build = jobWithDetails.getBuildByNumber(number);
+
+                                if (build != null) {
+                                    BuildWithDetails buildWithDetails = build.details();
+
+                                    if (buildWithDetails != null) {
+                                        //Identifies if the job is running. 
+                                        isBuilding = buildWithDetails.isBuilding();
+                                        
+                                        if (isBuilding) {
+                                            String stop = buildWithDetails.Stop(true);
+                                            
+                                            System.out.println("xxx: "+ stop);
+                                            
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                LOG.log(Level.ERROR, "Fail identifying if a job is building!", ex);
+            }
+        }
+
+        return isBuilding;
+    }
 }

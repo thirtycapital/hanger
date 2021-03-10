@@ -272,6 +272,7 @@ public class FlowService {
         spanStatus.setCSSClass(label);
         spanStatus.setTitle(jobDetails.getStatus().toString());
         spanStatus.appendText(jobDetails.getStatus().toString());
+        spanStatus.setId("span-status-" + job.getId());
 
         P jobStatus = new P();
         jobStatus.appendChild(spanStatus);

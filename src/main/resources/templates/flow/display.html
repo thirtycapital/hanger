@@ -418,16 +418,15 @@
                         label: 'Actions',
                         disabled: !isAuthenticated,
                         submenu: [
+                            {icon: 'glyphicon glyphicon-stop', label: 'Abort', action: abort, disabled: jobStatus.textContent !== "RUNNING"},
                             {icon: 'glyphicon glyphicon-play', label: 'Build', action: build, },
                             // Build Mesh confirm dialog.
                             // TODO - Reativar esta opção após resolução do chamado DENG-924.
                             //{icon: 'glyphicon glyphicon-fast-backward', label: 'Build Mesh', action: mesh},                            
-                            {icon: 'glyphicon glyphicon-stop', label: 'Abort', action: abort, disabled: jobStatus.textContent !== "RUNNING"},
+                            {icon: enabled ? 'glyphicon glyphicon-eye-close' : 'glyphicon glyphicon-eye-open', label: enabled ? 'Disable' : 'Enable', action: enable},
                             {},
                             {icon: 'glyphicon glyphicon-plus', label: 'Parent', submenu: submenuParents},
-                            {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren},
-                            {},
-                            {icon: enabled ? 'glyphicon glyphicon-eye-close' : 'glyphicon glyphicon-eye-open', label: enabled ? 'Disable' : 'Enable', action: enable}
+                            {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren}                            
                         ]
                     }
                 ];

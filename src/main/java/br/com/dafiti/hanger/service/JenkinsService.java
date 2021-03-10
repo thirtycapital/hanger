@@ -805,9 +805,6 @@ public class JenkinsService {
                                         
                                         if (isBuilding) {
                                             String stop = buildWithDetails.Stop(true);
-                                            
-                                            System.out.println("xxx: "+ stop);
-                                            
                                         }
                                     }
                                 }

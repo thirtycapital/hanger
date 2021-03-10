@@ -770,16 +770,17 @@ public class JenkinsService {
 
         return assignedNode.toString();
     }
-    
+
     /**
-     * 
-     * @param job
-     * @param number
-     * @return 
+     * Abort a job execution by its number.
+     *
+     * @param job Job
+     * @param number execution number.
+     * @return
      */
     public boolean abort(Job job, int number) {
         JenkinsServer jenkins;
-        boolean isBuilding = false;
+        boolean aborted = false;
 
         if (job != null) {
             try {
@@ -791,9 +792,9 @@ public class JenkinsService {
 
                         if (jobWithDetails != null) {
                             //Identifies if the job is in queue. 
-                            isBuilding = jobWithDetails.isInQueue();
+                            aborted = jobWithDetails.isInQueue();
 
-                            if (!isBuilding) {
+                            if (!aborted) {
                                 Build build = jobWithDetails.getBuildByNumber(number);
 
                                 if (build != null) {
@@ -801,10 +802,11 @@ public class JenkinsService {
 
                                     if (buildWithDetails != null) {
                                         //Identifies if the job is running. 
-                                        isBuilding = buildWithDetails.isBuilding();
-                                        
-                                        if (isBuilding) {
-                                            String stop = buildWithDetails.Stop(true);
+                                        aborted = buildWithDetails.isBuilding();
+
+                                        if (aborted) {
+                                            //Stops job execution.
+                                            buildWithDetails.Stop(true);
                                         }
                                     }
                                 }
@@ -815,10 +817,10 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                LOG.log(Level.ERROR, "Fail identifying if a job is building!", ex);
+                LOG.log(Level.ERROR, "Fail aborting job!", ex);
             }
         }
 
-        return isBuilding;
+        return aborted;
     }
 }

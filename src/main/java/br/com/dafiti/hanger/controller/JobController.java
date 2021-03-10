@@ -287,7 +287,7 @@ public class JobController {
             RedirectAttributes redirectAttributes,
             @PathVariable(value = "id") Job job) {
 
-        if (jobAbort(job, true)) { //chega aqui
+        if (jobAbort(job)) { //chega aqui
             redirectAttributes.addFlashAttribute("successMessage", "ok");
         } else {
             redirectAttributes.addFlashAttribute("errorMessage", "Fail aborting job!");
@@ -317,7 +317,7 @@ public class JobController {
     @GetMapping(path = "/abort/silently/{id}")
     @ResponseBody
     public boolean abort(@PathVariable(value = "id") Job job) {
-        return jobAbort(job, true);
+        return jobAbort(job);
     }
 
     /**
@@ -346,37 +346,13 @@ public class JobController {
     }
     
     /**
-     * Abort a job.
-     *
-     * @param model
-     * @param job
-     * @return Identifies if the job was built successfully.
-     */
-    @ApiOperation(value = "Build a job")
-    @PostMapping(path = "/api/abort/{id}")
-    @ResponseBody
-    public ResponseEntity abort(
-            Model model,
-            @PathVariable(value = "id") Job job) {
-
-        if (jobAbort(job, true)) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body("OK");
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("BAD_REQUEST");
-        }
-    }
-
-    /**
      * Build a job.
      *
      * @param job Job
      * @return boolean with status of job build.
      */
     private boolean jobBuild(Job job) {
+        System.out.println("Entrou aqui no job build");
         return jobBuild(job, false);
     }
     
@@ -386,8 +362,9 @@ public class JobController {
      * @param job Job
      * @return boolean with status of job abort.
      */
-    private boolean jobAbort(Job job, boolean par) {
-        return jobAbort(job, false); //chega aqui
+    private boolean jobAbort(Job job) {
+        System.out.println("Entrou aqui no job abort");
+        return jobAbort(job, false); //chega aqui e looping infinito
     }
 
     /**
@@ -422,6 +399,40 @@ public class JobController {
         }
 
         return built;
+    }
+    
+    /**
+     * Abort a job.
+     *
+     * @param job Job
+     * @param api Identifies api build.
+     * @return boolean with status of job build.
+     */
+    private boolean jobAbort(Job job, boolean api) {
+        boolean stoped = false;
+
+        auditorService.publish(api ? "API_BUILD_JOB" : "BUILD_JOB",
+                new AuditorData()
+                        .addData("name", job.getName())
+                        .getData());
+
+        retryService.remove(job);
+
+        try {
+            stoped = jenkinsService.abort(job);
+
+            if (!stoped) {
+                jobStatusService.updateFlow(job.getStatus(), Flow.ERROR);
+                jobNotificationService.notify(job, true);
+            } else {
+                jobStatusService.updateFlow(job.getStatus(), Flow.ABORTED);
+            }
+
+        } catch (Exception ex) {
+            LOG.log(Level.ERROR, "Fail aborting job " + job.getName() + " manually", ex);
+        }
+
+        return stoped;
     }
 
     /**

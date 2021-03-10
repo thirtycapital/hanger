@@ -231,24 +231,25 @@ public class JenkinsService {
      * @throws URISyntaxException
      * @throws IOException
      */
-    public boolean abortJ(Job job) throws Exception {
+    public boolean abort(Job job) throws Exception {
         JenkinsServer jenkins;
-        boolean built = true;
+        Build build = null;
+        boolean stoped = true;
 
-        if (job != null) {
-            jenkins = this.getJenkinsServer(job.getServer());
+        if (job != null) { //chega aqui
+            jenkins = this.getJenkinsServer(job.getServer()); //job chega aqui
 
             if (jenkins != null) {
                 if (jenkins.isRunning()) {
-                    JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
-
-                    if (jobWithDetails != null) {
+                    JobWithDetails jobWithDetails = jenkins.getJob(job.getName()); //entra aqui
+                    
+                    if (build != null) {
                         try {
-                            built = (jobWithDetails.build(false) != null);
+                            stoped = (build.Stop() != null);
                         } catch (IOException ex) {
                             LOG.log(Level.ERROR, "Fail aborting job: " + job.getName(), ex);
                             try {
-                                built = (jobWithDetails.build(new HashMap(), false) != null);
+                                stoped = (jobWithDetails.build(new HashMap(), false) != null);
                             } catch (IOException e) {
                                 LOG.log(Level.ERROR, "Fail aborting parametrized job: " + job.getName(), ex);
                                 throw ex;
@@ -261,26 +262,7 @@ public class JenkinsService {
             }
         }
 
-        return built;
-    }
-    
-     /**
-     * Abort a Jenkins job.
-     *
-     * @param job Job
-     * @return Identify if job was aborted.
-     * @throws URISyntaxException
-     * @throws IOException
-     */
-    public boolean abort(Job job) throws Exception {
-        JenkinsServer jenkins;
-        boolean built = true;
-
-        
-       Build.BUILD_HAS_BEEN_CANCELLED.Stop(built);
-                        
-
-        return built;
+        return stoped;
     }
 
     /**

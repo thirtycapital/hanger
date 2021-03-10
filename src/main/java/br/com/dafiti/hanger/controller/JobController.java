@@ -1213,6 +1213,12 @@ public class JobController {
     @ResponseBody
     public boolean abort(@PathVariable(value = "id") Job job) {
         JobDetails jobDetails = jobDetailsService.getDetailsOf(job);
+        
+        auditorService.publish("ABORT_JOB",
+               new AuditorData()
+                        .addData("name", job.getName())
+                        .getData());
+        
         return this.jenkinsService.abort(job, jobDetails.getBuildNumber());
 
     }

@@ -170,6 +170,7 @@ Each *job* represented on flow has a  status and the follow information:
 		- **Duration in minutes:** Execution duration in minutes.
 		- **Efficiency:**  Shows the percentage that the execution was queued.
 	- **Actions:**
+		- **Abort**: Allows to stop the selected *job* execution.
 		- **Build:** Allows to execute the selected *job*. 
 		- **Build Mesh:** Allows to execute all he selected *job* chain.
 		- **Parent:** Shows a list with all the Jenkins available servers, where it is possible to add one or more parents to the current *job*:	

@@ -141,6 +141,24 @@
                             class="italic" 
                             th:utext="${currentSubject.getHTMLDescription()}"></div>
                         <hr/>
+                    </div> 
+
+                    <div sec:authorize="isAuthenticated()"> 
+                        <div th:switch="${currentSubject.mandatory}">
+                            <div th:case="true">
+                            </div>
+                            <div th:case="false">
+                                <label>
+                                    <input  
+                                        name="subscribe"
+                                        type="checkbox" 
+                                        th:id="subscribe" 
+                                        th:value="${currentSubject.id}" 
+                                        th:checked="${#lists.contains(currentSubject.user, loggedIn)}"
+                                        th:disabled="${!#authorization.expression('isAuthenticated()')}"/> Subscription
+                                </label> 
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Job details list-->
@@ -216,78 +234,132 @@
 
 
         <script th:inline="javascript">
-            /**
-             * Define ajax start behavior. 
-             * @returns {undefined}
-             */
-            $(document).ajaxStart(function () {
-                $("#wait").css("display", "block");
-                $("#add_job").prop("disabled", true);
-            });
+            $(document).ready(function () {
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "timeOut": "2500",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+                /**
+                 * Define ajax start behavior. 
+                 * @returns {undefined}
+                 */
+                $(document).ajaxStart(function () {
+                    $("#wait").css("display", "block");
+                    $("#add_job").prop("disabled", true);
+                });
 
-            /**
-             * Define ajax complete behavior. 
-             * @returns {undefined}
-             */
-            $(document).ajaxComplete(function () {
-                $("#wait").css("display", "none");
-                $("#add_job").prop("disabled", false);
-            });
+                /**
+                 * Define ajax complete behavior. 
+                 * @returns {undefined}
+                 */
+                $(document).ajaxComplete(function () {
+                    $("#wait").css("display", "none");
+                    $("#add_job").prop("disabled", false);
+                });
 
-            /**
-             * Show add subject to job modal. 
-             * 
-             * @param {type} e
-             * @returns {undefined}
-             */
-            function addJobModal(SubjectID) {
-                var url = /*[[@{/detail/modal/}]]*/ "/detail/modal/1"
+                /**
+                 * Show add subject to job modal. 
+                 * 
+                 * @param {type} e
+                 * @returns {undefined}
+                 */
+                function addJobModal(SubjectID) {
+                    var url = /*[[@{/detail/modal/}]]*/ "/detail/modal/1"
 
-                $.ajax({
-                    type: "GET",
-                    url: url + SubjectID,
-                    timeout: 30000,
-                    success: function (result) {
-                        $("#modalHolder").html(result);
-                        $("#modalJobList").modal({backdrop: 'static', keyboard: false});
-                        $('.selectpicker').selectpicker();
-                    },
-                    error: function (e) {
-                        alert("Fail loading jobs from Server " + e);
+                    $.ajax({
+                        type: "GET",
+                        url: url + SubjectID,
+                        timeout: 30000,
+                        success: function (result) {
+                            $("#modalHolder").html(result);
+                            $("#modalJobList").modal({backdrop: 'static', keyboard: false});
+                            $('.selectpicker').selectpicker();
+                        },
+                        error: function (e) {
+                            alert("Fail loading jobs from Server " + e);
+                        }
+                    });
+                }
+
+                /**
+                 * Show delete job modal.
+                 * 
+                 * @param {type} jobID Job ID
+                 * @param {type} subjectID Subject ID
+                 * @param {type} jobName Job Name
+                 * @param {type} subjectName Subject Name
+                 * @returns {undefined}
+                 */
+                function deleteJobModal(jobID, subjectID, jobName, subjectName) {
+                    document.getElementById("subjectNameInModal").innerText = subjectName;
+                    document.getElementById("jobNameInModal").innerText = jobName;
+                    document.getElementById("confirmRemoveJob").href = "remove/" + jobID + "/" + subjectID;
+
+                    $("#modalRemoveJobFromSubject").modal();
+                }
+
+                // Exibe ou oculta o botão
+                $(window).scroll(function () {
+                    if (jQuery(this).scrollTop() > 100) {
+                        jQuery('.back_top').fadeIn(100);
+                    } else {
+                        jQuery('.back_top').fadeOut(100);
                     }
                 });
-            }
 
-            /**
-             * Show delete job modal.
-             * 
-             * @param {type} jobID Job ID
-             * @param {type} subjectID Subject ID
-             * @param {type} jobName Job Name
-             * @param {type} subjectName Subject Name
-             * @returns {undefined}
-             */
-            function deleteJobModal(jobID, subjectID, jobName, subjectName) {
-                document.getElementById("subjectNameInModal").innerText = subjectName;
-                document.getElementById("jobNameInModal").innerText = jobName;
-                document.getElementById("confirmRemoveJob").href = "remove/" + jobID + "/" + subjectID;
+                // Faz animação para subir
+                $('.back_top').click(function (event) {
+                    event.preventDefault();
+                    $('html, body').animate({scrollTop: 0}, 400);
+                });
+                /**
+                 * Set header CSRF Token.
+                 * @returns {undefined}
+                 */
+                $.ajaxSetup({
+                    headers: {'X-CSRF-Token': $('#_csrf').attr('content')}
+                });
 
-                $("#modalRemoveJobFromSubject").modal();
-            }
+                /**
+                 * Subject subscription and unsubscription.
+                 * @returns {undefined}
+                 */
+                $("#subscribe").change(function () {
+                    var url;
+                    var subject = $(this).val();
+                    var subscription = $(this).prop("checked");
 
-            // Exibe ou oculta o botão
-            $(window).scroll(function () {
-                if (jQuery(this).scrollTop() > 100) {
-                    jQuery('.back_top').fadeIn(100);
-                } else {
-                    jQuery('.back_top').fadeOut(100);
-                }
-            });
+                    if (subscription) {
+                        url = /*[[@{/subject/subscribe/}]]*/ "/subject/subscribe/";
+                    } else {
+                        url = /*[[@{/subject/unsubscribe/}]]*/ "/subject/unsubscribe/";
+                    }
 
-            // Faz animação para subir
-            $('.back_top').click(function (event) {
-                event.preventDefault();
-                $('html, body').animate({scrollTop: 0}, 400);
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: subject,
+                        contentType: "text/html",
+                        timeout: 30000,
+                        success: function (result) {
+                            if (subscription) {
+                                toastr.success('Subscribed');
+                            } else {
+                                toastr.success('Unsubscribed');
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            toastr.error('Subscription failure');
+                            alert("Subscription error " + xhr.responseText);
+                        }
+                    });
+                });
             });
         </script>
     </body>

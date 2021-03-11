@@ -100,22 +100,27 @@ Using [Apache Tomcat](http://tomcat.apache.org/):
 
 	- At the left side of the *subject* name is displayed an icon that indcates that the logged user is subscribed. However, the icon only appears if the *subject* is not mandatory. A *subject* is defined as mandatory if the user wants that the *subject* is visible to all other Hanger users. 
 	- To the right of the subject's name, the total number of *jobs* contained in it is informed.
-	- Click under the chosen subject name and a list of subject jobs will be displayed with the following information:
+	- Click on the chosen subject name to see the subject details.
 
-		- **Status:** *job* status.
-		- **Server:** Jenkins instance in which the *job* is executed.
-		- **Job:** *job* name.
-		- **Warning:** number of warning on *job* chain.
-		- **Link:** link to redirect to *job* on Jenkins.
-		- **Check-Up:** link to redirect to checkup execution list.
-		- **Updated:** *job* execution date.
-		- **Scope:** *job* execution scope.
+		- The subject description is displayed.
+		- Click on the ***Subscription*** checkbox to **subscribe** or **unsubscribe** on the current subject.
 
-		- Click on *job* name to be directed to the *job* dependency chain named ***Flow***. 
+		- A list of all jobs related to the selected subject will be displayed with the following information:
+			- **Status:** *job* status.
+			- **Server:** Jenkins instance in which the *job* is executed.
+			- **Job:** *job* name.
+			- **Warning:** number of warning on *job* chain.
+			- **Link:** link to redirect to *job* on Jenkins.
+			- **Check-Up:** link to redirect to checkup execution list.
+			- **Updated:** *job* execution date.
+			- **Scope:** *job* execution scope.
+
 		- Click on the displayed number on warning column and a list with all the jobs with problems and its respective status will be shown. 
 		- Click on ***Build*** button to run a *job*.
+		- Click on ***Flow*** button to be directed to the *job* dependency chain.
 		- Click on ***See*** button to see the *job* details. 
-		- Click on ***Remove*** button to remove a *job* from a subject 
+		- Click on ***Remove*** button to remove a *job* from a *subject* 
+		- Click on ***Edit subject*** option if you want to edit the *subject*.
 		- Click on the ***Add Job*** option to add a *job* to the *subject*.
 
 - On ***HOME*** tab the progress from each *subject* and the count of *jobs* by status will be displayed:

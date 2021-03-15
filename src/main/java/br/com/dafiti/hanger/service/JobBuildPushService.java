@@ -123,8 +123,8 @@ public class JobBuildPushService {
                         //Publish a job notification.
                         jobNotificationService.notify(childJob, true);
                     } else {
-                        //Set child job as rebuilding.
-                        childJobStatus.setFlow(Flow.REBUILD);
+                        //Set child job as queued.
+                        childJobStatus.setFlow(Flow.QUEUED);
                         jobStatusService.save(childJobStatus);
                     }
                 } catch (Exception ex) {

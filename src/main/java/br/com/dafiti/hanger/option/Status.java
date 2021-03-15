@@ -44,5 +44,6 @@ public enum Status {
     UNSTABLE,
     CHECKUP,
     RESTRICTED,
-    PARTIAL;
+    PARTIAL,
+    QUEUED;
 }

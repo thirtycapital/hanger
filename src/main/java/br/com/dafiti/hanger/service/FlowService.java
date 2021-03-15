@@ -252,6 +252,7 @@ public class FlowService {
                 label = "label label-success";
                 break;
 
+            case QUEUED:
             case REBUILD:
             case RUNNING:
             case CHECKUP:

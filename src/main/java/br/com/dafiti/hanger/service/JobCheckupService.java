@@ -299,7 +299,7 @@ public class JobCheckupService {
             case REBUILD:
                 try {
                     //Rebuild the job.
-                    jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
+                    jobStatusService.updateFlow(job.getStatus(), Flow.QUEUED);
                     jenkinsService.build(job);
                 } catch (Exception ex) {
                     LogManager.getLogger(EyeService.class).log(Level.ERROR, "Fail building job: " + job.getName(), ex);

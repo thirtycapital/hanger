@@ -122,8 +122,13 @@ public class JobDetailsService {
                     //Identifies if is a current day build.  
                 } else if (today || (yesterday && eagerness)) {
                     switch (jobStatus.getFlow()) {
+                        /////////////////////////////////////////////////                                                
+                        // TODO
+                        // VERIFICAR SE PARA REBUILD E QUEUED FRASES SERÃO AS MESMAS.
+                        /////////////////////////////////////////////////                        
+                        case QUEUED:
                         case REBUILD:
-                            status = Status.REBUILD;
+                            status = Status.valueOf(jobStatus.getFlow().toString());
                             phase = Phase.NONE;
                             building
                                     .append("BUILDING, last build ")
@@ -177,8 +182,9 @@ public class JobDetailsService {
                                     .append(new SimpleDateFormat("HH:mm:ss").format(jobBuild.getDate()));
                             break;
                     }
-                } else if (jobStatus.getFlow().equals(Flow.REBUILD)) {
-                    status = Status.REBUILD;
+                } else if (jobStatus.getFlow().equals(Flow.REBUILD)
+                        || jobStatus.getFlow().equals(Flow.QUEUED)) {
+                    status = Status.valueOf(jobStatus.getFlow().toString());
                     phase = Phase.NONE;
                     building
                             .append("BUILDING, last build at ")
@@ -220,9 +226,10 @@ public class JobDetailsService {
                     } catch (Exception ex) {
                     }
                 }
-            } else if (jobStatus.getFlow().equals(Flow.REBUILD)) {
+            } else if (jobStatus.getFlow().equals(Flow.REBUILD)
+                    || jobStatus.getFlow().equals(Flow.QUEUED)) {
                 //Identify the first build of a job. 
-                status = Status.REBUILD;
+                status = Status.valueOf(jobStatus.getFlow().toString());
                 phase = Phase.NONE;
                 building
                         .append("Building now");

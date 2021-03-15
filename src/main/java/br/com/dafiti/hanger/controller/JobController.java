@@ -346,7 +346,7 @@ public class JobController {
                 jobStatusService.updateFlow(job.getStatus(), Flow.ERROR);
                 jobNotificationService.notify(job, true);
             } else {
-                jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
+                jobStatusService.updateFlow(job.getStatus(), Flow.QUEUED);
             }
 
         } catch (Exception ex) {
@@ -369,29 +369,33 @@ public class JobController {
             @PathVariable(value = "id") Job job) {
 
         try {
-            retryService.remove(job);
-            jobService.rebuildMesh(job);
+            if (jenkinsService.isRunning(job.getServer())) {
+                retryService.remove(job);
+                jobService.rebuildMesh(job);
 
-            HashSet<Job> parent = jobService.getMeshParent(job);
+                HashSet<Job> parent = jobService.getMeshParent(job);
 
-            auditorService.publish("BUILD_MESH",
-                    new AuditorData()
-                            .addData("name", job.getName())
-                            .addData("javascript", parent.toString())
-                            .getData());
+                auditorService.publish("BUILD_MESH",
+                        new AuditorData()
+                                .addData("name", job.getName())
+                                .addData("javascript", parent.toString())
+                                .getData());
 
-            for (Job meshParent : parent) {
-                retryService.remove(meshParent);
+                for (Job meshParent : parent) {
+                    retryService.remove(meshParent);
 
-                if (!jenkinsService.build(meshParent)) {
-                    jobStatusService.updateFlow(job.getStatus(), Flow.ERROR);
-                    jobNotificationService.notify(job, true);
-                } else {
-                    jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
+                    if (!jenkinsService.build(meshParent)) {
+                        jobStatusService.updateFlow(job.getStatus(), Flow.ERROR);
+                        jobNotificationService.notify(job, true);
+                    } else {
+                        jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
+                    }
                 }
-            }
 
-            redirectAttributes.addFlashAttribute("successMessage", "Mesh built successfully, refresh this page to see the build progress!");
+                redirectAttributes.addFlashAttribute("successMessage", "Mesh built successfully, refresh this page to see the build progress!");
+            } else {
+                redirectAttributes.addFlashAttribute("errorMessage", "Jenkins server is not running! ");
+            }
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("errorMessage", "Fail building mesh, " + ex.getMessage() + "!");
         }
@@ -1213,12 +1217,12 @@ public class JobController {
     @ResponseBody
     public boolean abort(@PathVariable(value = "id") Job job) {
         JobDetails jobDetails = jobDetailsService.getDetailsOf(job);
-        
+
         auditorService.publish("ABORT_JOB",
-               new AuditorData()
+                new AuditorData()
                         .addData("name", job.getName())
                         .getData());
-        
+
         return this.jenkinsService.abort(job, jobDetails.getBuildNumber());
 
     }

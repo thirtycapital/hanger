@@ -205,9 +205,8 @@
                                 th:id="subscribe" 
                                 th:value="${currentSubject.id}" 
                                 th:checked="${#lists.contains(currentSubject.user, loggedIn)}"
-                                th:disabled="${!#authorization.expression('isAuthenticated()')}" />                            
-                            <span th:if="${#lists.contains(currentSubject.user, loggedIn)}"> Unsubscribe</span>
-                            <span th:if="${not #lists.contains(currentSubject.user, loggedIn)}" th:text="${'Subscribe'}"></span>
+                                th:disabled="${!#authorization.expression('isAuthenticated()')}"
+                                th:text="${#lists.contains(currentSubject.user, loggedIn) ? ' Unsubscribe': ' Subscribe'}" />
                         </label>
 
                         <button id="wait" 

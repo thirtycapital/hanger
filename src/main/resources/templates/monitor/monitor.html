@@ -141,24 +141,6 @@
                             class="italic" 
                             th:utext="${currentSubject.getHTMLDescription()}"></div>
                         <hr/>
-                    </div> 
-
-                    <div sec:authorize="isAuthenticated()"> 
-                        <div th:switch="${currentSubject.mandatory}">
-                            <div th:case="true">
-                            </div>
-                            <div th:case="false">
-                                <label>
-                                    <input  
-                                        name="subscribe"
-                                        type="checkbox" 
-                                        th:id="subscribe" 
-                                        th:value="${currentSubject.id}" 
-                                        th:checked="${#lists.contains(currentSubject.user, loggedIn)}"
-                                        th:disabled="${!#authorization.expression('isAuthenticated()')}"/> Subscription
-                                </label> 
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Job details list-->
@@ -211,10 +193,20 @@
                         </a>
 
                         <button id="add_job" 
-                                class="btn btn-link btn-sm btn-home" 
+                                class="btn btn-link btn-sm" 
                                 th:attr="onclick='addJobModal(' + ${currentSubject.id} + ');'">
                             <span class="glyphicon glyphicon-magnet" aria-hidden="true"></span> Add job
                         </button>
+
+                        <label class="btn btn-link btn-sm" th:if="${not currentSubject.mandatory}">
+                            <input  
+                                name="subscribe"
+                                type="checkbox"
+                                th:id="subscribe" 
+                                th:value="${currentSubject.id}" 
+                                th:checked="${#lists.contains(currentSubject.user, loggedIn)}"
+                                th:disabled="${!#authorization.expression('isAuthenticated()')}" /> Subscription
+                        </label>
 
                         <button id="wait" 
                                 type="button" 

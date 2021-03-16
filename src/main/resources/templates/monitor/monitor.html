@@ -234,6 +234,47 @@
 
 
         <script th:inline="javascript">
+            /**
+             * Show add subject to job modal. 
+             * 
+             * @param {type} e
+             * @returns {undefined}
+             */
+            function addJobModal(SubjectID) {
+                var url = /*[[@{/detail/modal/}]]*/ "/detail/modal/1"
+
+                $.ajax({
+                    type: "GET",
+                    url: url + SubjectID,
+                    timeout: 30000,
+                    success: function (result) {
+                        $("#modalHolder").html(result);
+                        $("#modalJobList").modal({backdrop: 'static', keyboard: false});
+                        $('.selectpicker').selectpicker();
+                    },
+                    error: function (e) {
+                        alert("Fail loading jobs from Server " + e);
+                    }
+                });
+            }
+
+            /**
+             * Show delete job modal.
+             * 
+             * @param {type} jobID Job ID
+             * @param {type} subjectID Subject ID
+             * @param {type} jobName Job Name
+             * @param {type} subjectName Subject Name
+             * @returns {undefined}
+             */
+            function deleteJobModal(jobID, subjectID, jobName, subjectName) {
+                document.getElementById("subjectNameInModal").innerText = subjectName;
+                document.getElementById("jobNameInModal").innerText = jobName;
+                document.getElementById("confirmRemoveJob").href = "remove/" + jobID + "/" + subjectID;
+
+                $("#modalRemoveJobFromSubject").modal();
+            }
+
             $(document).ready(function () {
                 toastr.options = {
                     "closeButton": true,
@@ -262,47 +303,6 @@
                     $("#wait").css("display", "none");
                     $("#add_job").prop("disabled", false);
                 });
-
-                /**
-                 * Show add subject to job modal. 
-                 * 
-                 * @param {type} e
-                 * @returns {undefined}
-                 */
-                function addJobModal(SubjectID) {
-                    var url = /*[[@{/detail/modal/}]]*/ "/detail/modal/1"
-
-                    $.ajax({
-                        type: "GET",
-                        url: url + SubjectID,
-                        timeout: 30000,
-                        success: function (result) {
-                            $("#modalHolder").html(result);
-                            $("#modalJobList").modal({backdrop: 'static', keyboard: false});
-                            $('.selectpicker').selectpicker();
-                        },
-                        error: function (e) {
-                            alert("Fail loading jobs from Server " + e);
-                        }
-                    });
-                }
-
-                /**
-                 * Show delete job modal.
-                 * 
-                 * @param {type} jobID Job ID
-                 * @param {type} subjectID Subject ID
-                 * @param {type} jobName Job Name
-                 * @param {type} subjectName Subject Name
-                 * @returns {undefined}
-                 */
-                function deleteJobModal(jobID, subjectID, jobName, subjectName) {
-                    document.getElementById("subjectNameInModal").innerText = subjectName;
-                    document.getElementById("jobNameInModal").innerText = jobName;
-                    document.getElementById("confirmRemoveJob").href = "remove/" + jobID + "/" + subjectID;
-
-                    $("#modalRemoveJobFromSubject").modal();
-                }
 
                 // Exibe ou oculta o botão
                 $(window).scroll(function () {

@@ -205,7 +205,9 @@
                                 th:id="subscribe" 
                                 th:value="${currentSubject.id}" 
                                 th:checked="${#lists.contains(currentSubject.user, loggedIn)}"
-                                th:disabled="${!#authorization.expression('isAuthenticated()')}" /> Subscription
+                                th:disabled="${!#authorization.expression('isAuthenticated()')}" />                            
+                            <span th:if="${#lists.contains(currentSubject.user, loggedIn)}"> Unsubscribe</span>
+                            <span th:if="${not #lists.contains(currentSubject.user, loggedIn)}" th:text="${'Subscribe'}"></span>
                         </label>
 
                         <button id="wait" 
@@ -272,7 +274,7 @@
                     "closeButton": true,
                     "progressBar": true,
                     "positionClass": "toast-top-right",
-                    "timeOut": "2500",
+                    "timeOut": "1000",
                     "showEasing": "swing",
                     "hideEasing": "linear",
                     "showMethod": "fadeIn",
@@ -342,8 +344,16 @@
                         success: function (result) {
                             if (subscription) {
                                 toastr.success('Subscribed');
+
+                                setTimeout(function () {
+                                    window.location.reload(1);
+                                }, 1000);
                             } else {
                                 toastr.success('Unsubscribed');
+
+                                setTimeout(function () {
+                                    window.location.reload(1);
+                                }, 1000);
                             }
                         },
                         error: function (xhr, status, error) {

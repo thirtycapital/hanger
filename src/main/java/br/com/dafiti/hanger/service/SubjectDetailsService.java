@@ -85,7 +85,8 @@ public class SubjectDetailsService {
                     JobBuild jobBuild = jobStatus.getBuild();
 
                     //Identify building jobs.
-                    if (jobStatus.getFlow().equals(Flow.QUEUED)) {
+                    if (jobStatus.getFlow().equals(Flow.QUEUED)
+                            || jobStatus.getFlow().equals(Flow.REBUILD)) {
                         building += 1;
                     } else if (jobBuild != null) {
                         int lastBuild = Days.daysBetween(new LocalDate(jobStatus.getDate()), new LocalDate()).getDays();

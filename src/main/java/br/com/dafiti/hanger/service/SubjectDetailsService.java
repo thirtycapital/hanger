@@ -34,6 +34,7 @@ import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Status;
 import java.util.ArrayList;
 import java.util.List;
+import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,8 +89,12 @@ public class SubjectDetailsService {
                     if (jobStatus.getFlow().equals(Flow.QUEUED)
                             || jobStatus.getFlow().equals(Flow.REBUILD)) {
                         building += 1;
+                    } else if (jobStatus.getFlow().equals(Flow.ERROR)) {
+                        failure += 1;
                     } else if (jobBuild != null) {
-                        int lastBuild = Days.daysBetween(new LocalDate(jobStatus.getDate()), new LocalDate()).getDays();
+                        int lastBuild = Days.daysBetween(
+                                new LocalDate(new DateTime(jobBuild.getDate()).plusHours(job.getTolerance())),
+                                new LocalDate()).getDays();
 
                         if (lastBuild == 0) {
                             //Identify running jobs.

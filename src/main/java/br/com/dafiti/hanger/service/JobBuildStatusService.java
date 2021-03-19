@@ -220,8 +220,11 @@ public class JobBuildStatusService {
                         }
                     }
 
-                    if (!buildable) {
-                        //Identifies if it has any problem or is a rebuild mesh.
+                    if (buildable) {
+                        //If a job is in a checkup process, it is not buildable. 
+                        buildable = !jobStatus.getFlow().equals(Flow.CHECKUP);
+                    } else {
+                        // But if it failed ou is in a build mesh, it should be buildable. 
                         buildable = jobStatus.getFlow().equals(Flow.ERROR) || jobStatus.getFlow().equals(Flow.REBUILD);
                     }
                 }

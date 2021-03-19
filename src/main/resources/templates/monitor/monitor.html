@@ -180,7 +180,7 @@
                 </div>
             </div>
 
-            <!--Add job button-->
+            <!--Subject action buttons-->
             <div class="form-group">
                 <div sec:authorize="isAuthenticated()"> 
                     <div th:if="${#httpServletRequest.getRequestURI().contains('/detail/') 
@@ -198,7 +198,7 @@
                             <span class="glyphicon glyphicon-magnet" aria-hidden="true"></span> Add job
                         </button>
 
-                        <label class="btn btn-link btn-sm" th:if="${not currentSubject.mandatory}">
+                        <label class="btn btn-link btn-sm pull-right" th:if="${not currentSubject.mandatory}">
                             <input  
                                 name="subscribe"
                                 type="checkbox"

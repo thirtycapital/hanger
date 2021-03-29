@@ -9,7 +9,8 @@
 .italic{
     font-style: italic;
     padding: 10px;
-    border-left: 7.5px solid  #F4F5F7
+    border-left: 7.5px solid  #F4F5F7;
+    color: #696969;
 }
 
 .italic > p{

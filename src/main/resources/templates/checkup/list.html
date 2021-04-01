@@ -59,7 +59,7 @@
                 <div th:if="${checkup.description != null and checkup.description != '' and checkup.enabled}">
                     <div class="form-group">
                         <div 
-                            class="italic" 
+                            class="markdown" 
                             th:utext="${checkup.getHTMLDescription()}"></div>
                     </div>
                 </div>

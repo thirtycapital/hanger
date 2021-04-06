@@ -6,22 +6,6 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content space-top">
-            <table>
-                <tr>
-                    <th>
-                        <a th:href="@{'/job/view/' + ${job.id}}" class="space-right">
-                            <span th:text="${job.name}"></span>
-                        </a>
-
-                        <a th:if="${approval}" th:href="@{'/approval/approval/' + ${job.id}}" class="btn btn-notice btn-sm">
-                            <span class="glyphicon glyphicon-check"></span> Approval
-                        </a>
-                    </th>                      
-                </tr>
-            </table>
-
-            <hr/>
-
             <div th:if="${ errorMessage != null }" class="form-group">
                 <div class="alert alert-danger" role="alert">
                     <span th:text="${errorMessage}"></span>
@@ -75,14 +59,14 @@
                 <div th:if="${checkup.description != null and checkup.description != '' and checkup.enabled}">
                     <div class="form-group">
                         <div 
-                            class="italic" 
+                            class="markdown" 
                             th:utext="${checkup.getHTMLDescription()}"></div>
                     </div>
                 </div>
 
                 <div th:if="${checkup.enabled and not #lists.isEmpty(checkup.log)}">
                     <div> 
-                        <ul class="nav nav-pills">                    
+                        <ul class="nav nav-pills pull-right">                    
                             <li class="active">
                                 <a data-toggle="tab" th:href="'#chart_tab' + ${checkup.id}">
                                     <span class="glyphicon glyphicon-signal" title="Chart"></span>
@@ -202,6 +186,10 @@
             </div>
 
             <hr/>  
+
+            <a th:href="@{'/job/view/' + ${job.id}}" th:title="${job.name}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-file"></span> Job
+            </a>
 
             <a th:href="@{'/flow/job/' + ${job.id}}" class="btn btn-link btn-sm">
                 <span class="glyphicon glyphicon-random"></span> Flow

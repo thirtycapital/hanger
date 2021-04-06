@@ -106,7 +106,7 @@ public class Watchdog {
                 Status status = jobDetailsService.getDetailsOf(job).getStatus();
 
                 //Identifies jobs that are watchdog candidate. 
-                if (status.equals(Status.WAITING) || status.equals(Status.REBUILD) || status.equals(Status.RUNNING)) {
+                if (status.equals(Status.WAITING) || status.equals(Status.QUEUED) || status.equals(Status.RUNNING)) {
                     //Identifies jobs waiting forever. 
                     if (status.equals(Status.WAITING)) {
                         //Identifies if parents were built at least 30 minutes ago.
@@ -130,7 +130,7 @@ public class Watchdog {
                     }
 
                     //Identifies jobs running forever.
-                    if (status.equals(Status.REBUILD) || status.equals(Status.RUNNING)) {
+                    if (status.equals(Status.QUEUED) || status.equals(Status.RUNNING)) {
                         JobStatus jobStatus = job.getStatus();
 
                         if (jobStatus != null) {

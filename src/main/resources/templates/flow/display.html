@@ -130,6 +130,10 @@
                                     <td><span class="label label-primary">CHECKUP</span></td>
                                     <td>Job checkups are running</td>
                                 </tr>
+                                <tr>
+                                    <td><span class="label label-primary">QUEUED</span></td>
+                                    <td>Job is waiting to run on a queue</td>
+                                </tr>
 
                                 <!--FAILURE-->
                                 <tr>
@@ -275,6 +279,7 @@
                 e.preventDefault();
                 job = this.id;
                 var enabled = isEnabled(job);
+                var jobStatus = document.getElementById("span-status-" + job);
 
                 // Build a Job.
                 var build = function () {
@@ -284,6 +289,11 @@
 
                 var mesh = function () {
                     $("#mesh").modal({backdrop: 'static', keyboard: false});
+                };
+
+                var abort = function () {
+                    var url = /*[[@{/job/build/abort/}]]*/ "/job/build/abort/";
+                    abortJob(job, url);
                 };
 
                 var flow = function () {
@@ -412,15 +422,13 @@
                         label: 'Actions',
                         disabled: !isAuthenticated,
                         submenu: [
+                            {icon: 'glyphicon glyphicon-stop', label: 'Abort', action: abort, disabled: jobStatus.textContent !== "RUNNING"},
                             {icon: 'glyphicon glyphicon-play', label: 'Build', action: build, },
-                            // Build Mesh confirm dialog.
-                            // TODO - Reativar esta opção após resolução do chamado DENG-924.
-                            //{icon: 'glyphicon glyphicon-fast-backward', label: 'Build Mesh', action: mesh},                            
+                            {icon: 'glyphicon glyphicon-fast-backward', label: 'Build Mesh', action: mesh},
+                            {icon: enabled ? 'glyphicon glyphicon-eye-close' : 'glyphicon glyphicon-eye-open', label: enabled ? 'Disable' : 'Enable', action: enable},
                             {},
                             {icon: 'glyphicon glyphicon-plus', label: 'Parent', submenu: submenuParents},
-                            {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren},
-                            {},
-                            {icon: enabled ? 'glyphicon glyphicon-eye-close' : 'glyphicon glyphicon-eye-open', label: enabled ? 'Disable' : 'Enable', action: enable}
+                            {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren}
                         ]
                     }
                 ];
@@ -467,6 +475,49 @@
                         },
                         error: function (e) {
                             toastr.error('Error on building request.');
+                        }
+                    });
+                }
+            }
+
+            /**
+             * Abort a running job.
+             * 
+             * @param {type} id job id.
+             * @param {type} url hanger url;
+             * @returns {undefined}
+             */
+            function abortJob(id, url) {
+                if (url) {
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "timeOut": timeout,
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    };
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + id,
+                        timeout: 30000,
+                        success: function (result) {
+                            if (result) {
+                                toastr.success('Job aborted successfully.');
+
+                                setTimeout(function () {
+                                    window.location.reload(1);
+                                }, timeout);
+
+                            } else {
+                                toastr.error('An error occurred while Aborting.');
+                            }
+                        },
+                        error: function (e) {
+                            toastr.error('Error on Abort request.');
                         }
                     });
                 }

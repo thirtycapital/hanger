@@ -161,7 +161,7 @@ public class JobApprovalService {
                     jobNotificationService.notify(job, true);
 
                 } else {
-                    jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
+                    jobStatusService.updateFlow(job.getStatus(), Flow.QUEUED);
                 }
             } catch (Exception ex) {
                 return false;

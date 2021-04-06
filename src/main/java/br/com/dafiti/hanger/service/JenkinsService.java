@@ -770,4 +770,57 @@ public class JenkinsService {
 
         return assignedNode.toString();
     }
+
+    /**
+     * Abort a job execution by its number.
+     *
+     * @param job Job
+     * @param number execution number.
+     * @return
+     */
+    public boolean abort(Job job, int number) {
+        JenkinsServer jenkins;
+        boolean aborted = false;
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
+
+                        if (jobWithDetails != null) {
+                            //Identifies if the job is in queue. 
+                            aborted = jobWithDetails.isInQueue();
+
+                            if (!aborted) {
+                                Build build = jobWithDetails.getBuildByNumber(number);
+
+                                if (build != null) {
+                                    BuildWithDetails buildWithDetails = build.details();
+
+                                    if (buildWithDetails != null) {
+                                        //Identifies if the job is running. 
+                                        aborted = buildWithDetails.isBuilding();
+
+                                        if (aborted) {
+                                            //Stops job execution.
+                                            buildWithDetails.Stop(true);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                LOG.log(Level.ERROR, "Fail aborting job!", ex);
+            }
+        }
+
+        return aborted;
+    }
 }

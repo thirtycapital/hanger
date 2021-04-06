@@ -186,6 +186,9 @@ public class JobCheckupService {
             //Log the job status before checkup evaluation.
             LOG.log(Level.INFO, "{} status before checkup evaluation", new Object[]{job.getName()});
 
+            //Identifies the checkup on the status. 
+            jobStatusService.updateFlow(job.getStatus(), Flow.CHECKUP);
+
             //Filters checkup by scope.
             List<JobCheckup> checkups = job.getCheckup()
                     .stream()
@@ -196,9 +199,6 @@ public class JobCheckupService {
             //Identifies if the job has checkups.
             if (!checkups.isEmpty()) {
                 int retry = retryService.get(job);
-
-                //Changes the job flow to checkup.
-                jobStatusService.updateFlow(job.getStatus(), Flow.CHECKUP);
 
                 for (JobCheckup checkup : checkups) {
                     //Identifies the query scope and if it is enabled. 
@@ -274,9 +274,6 @@ public class JobCheckupService {
 
                 if (validated) {
                     retryService.remove(job);
-                } else {
-                    //Changes the job flow to checkup.
-                    jobStatusService.updateFlow(job.getStatus(), Flow.UNHEALTHY);
                 }
             }
 
@@ -298,14 +295,14 @@ public class JobCheckupService {
         switch (checkup.getAction()) {
             case REBUILD:
                 try {
-                    //Rebuild the job.
-                    jobStatusService.updateFlow(job.getStatus(), Flow.REBUILD);
-                    jenkinsService.build(job);
-                } catch (Exception ex) {
-                    LogManager.getLogger(EyeService.class).log(Level.ERROR, "Fail building job: " + job.getName(), ex);
-                }
+                //Rebuild the job.
+                jobStatusService.updateFlow(job.getStatus(), Flow.QUEUED);
+                jenkinsService.build(job);
+            } catch (Exception ex) {
+                LogManager.getLogger(EyeService.class).log(Level.ERROR, "Fail building job: " + job.getName(), ex);
+            }
 
-                break;
+            break;
             case REBUILD_MESH:
                 HashSet<Job> parent = jobService.getMeshParent(job);
                 jobService.rebuildMesh(job);

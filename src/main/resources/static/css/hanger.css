@@ -6,13 +6,13 @@
     font-weight: bold;
 }
 
-.italic{
-    font-style: italic;
-    background-color: #F4F5F7;
+.markdown{
     padding: 10px;
+    border-left: 7.5px solid  #F4F5F7;
+    color: #999999;
 }
 
-.italic > p{
+.markdown > p{
     margin: 0 0 0px;
 }
 

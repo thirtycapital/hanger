@@ -218,8 +218,8 @@
 
             /*[# th:if="${#lists.isEmpty(checkup.log)}"]*/
             labels.push("");
-            results.push("");
-            thresholds.push("");
+            results.push();
+            thresholds.push();
             statuses.push(true);
             /*[/]*/
 
@@ -261,7 +261,7 @@
                             },
                             pointBackgroundColor: pointBackgroundColors,
                             pointBorderColor: pointBackgroundColors,
-                            pointRadius: 4,
+                            pointRadius: 3,
                             borderWidth: 2
                         }
                     ]

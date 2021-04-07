@@ -46,7 +46,7 @@
 
             <div class="row">
                 <div th:each="checkup, checkupStat : ${job.checkup}">
-                    <div class="col-md-6 space-top">
+                    <div class="space-top" th:classappend="${#lists.size(job.checkup) == 1 ? 'col-md' : 'col-md-6' }">
                         <span class="label " 
                               th:classappend="${checkup.enabled ? (checkup.getLastStatus() ? 'label-success' : 'label-danger') : 'label-default'}" 
                               th:text="${checkup.enabled ?  checkup.name : checkup.name + ' [DISABLED]'}"></span>

@@ -102,7 +102,7 @@
                 <div class="tab-content">
                     <!--Graph view-->
                     <div id="chart_tab" class="tab-pane fade active in">
-                        <div class="row">
+                        <div class="row col-sm-12">
                             <block th:each="subjects : ${subjectDetails}" >
                                 <div th:if="${subjects.total > 0}" class="space-top col-md-2">
                                     <center>
@@ -274,53 +274,47 @@
             var labels = [];
             var values = [];
             var backgroundColors = [];
-            var borderColors = [];
 
             /*[# th:if="${subjects.success}> 0 "]*/
-            labels.push("success");
+            labels.push("SUCCESS");
             values.push(/*[[${subjects.success}]]*/);
-            backgroundColors.push("#E3FCEF");
-            borderColors.push("#006644");
+            backgroundColors.push("#20b2aa");
             /*[/]*/
 
             /*[# th:if="${subjects.waiting}> 0 "]*/
-            labels.push("waiting");
+            labels.push("WAITING");
             values.push(/*[[${subjects.waiting}]]*/);
-            backgroundColors.push("#ececec");
-            borderColors.push("#6c6c6c");
+            backgroundColors.push("#e5e8ec");
             /*[/]*/
 
             /*[# th:if="${subjects.building}> 0 "]*/
-            labels.push("building");
+            labels.push("BUILDING");
             values.push(/*[[${subjects.building}]]*/);
-            backgroundColors.push("#fffdeb");
-            borderColors.push("#c4b000");
+            backgroundColors.push("#f6f558");
             /*[/]*/
 
             /*[# th:if="${subjects.warning}> 0 "]*/
-            labels.push("warning");
+            labels.push("WARNING");
             values.push(/*[[${subjects.warning}]]*/);
-            backgroundColors.push("#fff8eb");
-            borderColors.push("#b87700");
+            backgroundColors.push("#ffa500");
             /*[/]*/
 
             /*[# th:if="${subjects.failure}> 0 "]*/
-            labels.push("failure");
+            labels.push("FAILURE");
             values.push(/*[[${subjects.failure}]]*/);
-            backgroundColors.push("#fbe8e9");
-            borderColors.push("#dd424a");
+            backgroundColors.push("#dd424a");
             /*[/]*/
             /*[/]*/
 
             var myChart = new Chart(context, {
-                type: 'doughnut',
+                type: 'pie',
                 data: {
                     labels: labels,
                     datasets: [{
                             data: values,
                             backgroundColor: backgroundColors,
-                            borderColor: borderColors,
-                            borderWidth: 2
+                            borderColor: "#ddd",
+                            borderWidth: 1
                         }]
                 },
                 options: {
@@ -329,10 +323,10 @@
                     },
                     layout: {
                         padding: {
-                            left: 10,
-                            right: 10,
+                            left: 0,
+                            right: 0,
                             top: 20,
-                            bottom: 10
+                            bottom: 0
                         }
                     }
                 }

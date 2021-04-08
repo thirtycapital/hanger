@@ -15,12 +15,11 @@
                             class="space-top swinlane">
                             <span th:text="${swimlane.key}"
                                   data-toggle="tooltip" 
-                                  data-placement="left"
-                                  th:title="${rules.get(swimlane.key)}"></span>
+                                  data-placement="left"></span>
 
                             <span sec:authorize="isAuthenticated()">
                                 <button class="btn btn-link btn-xs"
-                                        title="Build all jobs from this swimlane unordered"
+                                        title="Build jobs from this swimlane"
                                         data-toggle="tooltip" 
                                         data-placement="right"
                                         th:attr="onclick='confirmBuildSwimlane(' + ${currentSubject.id} + ', \'' + ${swimlane.key} + '\')'">
@@ -222,7 +221,7 @@
                     function confirmBuildSwimlane(id, swimlane) {
                         bootbox.confirm({
                             title: swimlane + " swimlane",
-                            message: "You are about to build all jobs in swimlane " + swimlane + " unordered, are you sure?",
+                            message: "You are about to build all jobs in swimlane " + swimlane + ", are you sure?",
                             callback: function (result) {
                                 if (result) {
                                     buildSwimlane(id, swimlane);
@@ -258,13 +257,13 @@
                             timeout: 30000,
                             success: function (result) {
                                 if (result) {
-                                    toastr.success("Successfully built jobs " + swimlane + " swimlane");
+                                    toastr.success("Jobs build started successfully.");
                                 } else {
-                                    toastr.error("Error building jobs " + swimlane + " swimlane");
+                                    toastr.error("Error building jobs from " + swimlane + " swimlane");
                                 }
                             },
                             error: function (e) {
-                                toastr.error('Error on building request of ' + swimlane);
+                                toastr.error('Error on build request of ' + swimlane);
                             }
                         });
                     }

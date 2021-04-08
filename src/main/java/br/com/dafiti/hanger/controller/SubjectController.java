@@ -312,28 +312,28 @@ public class SubjectController {
     }
 
     /**
-     * Build all jobs swimlane.
+     * Build all jobs in a swimlane.
      *
-     * @param model
-     * @param subject
-     * @param swimlane
+     * @param model Model
+     * @param subject Subject
+     * @param swimlane Swimlane name
      * @return Identifies if the job was built successfully.
      */
     @GetMapping(path = "/build/swimlane/{id}/{swimlane}")
     @ResponseBody
-    public boolean buildSwimlaneJobs(
+    public boolean buildSwimlane(
             Model model,
             @PathVariable(value = "id") Subject subject,
             @PathVariable(value = "swimlane") String swimlane) {
 
-        auditorService.publish("BUILD_SWIMLANE_JOBS",
+        auditorService.publish("BUILD_SWIMLANE",
                 new AuditorData()
                         .addData("subject", "Subject: " + subject.getName())
                         .addData("swimlane", "Swimlane: " + swimlane)
                         .getData());
 
-        subjectService.buildSwimlineJobs(subject, swimlane);
-        
+        subjectService.buildSwimline(subject, swimlane);
+
         return true;
     }
 

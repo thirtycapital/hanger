@@ -111,16 +111,15 @@ public class SubjectService {
     }
 
     /**
-     * Build all jobs swimlane.
+     * Build all jobs in a swimlane.
      *
-     * @param subject
-     * @param swimlane
+     * @param subject Subject
+     * @param swimlane Swimlane name
      */
-    public void buildSwimlineJobs(Subject subject, String swimlane) {
-        //All jobs in the subject
+    public void buildSwimline(Subject subject, String swimlane) {
         List<Job> jobs = jobService.findBySubjectOrderByName(subject);
 
-        //Identify the swimlane criteria.
+        //Identifies swimlane criteria.
         String criteria = "";
         Map<String, String> rules = subject.getSwimlane();
 
@@ -131,7 +130,7 @@ public class SubjectService {
             }
         }
 
-        //Identify the jobs that contain this subject and that swimlane. Build jobs found.
+        //Build jobs that matchs swimlane criteria.
         for (Job job : jobs) {
             if (job.getName().matches(criteria)) {
                 try {
@@ -143,7 +142,7 @@ public class SubjectService {
                     }
 
                 } catch (Exception ex) {
-                    LOG.log(Level.ERROR, "Fail building job " + job.getName() + " manually", ex);
+                    LOG.log(Level.ERROR, "Fail building job " + job.getName() + ".", ex);
                 }
 
             }

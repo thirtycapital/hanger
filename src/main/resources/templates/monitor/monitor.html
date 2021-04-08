@@ -74,61 +74,97 @@
                     </div>             
                 </form>
             </div>
+
             <hr/>
 
-            <div class="tab-content">
-                <div th:if="${not #httpServletRequest.getRequestURI().contains('/detail/')}">
-                    <!--Home refresh timeout-->
-                    <script type="text/javascript">
-                        setTimeout("location.reload(true);", 120000);
-                    </script>
+            <div th:if="${not #httpServletRequest.getRequestURI().contains('/detail/')}">
+                <!--Home refresh timeout-->
+                <script type="text/javascript">
+                    setTimeout("location.reload(true);", 120000);
+                </script>
 
-                    <table id="table_clean" class="table">
-                        <thead>
-                            <tr>
-                                <th>Subject</th>                                
-                                <th class="no-sort">Status</th>  
-                                <th><span class="label label-success" title="SUCCESS">SUCCESS</span></th>
-                                <th><span class="label label-neutral" title="WAITING">WAITING</span></th>
-                                <th><span class="label label-primary" title="BUILDING">BUILDING</span></th> 
-                                <th><span class="label label-warning" title="WARNING">WARNING</span></th> 
-                                <th><span class="label label-danger" title="FAILURE">FAILURE</span></th> 
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="subjects : ${subjectDetails}">
-                                <td><a th:href="@{'/detail/' + ${subjects.subject.id}}" th:text="${subjects.subject.name}" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
-
-                                <td width="22.5%">
-                                    <div class="progress">
-                                        <div class="progress-bar progress-bar-success" th:inline="text" th:attr="style='width:' +  ${ subjects.successPercent } + '%'" title="SUCCESS">
-                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.successPercent, 0, 0)}]]%
-                                        </div>
-                                        <div class="progress-bar progress-bar-building" th:inline="text" th:attr="style='width:' +  ${ subjects.buildingPercent } + '%'" title="BUILDING">
-                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.buildingPercent, 0, 0)}]]%
-                                        </div>
-                                        <div class="progress-bar progress-bar-warning" th:inline="text" th:attr="style='width:' + ${ subjects.warningPercent } + '%'" title="WARNING">
-                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.warningPercent, 0, 0)}]]% 
-                                        </div>
-                                        <div class="progress-bar progress-bar-danger" th:inline="text" th:attr="style='width:' + ${ subjects.failurePercent } + '%'" title="FAILURE">
-                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.failurePercent, 0, 0)}]]% 
-                                        </div>
-                                        <div class="progress-bar progress-bar-waiting" th:inline="text" th:attr="style='width:' + ${ subjects.waitingPercent } + '%'" title="WAITING">
-                                            <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.waitingPercent, 0, 0)}]]% 
-                                        </div>
-                                    </div>
-                                </td>
-
-                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.success}> 0 ? ${subjects.success} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
-                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.waiting} > 0 ? ${subjects.waiting} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
-                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.building} > 0 ? ${subjects.building} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
-                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.warning} > 0 ? ${subjects.warning} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
-                                <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.failure} > 0 ? ${subjects.failure} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <!--Table or graph selector-->
+                <div> 
+                    <ul class="nav nav-pills pull-right">                    
+                        <li class="active">
+                            <a data-toggle="tab" href="#chart_tab">
+                                <span class="glyphicon glyphicon-signal" title="Chart"></span>
+                            </a>  
+                        </li>
+                        <li>
+                            <a data-toggle="tab" href="#table_tab">
+                                <span class="glyphicon glyphicon-th-list" title="Table"></span>
+                            </a>                                
+                        </li>
+                    </ul>
                 </div>
 
+                <div class="tab-content">
+                    <!--Graph view-->
+                    <div id="chart_tab" class="tab-pane fade active in">
+                        <div class="row">
+                            <div th:each="subjects : ${subjectDetails}" class="space-top col-md-2">
+                                <div th:if="${subjects.total > 0}">
+                                    <center>
+                                        <a th:href="@{'/detail/' + ${subjects.subject.id}}" th:text="${subjects.subject.name}" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a>
+                                    </center>
+                                    <canvas th:id="'chart_' + ${subjects.subject.id}" width="150" height="150"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Table view-->
+                    <div id="table_tab" class="tab-pane fade in">
+                        <table id="table_clean" class="table">
+                            <thead>
+                                <tr>
+                                    <th>Subject</th>                                
+                                    <th class="no-sort">Status</th>  
+                                    <th><span class="label label-success" title="SUCCESS">SUCCESS</span></th>
+                                    <th><span class="label label-neutral" title="WAITING">WAITING</span></th>
+                                    <th><span class="label label-primary" title="BUILDING">BUILDING</span></th> 
+                                    <th><span class="label label-warning" title="WARNING">WARNING</span></th> 
+                                    <th><span class="label label-danger" title="FAILURE">FAILURE</span></th> 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="subjects : ${subjectDetails}">
+                                    <td><a th:href="@{'/detail/' + ${subjects.subject.id}}" th:text="${subjects.subject.name}" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+
+                                    <td width="22.5%">
+                                        <div class="progress">
+                                            <div class="progress-bar progress-bar-success" th:inline="text" th:attr="style='width:' +  ${ subjects.successPercent } + '%'" title="SUCCESS">
+                                                <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.successPercent, 0, 0)}]]%
+                                            </div>
+                                            <div class="progress-bar progress-bar-building" th:inline="text" th:attr="style='width:' +  ${ subjects.buildingPercent } + '%'" title="BUILDING">
+                                                <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.buildingPercent, 0, 0)}]]%
+                                            </div>
+                                            <div class="progress-bar progress-bar-warning" th:inline="text" th:attr="style='width:' + ${ subjects.warningPercent } + '%'" title="WARNING">
+                                                <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.warningPercent, 0, 0)}]]% 
+                                            </div>
+                                            <div class="progress-bar progress-bar-danger" th:inline="text" th:attr="style='width:' + ${ subjects.failurePercent } + '%'" title="FAILURE">
+                                                <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.failurePercent, 0, 0)}]]% 
+                                            </div>
+                                            <div class="progress-bar progress-bar-waiting" th:inline="text" th:attr="style='width:' + ${ subjects.waitingPercent } + '%'" title="WAITING">
+                                                <span class="sr-only"></span> [[${#numbers.formatDecimal(subjects.waitingPercent, 0, 0)}]]% 
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.success}> 0 ? ${subjects.success} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                    <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.waiting} > 0 ? ${subjects.waiting} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                    <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.building} > 0 ? ${subjects.building} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                    <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.warning} > 0 ? ${subjects.warning} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                    <td width="5.5%"><a th:href="@{'/detail/' + ${subjects.subject.id}}"  th:text="${subjects.failure} > 0 ? ${subjects.failure} : ''" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content">
                 <div th:if="${#httpServletRequest.getRequestURI().contains('/detail/') }">
                     <ul th:if="${not #lists.isEmpty(swimlanes)}" class="pager">
                         <li th:if="${swimlane.key != 'ALL'}" th:each="swimlane, swimlaneStat: ${swimlanes}">
@@ -224,8 +260,85 @@
             <span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
         </a>
 
-
         <script th:inline="javascript">
+            /*<![CDATA[*/
+
+            //Iterates on each subject detail. 
+            /*[# th:each="subjects : ${subjectDetails}"]*/
+
+            //Identifies if there are at least one job. 
+            /*[# th:if="${subjects.total}> 0 "]*/
+            var chart = 'chart_' + /*[[${subjects.subject.id}]]*/ "id";
+            var context = document.getElementById(chart);
+
+            var labels = [];
+            var values = [];
+            var backgroundColors = [];
+            var borderColors = [];
+
+            /*[# th:if="${subjects.success}> 0 "]*/
+            labels.push("success");
+            values.push(/*[[${subjects.success}]]*/);
+            backgroundColors.push("#E3FCEF");
+            borderColors.push("#006644");
+            /*[/]*/
+
+            /*[# th:if="${subjects.waiting}> 0 "]*/
+            labels.push("waiting");
+            values.push(/*[[${subjects.waiting}]]*/);
+            backgroundColors.push("#ececec");
+            borderColors.push("#6c6c6c");
+            /*[/]*/
+
+            /*[# th:if="${subjects.building}> 0 "]*/
+            labels.push("building");
+            values.push(/*[[${subjects.building}]]*/);
+            backgroundColors.push("#fffdeb");
+            borderColors.push("#c4b000");
+            /*[/]*/
+
+            /*[# th:if="${subjects.warning}> 0 "]*/
+            labels.push("warning");
+            values.push(/*[[${subjects.warning}]]*/);
+            backgroundColors.push("#fff8eb");
+            borderColors.push("#b87700");
+            /*[/]*/
+
+            /*[# th:if="${subjects.failure}> 0 "]*/
+            labels.push("failure");
+            values.push(/*[[${subjects.failure}]]*/);
+            backgroundColors.push("#fbe8e9");
+            borderColors.push("#dd424a");
+            /*[/]*/
+            /*[/]*/
+
+            var myChart = new Chart(context, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                            data: values,
+                            backgroundColor: backgroundColors,
+                            borderColor: borderColors,
+                            borderWidth: 2
+                        }]
+                },
+                options: {
+                    legend: {
+                        display: false
+                    },
+                    layout: {
+                        padding: {
+                            left: 10,
+                            right: 10,
+                            top: 20,
+                            bottom: 10
+                        }
+                    }
+                }
+            });
+            /*[/]*/
+
             /**
              * Show add subject to job modal. 
              * 
@@ -263,7 +376,6 @@
                 document.getElementById("subjectNameInModal").innerText = subjectName;
                 document.getElementById("jobNameInModal").innerText = jobName;
                 document.getElementById("confirmRemoveJob").href = "remove/" + jobID + "/" + subjectID;
-
                 $("#modalRemoveJobFromSubject").modal();
             }
 
@@ -286,7 +398,6 @@
                     $("#wait").css("display", "block");
                     $("#add_job").prop("disabled", true);
                 });
-
                 /**
                  * Define ajax complete behavior. 
                  * @returns {undefined}
@@ -295,7 +406,6 @@
                     $("#wait").css("display", "none");
                     $("#add_job").prop("disabled", false);
                 });
-
                 // Exibe ou oculta o botão
                 $(window).scroll(function () {
                     if (jQuery(this).scrollTop() > 100) {
@@ -304,7 +414,6 @@
                         jQuery('.back_top').fadeOut(100);
                     }
                 });
-
                 // Faz animação para subir
                 $('.back_top').click(function (event) {
                     event.preventDefault();
@@ -317,7 +426,6 @@
                 $.ajaxSetup({
                     headers: {'X-CSRF-Token': $('#_csrf').attr('content')}
                 });
-
                 /**
                  * Subject subscription and unsubscription.
                  * @returns {undefined}
@@ -326,7 +434,6 @@
                     var url;
                     var subject = $(this).val();
                     var subscription = $(this).prop("checked");
-
                     if (subscription) {
                         url = /*[[@{/subject/subscribe/}]]*/ "/subject/subscribe/";
                     } else {
@@ -342,13 +449,11 @@
                         success: function (result) {
                             if (subscription) {
                                 toastr.success('Subscribed');
-
                                 setTimeout(function () {
                                     window.location.reload(1);
                                 }, 1000);
                             } else {
                                 toastr.success('Unsubscribed');
-
                                 setTimeout(function () {
                                     window.location.reload(1);
                                 }, 1000);

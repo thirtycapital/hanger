@@ -85,7 +85,7 @@
 
                         <div class="tab-content">
                             <div th:id="'chart_tab' + ${checkup.id}" class="tab-pane fade active in">
-                                <canvas th:id="'chart' + ${checkup.id}" height='80'></canvas>
+                                <canvas th:id="'chart_' + ${checkup.id}" height='80'></canvas>
                             </div>
 
                             <div th:id="'table_tab' + ${checkup.id}" class="tab-pane fade in">
@@ -208,8 +208,8 @@
             //START CHECKUP LOOP
             /*[# th:each="checkup, checkupStat : ${job.checkup}"]*/
 
-            var chart = 'chart' + /*[[${checkup.id}]]*/;
-            var context = document.getElementById(chart).getContext('2d');
+            var chart = 'chart_' + /*[[${checkup.id}]]*/ "id";
+            var context = document.getElementById(chart);
 
             var labels = [];
             var results = [];

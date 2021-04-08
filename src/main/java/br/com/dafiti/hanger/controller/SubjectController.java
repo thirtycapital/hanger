@@ -24,9 +24,11 @@
 package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.exception.Message;
+import br.com.dafiti.hanger.model.AuditorData;
 import br.com.dafiti.hanger.model.Subject;
 import br.com.dafiti.hanger.model.User;
 import br.com.dafiti.hanger.model.JobDetails;
+import br.com.dafiti.hanger.service.AuditorService;
 import br.com.dafiti.hanger.service.SlackService;
 import br.com.dafiti.hanger.service.SubjectService;
 import br.com.dafiti.hanger.service.UserService;
@@ -52,6 +54,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -66,6 +69,7 @@ public class SubjectController {
     private final UserService userService;
     private final JobService jobService;
     private final JobDetailsService jobDetailsService;
+    private final AuditorService auditorService;
 
     @Autowired
     public SubjectController(
@@ -73,13 +77,15 @@ public class SubjectController {
             SlackService slackService,
             UserService userService,
             JobService jobService,
-            JobDetailsService jobDetailsService) {
+            JobDetailsService jobDetailsService,
+            AuditorService auditorService) {
 
         this.subjectService = subjectService;
         this.slackService = slackService;
         this.userService = userService;
         this.jobService = jobService;
         this.jobDetailsService = jobDetailsService;
+        this.auditorService = auditorService;
     }
 
     /**
@@ -303,6 +309,32 @@ public class SubjectController {
         subject.getSwimlane().remove(key);
         model.addAttribute("subject", subject);
         return "subject/edit";
+    }
+
+    /**
+     * Build all jobs in a swimlane.
+     *
+     * @param model Model
+     * @param subject Subject
+     * @param swimlane Swimlane name
+     * @return Identifies if the job was built successfully.
+     */
+    @GetMapping(path = "/build/swimlane/{id}/{swimlane}")
+    @ResponseBody
+    public boolean buildSwimlane(
+            Model model,
+            @PathVariable(value = "id") Subject subject,
+            @PathVariable(value = "swimlane") String swimlane) {
+
+        auditorService.publish("BUILD_SWIMLANE",
+                new AuditorData()
+                        .addData("subject", "Subject: " + subject.getName())
+                        .addData("swimlane", "Swimlane: " + swimlane)
+                        .getData());
+
+        subjectService.buildSwimline(subject, swimlane);
+
+        return true;
     }
 
     /**

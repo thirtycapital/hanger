@@ -242,6 +242,22 @@ public class JobCheckup implements Serializable {
         this.prevalidation = prevalidation;
     }
 
+    @Transient
+    public boolean getLastStatus() {
+        boolean status = true;
+        List<JobCheckupLog> log = this.getLog();
+
+        if (!log.isEmpty()) {
+            JobCheckupLog jobCheckupLog = log.get(0);
+
+            if (jobCheckupLog != null) {
+                status = jobCheckupLog.isSuccess();
+            }
+        }
+
+        return status;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;

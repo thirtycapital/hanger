@@ -12,10 +12,20 @@
                         <legend 
                             th:id="${swimlane.key}" 
                             th:if="${swimlane.key != 'ALL'}" 
-                            class="space-top swinlane" 
-                            th:text="${swimlane.key}"
-                            data-toggle="tooltip" 
-                            data-placement="left">
+                            class="space-top swinlane">
+                            <span th:text="${swimlane.key}"
+                                  data-toggle="tooltip" 
+                                  data-placement="left"></span>
+
+                            <span sec:authorize="isAuthenticated()">
+                                <button class="btn btn-link btn-xs"
+                                        title="Build swinlane's jobs"
+                                        data-toggle="tooltip" 
+                                        data-placement="right"
+                                        th:attr="onclick='confirmBuildSwimlane(' + ${currentSubject.id} + ', \'' + ${swimlane.key} + '\')'">
+                                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                                </button>
+                            </span>
                         </legend>
 
                         <label th:if="${swimlane.key != 'ALL'}" th:inline="text" class="label-edit-information">[[*{rules.get(swimlane.key)}]]</label>
@@ -197,6 +207,67 @@
                             },
                             error: function (e) {
                                 toastr.error('Error on building request of ' + name);
+                            }
+                        });
+                    }
+
+                    /**
+                     * Display swimlane job build confirmation modal.
+                     * 
+                     * @param {type} id
+                     * @param {type} name
+                     * @returns {undefined}
+                     */
+                    function confirmBuildSwimlane(id, swimlane) {
+                        bootbox.confirm({
+                            title: swimlane + " swimlane",
+                            message: "You are about to build all jobs in swimlane " + swimlane + ", are you sure?",
+                            callback: function (result) {
+                                if (result) {
+                                    buildSwimlane(id, swimlane);
+                                }
+                            }
+                        });
+                    }
+
+                    /**
+                     * Build all jobs swimlane.
+                     * 
+                     * @param {type} id ID
+                     * @param {type} name
+                     * @returns {undefined}
+                     */
+                    function buildSwimlane(id, swimlane) {
+                        var url = /*[[@{/subject/build/swimlane/}]]*/ "/subject/build/swimlane/";
+
+                        toastr.options = {
+                            "closeButton": true,
+                            "progressBar": true,
+                            "positionClass": "toast-top-right",
+                            "timeOut": "2500",
+                            "showEasing": "swing",
+                            "hideEasing": "linear",
+                            "showMethod": "fadeIn",
+                            "hideMethod": "fadeOut"
+                        }
+
+                        $.ajax({
+                            type: "GET",
+                            url: url + id + "/" + swimlane,
+                            timeout: 30000,
+                            success: function (result) {
+                                if (result) {
+                                    toastr.success("Jobs build started successfully.");
+                                } else {
+                                    toastr.error("Error building jobs from " + swimlane + " swimlane");
+                                }
+
+                                setTimeout(function () {
+                                    window.location.reload(1);
+                                }, 2500);
+                            },
+                            error: function (e) {
+                                toastr.error('Error on build request of ' + swimlane);
                             }
                         });
                     }

@@ -278,7 +278,7 @@
             /*[# th:if="${subjects.success}> 0 "]*/
             labels.push("SUCCESS");
             values.push(/*[[${subjects.success}]]*/);
-            backgroundColors.push("#25CED1");
+            backgroundColors.push("#20b2aa");
             /*[/]*/
 
             /*[# th:if="${subjects.waiting}> 0 "]*/
@@ -331,6 +331,8 @@
                     }
                 }
             });
+     
+            myChart.update();
             /*[/]*/
 
             /**

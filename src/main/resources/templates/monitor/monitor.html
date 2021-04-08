@@ -103,14 +103,14 @@
                     <!--Graph view-->
                     <div id="chart_tab" class="tab-pane fade active in">
                         <div class="row">
-                            <div th:each="subjects : ${subjectDetails}" class="space-top col-md-2">
-                                <div th:if="${subjects.total > 0}">
+                            <block th:each="subjects : ${subjectDetails}" >
+                                <div th:if="${subjects.total > 0}" class="space-top col-md-2">
                                     <center>
                                         <a th:href="@{'/detail/' + ${subjects.subject.id}}" th:text="${subjects.subject.name}" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a>
                                     </center>
                                     <canvas th:id="'chart_' + ${subjects.subject.id}" width="150" height="150"></canvas>
                                 </div>
-                            </div>
+                            </block>
                         </div>
                     </div>
 

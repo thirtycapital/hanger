@@ -210,7 +210,7 @@
                             }
                         });
                     }
-                    
+
                     /**
                      * Display swimlane job build confirmation modal.
                      * 
@@ -261,6 +261,10 @@
                                 } else {
                                     toastr.error("Error building jobs from " + swimlane + " swimlane");
                                 }
+
+                                setTimeout(function () {
+                                    window.location.reload(1);
+                                }, 2500);
                             },
                             error: function (e) {
                                 toastr.error('Error on build request of ' + swimlane);

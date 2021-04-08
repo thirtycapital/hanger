@@ -87,21 +87,21 @@
                 <div> 
                     <ul class="nav nav-pills pull-right">                    
                         <li class="active">
-                            <a data-toggle="tab" href="#chart_tab">
-                                <span class="glyphicon glyphicon-signal" title="Chart"></span>
-                            </a>  
-                        </li>
-                        <li>
                             <a data-toggle="tab" href="#table_tab">
                                 <span class="glyphicon glyphicon-th-list" title="Table"></span>
                             </a>                                
+                        </li>
+                        <li >
+                            <a data-toggle="tab" href="#chart_tab">
+                                <span class="glyphicon glyphicon-signal" title="Chart"></span>
+                            </a>  
                         </li>
                     </ul>
                 </div>
 
                 <div class="tab-content">
                     <!--Graph view-->
-                    <div id="chart_tab" class="tab-pane fade active in">
+                    <div id="chart_tab" class="tab-pane fade in">
                         <div class="row col-sm-12">
                             <block th:each="subjects : ${subjectDetails}" >
                                 <div th:if="${subjects.total > 0}" class="space-top col-md-2">
@@ -115,7 +115,7 @@
                     </div>
 
                     <!--Table view-->
-                    <div id="table_tab" class="tab-pane fade in">
+                    <div id="table_tab" class="tab-pane fade active in">
                         <table id="table_clean" class="table">
                             <thead>
                                 <tr>
@@ -278,7 +278,7 @@
             /*[# th:if="${subjects.success}> 0 "]*/
             labels.push("SUCCESS");
             values.push(/*[[${subjects.success}]]*/);
-            backgroundColors.push("#20b2aa");
+            backgroundColors.push("#25CED1");
             /*[/]*/
 
             /*[# th:if="${subjects.waiting}> 0 "]*/
@@ -302,7 +302,7 @@
             /*[# th:if="${subjects.failure}> 0 "]*/
             labels.push("FAILURE");
             values.push(/*[[${subjects.failure}]]*/);
-            backgroundColors.push("#dd424a");
+            backgroundColors.push("#EC5D55");
             /*[/]*/
             /*[/]*/
 
@@ -313,8 +313,8 @@
                     datasets: [{
                             data: values,
                             backgroundColor: backgroundColors,
-                            borderColor: "#ddd",
-                            borderWidth: 1
+                            borderColor: "#FFFFFF",
+                            borderWidth: 2
                         }]
                 },
                 options: {
@@ -323,10 +323,10 @@
                     },
                     layout: {
                         padding: {
-                            left: 0,
-                            right: 0,
+                            left: 20,
+                            right: 20,
                             top: 20,
-                            bottom: 0
+                            bottom: 20
                         }
                     }
                 }

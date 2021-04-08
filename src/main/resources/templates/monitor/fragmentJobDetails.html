@@ -19,7 +19,7 @@
 
                             <span sec:authorize="isAuthenticated()">
                                 <button class="btn btn-link btn-xs"
-                                        title="Build jobs from this swimlane"
+                                        title="Build swinlane's jobs"
                                         data-toggle="tooltip" 
                                         data-placement="right"
                                         th:attr="onclick='confirmBuildSwimlane(' + ${currentSubject.id} + ', \'' + ${swimlane.key} + '\')'">

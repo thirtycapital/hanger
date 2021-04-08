@@ -107,8 +107,8 @@
                                 <div th:if="${subjects.total > 0}" class="space-top col-md-2">
                                     <center>
                                         <a th:href="@{'/detail/' + ${subjects.subject.id}}" th:text="${subjects.subject.name}" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a>
+                                        <canvas th:id="'chart_' + ${subjects.subject.id}" width="225" height="225"></canvas>
                                     </center>
-                                    <canvas th:id="'chart_' + ${subjects.subject.id}" width="150" height="150"></canvas>
                                 </div>
                             </block>
                         </div>
@@ -304,7 +304,6 @@
             values.push(/*[[${subjects.failure}]]*/);
             backgroundColors.push("#EC5D55");
             /*[/]*/
-            /*[/]*/
 
             var myChart = new Chart(context, {
                 type: 'pie',
@@ -318,21 +317,23 @@
                         }]
                 },
                 options: {
+                    responsive: false,
                     legend: {
                         display: false
                     },
                     layout: {
                         padding: {
-                            left: 20,
-                            right: 20,
+                            left: 0,
+                            right: 0,
                             top: 20,
                             bottom: 20
                         }
                     }
                 }
             });
-     
+
             myChart.update();
+            /*[/]*/
             /*[/]*/
 
             /**

@@ -49,7 +49,8 @@
                     <div class="space-top" th:classappend="${#lists.size(job.checkup) == 1 ? 'col-md' : 'col-md-6' }">
                         <span class="label " 
                               th:classappend="${checkup.enabled ? (checkup.getLastStatus() ? 'label-success' : 'label-danger') : 'label-default'}" 
-                              th:text="${checkup.enabled ?  checkup.name : checkup.name + ' [DISABLED]'}"></span>
+                              th:text="${ #strings.abbreviate(checkup.enabled ?  checkup.name : '[DISABLED] ' + checkup.name, 50)}"
+                              th:title="${checkup.name}"></span>
                         <span class="label label-default" th:text="${checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION'}"></span>
                         <span class="label label-default" th:text="${checkup.conditional}"></span>
                         <span class="label label-default" th:text="${checkup.action}"></span>
@@ -57,6 +58,19 @@
                         <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Open the query in workbench" target="_blank">
                             <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
                         </a>
+
+                        <ul class="nav nav-pills pull-right">                    
+                            <li class="active">
+                                <a data-toggle="tab" th:href="'#chart_tab' + ${checkup.id}">
+                                    <span class="glyphicon glyphicon-signal" title="Chart"></span>
+                                </a>  
+                            </li>
+                            <li>
+                                <a data-toggle="tab" th:href="'#table_tab' + ${checkup.id}">
+                                    <span class="glyphicon glyphicon-th-list" title="Table"></span>
+                                </a>                                
+                            </li>
+                        </ul>
 
                         <hr/>
 
@@ -66,21 +80,6 @@
                                     th:title="${checkup.description != null and checkup.description != '' ? checkup.description : ''}" 
                                     th:text="${#strings.abbreviate( checkup.description != null and checkup.description != '' ? checkup.description : '', 100 )}"> </span>
                             </div>
-                        </div>
-
-                        <div> 
-                            <ul class="nav nav-pills pull-right">                    
-                                <li class="active">
-                                    <a data-toggle="tab" th:href="'#chart_tab' + ${checkup.id}">
-                                        <span class="glyphicon glyphicon-signal" title="Chart"></span>
-                                    </a>  
-                                </li>
-                                <li>
-                                    <a data-toggle="tab" th:href="'#table_tab' + ${checkup.id}">
-                                        <span class="glyphicon glyphicon-th-list" title="Table"></span>
-                                    </a>                                
-                                </li>
-                            </ul>
                         </div>
 
                         <div class="tab-content">

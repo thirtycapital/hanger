@@ -101,6 +101,12 @@
                     <!--Graph view-->
                     <div id="chart_tab" class="tab-pane fade in">
                         <div class="row col-sm-12">
+                            <fieldset>
+                                <legend>
+                                    Subjects
+                                </legend>
+                            </fieldset>
+
                             <block th:each="subjects : ${subjectDetails}" >
                                 <div th:if="${subjects.total > 0}" class="space-top col-md-2">
                                     <center>

@@ -107,7 +107,7 @@ public class ConnectionService {
         for (Connection connection : this.list()) {
             ConnectionStatus status = new ConnectionStatus();
             status.setConnection(connection);
-            status.setStatus(this.testConnection(connection) ? Status.SUCCESS : Status.FAILURE);
+            status.setStatus(this.testConnection(connection).isEmpty() ? Status.SUCCESS : Status.FAILURE);
             connectionStatus.add(status);
         }
 
@@ -210,22 +210,22 @@ public class ConnectionService {
     }
 
     /**
-     * Get the connection.
+     * Test a connection.
      *
      * @param connection Connection
-     * @return Identify is a connection is ok.
+     * @return Identifies a connection status.
      */
-    public boolean testConnection(Connection connection) {
-        boolean running = false;
+    public String testConnection(Connection connection) {
+        String status = "";
         DataSource datasource = this.getDataSource(connection);
 
         if (datasource != null) {
             try {
                 if (datasource.getConnection() != null) {
-                    running = true;
                 }
             } catch (SQLException ex) {
-                LOG.log(Level.ERROR, "Fail testing connection to " + connection.getName(), ex);
+                status = ex.getMessage();
+                LOG.log(Level.ERROR, "Fail testing connection to " + connection.getName(), status);
             } finally {
                 try {
                     if (datasource.getConnection() != null) {
@@ -237,7 +237,7 @@ public class ConnectionService {
             }
         }
 
-        return running;
+        return status;
     }
 
     /**

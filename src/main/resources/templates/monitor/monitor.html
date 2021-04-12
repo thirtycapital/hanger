@@ -84,7 +84,7 @@
                 </script>
 
                 <!--Table or graph selector-->
-                <ul class="nav nav-pills pull-right">                    
+                <ul class="nav nav-pills pull-right" id="tabSelector">                    
                     <li class="active">
                         <a data-toggle="tab" href="#table_tab">
                             <span class="glyphicon glyphicon-th-list" title="Table"></span>
@@ -342,12 +342,11 @@
 
             /**
              * Show add subject to job modal. 
-             * 
-             * @param {type} e
+             * @param {type} SubjectID
              * @returns {undefined}
              */
             function addJobModal(SubjectID) {
-                var url = /*[[@{/detail/modal/}]]*/ "/detail/modal/1"
+                var url = /*[[@{/detail/modal/}]]*/ "/detail/modal/1";
 
                 $.ajax({
                     type: "GET",
@@ -381,6 +380,20 @@
             }
 
             $(document).ready(function () {
+                if (location.hash) {
+                    $("a[href='" + location.hash + "']").tab("show");
+                }
+
+                /**
+                 * Identifies the selected tab. 
+                 */
+                $(document.body).on("click", "a[data-toggle='tab']", function (event) {
+                    location.hash = this.getAttribute("href");
+                });
+
+                /**
+                 * Toast configuration. 
+                 */
                 toastr.options = {
                     "closeButton": true,
                     "progressBar": true,

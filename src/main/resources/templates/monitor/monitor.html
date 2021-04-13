@@ -87,12 +87,12 @@
                 <!--Table or graph selector-->
                 <ul class="nav nav-pills pull-right" id="tabSelector">                    
                     <li class="active">
-                        <a data-toggle="tab" href="#table_tab">
+                        <a data-toggle="tab" href="#list">
                             <span class="glyphicon glyphicon-th-list" title="Table"></span>
                         </a>                                
                     </li>
                     <li >
-                        <a data-toggle="tab" href="#chart_tab">
+                        <a data-toggle="tab" href="#graph">
                             <span class="glyphicon glyphicon-signal" title="Chart"></span>
                         </a>  
                     </li>
@@ -100,7 +100,7 @@
 
                 <div class="tab-content">
                     <!--Graph view-->
-                    <div id="chart_tab" class="tab-pane fade in">
+                    <div id="graph" class="tab-pane fade in">
                         <div class="row col-sm-12">
                             <fieldset>
                                 <legend>
@@ -112,7 +112,7 @@
                                 <div th:if="${subjects.total > 0}" class="space-top col-md-2">
                                     <center>
                                         <a th:href="@{'/detail/' + ${subjects.subject.id}}" th:text="${subjects.subject.name}" th:classappend="${#httpServletRequest.getRequestURI().contains('/' + subjects.subject.id) ? 'active':''}"></a>
-                                        <canvas th:id="'chart_' + ${subjects.subject.id}" width="225" height="225"></canvas>
+                                        <canvas th:id="'chart_' + ${subjects.subject.id}" width="200" height="200"></canvas>
                                     </center>
                                 </div>
                             </block>
@@ -120,7 +120,7 @@
                     </div>
 
                     <!--Table view-->
-                    <div id="table_tab" class="tab-pane fade active in">
+                    <div id="list" class="tab-pane fade active in">
                         <table id="table_clean" class="table">
                             <thead>
                                 <tr>
@@ -322,7 +322,7 @@
                         }]
                 },
                 options: {
-                    responsive: false,
+                    responsive: true,
                     legend: {
                         display: false
                     },

@@ -88,10 +88,11 @@ public class JobService {
     }
 
     /**
+     * Return a server job list.
      *
-     * @param server
-     * @param incremental
-     * @return
+     * @param server Server
+     * @param incremental Identifies if should list only not imported jobs.
+     * @return server job list.
      * @throws URISyntaxException
      * @throws IOException
      */

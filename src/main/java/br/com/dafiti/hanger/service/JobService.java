@@ -87,6 +87,45 @@ public class JobService {
         return jobRepository.findAll();
     }
 
+    /**
+     *
+     * @param server
+     * @param incremental
+     * @return
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    public List<String> listFromServer(
+            Server server,
+            boolean incremental) throws URISyntaxException, IOException {
+
+        List<String> list = new ArrayList<>();
+        List<String> jenkinsJob = jenkinsService.listJob(server);
+
+        if (incremental) {
+            Iterable<Job> cache = this.listFromCache();
+
+            for (String jobServer : jenkinsJob) {
+                boolean exists = false;
+
+                for (Job job : cache) {
+                    if (jobServer.equalsIgnoreCase(job.getName())) {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if (!exists) {
+                    list.add(jobServer);
+                }
+            }
+        } else {
+            list = jenkinsJob;
+        }
+
+        return list;
+    }
+
     public Job load(Long id) {
         return jobRepository.findById(id).get();
     }
@@ -620,36 +659,5 @@ public class JobService {
      */
     public HashSet<JobParent> getChildrenlist(Job job) {
         return jobParentService.findByParent(job);
-    }
-
-    /**
-     * Get list of only existing jobs at Jenkins.
-     *
-     * @param server Server
-     * @return
-     * @throws URISyntaxException
-     * @throws IOException
-     */
-    public List<String> listNonExistsJobs(Server server) throws URISyntaxException, IOException {
-        List<String> listJobServer = this.jenkinsService.listJob(server);
-        Iterable<Job> listJob = this.listFromCache();
-        List<String> list = new ArrayList<>();
-
-        for (String jobServer : listJobServer) {
-            boolean jobExists = false;
-
-            for (Job job : listJob) {
-                if (jobServer.equalsIgnoreCase(job.getName())) {
-                    jobExists = true;
-                    break;
-                }
-            }
-
-            if (!jobExists) {
-                list.add(jobServer);
-            }
-        }
-
-        return list;
     }
 }

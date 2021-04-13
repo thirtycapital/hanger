@@ -6,26 +6,12 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-
-            <!--Command-->   
             <div class="form-group space-top">
-                <fieldset>
-                    <legend>Command</legend>
-                    <div class="col-sm-12">
-                        <pre class="no-border">
-                            <code th:class="${log.commandType} == 'SQL' ? language-sql : language-bash" th:text="${log.command}"></code>
-                        </pre>  
-                    </div>
-                </fieldset>
-            </div>
-
-            <!--Result-->   
-            <div class="form-group">
                 <fieldset>
                     <legend>Log</legend>
                     <div class="col-sm-12">
                         <pre class="line-numbers no-border">
-                            <code class="language-none" th:text="${log.log}"></code>
+                            <code class="language-bash" th:text="${log}"></code>
                         </pre>
                     </div>
                 </fieldset>
@@ -39,6 +25,7 @@
                 </a>
             </div>
         </div>
+
         <script>
             Prism.plugins.NormalizeWhitespace.setDefaults({
                 'remove-trailing': true,

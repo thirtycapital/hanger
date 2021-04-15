@@ -49,6 +49,8 @@ import java.util.regex.Pattern;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -955,6 +957,36 @@ public class ConnectionService {
 
         public void setError(String error) {
             this.error = error;
+        }
+
+        /**
+         * Get the query resultset as a JSON Object ;
+         *
+         * @return Query resultset JSON Object
+         */
+        public Map toJSONObject() {
+            JSONObject object = new JSONObject();
+
+            for (int i = 0; i < header.size(); i++) {
+                for (int j = 0; j < row.size(); j++) {
+
+                    if (object.has(header.get(i))) {
+                        object.put(
+                                header.get(i),
+                                ((JSONArray) object.get(header.get(i)))
+                                        .put(row.get(j)
+                                                .getColumn()
+                                                .get(i)));
+                    } else {
+                        object.put(header.get(i), new JSONArray()
+                                .put(row.get(j)
+                                        .getColumn()
+                                        .get(i)));
+                    }
+                }
+            }
+
+            return object.toMap();
         }
     }
 

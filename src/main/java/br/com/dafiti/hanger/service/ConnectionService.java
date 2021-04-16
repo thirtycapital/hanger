@@ -537,6 +537,11 @@ public class ConnectionService {
                         queryResultSet
                                 .getType()
                                 .put(metaData.getColumnName(i), metaData.getColumnTypeName(i));
+
+                        //Extracts columns class name. 
+                        queryResultSet
+                                .getClassName()
+                                .put(metaData.getColumnName(i), metaData.getColumnClassName(i));
                     }
                 }
 
@@ -912,6 +917,7 @@ public class ConnectionService {
         String error = new String();
         List<String> header = new ArrayList();
         Map<String, String> type = new HashMap();
+        Map<String, String> className = new HashMap();
         List<QueryResultSetRow> row = new ArrayList();
         long elapsedTime = 0;
 
@@ -929,6 +935,14 @@ public class ConnectionService {
 
         public void setType(Map<String, String> type) {
             this.type = type;
+        }
+
+        public Map<String, String> getClassName() {
+            return className;
+        }
+
+        public void setClassName(Map<String, String> className) {
+            this.className = className;
         }
 
         public List<QueryResultSetRow> getRow() {

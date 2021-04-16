@@ -13,29 +13,146 @@
                     </div>  
                 </div> 
 
-                <div th:if="${ errorMessage == null }">
-                    <table id="table" class="table table-hover space-top table-workbench-result">
-                        <thead> 
-                            <tr>
-                                <th 
-                                    th:each="header: ${resultset.header}" 
-                                    class="column-title" 
-                                    th:text="${header}" 
-                                    data-toggle="tooltip" 
-                                    data-placement="top"
-                                    th:title="${resultset.type.get(header)}"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="row: ${resultset.row}">
-                                <td th:each="column: ${row.column}" th:text="${column}" />
-                            </tr>
-                        </tbody>
-                    </table>
+                <!--Table or graph selector-->
+                <ul class="nav nav-pills pull-right" id="tabSelector">                    
+                    <li class="active">
+                        <a data-toggle="tab" href="#list">
+                            <span class="glyphicon glyphicon-th-list" title="Table"></span>
+                        </a>                                
+                    </li>
+                    <li >
+                        <a data-toggle="tab" href="#graph">
+                            <span class="glyphicon glyphicon-signal" title="Chart"></span>
+                        </a>  
+                    </li>
+                </ul>
 
-                    <span class="pull-right" th:inline="text">Query time: [[${resultset.elapsedTime}]] ms</span>
+                <div th:if="${ errorMessage == null }">
+                    <div class="tab-content">
+                        <!--Table view-->
+                        <div id="list" class="tab-pane fade active in">
+                            <table id="table" class="table table-hover space-top table-workbench-result">
+                                <thead> 
+                                    <tr>
+                                        <th 
+                                            th:each="header: ${resultset.header}" 
+                                            class="column-title" 
+                                            th:text="${header}" 
+                                            data-toggle="tooltip" 
+                                            data-placement="top"
+                                            th:title="${resultset.type.get(header)}"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="row: ${resultset.row}">
+                                        <td th:each="column: ${row.column}" th:text="${column}" />
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <span class="pull-right" th:inline="text">Query time: [[${resultset.elapsedTime}]] ms</span>
+                        </div>
+
+                        <!--Graph view-->
+                        <div id="graph" class="tab-pane fade in">
+                            <div class="row col-sm-12">
+                                <div class="row col-sm-2">
+                                    <div class="form-group">
+                                        <fieldset>
+                                            <legend>Label</legend>
+                                            <div th:each="header: ${resultset.header}">
+                                                <div th:if="${
+                                                     #strings.contains(resultset.className.get(header),'String') 
+                                                     || #strings.contains(resultset.className.get(header),'Date')
+                                                     || #strings.contains(resultset.className.get(header),'Time')}">
+
+                                                    <input type="radio" th:id="${'label_' + header}" name="label"/>
+                                                    <label th:text="${header}"></label>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <fieldset>
+                                            <legend>Dataset</legend>
+                                            <div th:each="header: ${resultset.header}">
+                                                <div th:if="${
+                                                     not #strings.contains(resultset.className.get(header),'Date') 
+                                                     && not #strings.contains(resultset.className.get(header),'Time')}">
+
+                                                    <input type="checkbox" th:id="${'dataset_' + header}"/>
+                                                    <label th:text="${header}"></label>
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </div>
+
+                                <div class="row col-sm-10">
+                                    <canvas th:id="workbenchChart" width="800" height="500"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script th:inline="javascript">
+                        /*<![CDATA[*/
+                        var context = document.getElementById('workbenchChart');
+                        var resultset = /*[[${resultset.toJSONObject()}]]*/ "";
+                        var datasets = [];
+                        var indexes = [];
+
+                        var chart = new Chart(context, {
+                            type: 'line',
+                            data: {
+                                labels: [],
+                                datasets: datasets
+                            },
+                            options: {
+                                responsive: true
+                            },
+                            plugins: {
+                                colorschemes: {
+                                    scheme: 'brewer.PastelTwo8'
+                                }
+                            }
+                        });
+
+                        /**
+                         * Add graph label. 
+                         */
+                        $(":radio").on('change', function () {
+                            chart.data.labels = resultset[$(this).attr('id').replace('label_', '')];
+                            chart.update();
+                        });
+
+                        /**
+                         * Add graph datasets. 
+                         */
+                        $(":checkbox").on('change', function () {
+                            if ($(this).is(':checked')) {
+                                indexes.push($(this).attr('id'));
+                                datasets.push({
+                                    label: $(this).attr('id').replace('dataset_', ''),
+                                    fill: false,
+                                    data: resultset[$(this).attr('id').replace('dataset_', '')],
+                                });
+                            } else {
+                                var index = indexes.indexOf($(this).attr('id'));
+
+                                if (index > -1) {
+                                    indexes.splice(index, 1);
+                                    datasets.splice(index, 1);
+                                }
+                            }
+
+                            chart.update();
+                        });
+
+                        /*]]>*/
+                    </script>
                 </div>
-            </div>
-        </div>       	
+            </div>       	
     </body>
 </html>

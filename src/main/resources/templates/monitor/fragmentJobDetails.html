@@ -92,7 +92,15 @@
                                         </div>
                                     </th:block>
                                     <td>
-                                        <a class="link node-link" th:href="@{ ${jobDetail.job.server.url} + 'job/' + ${jobDetail.job.name}}" target="_blank"> +</a>
+                                        <div class="dropdown">
+                                            <a class="dropdown-toggle" type="button" data-toggle="dropdown">
+                                                <span class="caret"></span></button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="link node-link" th:href="@{'/job/log/' + ${jobDetail.job.id}}"> Log</a></li>
+                                                    <li><a class="link node-link" th:href="@{ ${jobDetail.job.server.url} + 'job/' + ${jobDetail.job.name}}" target="_blank"> Job</a></li>
+                                                </ul>
+                                            </a>
+                                        </div>
                                     </td>
                                     <td>
                                         <div th:if="${ not #lists.isEmpty(jobDetail.job.checkup) }">

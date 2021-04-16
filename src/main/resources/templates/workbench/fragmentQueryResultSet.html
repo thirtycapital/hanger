@@ -119,6 +119,22 @@
                             plugins: {
                                 colorschemes: {
                                     scheme: 'brewer.PastelTwo8'
+                                },
+                                datalabels: {
+                                    font: {
+                                        weight: 'bold'
+                                    },
+                                    formatter: function (value, context) {
+                                        return Math.round(value * 100) / 100;
+                                    }
+                                }
+                            },
+                            layout: {
+                                padding: {
+                                    left: 10,
+                                    right: 20,
+                                    top: 30,
+                                    bottom: 20
                                 }
                             }
                         });

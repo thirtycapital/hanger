@@ -101,11 +101,9 @@
 
                     <script th:inline="javascript">
                         /*<![CDATA[*/
-                        var context = document.getElementById('workbenchChart');
                         var label = "";
-
+                        var context = document.getElementById('workbenchChart');
                         var resultset = /*[[${resultset.toJSONObject()}]]*/ "";
-                        //var datasets = [];
                         var indexes = [];
 
                         var chart = new Chart(context, {

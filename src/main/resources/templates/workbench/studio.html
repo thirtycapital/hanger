@@ -19,8 +19,7 @@
                                     id="connection" 
                                     class="selectpicker form-control" 
                                     data-live-search="true" 
-                                    required="true" 
-                                    placeholder="Connection">
+                                    required="true">
                                     <option th:each="conn : ${connections}" 
                                             th:value="${conn.id}" 
                                             th:text="${conn.name}"

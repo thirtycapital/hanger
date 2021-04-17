@@ -77,7 +77,7 @@
 
                                     <div class="form-group">
                                         <fieldset>
-                                            <legend>Dataset</legend>
+                                            <legend>Value</legend>
                                             <div th:each="header: ${resultset.header}">
                                                 <div th:if="${
                                                      not #strings.contains(resultset.className.get(header),'String')
@@ -85,7 +85,7 @@
                                                      && not #strings.contains(resultset.className.get(header),'Time')}">
 
                                                     <input type="checkbox" th:id="${'dataset_' + header}"/>
-                                                    <label th:text="${header + ' (' + resultset.type.get(header) + ') [sum]'}"></label>
+                                                    <label th:text="${header + ' (' + resultset.type.get(header) + ') [SUM]'}"></label>
                                                 </div>
                                             </div>
                                         </fieldset>
@@ -147,9 +147,8 @@
                                 layout: {
                                     padding: {
                                         left: 10,
-                                        right: 20,
-                                        top: 30,
-                                        bottom: 20
+                                        right: 30,
+                                        top: 30
                                     }
                                 }
                             }
@@ -211,6 +210,8 @@
                                 chart.data.datasets.push({
                                     label: $(this).attr('id').replace('dataset_', ''),
                                     fill: false,
+                                    pointRadius: 3,
+                                    borderWidth: 2,
                                     data: summarizedValues,
                                 });
                             } else {

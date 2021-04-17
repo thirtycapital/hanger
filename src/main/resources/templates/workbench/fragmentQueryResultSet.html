@@ -63,17 +63,17 @@
                                         <fieldset>
                                             <legend>Type</legend>
                                             <div>
-                                                <input type="radio" id="bar" name="type" checked/>
+                                                <input type="radio" id="type_bar" name="type" value="bar" checked="checked"/>
                                                 <label class="checkbox-label" th:text="Bar" ></label>
                                             </div>
 
                                             <div>
-                                                <input type="radio" id="line" name="type"/>
+                                                <input type="radio" id="type_line" name="type" value="line" />
                                                 <label class="checkbox-label" th:text="Line"></label>
                                             </div>
 
                                             <div>
-                                                <input type="radio" id="radar" name="type"/>
+                                                <input type="radio" id="type_radar" name="type" value="radar" />
                                                 <label class="checkbox-label" th:text="Radar"></label>
                                             </div>
                                         </fieldset>
@@ -89,7 +89,7 @@
                                                      || #strings.contains(resultset.className.get(header),'Date')
                                                      || #strings.contains(resultset.className.get(header),'Time')}">
 
-                                                    <input type="radio" th:id="${'label_' + header}" name="label"/>
+                                                    <input type="radio" th:id="${'label_' + header}" th:value="${header}" name="label"/>
                                                     <label class="checkbox-label" th:text="${header + ' (' + resultset.type.get(header) + ')'}"></label>
                                                 </div>
                                             </div>
@@ -105,7 +105,7 @@
                                                      && not #strings.contains(resultset.className.get(header),'Date') 
                                                      && not #strings.contains(resultset.className.get(header),'Time')}">
 
-                                                    <input type="checkbox" th:id="${'dataset_' + header}"/>
+                                                    <input type="checkbox" th:id="${'dataset_' + header}" th:value="${header}"/>
                                                     <label class="checkbox-label" th:text="${header + ' (' + resultset.type.get(header) + ') [SUM]'}"></label>
                                                 </div>
                                             </div>
@@ -191,7 +191,7 @@
                          * Change chart type.
                          */
                         $("input[type=radio][name=type]").on('change', function () {
-                            type = $(this).attr('id');
+                            type = $(this).attr('value');
 
                             //Destroy a chart. 
                             chart.destroy();
@@ -209,10 +209,10 @@
                          */
                         $("input[type=radio][name=label]").on('change', function () {
                             let uniqueLabels = [];
-                            let labels = resultset[$(this).attr('id').replace('label_', '')];
+                            let labels = resultset[$(this).attr('value')];
 
                             //Identifies the selected label.
-                            label = $(this).attr('id').replace('label_', '');
+                            label = $(this).attr('value');
 
                             //Identifies unique labels values.
                             labels.forEach((c) => {
@@ -241,7 +241,7 @@
                                 let uniqueLabels = [];
                                 let summarizedValues = [];
                                 let labels = resultset[label];
-                                let values = resultset[$(this).attr('id').replace('dataset_', '')];
+                                let values = resultset[$(this).attr('value')];
 
                                 //Sumarrizes resultset values. 
                                 for (var i = 0; i < labels.length; i++) {
@@ -254,16 +254,16 @@
                                 }
 
                                 //Identifies dataset position.
-                                indexes.push($(this).attr('id'));
+                                indexes.push($(this).attr('value'));
 
                                 //Adds values to the chart dataset.
                                 chart.data.datasets.push({
-                                    label: $(this).attr('id').replace('dataset_', ''),
+                                    label: $(this).attr('value'),
                                     data: summarizedValues,
                                     fill: false
                                 });
                             } else {
-                                var index = indexes.indexOf($(this).attr('id'));
+                                var index = indexes.indexOf($(this).attr('value'));
 
                                 //Removes a dataset from chart by position.
                                 if (index > -1) {

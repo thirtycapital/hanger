@@ -69,7 +69,7 @@
                                                      || #strings.contains(resultset.className.get(header),'Time')}">
 
                                                     <input type="radio" th:id="${'label_' + header}" name="label"/>
-                                                    <label th:text="${header + ' (' + resultset.type.get(header) + ')'}"></label>
+                                                    <label class="checkbox-label" th:text="${header + ' (' + resultset.type.get(header) + ')'}"></label>
                                                 </div>
                                             </div>
                                         </fieldset>
@@ -85,7 +85,7 @@
                                                      && not #strings.contains(resultset.className.get(header),'Time')}">
 
                                                     <input type="checkbox" th:id="${'dataset_' + header}"/>
-                                                    <label th:text="${header + ' (' + resultset.type.get(header) + ') [SUM]'}"></label>
+                                                    <label class="checkbox-label" th:text="${header + ' (' + resultset.type.get(header) + ') [SUM]'}"></label>
                                                 </div>
                                             </div>
                                         </fieldset>

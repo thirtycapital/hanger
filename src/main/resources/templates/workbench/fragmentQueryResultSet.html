@@ -58,7 +58,7 @@
                         <!--Graph view-->
                         <div id="graph" class="tab-pane fade in">
                             <div class="row col-sm-12">
-                                <div class="row col-sm-4">
+                                <div class="row col-sm-3">
                                     <div class="form-group">
                                         <fieldset>
                                             <legend>Label</legend>
@@ -92,8 +92,8 @@
                                     </div>
                                 </div>
 
-                                <div class="row col-sm-8">
-                                    <canvas th:id="workbenchChart" width="800" height="500"></canvas>
+                                <div class="row col-sm-9">
+                                    <canvas th:id="workbenchChart" width="800" height="600"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -112,43 +112,45 @@
                                 labels: [],
                                 datasets: []
                             },
-                            responsive: true,
-                            scales: {
-                                xAxes: [{
-                                        gridLines: {
-                                            display: false
-                                        },
-                                        ticks: {
-                                            beginAtZero: true,
-                                            fontColor: "#999999"
-                                        }
-                                    }],
-                                yAxes: [{
-                                        ticks: {
-                                            beginAtZero: true,
-                                            padding: 20
-                                        }
-                                    }]
-                            },
-                            plugins: {
-                                colorschemes: {
-                                    scheme: 'brewer.PastelTwo8'
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    xAxes: [{
+                                            gridLines: {
+                                                display: false
+                                            },
+                                            ticks: {
+                                                beginAtZero: true,
+                                                fontColor: "#999999"
+                                            }
+                                        }],
+                                    yAxes: [{
+                                            ticks: {
+                                                beginAtZero: true,
+                                                padding: 20
+                                            }
+                                        }]
                                 },
-                                datalabels: {
-                                    font: {
-                                        weight: 'bold'
+                                plugins: {
+                                    colorschemes: {
+                                        scheme: 'brewer.PastelTwo8'
                                     },
-                                    formatter: function (value, context) {
-                                        return Math.round(value * 100) / 100;
+                                    datalabels: {
+                                        font: {
+                                            weight: 'bold'
+                                        },
+                                        formatter: function (value) {
+                                            return Math.round(value * 100) / 100;
+                                        }
                                     }
-                                }
-                            },
-                            layout: {
-                                padding: {
-                                    left: 10,
-                                    right: 20,
-                                    top: 30,
-                                    bottom: 20
+                                },
+                                layout: {
+                                    padding: {
+                                        left: 10,
+                                        right: 20,
+                                        top: 30,
+                                        bottom: 20
+                                    }
                                 }
                             }
                         });
@@ -173,12 +175,12 @@
                             //Resets the dataset selection.
                             $(":checkbox").prop("checked", false);
 
-                            //Resets chart dataset values and indexes.
-                            chart.data.datasets.splice(0, chart.data.datasets.length);
+                            //Resets chart dataset properties, values and indexes.
                             indexes.splice(0, indexes.length);
-
-                            //Updates chart label.
+                            chart.data.datasets.splice(0, chart.data.datasets.length);
                             chart.data.labels = uniqueLabels;
+
+                            //Updates chart label.                            
                             chart.update();
                         });
 

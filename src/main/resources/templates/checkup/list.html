@@ -232,18 +232,20 @@
             var pointBackgroundColors = [];
 
             var chart = new Chart(context, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: labels.reverse(),
                     datasets: [{
+                            type: 'line',
                             label: 'Threshold',
                             data: thresholds.reverse(),
                             fill: false,
-                            backgroundColor: '#ececec',
+                            backgroundColor: '#ECECEC',
                             borderColor: '#6C6C6C',
+                            pointBorderColor: '#000000',
                             borderDash: [5, 5],
-                            borderWidth: 1,
-                            pointRadius: 2,
+                            borderWidth: 2,
+                            pointRadius: 1,
                             datalabels: {
                                 display: false
                             }
@@ -251,17 +253,12 @@
                         {
                             label: 'Result',
                             data: results.reverse(),
-                            fill: true,
-                            backgroundColor: '#f3fcfd',
-                            borderColor: '#25CED1',
                             datalabels: {
                                 align: 'end',
                                 anchor: 'end'
                             },
-                            pointBackgroundColor: pointBackgroundColors,
-                            pointBorderColor: pointBackgroundColors,
-                            pointRadius: 3,
-                            borderWidth: 2
+                            backgroundColor: pointBackgroundColors,
+                            borderColor: pointBackgroundColors
                         }
                     ]
                 },
@@ -313,9 +310,9 @@
 
             for (i = 0; i < statuses.length; i++) {
                 if (statuses[i]) {
-                    pointBackgroundColors.push("#20b2aa");
+                    pointBackgroundColors.push("#20B2AA");
                 } else {
-                    pointBackgroundColors.push("#dd424a");
+                    pointBackgroundColors.push("#EC5D55");
                 }
             }
 

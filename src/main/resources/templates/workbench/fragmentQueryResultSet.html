@@ -110,7 +110,7 @@
                                                      && not #strings.contains(resultset.className.get(header),'Date') 
                                                      && not #strings.contains(resultset.className.get(header),'Time')}">
 
-                                                    <input type="checkbox" th:id="${'dataset_' + header}" th:value="${header}"/>
+                                                    <input type="checkbox" th:id="${'dataset_' + header}" th:value="${header}" name="dataset"/>
                                                     <label class="checkbox-label" th:text="${header + ' (' + resultset.type.get(header) + ') [SUM]'}"></label>
                                                 </div>
                                             </div>
@@ -165,7 +165,7 @@
                             },
                             plugins: {
                                 colorschemes: {
-                                    scheme: 'brewer.PastelTwo8'
+                                    scheme: 'tableau.Tableau10'
                                 },
                                 datalabels: {
                                     font: {
@@ -175,6 +175,10 @@
                                         return Math.round(value * 100) / 100;
                                     }
                                 }
+                            },
+                            legend: {
+                                display: true,
+                                position: 'bottom'
                             },
                             layout: {
                                 padding: {
@@ -241,7 +245,7 @@
                         /**
                          * Add chart datasets. 
                          */
-                        $(":checkbox").on('change', function () {
+                        $("input[type=checkbox][name=dataset]").on('change', function () {
                             if ($(this).is(':checked')) {
                                 let uniqueLabels = [];
                                 let summarizedValues = [];
@@ -250,11 +254,13 @@
 
                                 //Sumarrizes resultset values. 
                                 for (var i = 0; i < labels.length; i++) {
+                                    let value = Math.round(values[i] * 100) / 100;
+
                                     if (!uniqueLabels.includes(labels[i])) {
                                         uniqueLabels.push(labels[i]);
-                                        summarizedValues.push(parseFloat(values[i]));
+                                        summarizedValues.push(value);
                                     } else {
-                                        summarizedValues[uniqueLabels.indexOf(labels[i])] += parseFloat(values[i]);
+                                        summarizedValues[uniqueLabels.indexOf(labels[i])] += value;
                                     }
                                 }
 
@@ -265,10 +271,14 @@
                                 chart.data.datasets.push({
                                     label: $(this).attr('value'),
                                     data: summarizedValues,
-                                    fill: false
+                                    fill: false,
+                                    datalabels: {
+                                        align: 'end',
+                                        anchor: 'end'
+                                    }
                                 });
                             } else {
-                                var index = indexes.indexOf($(this).attr('value'));
+                                let index = indexes.indexOf($(this).attr('value'));
 
                                 //Removes a dataset from chart by position.
                                 if (index > -1) {

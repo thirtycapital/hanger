@@ -68,26 +68,25 @@
                                             </div>
 
                                             <div>
-                                                <input type="radio" id="type_line" name="type" value="line" />
+                                                <input type="radio" id="type_line" name="type" value="line"/>
                                                 <label class="checkbox-label" th:text="Line"></label>
                                             </div>
 
                                             <div>
-                                                <input type="radio" id="type_radar" name="type" value="pie" />
+                                                <input type="radio" id="type_radar" name="type" value="pie"/>
                                                 <label class="checkbox-label" th:text="Pie"></label>
                                             </div>
 
                                             <div>
-                                                <input type="radio" id="type_radar" name="type" value="radar" />
+                                                <input type="radio" id="type_radar" name="type" value="radar"/>
                                                 <label class="checkbox-label" th:text="Radar"></label>
                                             </div>
                                         </fieldset>
                                     </div>
 
-
                                     <div class="form-group">
                                         <fieldset>
-                                            <legend>Y Axis</legend>
+                                            <legend>Labels</legend>
                                             <div th:each="header: ${resultset.header}">
                                                 <div th:if="${
                                                      #strings.contains(resultset.className.get(header),'String') 
@@ -103,7 +102,7 @@
 
                                     <div class="form-group">
                                         <fieldset>
-                                            <legend>X Axis</legend>
+                                            <legend>Metrics</legend>
                                             <div th:each="header: ${resultset.header}">
                                                 <div th:if="${
                                                      not #strings.contains(resultset.className.get(header),'String')
@@ -111,7 +110,13 @@
                                                      && not #strings.contains(resultset.className.get(header),'Time')}">
 
                                                     <input type="checkbox" th:id="${'dataset_' + header}" th:value="${header}" name="dataset"/>
-                                                    <label class="checkbox-label" th:text="${header + ' (' + resultset.type.get(header) + ') [SUM]'}"></label>
+
+                                                    <label class="checkbox-label" th:text="${header + ' (' + resultset.type.get(header) + ')'}"></label>
+
+                                                    <select name="aggregation" th:id="${'aggregation_' +  header}" th:value="${header}">
+                                                        <option th:value="sum" selected>SUM</option>
+                                                        <option th:value="count">COUNT</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </fieldset>
@@ -247,22 +252,10 @@
                          */
                         $("input[type=checkbox][name=dataset]").on('change', function () {
                             if ($(this).is(':checked')) {
-                                let uniqueLabels = [];
-                                let summarizedValues = [];
-                                let labels = resultset[label];
-                                let values = resultset[$(this).attr('value')];
-
-                                //Sumarrizes resultset values. 
-                                for (var i = 0; i < labels.length; i++) {
-                                    let value = Math.round(values[i] * 100) / 100;
-
-                                    if (!uniqueLabels.includes(labels[i])) {
-                                        uniqueLabels.push(labels[i]);
-                                        summarizedValues.push(value);
-                                    } else {
-                                        summarizedValues[uniqueLabels.indexOf(labels[i])] += value;
-                                    }
-                                }
+                                let summarizedValues = Aggregate(
+                                        $("#aggregation_" + $(this).attr('value')).children(':selected').attr('value'),
+                                        resultset[label],
+                                        resultset[$(this).attr('value')]);
 
                                 //Identifies dataset position.
                                 position.push($(this).attr('value'));
@@ -289,6 +282,62 @@
 
                             chart.update();
                         });
+
+                        /**
+                         * Changes the dataset agregation funcion. 
+                         */
+                        $("select[name='aggregation']").change(function () {
+                            let summarizedValues = Aggregate(
+                                    $(this).children(':selected').attr('value'),
+                                    resultset[label],
+                                    resultset[$(this).attr('value')]);
+
+                            //Adds values to the chart dataset.
+                            chart.data.datasets[position.indexOf($(this).attr('value'))].data = summarizedValues;
+
+                            //Updates chart label. 
+                            chart.update();
+                        });
+
+                        /**
+                         * Aggregated the values. 
+                         * 
+                         * @param {type} aggregation 
+                         * @param {type} labels
+                         * @param {type} values
+                         * @returns {Array|Aggregate.summarizedValues}
+                         */
+                        function Aggregate(aggregation, labels, values) {
+                            let uniqueLabels = [];
+                            let summarizedValues = [];
+
+
+                            if (aggregation === 'sum') {
+                                for (var i = 0; i < labels.length; i++) {
+                                    let value = Math.round(values[i] * 100) / 100;
+
+                                    if (!uniqueLabels.includes(labels[i])) {
+                                        uniqueLabels.push(labels[i]);
+                                        summarizedValues.push(value);
+                                    } else {
+                                        summarizedValues[uniqueLabels.indexOf(labels[i])] += value;
+                                    }
+                                }
+                            } else if (aggregation === 'count') {
+                                for (var i = 0; i < labels.length; i++) {
+                                    let value = 1;
+
+                                    if (!uniqueLabels.includes(labels[i])) {
+                                        uniqueLabels.push(labels[i]);
+                                        summarizedValues.push(value);
+                                    } else {
+                                        summarizedValues[uniqueLabels.indexOf(labels[i])] += value;
+                                    }
+                                }
+                            }
+
+                            return summarizedValues;
+                        }
                         /*]]>*/
                     </script>
                 </div>

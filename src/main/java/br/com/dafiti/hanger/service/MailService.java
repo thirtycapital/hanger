@@ -33,7 +33,6 @@ import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.context.ApplicationContext;
@@ -117,6 +116,8 @@ public class MailService {
         String email = configurationService.getValue("EMAIL_ADDRESS");
         String password = configurationService.getValue("EMAIL_PASSWORD");
 
+        boolean SSLOnConnect = (port != 25 && port != 80 && port != 3535);
+
         AuditorData auditorData = new AuditorData();
 
         if (log != null) {
@@ -132,7 +133,7 @@ public class MailService {
             mail.setHostName(host);
             mail.setSmtpPort(port);
             mail.setAuthenticator(new DefaultAuthenticator(email, password));
-            mail.setSSLOnConnect(true);
+            mail.setSSLOnConnect(SSLOnConnect);
             mail.addHeader("X-Priority", "1");
             mail.setFrom(email);
             mail.setSubject(blueprint.getSubject());

@@ -283,31 +283,31 @@
             /*[# th:if="${subjects.success}> 0 "]*/
             labels.push("SUCCESS");
             values.push(/*[[${subjects.success}]]*/);
-            backgroundColors.push("#20b2aa");
+            backgroundColors.push("#20B2AA");
             /*[/]*/
 
             /*[# th:if="${subjects.waiting}> 0 "]*/
             labels.push("WAITING");
             values.push(/*[[${subjects.waiting}]]*/);
-            backgroundColors.push("#e5e8ec");
+            backgroundColors.push("#E5E8EC");
             /*[/]*/
 
             /*[# th:if="${subjects.building}> 0 "]*/
             labels.push("BUILDING");
             values.push(/*[[${subjects.building}]]*/);
-            backgroundColors.push("#f6f558");
+            backgroundColors.push("#F6F558");
             /*[/]*/
 
             /*[# th:if="${subjects.warning}> 0 "]*/
             labels.push("WARNING");
             values.push(/*[[${subjects.warning}]]*/);
-            backgroundColors.push("#ffa500");
+            backgroundColors.push("#FFA500");
             /*[/]*/
 
             /*[# th:if="${subjects.failure}> 0 "]*/
             labels.push("FAILURE");
             values.push(/*[[${subjects.failure}]]*/);
-            backgroundColors.push("#EC5D55");
+            backgroundColors.push("#E15759");
             /*[/]*/
 
             var myChart = new Chart(context, {

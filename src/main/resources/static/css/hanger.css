@@ -63,26 +63,26 @@ label {
 }
 
 .label-warning {
-    background-color: #fff8eb;
+    background-color: #FFF8EB;
     color: #b87700;
     font-size: 11px;
 }
 
 .label-danger {
-    background-color: #fbe8e9;
-    color: #dd424a;
+    background-color: #FBE8E9;
+    color: #DD424A;
     font-size: 11px;
 }
 
 .label-neutral, .label-default{
-    background-color: #ececec;
-    color: #6c6c6c;
+    background-color: #ECECEC;
+    color: #6C6C6C;
     font-size: 11px;
 }
 
 .label-primary{
-    background-color: #fffdeb;
-    color: #c4b000;  
+    background-color: #FFFDEB;
+    color: #C4B000;  
     font-size: 11px;
 }
 
@@ -190,7 +190,7 @@ code[class*="language-free"] {
 }
 
 .progress-bar-danger {
-    background-color: #EC5D55;
+    background-color: #E15759;
 }
 
 .progress-bar-neutral {

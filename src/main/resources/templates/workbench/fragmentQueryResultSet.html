@@ -129,7 +129,7 @@
                         /*<![CDATA[*/
                         var label = "";
                         var resultset = /*[[${resultset.toJSONObject()}]]*/ "";
-                        var indexes = [];
+                        var position = [];
 
                         //Graph context. 
                         var context = document.getElementById('workbenchChart');
@@ -234,7 +234,7 @@
                             $(":checkbox").prop("checked", false);
 
                             //Resets chart dataset properties, values and indexes.
-                            indexes.splice(0, indexes.length);
+                            position.splice(0, position.length);
                             chart.data.datasets.splice(0, chart.data.datasets.length);
                             chart.data.labels = uniqueLabels;
 
@@ -265,7 +265,7 @@
                                 }
 
                                 //Identifies dataset position.
-                                indexes.push($(this).attr('value'));
+                                position.push($(this).attr('value'));
 
                                 //Adds values to the chart dataset.
                                 chart.data.datasets.push({
@@ -278,11 +278,11 @@
                                     }
                                 });
                             } else {
-                                let index = indexes.indexOf($(this).attr('value'));
+                                let index = position.indexOf($(this).attr('value'));
 
                                 //Removes a dataset from chart by position.
                                 if (index > -1) {
-                                    indexes.splice(index, 1);
+                                    position.splice(index, 1);
                                     chart.data.datasets.splice(index, 1);
                                 }
                             }

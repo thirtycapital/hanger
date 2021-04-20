@@ -117,11 +117,11 @@
                                                         <option th:value="min">MIN</option>                                                        
                                                     </select> 
 
-                                                    <button class="btn btn-generic btn-xs" type="button" th:id="${'add_' + header}" name="command" th:value="${header}"> 
+                                                    <button class="btn btn-generic btn-xs" type="button" th:id="${'add_' + header}" name="metric" th:value="${header}"> 
                                                         +
                                                     </button>
 
-                                                    <button class="btn btn-generic btn-xs" type="button" th:id="${'remove_' + header}" name="command" th:value="${header}">
+                                                    <button class="btn btn-generic btn-xs" type="button" th:id="${'remove_' + header}" name="metric" th:value="${header}">
                                                         -
                                                     </button> 
 
@@ -259,7 +259,7 @@
                         /**
                          * Add/Removes chart datasets. 
                          */
-                        $("button[name=command]").click(function () {
+                        $("button[name=metric]").click(function () {
                             let aggregation = $("#aggregation_" + $(this).attr('value')).children(':selected').attr('value');
                             let id = $(this).attr('value') + '_' + aggregation;
 

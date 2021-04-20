@@ -116,8 +116,9 @@
                                                     <select name="aggregation" th:id="${'aggregation_' +  header}" th:value="${header}" style="background: transparent">
                                                         <option th:value="sum" selected>SUM</option>
                                                         <option th:value="count">COUNT</option>
+                                                        <option th:value="avg">AVG</option>
                                                         <option th:value="max">MAX</option>
-                                                        <option th:value="min">MIN</option>
+                                                        <option th:value="min">MIN</option>                                                        
                                                     </select>
                                                 </div>
                                             </div>
@@ -310,27 +311,28 @@
                          * @returns {Array|Aggregate.summarizedValues}
                          */
                         function Aggregate(aggregation, labels, values) {
+                            let occurrences = [];
                             let uniqueLabels = [];
                             let summarizedValues = [];
 
                             for (var i = 0; i < labels.length; i++) {
-                                if (aggregation === 'sum') {
+                                if (aggregation === 'sum' || aggregation === 'avg') {
                                     let value = Math.round(values[i] * 100) / 100;
 
                                     if (!uniqueLabels.includes(labels[i])) {
+                                        occurrences.push(1);
                                         uniqueLabels.push(labels[i]);
                                         summarizedValues.push(value);
                                     } else {
+                                        occurrences[uniqueLabels.indexOf(labels[i])] += 1;
                                         summarizedValues[uniqueLabels.indexOf(labels[i])] += value;
                                     }
                                 } else if (aggregation === 'count') {
-                                    let value = 1;
-
                                     if (!uniqueLabels.includes(labels[i])) {
                                         uniqueLabels.push(labels[i]);
-                                        summarizedValues.push(value);
+                                        summarizedValues.push(1);
                                     } else {
-                                        summarizedValues[uniqueLabels.indexOf(labels[i])] += value;
+                                        summarizedValues[uniqueLabels.indexOf(labels[i])] += 1;
                                     }
                                 } else if (aggregation === 'min') {
                                     let value = Math.round(values[i] * 100) / 100;
@@ -354,6 +356,12 @@
                                             summarizedValues[uniqueLabels.indexOf(labels[i])] = value;
                                         }
                                     }
+                                }
+                            }
+
+                            if (aggregation === 'avg') {
+                                for (var i = 0, summary = summarizedValues.length; i < summary; i++) {
+                                    summarizedValues[i] = (summarizedValues[i] / occurrences[i])
                                 }
                             }
 

@@ -187,6 +187,9 @@
                                     },
                                     formatter: function (value) {
                                         return Math.round(value * 100) / 100;
+                                    },
+                                    rotation: function (context) {
+                                        return (context.chart.data.labels.length > 10) ? 300 : 0;
                                     }
                                 }
                             },

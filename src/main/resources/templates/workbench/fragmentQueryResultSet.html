@@ -109,17 +109,23 @@
                                                      && not #strings.contains(resultset.className.get(header),'Date') 
                                                      && not #strings.contains(resultset.className.get(header),'Time')}">
 
-                                                    <input type="checkbox" th:id="${'dataset_' + header}" th:value="${header}" name="dataset"/>
-
-                                                    <label class="checkbox-label" th:text="${header + ' (' + resultset.type.get(header) + ')'}"></label>
-
-                                                    <select name="aggregation" th:id="${'aggregation_' +  header}" th:value="${header}" style="background: transparent">
+                                                    <select name="aggregation" th:id="${'aggregation_' +  header}" th:value="${header}" style="background: transparent; border: 1px solid #D8D8D8;">
                                                         <option th:value="sum" selected>SUM</option>
                                                         <option th:value="count">COUNT</option>
                                                         <option th:value="avg">AVG</option>
                                                         <option th:value="max">MAX</option>
                                                         <option th:value="min">MIN</option>                                                        
-                                                    </select>
+                                                    </select> 
+
+                                                    <button class="btn btn-generic btn-xs" type="button" th:id="${'add_' + header}" name="command" th:value="${header}"> 
+                                                        +
+                                                    </button>
+
+                                                    <button class="btn btn-generic btn-xs" type="button" th:id="${'remove_' + header}" name="command" th:value="${header}">
+                                                        -
+                                                    </button> 
+
+                                                    <label class="checkbox-label" th:text="${header + ' (' + resultset.type.get(header) + ')'}"></label>
                                                 </div>
                                             </div>
                                         </fieldset>
@@ -251,30 +257,39 @@
                         });
 
                         /**
-                         * Add chart datasets. 
+                         * Add/Removes chart datasets. 
                          */
-                        $("input[type=checkbox][name=dataset]").on('change', function () {
-                            if ($(this).is(':checked')) {
-                                let summarizedValues = Aggregate(
-                                        $("#aggregation_" + $(this).attr('value')).children(':selected').attr('value'),
-                                        resultset[label],
-                                        resultset[$(this).attr('value')]);
+                        $("button[name=command]").click(function () {
+                            let aggregation = $("#aggregation_" + $(this).attr('value')).children(':selected').attr('value');
+                            let id = $(this).attr('value') + '_' + aggregation;
 
-                                //Identifies dataset position.
-                                position.push($(this).attr('value'));
+                            if ($(this).attr('id').startsWith("add_")) {
+                                //Identifies if the aggregation was already in use. 
+                                if (!position.includes(id)) {
+                                    //Aggregates the values using the selected aggregation.
+                                    let summarizedValues = Aggregate(
+                                            aggregation,
+                                            resultset[label],
+                                            resultset[$(this).attr('value')]);
 
-                                //Adds values to the chart dataset.
-                                chart.data.datasets.push({
-                                    label: $(this).attr('value'),
-                                    data: summarizedValues,
-                                    fill: false,
-                                    datalabels: {
-                                        align: 'end',
-                                        anchor: 'end'
-                                    }
-                                });
+                                    //Identifies dataset position.
+                                    position.push(id);
+
+                                    //Adds values to the chart dataset.
+                                    chart.data.datasets.push(
+                                            {
+                                                label: $(this).attr('value') + ' (' + aggregation.toUpperCase() + ')',
+                                                data: summarizedValues,
+                                                fill: false,
+                                                datalabels: {
+                                                    align: 'end',
+                                                    anchor: 'end'
+                                                }
+                                            }
+                                    );
+                                }
                             } else {
-                                let index = position.indexOf($(this).attr('value'));
+                                let index = position.indexOf(id);
 
                                 //Removes a dataset from chart by position.
                                 if (index > -1) {
@@ -283,22 +298,6 @@
                                 }
                             }
 
-                            chart.update();
-                        });
-
-                        /**
-                         * Changes the dataset agregation funcion. 
-                         */
-                        $("select[name='aggregation']").change(function () {
-                            let summarizedValues = Aggregate(
-                                    $(this).children(':selected').attr('value'),
-                                    resultset[label],
-                                    resultset[$(this).attr('value')]);
-
-                            //Adds values to the chart dataset.
-                            chart.data.datasets[position.indexOf($(this).attr('value'))].data = summarizedValues;
-
-                            //Updates chart label. 
                             chart.update();
                         });
 

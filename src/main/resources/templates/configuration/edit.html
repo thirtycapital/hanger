@@ -8,21 +8,6 @@
         <div class="container-fluid main-content">            
             <div>
                 <form id="configuration" class="form-horizontal space-top" th:object="${configurationGroup}" th:action="@{/configuration/save}" method="post">
-                    <div class="modal-body">  
-                        <div class="form-group">
-                            <div class="markdown col-sm-10">
-                                <div>
-                                    <strong>Database time: </strong>
-                                    <span th:text="${databaseTime}"></span>
-                                </div>
-                                <div>
-                                    <strong>Server time: </strong>
-                                    <span th:text="${serverTime}"></span>
-                                </div>                
-                            </div>
-                        </div>
-                    </div>
-
                     <div th:if="${ errorMessage != null }">
                         <div class="alert alert-danger" role="alert">
                             <span th:text="${errorMessage}"></span>
@@ -71,37 +56,52 @@
                     </fieldset>
 
                     <fieldset>
-                        <legend>Maintenance</legend>                    
-                        <div class="btn-group dropup">
-                            <a class="btn btn-generic btn-sm" th:id="modal_change_logo">                                         
-                                <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Update logo
-                            </a>
-
-                            <a class="btn btn-generic btn-space btn-sm" th:href="@{/job/refresh/}">
-                                <span class="glyphicon glyphicon-refresh"></span> Update cache 
-                            </a>
-
-                            <div class="btn-group pull-right dropup">
-                                <a class="btn btn-notice btn-space btn-sm" th:attr="onclick='modalUpdate();'">
-                                    <span class="glyphicon glyphicon-plane" aria-hidden="true"></span> 
-                                    Update plugin
-                                </a>
-
-                                <button type="button" class="btn btn-notice btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="caret"></span>
-                                    <span class="sr-only"></span>
-                                </button>
-
-                                <ul class="dropdown-menu">                                                                             
-                                    <li th:each="server : ${servers}">
-                                        <a th:inline= "text" class="btn btn-sm pull-left" th:attr="onclick='modalUpdate('+${server.id}+');'">
-                                            <span  class="glyphicon glyphicon-tasks" aria-hidden="true"></span> [[${server.name}]]
-                                        </a>
-                                    </li>
-                                </ul>
+                        <legend>Server information</legend>   
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <div>
+                                    <label>Database time: </label>
+                                    <span th:text="${databaseTime}"></span>
+                                </div>
+                                <div>
+                                    <label>Server time: </label>
+                                    <span th:text="${serverTime}"></span>
+                                </div>                
                             </div>
                         </div>
+
+                        <hr/>
                     </fieldset>
+
+                    <div class="btn-group dropup">
+                        <a class="btn btn-generic btn-sm" th:id="modal_change_logo">                                         
+                            <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Update logo
+                        </a>
+
+                        <a class="btn btn-generic btn-space btn-sm" th:href="@{/job/refresh/}">
+                            <span class="glyphicon glyphicon-refresh"></span> Update cache 
+                        </a>
+
+                        <div class="btn-group pull-right dropup">
+                            <a class="btn btn-notice btn-space btn-sm" th:attr="onclick='modalUpdate();'">
+                                <span class="glyphicon glyphicon-plane" aria-hidden="true"></span> 
+                                Update plugin
+                            </a>
+
+                            <button type="button" class="btn btn-notice btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="caret"></span>
+                                <span class="sr-only"></span>
+                            </button>
+
+                            <ul class="dropdown-menu">                                                                             
+                                <li th:each="server : ${servers}">
+                                    <a th:inline= "text" class="btn btn-sm pull-left" th:attr="onclick='modalUpdate('+${server.id}+');'">
+                                        <span  class="glyphicon glyphicon-tasks" aria-hidden="true"></span> [[${server.name}]]
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </form>
 
                 <!--Modal--> 

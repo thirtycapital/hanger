@@ -116,6 +116,8 @@
                                                     <select name="aggregation" th:id="${'aggregation_' +  header}" th:value="${header}" style="background: transparent">
                                                         <option th:value="sum" selected>SUM</option>
                                                         <option th:value="count">COUNT</option>
+                                                        <option th:value="max">MAX</option>
+                                                        <option th:value="min">MIN</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -311,9 +313,8 @@
                             let uniqueLabels = [];
                             let summarizedValues = [];
 
-
-                            if (aggregation === 'sum') {
-                                for (var i = 0; i < labels.length; i++) {
+                            for (var i = 0; i < labels.length; i++) {
+                                if (aggregation === 'sum') {
                                     let value = Math.round(values[i] * 100) / 100;
 
                                     if (!uniqueLabels.includes(labels[i])) {
@@ -322,9 +323,7 @@
                                     } else {
                                         summarizedValues[uniqueLabels.indexOf(labels[i])] += value;
                                     }
-                                }
-                            } else if (aggregation === 'count') {
-                                for (var i = 0; i < labels.length; i++) {
+                                } else if (aggregation === 'count') {
                                     let value = 1;
 
                                     if (!uniqueLabels.includes(labels[i])) {
@@ -332,6 +331,28 @@
                                         summarizedValues.push(value);
                                     } else {
                                         summarizedValues[uniqueLabels.indexOf(labels[i])] += value;
+                                    }
+                                } else if (aggregation === 'min') {
+                                    let value = Math.round(values[i] * 100) / 100;
+
+                                    if (!uniqueLabels.includes(labels[i])) {
+                                        uniqueLabels.push(labels[i]);
+                                        summarizedValues.push(value);
+                                    } else {
+                                        if (summarizedValues[uniqueLabels.indexOf(labels[i])] > value) {
+                                            summarizedValues[uniqueLabels.indexOf(labels[i])] = value;
+                                        }
+                                    }
+                                } else if (aggregation === 'max') {
+                                    let value = Math.round(values[i] * 100) / 100;
+
+                                    if (!uniqueLabels.includes(labels[i])) {
+                                        uniqueLabels.push(labels[i]);
+                                        summarizedValues.push(value);
+                                    } else {
+                                        if (summarizedValues[uniqueLabels.indexOf(labels[i])] < value) {
+                                            summarizedValues[uniqueLabels.indexOf(labels[i])] = value;
+                                        }
                                     }
                                 }
                             }

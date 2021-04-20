@@ -97,7 +97,10 @@
                                                     <code th:class="'language-' + ${data.key}" th:text="${data.value}"></code>
                                                 </pre>
                                             </div>
-                                            <div th:unless="${data.key == 'sql' or data.key == 'javascript'}">
+                                            <div class="space-top" th:if="${data.key == 'error'}">
+                                                <span class="label label-danger" th:text="${data.value}"></span>
+                                            </div>
+                                            <div th:unless="${data.key == 'sql' or data.key == 'javascript' or data.key == 'error'}">
                                                 <span class="bold" th:text="${data.value}"></span>
                                             </div>
                                         </td>

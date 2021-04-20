@@ -113,7 +113,7 @@
 
                                                     <label class="checkbox-label" th:text="${header + ' (' + resultset.type.get(header) + ')'}"></label>
 
-                                                    <select name="aggregation" th:id="${'aggregation_' +  header}" th:value="${header}">
+                                                    <select name="aggregation" th:id="${'aggregation_' +  header}" th:value="${header}" style="background: transparent">
                                                         <option th:value="sum" selected>SUM</option>
                                                         <option th:value="count">COUNT</option>
                                                     </select>

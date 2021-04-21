@@ -55,8 +55,9 @@
                                     </div> 
 
                                     <div class="form-group">
-                                        <span class="label label-warning" th:text="${'LIMIT ' + maxRows}"></span>
-                                        <span class="label label-default"> READ ONLY</span>
+                                        <div class="alert alert-info pull-left wb-alert">
+                                            <span class="bold" th:text="${'LIMIT ' + maxRows}"></span>
+                                        </div>
 
                                         <div class="btn-group pull-right dropup">                                        
                                             <button 
@@ -219,7 +220,7 @@
                  * Links the size of the editor with the database tree. 
                  */
                 var resizeObserver = new ResizeObserver(entries => {
-                    $(".div-jstree").css("height", codeMirror.getScrollerElement().clientHeight - 90 + 'px');
+                    $(".div-jstree").css("height", codeMirror.getScrollerElement().clientHeight - 80 + 'px');
                 });
 
                 resizeObserver.observe(document.querySelector("div.CodeMirror"));

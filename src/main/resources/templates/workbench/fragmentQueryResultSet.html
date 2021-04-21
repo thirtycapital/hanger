@@ -94,7 +94,7 @@
                                                      || #strings.contains(resultset.className.get(header),'Time')}">
 
                                                     <input type="radio" th:id="${'label_' + header}" th:value="${header}" name="label"/>
-                                                    <label class="checkbox-label" th:text="${header + ' (' + resultset.type.get(header) + ')'}"></label>
+                                                    <label class="checkbox-label" th:text="${header}"></label>
                                                 </div>
                                             </div>
                                         </fieldset>
@@ -125,7 +125,7 @@
                                                         -
                                                     </button> 
 
-                                                    <label class="checkbox-label" th:text="${header + ' (' + resultset.type.get(header) + ')'}"></label>
+                                                    <label class="checkbox-label" th:text="${header}"></label>
                                                 </div>
                                             </div>
                                         </fieldset>
@@ -133,7 +133,7 @@
                                 </div>
 
                                 <div class="row col-sm-9">
-                                    <canvas th:id="workbenchChart" width="800" height="550"></canvas>
+                                    <canvas th:id="workbenchChart"></canvas>
                                 </div>
                             </div>
                         </div>

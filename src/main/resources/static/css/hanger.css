@@ -962,10 +962,10 @@ input[type='file'] {
 
 .div-jstree {
     position: relative; 
-    overflow-y: hidden;
-    overflow-x: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     width: auto; 
-    height: auto;
+    height: 300px;
 }
 
 .form-control-search {
@@ -1070,10 +1070,6 @@ input[type='file'] {
 
 .mb-2 {
     margin-bottom: 5px !important;
-}
-
-.hr-workbench-collapse {
-    margin: 0 0 10px 0;
 }
 
 .col-div-query {

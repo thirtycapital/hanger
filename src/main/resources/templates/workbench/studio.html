@@ -11,144 +11,150 @@
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content p-0">
             <div class="tab-content">
-                <div class="form-horizontal">
-                    <div class="row">
-                        <div class="col-sm-2 space-right space-top">
-                            <div class="form-group mb-2">                                    
-                                <select 
-                                    id="connection" 
-                                    class="selectpicker form-control" 
-                                    data-live-search="true" 
-                                    required="true">
-                                    <option th:each="conn : ${connections}" 
-                                            th:value="${conn.id}" 
-                                            th:text="${conn.name}"
-                                            th:selected="${connection != null ? conn == connection : 0}">
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="form-group col-div-jstree">
-                                <input type="text"
-                                       id="jstree-search"
-                                       class="form-control form-control-search" 
-                                       maxlength="50" 
-                                       placeholder="Search:"/>
-
-                                <div class="div-jstree">
-                                    <div id="jstree"></div>
-                                </div>                                
-                            </div>                                
-                        </div>                            
-                        <div class="col-sm-10 col-div-query space-top">
-                            <div class="collapse in" id="workbench_top">
-                                <div class="form-group">
-                                    <textarea 
-                                        class="form-control" 
-                                        id="cm" 
-                                        required="true" 
-                                        rows="10" 
-                                        minlength="1" 
-                                        maxlength="5000"
-                                        th:text="${query != null ? query : ''}">
-                                    </textarea>
-                                </div>
-                                <div class="form-group">                     
-                                    <div class="alert alert-info pull-left wb-alert">
-                                        <span class="bold" th:text="${'LIMIT ' + maxRows}"></span>
+                <div class="form-horizontal">                        
+                    <div class="col-sm-12 space-top">
+                        <div class="collapse in" id="workbench_top">
+                            <div class="form-group row">
+                                <div class="col-sm-3 space-right">
+                                    <div class="form-group">                                    
+                                        <select 
+                                            id="connection" 
+                                            class="selectpicker form-control" 
+                                            data-live-search="true" 
+                                            required="true">
+                                            <option th:each="conn : ${connections}" 
+                                                    th:value="${conn.id}" 
+                                                    th:text="${conn.name}"
+                                                    th:selected="${connection != null ? conn == connection : 0}">
+                                            </option>
+                                        </select>
                                     </div>
-                                    <div class="btn-group pull-right dropup">                                        
-                                        <button 
-                                            id="cancel-button" 
-                                            class="btn-notice btn-sm pull-right btn-space" 
-                                            type="button"
-                                            style="display:none;">
+                                    <div class="form-group">
+                                        <input type="text"
+                                               id="jstree-search"
+                                               class="form-control form-control-search" 
+                                               maxlength="50" 
+                                               placeholder="Search:"/>
 
-                                            <span class="glyphicon glyphicon-stop" 
-                                                  aria-hidden="true"></span> Cancel
-                                        </button>
-                                        <button 
-                                            id="options-button"
-                                            type="button" 
-                                            class="btn btn-generic btn-sm pull-right dropdown-toggle" 
-                                            data-toggle="dropdown" 
-                                            aria-haspopup="true" 
-                                            aria-expanded="false">
-                                            <span class="glyphicon glyphicon-menu-hamburger"></span>
-                                            <span class="sr-only"></span>
-                                        </button>
-                                        <ul class="dropdown-menu">    
-                                            <li class="btn btn-sm pull-left">
-                                                <a id="save-query-button" class="btn btn-sm pull-left" title="Save a query">
-                                                    <span  class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> 
-                                                    Save a query
-                                                </a>
-                                                <a id="email-button" class="btn btn-sm pull-left" title="Save an e-mail">
-                                                    <span  class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> 
-                                                    Save an e-mail
-                                                </a>
-                                                <a id="export-button" class="btn btn-sm pull-left" title="Export as csv">
-                                                    <span  class="glyphicon glyphicon-export" aria-hidden="true"></span> 
-                                                    Export as csv
-                                                </a>
-                                            </li>
-                                        </ul>
-                                        <button 
-                                            id="play-button" 
-                                            class="btn btn-generic btn-sm pull-right btn-space" 
-                                            type="button">
+                                        <div class="div-jstree">
+                                            <div id="jstree"></div>
+                                        </div>                                
+                                    </div>                                
+                                </div> 
+                                <div class="col-sm-9">
+                                    <div class="form-group">
+                                        <textarea 
+                                            class="form-control" 
+                                            id="cm" 
+                                            required="true" 
+                                            rows="10" 
+                                            minlength="1" 
+                                            maxlength="5000"
+                                            th:text="${query != null ? query : ''}">
+                                        </textarea>
+                                    </div> 
 
-                                            <span class="glyphicon glyphicon-play" 
-                                                  aria-hidden="true"></span> Play
-                                        </button>
+                                    <div class="form-group">
+                                        <span class="label label-warning" th:text="${'LIMIT ' + maxRows}"></span>
+                                        <span class="label label-default"> READ ONLY</span>
 
-                                        <button 
-                                            id="wait" 
-                                            type="button"
-                                            class="btn btn-default btn-sm" 
-                                            style="display:none;">
+                                        <div class="btn-group pull-right dropup">                                        
+                                            <button 
+                                                id="cancel-button" 
+                                                class="btn-notice btn-sm pull-right btn-space" 
+                                                type="button"
+                                                style="display:none;">
 
-                                            <img th:src="@{'/images/ajax-loader.gif'}"></img>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                                                <span class="glyphicon glyphicon-stop" 
+                                                      aria-hidden="true"></span> Cancel
+                                            </button>
 
-                            <div class="form-group">
-                                <hr class="hr-workbench-collapse"/>
-                                <div id="workbench_collapse_top" class="text-center">
-                                    <a class="link glyphicon glyphicon-triangle-top" 
-                                       id="a_collapse_top"
-                                       data-toggle="collapse" 
-                                       href="#workbench_top" 
-                                       role="button" aria-expanded="false" 
-                                       aria-controls="workbench_top" 
-                                       title="Click me to see a greater table."
-                                       style="text-decoration: none">
-                                    </a>
-                                </div>
-                            </div>
+                                            <button 
+                                                id="options-button"
+                                                type="button" 
+                                                class="btn btn-generic btn-sm pull-right dropdown-toggle" 
+                                                data-toggle="dropdown" 
+                                                aria-haspopup="true" 
+                                                aria-expanded="false">
+                                                <span class="glyphicon glyphicon-menu-hamburger"></span>
+                                                <span class="sr-only"></span>
+                                            </button>
 
-                            <div class="form-group">
-                                <div id="workbench_bottom">
-                                    <!--Fragment-->
-                                    <div id="fragmentQueryResultSetHolder" />
+                                            <ul class="dropdown-menu">    
+                                                <li class="btn btn-sm pull-left">
+                                                    <a id="save-query-button" class="btn btn-sm pull-left" title="Save a query">
+                                                        <span  class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> 
+                                                        Save a query
+                                                    </a>
+                                                    <a id="email-button" class="btn btn-sm pull-left" title="Save an e-mail">
+                                                        <span  class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> 
+                                                        Save an e-mail
+                                                    </a>
+                                                    <a id="export-button" class="btn btn-sm pull-left" title="Export as csv">
+                                                        <span  class="glyphicon glyphicon-export" aria-hidden="true"></span> 
+                                                        Export as csv
+                                                    </a>
+                                                </li>
+                                            </ul>
 
-                                    <div th:if="${ errorMessage != null }" class="row">
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <div class="alert alert-danger" role="alert">
-                                                    <span th:text="${errorMessage}"></span>
-                                                </div>  
-                                            </div>
+                                            <button 
+                                                id="play-button" 
+                                                class="btn btn-generic btn-sm pull-right btn-space" 
+                                                type="button">
+
+                                                <span class="glyphicon glyphicon-play" 
+                                                      aria-hidden="true"></span> Play
+                                            </button>
+
+                                            <button 
+                                                id="wait" 
+                                                type="button"
+                                                class="btn btn-default btn-sm" 
+                                                style="display:none;">
+
+                                                <img th:src="@{'/images/ajax-loader.gif'}"></img>
+                                            </button>
                                         </div>
                                     </div>
-                                    <div th:if="${ successMessage != null }" class="row">
-                                        <div class="col-sm-12">
-                                            <div class="form-group">
-                                                <div class="alert alert-info" role="alert">
-                                                    <span th:text="${successMessage}"></span>
-                                                </div>  
-                                            </div>
+                                </div>
+                            </div>      
+                        </div>
+
+                        <div class="form-group">                            
+                            <div id="workbench_collapse_top" class="text-center">
+                                <a class="link glyphicon glyphicon-triangle-top" 
+                                   id="a_collapse_top"
+                                   data-toggle="collapse" 
+                                   href="#workbench_top" 
+                                   role="button" aria-expanded="false" 
+                                   aria-controls="workbench_top" 
+                                   title="Click me to see a greater table."
+                                   style="text-decoration: none">
+                                </a>
+                            </div>
+                            <hr class="hanger-no-border"/>
+                        </div>
+
+                        <div class="form-group">
+                            <div id="workbench_bottom">
+                                <!--Fragment-->
+                                <div id="fragmentQueryResultSetHolder" />
+
+                                <div th:if="${ errorMessage != null }" class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <div class="alert alert-danger" role="alert">
+                                                <span th:text="${errorMessage}"></span>
+                                            </div>  
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:if="${ successMessage != null }" class="row">
+                                    <div class="col-sm-12">
+                                        <div class="form-group">
+                                            <div class="alert alert-info" role="alert">
+                                                <span th:text="${successMessage}"></span>
+                                            </div>  
                                         </div>
                                     </div>
                                 </div>
@@ -177,7 +183,6 @@
 
                 // Connection ID.
                 var connection = $("#connection").val();
-
                 // Tree initial construction.
                 createJSTree(connection);
 
@@ -189,7 +194,11 @@
                     createJSTree(connection);
                 });
 
-                window.editor = CodeMirror.fromTextArea(document.getElementById('cm'), {
+                /**
+                 * Defines code mirror object. 
+                 * @type type
+                 */
+                var codeMirror = CodeMirror.fromTextArea(document.getElementById('cm'), {
                     mode: 'text/x-sql',
                     indentWithTabs: true,
                     smartIndent: true,
@@ -202,6 +211,18 @@
                             query();
                         }}
                 });
+
+                codeMirror.setSize("100%", "350px");
+                window.editor = codeMirror;
+
+                /**
+                 * Links the size of the editor with the database tree. 
+                 */
+                var resizeObserver = new ResizeObserver(entries => {
+                    $(".div-jstree").css("height", codeMirror.getScrollerElement().clientHeight - 90 + 'px');
+                });
+
+                resizeObserver.observe(document.querySelector("div.CodeMirror"));
 
                 /**
                  * Set header CSRF Token.

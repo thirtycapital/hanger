@@ -13,22 +13,22 @@
                     </div>  
                 </div> 
 
-                <!--Table or graph selector-->
-                <ul class="nav nav-pills pull-right" id="tabSelector">                    
-                    <li class="active">
-                        <a data-toggle="tab" href="#list">
-                            <span class="glyphicon glyphicon-th-list" title="Table"></span>
-                        </a>                                
-                    </li>
-                    <li >
-                        <a data-toggle="tab" href="#graph">
-                            <span class="glyphicon glyphicon-signal" title="Chart"></span>
-                        </a>  
-                    </li>
-                </ul>
-
                 <div th:if="${ errorMessage == null }">
                     <div class="tab-content">
+                        <!--Table or graph selector-->
+                        <ul class="nav nav-pills pull-right" id="tabSelector">                    
+                            <li class="active">
+                                <a data-toggle="tab" href="#list">
+                                    <span class="glyphicon glyphicon-th-list" title="Table"></span>
+                                </a>                                
+                            </li>
+                            <li >
+                                <a data-toggle="tab" href="#graph">
+                                    <span class="glyphicon glyphicon-signal" title="Chart"></span>
+                                </a>  
+                            </li>
+                        </ul>
+
                         <!--Table view-->
                         <div id="list" class="tab-pane fade active in">
                             <div class="row col-sm-12">
@@ -133,7 +133,7 @@
                                 </div>
 
                                 <div class="row col-sm-9">
-                                    <canvas th:id="workbenchChart" width="800" height="600"></canvas>
+                                    <canvas th:id="workbenchChart" width="800" height="550"></canvas>
                                 </div>
                             </div>
                         </div>

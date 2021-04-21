@@ -51,15 +51,18 @@
                               th:classappend="${checkup.enabled ? (checkup.getLastStatus() ? 'label-success' : 'label-danger') : 'label-default'}" 
                               th:text="${ #strings.abbreviate(checkup.enabled ?  checkup.name : '[DISABLED] ' + checkup.name, 50)}"
                               th:title="${checkup.name}"></span>
-                        <span class="label label-default" th:text="${checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION'}"></span>
-                        <span class="label label-default" th:text="${checkup.conditional}"></span>
+
                         <span class="label label-default" th:text="${checkup.action}"></span>
+                        <img th:src="@{'/images/' + ${checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION'} + '.png'}" th:title="${checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION'}"></img>
 
-                        <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Open the query in workbench" target="_blank">
-                            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-                        </a>
 
-                        <ul class="nav nav-pills pull-right">                    
+                        <ul class="nav nav-pills pull-right">   
+                            <li>
+                                <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Workbench" target="_blank">
+                                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                                </a>
+                            </li>
+
                             <li class="active">
                                 <a data-toggle="tab" th:href="'#chart_tab' + ${checkup.id}">
                                     <span class="glyphicon glyphicon-signal" title="Chart"></span>
@@ -77,8 +80,8 @@
                         <div class="form-group">
                             <div class="markdown">
                                 <span 
-                                    th:title="${checkup.description != null and checkup.description != '' ? checkup.description : ''}" 
-                                    th:text="${#strings.abbreviate( checkup.description != null and checkup.description != '' ? checkup.description : '', 100 )}"> </span>
+                                    th:title="${checkup.description != null and checkup.description != '' ? checkup.description + ' ( Should be ' + checkup.conditional + ' the threshold and when it is not true do ' +  checkup.action + ')' : ''}" 
+                                    th:text="${#strings.abbreviate( (checkup.description != null and checkup.description != '' ? checkup.description : '') + ' ( Should be ' + checkup.conditional + ' the threshold and when it is not true do ' +  checkup.action + ')', 100 ) }"> </span>
                             </div>
                         </div>
 

@@ -183,7 +183,7 @@
                                 yAxes: [{
                                         ticks: {
                                             beginAtZero: false,
-                                            padding: 20
+                                            padding: 30
                                         }
                                     }]
                             },
@@ -198,7 +198,7 @@
                                     formatter: function (value) {
                                         return Math.round(value * 100) / 100;
                                     },
-                                    rotation: function (context) {
+                                    rotation: function () {
                                         return rotation;
                                     }
                                 }
@@ -209,15 +209,14 @@
                             },
                             layout: {
                                 padding: {
-                                    left: 10,
-                                    right: 30,
-                                    top: 30
+                                    right: 50,
+                                    top: 50
                                 }
                             }
                         };
 
                         //Build a chart instance.
-                        chartBuilder();
+                        chart = chartBuilder();
 
                         /**
                          * Change chart type.
@@ -229,7 +228,7 @@
                             chart.destroy();
 
                             //Build a chart instance. 
-                            chartBuilder();
+                            chart = chartBuilder();
                         });
 
                         /**
@@ -242,7 +241,7 @@
                             chart.destroy();
 
                             //Build a chart instance.
-                            chartBuilder();
+                            chart = chartBuilder();
                         });
 
                         /**
@@ -324,7 +323,7 @@
                          * @returns {undefined}
                          */
                         function chartBuilder() {
-                            chart = new Chart(context, {
+                            return new Chart(context, {
                                 type: type,
                                 data: data,
                                 options: options

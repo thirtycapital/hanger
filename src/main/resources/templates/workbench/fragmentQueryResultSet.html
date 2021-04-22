@@ -86,7 +86,7 @@
 
                                     <div class="form-group">
                                         <fieldset>
-                                            <legend>Labels</legend>
+                                            <legend>Categories</legend>
                                             <div th:each="header: ${resultset.header}">
                                                 <div th:if="${
                                                      #strings.contains(resultset.className.get(header),'String') 
@@ -102,7 +102,7 @@
 
                                     <div class="form-group">
                                         <fieldset>
-                                            <legend>Metrics</legend>
+                                            <legend>Values</legend>
                                             <div th:each="header: ${resultset.header}">
                                                 <div th:if="${
                                                      not #strings.contains(resultset.className.get(header),'String')
@@ -117,17 +117,26 @@
                                                         <option th:value="min">MIN</option>                                                        
                                                     </select> 
 
-                                                    <button class="btn btn-generic btn-xs" type="button" th:id="${'add_' + header}" name="metric" th:value="${header}"> 
-                                                        +
+                                                    <button class="btn btn-link btn-xs no-border" type="button" th:id="${'add_' + header}" name="metric" th:value="${header}"> 
+                                                        <span class="glyphicon glyphicon-plus-sign"></span>
                                                     </button>
 
-                                                    <button class="btn btn-generic btn-xs" type="button" th:id="${'remove_' + header}" name="metric" th:value="${header}">
-                                                        -
+                                                    <button class="btn btn-link btn-xs no-border" type="button" th:id="${'remove_' + header}" name="metric" th:value="${header}">
+                                                        <span class="glyphicon glyphicon-minus-sign"></span>
                                                     </button> 
 
                                                     <label class="checkbox-label" th:text="${header}"></label>
                                                 </div>
                                             </div>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <fieldset>
+                                            <legend>Configuration</legend>
+                                            <button class="btn btn-link btn-xs" type="button" name="rotation"> 
+                                                <span class="glyphicon glyphicon-refresh"></span> Datalabels rotation
+                                            </button>
                                         </fieldset>
                                     </div>
                                 </div>
@@ -144,6 +153,7 @@
                         var label = "";
                         var resultset = /*[[${resultset.toJSONObject()}]]*/ "";
                         var position = [];
+                        var rotation = 0;
 
                         //Graph context. 
                         var context = document.getElementById('workbenchChart');
@@ -189,7 +199,7 @@
                                         return Math.round(value * 100) / 100;
                                     },
                                     rotation: function (context) {
-                                        return (context.chart.data.labels.length > 10) ? 300 : 0;
+                                        return rotation;
                                     }
                                 }
                             },
@@ -206,12 +216,8 @@
                             }
                         };
 
-                        //Chart instance. 
-                        var chart = new Chart(context, {
-                            type: type,
-                            data: data,
-                            options: options
-                        });
+                        //Build a chart instance.
+                        chartBuilder();
 
                         /**
                          * Change chart type.
@@ -222,12 +228,21 @@
                             //Destroy a chart. 
                             chart.destroy();
 
-                            //Chart instance with choosed type. 
-                            chart = new Chart(context, {
-                                type: type,
-                                data: data,
-                                options: options
-                            });
+                            //Build a chart instance. 
+                            chartBuilder();
+                        });
+
+                        /**
+                         * Change datalabels rotation.
+                         */
+                        $("button[name=rotation]").click(function () {
+                            rotation = (rotation === 0 ? 360 : rotation) - 30;
+
+                            //Destroy a chart. 
+                            chart.destroy();
+
+                            //Build a chart instance.
+                            chartBuilder();
                         });
 
                         /**
@@ -303,6 +318,18 @@
 
                             chart.update();
                         });
+
+                        /**
+                         * Draw a chart. 
+                         * @returns {undefined}
+                         */
+                        function chartBuilder() {
+                            chart = new Chart(context, {
+                                type: type,
+                                data: data,
+                                options: options
+                            });
+                        }
 
                         /**
                          * Aggregated the values. 

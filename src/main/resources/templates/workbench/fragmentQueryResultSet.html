@@ -87,6 +87,9 @@
                                     <div class="form-group">
                                         <fieldset>
                                             <legend>Categories</legend>
+                                            <input type="radio" id="label_all" value="all" name="label"/>
+                                            <label class="checkbox-label">all</label>
+
                                             <div th:each="header: ${resultset.header}">
                                                 <div th:if="${
                                                      #strings.contains(resultset.className.get(header),'String') 
@@ -249,7 +252,7 @@
                          */
                         $("input[type=radio][name=label]").on('change', function () {
                             let uniqueLabels = [];
-                            let labels = resultset[$(this).attr('value')];
+                            let labels = resultset[$(this).attr('value')] ? resultset[$(this).attr('value')] : ['ALL'];
 
                             //Identifies the selected label.
                             label = $(this).attr('value');
@@ -286,7 +289,7 @@
                                     //Aggregates the values using the selected aggregation.
                                     let summarizedValues = Aggregate(
                                             aggregation,
-                                            resultset[label],
+                                            resultset[label] ? resultset[label] : Array(resultset[$(this).attr('value')].length).fill('ALL'),
                                             resultset[$(this).attr('value')]);
 
                                     //Identifies dataset position.

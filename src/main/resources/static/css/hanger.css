@@ -1141,8 +1141,3 @@ label.radio-generic:hover
     background-color: #f6faff;
     border-color: #eee;
 }
-
-.nopadding {
-    padding: 0 !important;
-    margin: 0 !important;
-}

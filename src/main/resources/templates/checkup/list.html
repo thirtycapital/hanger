@@ -142,7 +142,7 @@
                                     </thead>
 
                                     <tbody>
-                                        <tr class="checkup-row" th:each="checkupLog, checkupLogStat : ${checkup.value}" th:unless="${checkupLogStat.index > item}">
+                                        <tr class="checkup-row" th:each="checkupLog, checkupLogStat : ${checkup.value}" th:unless="${checkupLogStat.index >= item}">
                                             <td>
                                                 <th:block th:switch="${checkupLog.success}">
                                                     <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>
@@ -254,7 +254,7 @@
             statuses.push(true);
             /*[/]*/
 
-            /*[# th:each="checkupLog, checkupLogStat : ${checkup.value}" th:unless="${checkupLogStat.index > item}"]*/
+            /*[# th:each="checkupLog, checkupLogStat : ${checkup.value}" th:unless="${checkupLogStat.index >= item}"]*/
             labels.push(/*[[${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}]]*/);
             results.push(/*[[${checkupLog.value}]]*/);
             thresholds.push(/*[[${checkupLog.threshold}]]*/);

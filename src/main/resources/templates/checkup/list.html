@@ -72,6 +72,35 @@
 
                 <hr/>
 
+                <!--                Datepicker aqui-->  
+                <form th:action="@{/checkup/filter}" method="post">
+                    <div class="row space-top">
+                        <div class="form-group col-md-3" style="padding-left: 0">
+                            <label>Period</label>
+                            <input type="hidden" name="job" id="job" th:value="${job.id}" />
+                            <input type="text" 
+                                   class="form-control date-range" 
+                                   maxlength="50" 
+                                   name="daterange" 
+                                   id="daterange"
+                                   readonly="readonly" />
+
+                            <span id="help_period" class="help-block" style="display: none">You must choose a date</span>
+
+                            <input type="hidden" name="dateFrom" id="dateFrom"/>
+                            <input type="hidden" name="dateTo" id="dateTo"/> 
+                        </div>
+                    </div>
+                    <button type="submit" 
+                            class="btn btn-generic" 
+                            id="filter">
+                        <span class="glyphicon glyphicon-filter" aria-hidden="true" id="filter"></span> Filter
+                    </button>           
+                    <button id="modal_wait" type="button" class="btn btn-generic btn-sm pull-right btn-space" style="display:none;">
+                        <img th:src="@{'/images/ajax-loader.gif'}"></img>
+                    </button>
+                </form>
+
                 <div th:if="${checkup.description != null and checkup.description != '' and checkup.enabled}">
                     <div class="form-group">
                         <div 
@@ -344,6 +373,49 @@
 
             //END THYMELEAF MACRO
             /*]]>*/
+
+            $(function () {
+                // Date range
+                $('#daterange').daterangepicker({
+                    timePicker: true,
+                    startDate: moment().startOf('minute').add(-1, 'H'),
+                    endDate: moment().startOf('minute'),
+                    maxSpan: {"days": 7, "hour": 23, "minute": 59},
+                    maxDate: moment().startOf('day').hour(23).minute(59),
+                    timePicker24Hour: true,
+                    opens: 'right',
+                    locale: {
+                        format: 'YYYY-MM-DD HH:mm',
+                        separator: " to "
+                    }
+                });
+                
+
+                // Save date in a hidden
+                $('#daterange').on('apply.daterangepicker', function (ev, picker) {
+                    $('#dateFrom').val(picker.startDate.format('YYYY-MM-DD HH:mm:ss'));
+                    $('#dateTo').val(picker.endDate.format('YYYY-MM-DD HH:mm') + ':59');
+                });
+
+                // Start field with current date
+                $('#dateFrom').val(moment().startOf('minute').add(-1, 'H').format('YYYY-MM-DD HH:mm:ss'));
+                $('#dateTo').val(moment().startOf('minute').second(59).format('YYYY-MM-DD HH:mm:ss'));
+
+
+                $("#filter").click(function () {
+                    var dateFrom = $("#dateFrom").val();
+                    var dateTo = $("#dateTo").val();
+
+                    if (dateFrom === "") {
+                        $('#help_period').show();
+                        return false;
+                    } else {
+                        $('#help_period').hide();
+                    }
+
+                    
+                });
+            });
         </script>
     </body>
 </html>

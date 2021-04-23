@@ -62,4 +62,8 @@ public class JobCheckupLogService {
     public void cleaneup(Date expiration) {
         jobCheckupLogRepository.deleteByDateBefore(expiration);
     }
+    
+    public Iterable<JobCheckupLog> findAllCheckupLogByDateBetween(Date dateFrom, Date dateTo) {
+        return jobCheckupLogRepository.findAllCheckupLogByDateBetween(dateFrom, dateTo);
+    }
 }

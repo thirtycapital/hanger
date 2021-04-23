@@ -44,6 +44,7 @@ import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -143,6 +144,10 @@ public class JobCheckupService {
         jobCheckupRepository.deleteById(id);
     }
 
+    public Iterable<Job> findAllByDateBetween(Date dateFrom, Date dateTo) {
+        return findAllByDateBetween(dateFrom, dateTo);
+    }
+    
     /**
      * Identify if there are prevalidation.
      *
@@ -670,5 +675,5 @@ public class JobCheckupService {
 
             slackService.send(message.toString(), job.getChannel());
         }
-    }
+    }    
 }

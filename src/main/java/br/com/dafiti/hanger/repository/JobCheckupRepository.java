@@ -23,8 +23,15 @@
  */
 package br.com.dafiti.hanger.repository;
 
+import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobCheckup;
+import java.util.Date;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 public interface JobCheckupRepository extends CrudRepository<JobCheckup, Long> {
+
+    @Query("SELECT j.id FROM JobCheckup jc INNER JOIN jc.log jcl INNER JOIN jc.job j WHERE jcl.date BETWEEN :dateFrom AND :dateTo")
+    Iterable<Job> findAllByDateBetween(Date dateFrom, Date dateTo);
+
 }

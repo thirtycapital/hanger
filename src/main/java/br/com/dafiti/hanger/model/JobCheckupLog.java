@@ -41,6 +41,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -62,6 +63,7 @@ public class JobCheckupLog implements Serializable {
     private Action action;
     private Scope scope;
     private List<CommandLog> commandLog = new ArrayList();
+    private Job job;
 
     public JobCheckupLog() {
     }
@@ -190,6 +192,16 @@ public class JobCheckupLog implements Serializable {
 
     public void addCommandLog(CommandLog commandLog) {
         this.commandLog.add(commandLog);
+    }
+    
+    @ManyToOne
+    @JoinColumn(name = "job_id", referencedColumnName = "id")
+    public Job getJob() {
+        return job;
+    }
+
+    public void setJob(Job job) {
+        this.job = job;
     }
 
     @Override

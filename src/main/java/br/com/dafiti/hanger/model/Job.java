@@ -95,6 +95,8 @@ public class Job extends Tracker<Job> implements Serializable {
     private boolean rebuildBlocked;
     private boolean anyScope;
     private boolean checkupNotified;
+    private JobCheckup jobCheckupID;
+    private JobCheckupLog jobCheckupLogID;
 
     public Job() {
     }
@@ -412,6 +414,26 @@ public class Job extends Tracker<Job> implements Serializable {
 
     public void setCheckupNotified(boolean checkupNotified) {
         this.checkupNotified = checkupNotified;
+    }
+
+    @ManyToOne
+    @JoinColumn(name="job_checkup_id")
+    public JobCheckup getJobCheckupID() {
+        return jobCheckupID;
+    }
+
+    public void setJobCheckupID(JobCheckup jobCheckupID) {
+        this.jobCheckupID = jobCheckupID;
+    }
+
+    @ManyToOne
+    @JoinColumn(name="job_checkup_log_id")
+    public JobCheckupLog getJobCheckupLogID() {
+        return jobCheckupLogID;
+    }
+
+    public void setJobCheckupLogID(JobCheckupLog jobCheckupLogID) {
+        this.jobCheckupLogID = jobCheckupLogID;
     }
 
     @Override

@@ -26,14 +26,20 @@ package br.com.dafiti.hanger.controller;
 import br.com.dafiti.hanger.model.CommandLog;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.service.JobApprovalService;
+import br.com.dafiti.hanger.service.JobCheckupLogService;
+import br.com.dafiti.hanger.service.JobCheckupService;
 import br.com.dafiti.hanger.service.JobDetailsService;
 import java.security.Principal;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -45,21 +51,30 @@ public class JobCheckupController {
 
     private final JobApprovalService jobApprovalService;
     private final JobDetailsService jobDetailsService;
+    private final JobCheckupService jobCheckupService;
+    private final JobCheckupLogService jobCheckupLogService;
+    
 
     @Autowired
     public JobCheckupController(
             JobApprovalService jobApprovalService,
-            JobDetailsService jobDetailsService) {
+            JobDetailsService jobDetailsService,
+            JobCheckupService jobCheckupService,
+            JobCheckupLogService jobCheckupLogService) {
 
         this.jobApprovalService = jobApprovalService;
         this.jobDetailsService = jobDetailsService;
+        this.jobCheckupService = jobCheckupService;
+        this.jobCheckupLogService = jobCheckupLogService;
     }
 
     /**
-     * Show the checkup list of a job. Show a list of approvals for a job.
+     * Show the checkup list of a job.Show a list of approvals for a job.
      *
      * @param principal logged user
      * @param job Job
+     * @param dateFrom
+     * @param dateTo
      * @param model Model
      * @return Checkup list
      */
@@ -92,4 +107,23 @@ public class JobCheckupController {
         model.addAttribute("log", commandLog);
         return "checkup/log";
     }
+
+    @PostMapping(path = "/filter")
+    public String filter(
+            @RequestParam("job") Job job,
+            @RequestParam("dateFrom") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date dateFrom,
+            @RequestParam("dateTo") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date dateTo,
+            Principal principal,
+            Model model) {
+        model.addAttribute("approvals", jobApprovalService.findByJobOrderByCreatedAtDesc(job));
+        model.addAttribute("job", job);
+        model.addAttribute("jobDetail", this.jobDetailsService.getDetailsOf(job));
+        model.addAttribute("approval", this.jobApprovalService.hasApproval(job, principal));
+//        model.addAttribute("chekups", this.jobCheckupService.findByDate(dateFrom, dateTo));
+//        model.addAttribute("period", this.jobCheckupLogService.findAllCheckupLogByDateBetween(dateFrom, dateTo));
+//        model.addAttribute("checkups", this.jobCheckupService.findJobCheckupByJobId(job));
+        model.addAttribute("period", this.jobCheckupService.findAllByDateBetween(dateFrom, dateTo));
+        return "checkup/list";
+    }
 }
+ 

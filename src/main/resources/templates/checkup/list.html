@@ -376,14 +376,11 @@
                     },
                 });
 
-                // Save date in a hidden
                 $('#dateRange').on('apply.daterangepicker', function (ev, picker) {
                     $('#dateFrom').val(picker.startDate.format('YYYY-MM-DD HH:mm:ss'));
                     $('#dateTo').val(picker.endDate.format('YYYY-MM-DD HH:mm:ss'));
                 });
-            });
 
-            $(function () {
                 new ClipboardJS('.btn-copy');
             });
             /*]]>*/

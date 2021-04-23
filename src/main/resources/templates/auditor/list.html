@@ -9,12 +9,12 @@
             <form class="form-horizontal" th:action="@{/log/list/filter}" method="POST">
                 <div class="space-top">
                     <div class="form-group">
-                        <div class="col-sm-6">
+                        <div class="col-sm-9">
                             <input type="text" name="dateRange" id="dateRange" class="form-control date-range" readonly="readonly" />
                             <input type="hidden" name="dateFrom" id="dateFrom" th:value="${dateFrom}" />
                             <input type="hidden" name="dateTo" id="dateTo" th:value="${dateTo}" />
                         </div>
-                        <div class="col-md-6 p-1">
+                        <div class="col-md-3 p-1">
                             <select class="selectpicker form-control" 
                                     name="type"
                                     data-live-search="true"  
@@ -41,7 +41,7 @@
             </form>
 
             <hr/>
-            
+
             <div>
                 <table id="table_paginated" class="table table-hover">
                     <thead>

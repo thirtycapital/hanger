@@ -28,6 +28,10 @@ import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.service.JobApprovalService;
 import br.com.dafiti.hanger.service.JobCheckupLogService;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Date;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,11 +75,14 @@ public class JobCheckupController {
     public String list(@PathVariable(name = "id") Job job, Model model) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+        Date dateFrom = Date.from(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant());
+        Date dateTo = Date.from(LocalDateTime.of(LocalDate.now(), LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
+
         model.addAttribute("job", job);
-        model.addAttribute("checkups", jobCheckupLogService.findByJobCheckupAndDateBetween(job, DateUtils.addDays(new Date(), -5), new Date()));
+        model.addAttribute("checkups", jobCheckupLogService.findByJobCheckupAndDateBetween(job, dateFrom, dateTo));
         model.addAttribute("approvals", jobApprovalService.findByJobOrderByCreatedAtDesc(job));
-        model.addAttribute("dateFrom", simpleDateFormat.format(DateUtils.addDays(new Date(), -5)));
-        model.addAttribute("dateTo", simpleDateFormat.format(new Date()));
+        model.addAttribute("dateFrom", simpleDateFormat.format(dateFrom));
+        model.addAttribute("dateTo", simpleDateFormat.format(dateTo));
         model.addAttribute("item", 10);
 
         return "checkup/list";

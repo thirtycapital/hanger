@@ -41,6 +41,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -53,6 +54,7 @@ import javax.persistence.TemporalType;
 public class JobCheckupLog implements Serializable {
 
     private Long id;
+    private JobCheckup JobCheckup;
     private Date date = new Date();
     private String query;
     private String threshold;
@@ -63,23 +65,6 @@ public class JobCheckupLog implements Serializable {
     private Scope scope;
     private List<CommandLog> commandLog = new ArrayList();
 
-    public JobCheckupLog() {
-    }
-
-    public JobCheckupLog(JobCheckup jobCheckup) {
-        this(jobCheckup, "", false);
-    }
-
-    public JobCheckupLog(JobCheckup jobCheckup, String value, boolean success) {
-        this.query = jobCheckup.getQuery();
-        this.threshold = jobCheckup.getThreshold();
-        this.conditional = jobCheckup.getConditional();
-        this.action = jobCheckup.getAction();
-        this.scope = jobCheckup.getScope();
-        this.value = value;
-        this.success = success;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
@@ -88,6 +73,16 @@ public class JobCheckupLog implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "job_checkup_id", referencedColumnName = "id")
+    public JobCheckup getJobCheckup() {
+        return JobCheckup;
+    }
+
+    public void setJobCheckup(JobCheckup JobCheckup) {
+        this.JobCheckup = JobCheckup;
     }
 
     @Temporal(TemporalType.TIMESTAMP)

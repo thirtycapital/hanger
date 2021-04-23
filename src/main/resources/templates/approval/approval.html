@@ -7,18 +7,6 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content space-top">
-            <table>
-                <tr>
-                    <th>
-                        <a th:href="@{'/job/view/' + ${job.id}}" class="space-right">
-                            <span th:text="${job.name}"></span>
-                        </a>
-                    </th> 
-                </tr>
-            </table>
-
-            <hr/>
-
             <div  th:if="${not #lists.isEmpty(job.checkup)}">
                 <form class="form-horizontal" th:method="post" th:action="@{'/approval/submit/' + ${job.id}}" th:object="${jobApproval}">
                     <div>
@@ -46,17 +34,24 @@
                 </form>
 
                 <hr/>
-                
+
                 <div th:each="checkup, checkupStat : ${job.checkup}" th:remove="tag">
                     <fieldset th:if="${not #lists.isEmpty(checkup.log)}" >
-                        <span class="label label-info" th:text="${checkup.enabled ?  checkup.name : checkup.name + ' [DISABLED]'}"></span>
-                        <span class="label label-default" th:text="${checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION'}"></span>
-                        <span class="label label-default" th:text="${checkup.conditional}"></span>
-                        <span class="label label-default" th:text="${checkup.action}"></span>
+                        <span class="label " 
+                              th:classappend="${checkup.enabled ? (checkup.getLastStatus() ? 'label-success' : 'label-danger') : 'label-default'}" 
+                              th:text="${ #strings.abbreviate(checkup.enabled ?  checkup.name : '[DISABLED] ' + checkup.name, 50)}"
+                              th:title="${checkup.name}"></span>
 
-                        <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Open the query in workbench" target="_blank">
-                            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-                        </a>
+                        <span class="label label-default" th:text="${checkup.action}"></span>
+                        <img th:src="@{'/images/' + ${checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION'} + '.png'}" th:title="${checkup.prevalidation ? 'PRE_VALIDATION' : 'POST_VALIDATION'}"></img>
+
+                        <ul class="nav nav-pills pull-right">   
+                            <li>
+                                <a th:href="@{'/workbench/job/checkup/' + ${checkup.id}}" title="Workbench" target="_blank">
+                                    <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                                </a>
+                            </li>
+                        </ul>
 
                         <hr/>
 
@@ -150,6 +145,10 @@
             </div>
 
             <hr/>  
+
+            <a th:href="@{'/job/view/' + ${job.id}}" th:title="${job.name}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-file"></span> Job
+            </a>
 
             <a th:href="@{'/flow/job/' + ${job.id}}" class="btn btn-link btn-sm">
                 <span class="glyphicon glyphicon-random"></span> Flow

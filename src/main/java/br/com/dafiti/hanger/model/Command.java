@@ -33,6 +33,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -42,6 +44,7 @@ import javax.persistence.Id;
 public class Command implements Serializable {
 
     private Long id;
+    private JobCheckup JobCheckup;
     private String command;
     private CommandType commandType;
 
@@ -53,6 +56,16 @@ public class Command implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "job_checkup_id", referencedColumnName = "id")
+    public JobCheckup getJobCheckup() {
+        return JobCheckup;
+    }
+
+    public void setJobCheckup(JobCheckup JobCheckup) {
+        this.JobCheckup = JobCheckup;
     }
 
     @Column(columnDefinition = "text")

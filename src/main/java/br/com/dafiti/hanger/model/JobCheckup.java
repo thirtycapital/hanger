@@ -46,7 +46,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.Transient;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
@@ -213,7 +212,6 @@ public class JobCheckup implements Serializable {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "job_checkup_id", referencedColumnName = "id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
-    @OrderBy(value = "date DESC")
     public List<JobCheckupLog> getLog() {
         return log;
     }

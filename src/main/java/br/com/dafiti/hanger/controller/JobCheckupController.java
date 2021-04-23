@@ -26,14 +26,19 @@ package br.com.dafiti.hanger.controller;
 import br.com.dafiti.hanger.model.CommandLog;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.service.JobApprovalService;
-import br.com.dafiti.hanger.service.JobDetailsService;
-import java.security.Principal;
+import br.com.dafiti.hanger.service.JobCheckupLogService;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -44,35 +49,64 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class JobCheckupController {
 
     private final JobApprovalService jobApprovalService;
-    private final JobDetailsService jobDetailsService;
+    private final JobCheckupLogService jobCheckupLogService;
 
     @Autowired
     public JobCheckupController(
             JobApprovalService jobApprovalService,
-            JobDetailsService jobDetailsService) {
+            JobCheckupLogService jobCheckupLogService) {
 
         this.jobApprovalService = jobApprovalService;
-        this.jobDetailsService = jobDetailsService;
+        this.jobCheckupLogService = jobCheckupLogService;
     }
 
     /**
-     * Show the checkup list of a job. Show a list of approvals for a job.
+     * Show job checkups and approvals.
      *
-     * @param principal logged user
      * @param job Job
      * @param model Model
-     * @return Checkup list
+     * @return job checkups and approvals list
      */
-    @GetMapping(path = "/job/{id}/list")
-    public String list(
-            Principal principal,
+    @GetMapping(path = {"/job/{id}/list"})
+    public String list(@PathVariable(name = "id") Job job, Model model) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        model.addAttribute("job", job);
+        model.addAttribute("checkups", jobCheckupLogService.findByJobCheckupAndDateBetween(job, DateUtils.addDays(new Date(), -5), new Date()));
+        model.addAttribute("approvals", jobApprovalService.findByJobOrderByCreatedAtDesc(job));
+        model.addAttribute("dateFrom", simpleDateFormat.format(DateUtils.addDays(new Date(), -5)));
+        model.addAttribute("dateTo", simpleDateFormat.format(new Date()));
+        model.addAttribute("item", 10);
+
+        return "checkup/list";
+    }
+
+    /**
+     * Show job checkups and approvals.
+     *
+     * @param job Job
+     * @param dateFrom Date from.
+     * @param dateTo Date to.
+     * @param item Item per page.
+     * @param model Model
+     * @return job checkups and approvals list
+     */
+    @PostMapping(path = "/job/{id}/list")
+    public String filter(
             @PathVariable(name = "id") Job job,
+            @RequestParam("dateFrom") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date dateFrom,
+            @RequestParam("dateTo") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") Date dateTo,
+            @RequestParam(name = "item", defaultValue = "10") int item,
             Model model) {
 
-        model.addAttribute("approvals", jobApprovalService.findByJobOrderByCreatedAtDesc(job));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         model.addAttribute("job", job);
-        model.addAttribute("jobDetail", this.jobDetailsService.getDetailsOf(job));
-        model.addAttribute("approval", this.jobApprovalService.hasApproval(job, principal));
+        model.addAttribute("checkups", jobCheckupLogService.findByJobCheckupAndDateBetween(job, dateFrom, dateTo));
+        model.addAttribute("approvals", jobApprovalService.findByJobOrderByCreatedAtDesc(job));
+        model.addAttribute("dateFrom", simpleDateFormat.format(dateFrom));
+        model.addAttribute("dateTo", simpleDateFormat.format(dateTo));
+        model.addAttribute("item", item);
 
         return "checkup/list";
     }

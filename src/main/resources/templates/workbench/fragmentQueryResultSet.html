@@ -450,9 +450,9 @@
                             if (format === 'year') {
                                 formated = full.getFullYear();
                             } else if (format === 'month') {
-                                formated = full.getMonth();
+                                formated = (full.getMonth() + 1);
                             } else if (format === 'day') {
-                                formated = full.getDay();
+                                formated = full.getDate();
                             } else {
                                 formated = date;
                             }

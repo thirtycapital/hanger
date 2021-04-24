@@ -98,6 +98,19 @@
 
                                                     <input type="radio" th:id="${'label_' + header}" th:value="${header}" name="label"/>
                                                     <label class="checkbox-label" th:text="${header}"></label>
+
+                                                    <select 
+                                                        name="calendar" 
+                                                        th:id="${'calendar_' +  header}" 
+                                                        th:value="${header}"
+                                                        th:if="${#strings.contains(resultset.className.get(header),'Date') || #strings.contains(resultset.className.get(header),'Time')}" 
+                                                        style="background: transparent; border: 1px solid #D8D8D8;">
+
+                                                        <option value="full" selected>FULL</option>
+                                                        <option value="year">YEAR</option>
+                                                        <option value="month">MONTH</option>
+                                                        <option value="day">DAY</option>                                                    
+                                                    </select> 
                                                 </div>
                                             </div>
                                         </fieldset>
@@ -112,7 +125,12 @@
                                                      && not #strings.contains(resultset.className.get(header),'Date') 
                                                      && not #strings.contains(resultset.className.get(header),'Time')}">
 
-                                                    <select name="aggregation" th:id="${'aggregation_' +  header}" th:value="${header}" style="background: transparent; border: 1px solid #D8D8D8;">
+                                                    <select 
+                                                        name="aggregation" 
+                                                        th:id="${'aggregation_' +  header}" 
+                                                        th:value="${header}" 
+                                                        style="background: transparent; border: 1px solid #D8D8D8;">
+
                                                         <option th:value="sum" selected>SUM</option>
                                                         <option th:value="count">COUNT</option>
                                                         <option th:value="avg">AVG</option>
@@ -154,6 +172,7 @@
                     <script th:inline="javascript">
                         /*<![CDATA[*/
                         var label = "";
+                        var labels = [];
                         var resultset = /*[[${resultset.toJSONObject()}]]*/ "";
                         var position = [];
                         var rotation = 0;
@@ -250,22 +269,46 @@
                         /**
                          * Add chart label. 
                          */
-                        $("input[type=radio][name=label]").on('change', function () {
+                        $("input[type=radio][name=label],select[name=calendar]").on('change', function () {
                             let uniqueLabels = [];
-                            let labels = resultset[$(this).attr('value')] ? resultset[$(this).attr('value')] : ['ALL'];
+                            let originalLabels = [];
+                            let calendar = $("#calendar_" + $(this).attr('value')).children(':selected').attr('value');
+
+                            //Resets labels. 
+                            labels = [];
 
                             //Identifies the selected label.
                             label = $(this).attr('value');
 
-                            //Identifies unique labels values.
-                            labels.forEach((c) => {
-                                if (!uniqueLabels.includes(c)) {
-                                    uniqueLabels.push(c);
+                            //Idenfies if the selected label exists. 
+                            if (resultset[$(this).attr('value')]) {
+                                originalLabels = resultset[$(this).attr('value')];
+                            } else {
+                                originalLabels = Array(resultset[$(this).attr('value')].length).fill('ALL');
+                            }
+
+                            //Identifies unique and modified labels values.
+                            originalLabels.forEach((c) => {
+                                let label = c;
+
+                                //Identifies if should format a date label. 
+                                if (calendar) {
+                                    label = Calendar(label, calendar);
+                                }
+
+                                //Sets modified labels. 
+                                labels.push(label);
+
+                                //Sets unique labels. 
+                                if (!uniqueLabels.includes(label)) {
+                                    uniqueLabels.push(label);
                                 }
                             });
 
-                            //Resets the dataset selection.
-                            $(":checkbox").prop("checked", false);
+                            //Check a radio when a select is the entry point. 
+                            if ($(this).prop('nodeName').toUpperCase() === 'SELECT') {
+                                $("#label_" + $(this).attr('value')).prop("checked", true);
+                            }
 
                             //Resets chart dataset properties, values and indexes.
                             position.splice(0, position.length);
@@ -289,7 +332,7 @@
                                     //Aggregates the values using the selected aggregation.
                                     let summarizedValues = Aggregate(
                                             aggregation,
-                                            resultset[label] ? resultset[label] : Array(resultset[$(this).attr('value')].length).fill('ALL'),
+                                            labels,
                                             resultset[$(this).attr('value')]);
 
                                     //Identifies dataset position.
@@ -310,7 +353,6 @@
                                 }
                             } else {
                                 let index = position.indexOf(id);
-
                                 //Removes a dataset from chart by position.
                                 if (index > -1) {
                                     position.splice(index, 1);
@@ -320,7 +362,6 @@
 
                             chart.update();
                         });
-
                         /**
                          * Draw a chart. 
                          * @returns {undefined}
@@ -345,11 +386,9 @@
                             let occurrences = [];
                             let uniqueLabels = [];
                             let summarizedValues = [];
-
                             for (var i = 0; i < labels.length; i++) {
                                 if (aggregation === 'sum' || aggregation === 'avg') {
                                     let value = Math.round(values[i] * 100) / 100;
-
                                     if (!uniqueLabels.includes(labels[i])) {
                                         occurrences.push(1);
                                         uniqueLabels.push(labels[i]);
@@ -367,7 +406,6 @@
                                     }
                                 } else if (aggregation === 'min') {
                                     let value = Math.round(values[i] * 100) / 100;
-
                                     if (!uniqueLabels.includes(labels[i])) {
                                         uniqueLabels.push(labels[i]);
                                         summarizedValues.push(value);
@@ -378,7 +416,6 @@
                                     }
                                 } else if (aggregation === 'max') {
                                     let value = Math.round(values[i] * 100) / 100;
-
                                     if (!uniqueLabels.includes(labels[i])) {
                                         uniqueLabels.push(labels[i]);
                                         summarizedValues.push(value);
@@ -398,6 +435,31 @@
 
                             return summarizedValues;
                         }
+
+                        /**
+                         * Format date. 
+                         * 
+                         * @param {type} date Date
+                         * @param {type} format Date format. 
+                         * @returns {Number|Calendar.full|Date}
+                         */
+                        function Calendar(date, format) {
+                            let full = new Date(date);
+                            let formated = full;
+
+                            if (format === 'year') {
+                                formated = full.getFullYear();
+                            } else if (format === 'month') {
+                                formated = full.getMonth();
+                            } else if (format === 'day') {
+                                formated = full.getDay();
+                            } else {
+                                formated = date;
+                            }
+
+                            return formated;
+                        }
+
                         /*]]>*/
                     </script>
                 </div>

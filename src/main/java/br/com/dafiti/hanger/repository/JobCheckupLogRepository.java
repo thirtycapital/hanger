@@ -37,5 +37,5 @@ public interface JobCheckupLogRepository extends CrudRepository<JobCheckupLog, L
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void deleteByDateBefore(Date date);
 
-    List<JobCheckupLog> findByJobCheckupAndDateBetweenOrderByDateDesc(JobCheckup jobCheckup, Date from, Date to);
+    List<JobCheckupLog> findByCheckupAndDateBetweenOrderByDateDesc(JobCheckup jobCheckup, Date from, Date to);
 }

@@ -80,7 +80,7 @@ public class JobCheckupLogService {
         Map<JobCheckup, List<JobCheckupLog>> checkupLogs = new HashMap();
 
         job.getCheckup().forEach(checkup -> {
-            checkupLogs.put(checkup, jobCheckupLogRepository.findByJobCheckupAndDateBetweenOrderByDateDesc(checkup, from, to));
+            checkupLogs.put(checkup, jobCheckupLogRepository.findByCheckupAndDateBetweenOrderByDateDesc(checkup, from, to));
         });
 
         return checkupLogs;

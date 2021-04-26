@@ -64,22 +64,27 @@
                                             <legend>Type</legend>
                                             <div>
                                                 <input type="radio" id="type_bar" name="type" value="bar" checked="checked"/>
-                                                <label class="checkbox-label" th:text="Bar" ></label>
+                                                <label class="checkbox-label">Bar</label>
+                                            </div>
+
+                                            <div>
+                                                <input type="radio" id="type_stacked_bar" name="type" value="bar"/>
+                                                <label class="checkbox-label">Stacked bar</label>
                                             </div>
 
                                             <div>
                                                 <input type="radio" id="type_line" name="type" value="line"/>
-                                                <label class="checkbox-label" th:text="Line"></label>
+                                                <label class="checkbox-label">Line</label>
                                             </div>
 
                                             <div>
                                                 <input type="radio" id="type_radar" name="type" value="pie"/>
-                                                <label class="checkbox-label" th:text="Pie"></label>
+                                                <label class="checkbox-label">Pie</label>
                                             </div>
 
                                             <div>
                                                 <input type="radio" id="type_radar" name="type" value="radar"/>
-                                                <label class="checkbox-label" th:text="Radar"></label>
+                                                <label class="checkbox-label">Radar</label>
                                             </div>
                                         </fieldset>
                                     </div>
@@ -244,7 +249,14 @@
                          * Change chart type.
                          */
                         $("input[type=radio][name=type]").on('change', function () {
+                            let stacked = $(this).attr('id').includes('_stacked_');
+
+                            //Define the chart type. 
                             type = $(this).attr('value');
+
+                            //Define if is a stacked chart. 
+                            options.scales.xAxes[0].stacked = stacked;
+                            options.scales.yAxes[0].stacked = stacked;
 
                             //Destroy a chart. 
                             chart.destroy();
@@ -284,7 +296,7 @@
                             if (resultset[$(this).attr('value')]) {
                                 originalLabels = resultset[$(this).attr('value')];
                             } else {
-                                originalLabels = Array(resultset[$(this).attr('value')].length).fill('ALL');
+                                originalLabels = Array(resultset[Object.keys(resultset)[0]].length).fill('ALL');
                             }
 
                             //Identifies unique and modified labels values.
@@ -362,6 +374,7 @@
 
                             chart.update();
                         });
+
                         /**
                          * Draw a chart. 
                          * @returns {undefined}

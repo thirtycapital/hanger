@@ -33,9 +33,11 @@ import java.util.List;
 import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -54,7 +56,7 @@ import javax.persistence.TemporalType;
 public class JobCheckupLog implements Serializable {
 
     private Long id;
-    private JobCheckup JobCheckup;
+    private JobCheckup checkup;
     private Date date = new Date();
     private String query;
     private String threshold;
@@ -77,12 +79,12 @@ public class JobCheckupLog implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "job_checkup_id", referencedColumnName = "id")
-    public JobCheckup getJobCheckup() {
-        return JobCheckup;
+    public JobCheckup getCheckup() {
+        return checkup;
     }
 
-    public void setJobCheckup(JobCheckup JobCheckup) {
-        this.JobCheckup = JobCheckup;
+    public void setCheckup(JobCheckup checkup) {
+        this.checkup = checkup;
     }
 
     @Temporal(TemporalType.TIMESTAMP)

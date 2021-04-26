@@ -32,11 +32,9 @@ import java.util.List;
 import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -210,8 +208,7 @@ public class JobCheckup implements Serializable {
         this.command.add(command);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "job_checkup_id", referencedColumnName = "id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    @OneToMany(mappedBy = "checkup", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<JobCheckupLog> getLog() {
         return log;
     }

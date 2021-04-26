@@ -205,6 +205,7 @@ public class JobCheckupService {
                     if (checkup.isEnabled()) {
                         JobCheckupLog checkupLog = new JobCheckupLog();
 
+                        checkupLog.setCheckup(checkup);
                         checkupLog.setQuery(checkup.getQuery());
                         checkupLog.setConditional(checkup.getConditional());
                         checkupLog.setAction(checkup.getAction());
@@ -239,7 +240,7 @@ public class JobCheckupService {
                             }
                         }
 
-                        //Defines the checkup status. 
+                        //Defines the checkup status.                         
                         checkupLog.setThreshold(this.getMacro(checkup.getThreshold()));
                         checkupLog.setValue(value);
                         checkupLog.setSuccess(validated);

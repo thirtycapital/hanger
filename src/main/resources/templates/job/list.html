@@ -131,13 +131,13 @@
             <th:block th:switch="${enabled}">
                 <div th:case="true">
                     <a th:href="@{?enabled=false}" class="btn btn-link btn-sm">
-                        <span class="glyphicon glyphicon-eye-open"></span> Show enabled and disabled jobs
+                        <span class="glyphicon glyphicon-eye-open"></span> Show all jobs
                     </a>
                 </div>
 
                 <div th:case="false">
                     <a th:href="@{?enabled=true}" class="btn btn-link btn-sm">
-                        <span class="glyphicon glyphicon-eye-close"></span> Show only enabled jobs 
+                        <span class="glyphicon glyphicon-eye-close"></span> Show enabled jobs 
                     </a>             
                 </div>
             </th:block>

@@ -159,34 +159,52 @@ public class JobController {
     /**
      * List all jobs.
      *
+     * @param enabled Identifies if should get only enabled jobs.
      * @param model Model
      * @return Job list
      */
     @GetMapping(path = "/list")
-    public String list(Model model) {
-        model.addAttribute("jobs", jobService.listFromCache());
+    public String list(
+            @RequestParam(name = "enabled", defaultValue = "true") boolean enabled,
+            Model model) {
+
+        Iterable<Job> jobs;
+
+        if (enabled) {
+            jobs = jobService.listEnabledFromCache();
+        } else {
+            jobs = jobService.listFromCache();
+        }
+
+        model.addAttribute("enabled", enabled);
+        model.addAttribute("jobs", jobs);
+        
         return "job/list";
     }
 
     /**
-     * List job of a server.
+     * List jobs related with a specific server.
      *
      * @param server Server
+     * @param incremental Identify if should list only not imported jobs.
      * @return Job list modal
      */
-    @GetMapping(path = "/list/{serverID}")
+    @GetMapping(path = "/list/{server}")
     @ResponseBody
     public List<String> listJobServer(
-            @PathVariable(value = "serverID") Server server) {
+            @PathVariable(value = "server") Server server,
+            @RequestParam(name = "incremental", defaultValue = "true") boolean incremental) {
+
         List<String> jobs = null;
 
         if (server != null) {
             try {
-                jobs = jobService.listNonExistsJobs(server);
+                jobs = jobService.listFromServer(
+                        server,
+                        incremental);
             } catch (URISyntaxException | IOException ex) {
                 LOG.log(Level.ERROR,
-                        "Fail listing jobs from server " + server.getName(),
-                        ex);
+                        "Fail listing jobs from server " + server.getName(), ex);
             }
         }
 
@@ -714,7 +732,7 @@ public class JobController {
             @Valid @ModelAttribute Job job,
             Model model) {
 
-        job.addCheckup(new JobCheckup());
+        job.addCheckup(new JobCheckup(job));
         model.addAttribute("triggers", jobService.getMesh(job, false));
         this.modelDefault(model, job);
 
@@ -1223,7 +1241,22 @@ public class JobController {
                         .addData("name", job.getName())
                         .getData());
 
-        return this.jenkinsService.abort(job, jobDetails.getBuildNumber());
+        return jenkinsService.abort(job, jobDetails.getBuildNumber());
 
+    }
+
+    /**
+     * Get a job console log.
+     *
+     * @param model Model
+     * @param job Job
+     * @return Job console log.
+     */
+    @GetMapping(path = "/log/{job}")
+    public String log(
+            Model model,
+            @PathVariable(value = "job") Job job) {
+        model.addAttribute("log", jenkinsService.getLog(job));
+        return "job/log";
     }
 }

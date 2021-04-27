@@ -539,7 +539,6 @@
                                             </tr>     
                                             <tr th:each="trigger, triggetStat : *{checkup[__${checkupStat.index}__].trigger}">
                                                 <input type="hidden" th:field="*{checkup[__${checkupStat.index}__].trigger[__${triggetStat.index}__].id}"/>   
-                                                <input type="hidden" th:field="*{checkup[__${checkupStat.index}__].trigger[__${triggetStat.index}__].name}"/> 
                                                 <input type="hidden" th:field="*{checkup[__${checkupStat.index}__].trigger[__${triggetStat.index}__].server}"/> 
 
                                                 <td>

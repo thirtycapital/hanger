@@ -43,7 +43,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -219,28 +218,5 @@ public class ServerController {
         }
 
         return "server/list";
-    }
-
-    /**
-     * List template of a server.
-     *
-     * @param server Server
-     * @return Job list modal
-     */
-    @GetMapping(path = "/list/templates/{serverID}")
-    @ResponseBody
-    public List<String> listTemplates(
-            @PathVariable(value = "serverID") Server server) {
-        List<String> templates = null;
-
-        if (server != null) {
-            try {
-                templates = jenkinsService.listTemplates(server);
-            } catch (URISyntaxException | IOException ex) {
-                templates = null;
-            }
-        }
-
-        return templates;
     }
 }

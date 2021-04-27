@@ -125,7 +125,24 @@
                 </div>
             </div>
             <!--End delete modal-->
+
+            <hr/>  
+
+            <th:block th:switch="${enabled}">
+                <div th:case="true">
+                    <a th:href="@{?enabled=false}" class="btn btn-link btn-sm">
+                        <span class="glyphicon glyphicon-eye-open"></span> Show enabled and disabled jobs
+                    </a>
+                </div>
+
+                <div th:case="false">
+                    <a th:href="@{?enabled=true}" class="btn btn-link btn-sm">
+                        <span class="glyphicon glyphicon-eye-close"></span> Show only enabled jobs 
+                    </a>             
+                </div>
+            </th:block>
         </div>
+
         <script type="text/javascript" th:inline="javascript">
             /**
              * Show a modal delete. 

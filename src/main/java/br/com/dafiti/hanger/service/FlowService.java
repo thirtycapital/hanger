@@ -206,8 +206,8 @@ public class FlowService {
         A jobPhaseLink = new A();
 
         if (!jobDetails.getPhase().equals(Phase.NONE)) {
-            jobPhaseLink.setHref(job.getServer().getUrl() + "job/" + job.getName() + "/" + jobDetails.getBuildNumber() + "/console");
-            jobPhaseLink.setTarget("_blank");
+            jobPhaseLink.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/job/log/" + job.getId());
+            jobPhaseLink.setTarget("_self");
             jobPhaseLink.setCSSClass("node-phase");
             jobPhaseLink.appendText(jobDetails.getPhase().toString());
         }

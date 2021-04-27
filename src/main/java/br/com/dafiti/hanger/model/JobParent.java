@@ -68,7 +68,7 @@ public class JobParent implements Serializable {
         this.id = id;
     }
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "job_id", referencedColumnName = "id")
     public Job getJob() {
         return job;
@@ -78,7 +78,7 @@ public class JobParent implements Serializable {
         this.job = job;
     }
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
     public Job getParent() {
         return parent;

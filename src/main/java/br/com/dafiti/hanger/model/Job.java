@@ -57,8 +57,6 @@ import org.apache.commons.lang.StringUtils;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.OrderBy;
 import org.json.JSONObject;
 
 /**
@@ -118,7 +116,7 @@ public class Job extends Tracker<Job> implements Serializable {
         this.id = id;
     }
 
-    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @OneToOne
     @JoinColumn(name = "server_id", referencedColumnName = "id")
     public Server getServer() {
         return server;
@@ -185,7 +183,7 @@ public class Job extends Tracker<Job> implements Serializable {
         this.status = status;
     }
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToMany
     @JoinTable(name = "job_subject",
             joinColumns = {
                 @JoinColumn(name = "job_id", referencedColumnName = "id")},
@@ -203,10 +201,7 @@ public class Job extends Tracker<Job> implements Serializable {
         this.subject.add(subject);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "job_id", referencedColumnName = "id")
-    @BatchSize(size = 20)
-    @OrderBy(clause = "id, scope")
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<JobParent> getParent() {
         return parent;
     }
@@ -219,9 +214,7 @@ public class Job extends Tracker<Job> implements Serializable {
         this.parent.add(parent);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "job_id", referencedColumnName = "id")
-    @BatchSize(size = 20)
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<JobCheckup> getCheckup() {
         return checkup;
     }
@@ -234,9 +227,7 @@ public class Job extends Tracker<Job> implements Serializable {
         this.checkup.add(checkup);
     }
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "job_id", referencedColumnName = "id")
-    @BatchSize(size = 20)
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<JobApproval> getApproval() {
         return approval;
     }
@@ -249,7 +240,7 @@ public class Job extends Tracker<Job> implements Serializable {
         this.approval.add(approval);
     }
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToMany
     @JoinTable(name = "job_workbench_email",
             joinColumns = {
                 @JoinColumn(name = "job_id", referencedColumnName = "id")},
@@ -332,7 +323,7 @@ public class Job extends Tracker<Job> implements Serializable {
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     public User getApprover() {
-        return this.approver;
+        return approver;
     }
 
     public void setApprover(User approver) {

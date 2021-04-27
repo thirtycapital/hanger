@@ -30,6 +30,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import org.json.JSONObject;
 
@@ -117,7 +118,8 @@ public class Configuration extends Tracker<Configuration> implements Serializabl
         this.name = name;
     }
 
-    @ManyToOne()
+    @ManyToOne
+    @JoinColumn(name = "group_id", referencedColumnName = "id")
     public ConfigurationGroup getGroup() {
         return group;
     }

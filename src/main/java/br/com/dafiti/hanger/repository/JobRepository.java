@@ -35,15 +35,17 @@ public interface JobRepository extends CrudRepository<Job, Long> {
 
     Job findByName(String name);
 
-    public List<Job> findBySubjectOrderByName(Subject subject);
-
     public HashSet<Job> findBySubject(Subject subject);
 
     public HashSet<Job> findByApprover(User user);
 
+    public List<Job> findBySubjectOrderByName(Subject subject);
+
     public List<Job> findByNameContainingOrAliasContaining(String name, String alias);
 
-    public long countByEnabledTrueAndSubject(Subject subject);
-
     public List<Job> findByServer(Server server);
+
+    public List<Job> findByEnabledTrue();
+
+    public long countByEnabledTrueAndSubject(Subject subject);
 }

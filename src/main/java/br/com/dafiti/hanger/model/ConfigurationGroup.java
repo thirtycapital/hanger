@@ -72,7 +72,7 @@ public class ConfigurationGroup implements Serializable {
         this.name = name;
     }
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "group")
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Configuration> getConfiguration() {
         return configurations;
     }

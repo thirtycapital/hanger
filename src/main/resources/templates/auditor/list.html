@@ -9,12 +9,12 @@
             <form class="form-horizontal" th:action="@{/log/list/filter}" method="POST">
                 <div class="space-top">
                     <div class="form-group">
-                        <div class="col-sm-6">
+                        <div class="col-sm-9">
                             <input type="text" name="dateRange" id="dateRange" class="form-control date-range" readonly="readonly" />
                             <input type="hidden" name="dateFrom" id="dateFrom" th:value="${dateFrom}" />
                             <input type="hidden" name="dateTo" id="dateTo" th:value="${dateTo}" />
                         </div>
-                        <div class="col-md-6 p-1">
+                        <div class="col-md-3 p-1">
                             <select class="selectpicker form-control" 
                                     name="type"
                                     data-live-search="true"  
@@ -39,6 +39,8 @@
                     </div>
                 </div>             
             </form>
+
+            <hr/>
 
             <div>
                 <table id="table_paginated" class="table table-hover">
@@ -97,7 +99,10 @@
                                                     <code th:class="'language-' + ${data.key}" th:text="${data.value}"></code>
                                                 </pre>
                                             </div>
-                                            <div th:unless="${data.key == 'sql' or data.key == 'javascript'}">
+                                            <div class="space-top" th:if="${data.key == 'error'}">
+                                                <span class="label label-danger" th:text="${data.value}"></span>
+                                            </div>
+                                            <div th:unless="${data.key == 'sql' or data.key == 'javascript' or data.key == 'error'}">
                                                 <span class="bold" th:text="${data.value}"></span>
                                             </div>
                                         </td>

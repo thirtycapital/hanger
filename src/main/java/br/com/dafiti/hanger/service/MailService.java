@@ -33,7 +33,6 @@ import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.context.ApplicationContext;
@@ -105,34 +104,26 @@ public class MailService {
      * Send a mail with a HTML blueprint.
      *
      * @param blueprint Blueprint
-     * @param mail
-     * @param log Extra log information.
-     * @return
+     * @param mail Email sender.
+     * @param info Extra log information.
+     * @return Identifies if it was sent sucessfully.
      */
-    public boolean send(Blueprint blueprint, HtmlEmail mail, String log) {
+    public boolean send(Blueprint blueprint, HtmlEmail mail, String info) {
+        AuditorData auditorData = new AuditorData();
 
-        boolean sent = true;
         String host = configurationService.getValue("EMAIL_HOST");
         int port = Integer.valueOf(configurationService.getValue("EMAIL_PORT"));
         String email = configurationService.getValue("EMAIL_ADDRESS");
         String password = configurationService.getValue("EMAIL_PASSWORD");
+        boolean sent = true;
+        String log = "";
 
-        AuditorData auditorData = new AuditorData();
-
-        if (log != null) {
-            auditorData.addData("log", log);
-        }
-
-        auditorData.addData("to", mail.getBccAddresses().toString());
-        auditorData.addData("javascript", blueprint.toString());
-
-        auditorService.publish("SEND_EMAIL", auditorData.getData());
-
+        //Sents a e-mail. 
         try {
             mail.setHostName(host);
             mail.setSmtpPort(port);
             mail.setAuthenticator(new DefaultAuthenticator(email, password));
-            mail.setSSLOnConnect(true);
+            mail.setSSLOnConnect(port != 25 && port != 80 && port != 3535);
             mail.addHeader("X-Priority", "1");
             mail.setFrom(email);
             mail.setSubject(blueprint.getSubject());
@@ -145,9 +136,24 @@ public class MailService {
             mail.send();
         } catch (EmailException ex) {
             LOG.log(Level.ERROR, "Fail sending e-mail", ex);
+            log = ex.getCause().getMessage();
+            
             sent = false;
         }
 
+        //Logs general information and errors in the e-mail. 
+        if (info != null) {
+            auditorData.addData("log", info);
+        }
+
+        auditorData.addData("to", mail.getBccAddresses().toString());
+        auditorData.addData("javascript", blueprint.toString());
+
+        if (!sent) {
+            auditorData.addData("error", log);
+        }
+
+        auditorService.publish("SEND_EMAIL", auditorData.getData());
         return sent;
     }
 

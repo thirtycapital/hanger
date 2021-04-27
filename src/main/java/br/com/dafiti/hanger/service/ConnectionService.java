@@ -49,6 +49,8 @@ import java.util.regex.Pattern;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -107,7 +109,7 @@ public class ConnectionService {
         for (Connection connection : this.list()) {
             ConnectionStatus status = new ConnectionStatus();
             status.setConnection(connection);
-            status.setStatus(this.testConnection(connection) ? Status.SUCCESS : Status.FAILURE);
+            status.setStatus(this.testConnection(connection).isEmpty() ? Status.SUCCESS : Status.FAILURE);
             connectionStatus.add(status);
         }
 
@@ -210,22 +212,22 @@ public class ConnectionService {
     }
 
     /**
-     * Get the connection.
+     * Test a connection.
      *
      * @param connection Connection
-     * @return Identify is a connection is ok.
+     * @return Identifies a connection status.
      */
-    public boolean testConnection(Connection connection) {
-        boolean running = false;
+    public String testConnection(Connection connection) {
+        String status = "";
         DataSource datasource = this.getDataSource(connection);
 
         if (datasource != null) {
             try {
                 if (datasource.getConnection() != null) {
-                    running = true;
                 }
             } catch (SQLException ex) {
-                LOG.log(Level.ERROR, "Fail testing connection to " + connection.getName(), ex);
+                status = ex.getMessage();
+                LOG.log(Level.ERROR, "Fail testing connection to " + connection.getName(), status);
             } finally {
                 try {
                     if (datasource.getConnection() != null) {
@@ -237,7 +239,7 @@ public class ConnectionService {
             }
         }
 
-        return running;
+        return status;
     }
 
     /**
@@ -535,6 +537,11 @@ public class ConnectionService {
                         queryResultSet
                                 .getType()
                                 .put(metaData.getColumnName(i), metaData.getColumnTypeName(i));
+
+                        //Extracts columns class name. 
+                        queryResultSet
+                                .getClassName()
+                                .put(metaData.getColumnName(i), metaData.getColumnClassName(i));
                     }
                 }
 
@@ -910,6 +917,7 @@ public class ConnectionService {
         String error = new String();
         List<String> header = new ArrayList();
         Map<String, String> type = new HashMap();
+        Map<String, String> className = new HashMap();
         List<QueryResultSetRow> row = new ArrayList();
         long elapsedTime = 0;
 
@@ -927,6 +935,14 @@ public class ConnectionService {
 
         public void setType(Map<String, String> type) {
             this.type = type;
+        }
+
+        public Map<String, String> getClassName() {
+            return className;
+        }
+
+        public void setClassName(Map<String, String> className) {
+            this.className = className;
         }
 
         public List<QueryResultSetRow> getRow() {
@@ -955,6 +971,36 @@ public class ConnectionService {
 
         public void setError(String error) {
             this.error = error;
+        }
+
+        /**
+         * Get the query resultset as a JSON Object ;
+         *
+         * @return Query resultset JSON Object
+         */
+        public Map toJSONObject() {
+            JSONObject object = new JSONObject();
+
+            for (int i = 0; i < header.size(); i++) {
+                for (int j = 0; j < row.size(); j++) {
+
+                    if (object.has(header.get(i))) {
+                        object.put(
+                                header.get(i),
+                                ((JSONArray) object.get(header.get(i)))
+                                        .put(row.get(j)
+                                                .getColumn()
+                                                .get(i)));
+                    } else {
+                        object.put(header.get(i), new JSONArray()
+                                .put(row.get(j)
+                                        .getColumn()
+                                        .get(i)));
+                    }
+                }
+            }
+
+            return object.toMap();
         }
     }
 

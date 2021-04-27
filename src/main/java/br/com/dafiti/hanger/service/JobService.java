@@ -87,6 +87,52 @@ public class JobService {
         return jobRepository.findAll();
     }
 
+    @Cacheable(value = "jobs_enabled")
+    public Iterable<Job> listEnabledFromCache() {
+        return jobRepository.findByEnabledTrue();
+    }
+
+    /**
+     * Return a server job list.
+     *
+     * @param server Server
+     * @param incremental Identifies if should list only not imported jobs.
+     * @return server job list.
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    public List<String> listFromServer(
+            Server server,
+            boolean incremental)
+            throws URISyntaxException, IOException {
+
+        List<String> list = new ArrayList<>();
+        List<String> jenkinsJob = jenkinsService.listJob(server);
+
+        if (incremental) {
+            Iterable<Job> cache = this.listFromCache();
+
+            for (String jobServer : jenkinsJob) {
+                boolean exists = false;
+
+                for (Job job : cache) {
+                    if (jobServer.equalsIgnoreCase(job.getName())) {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if (!exists) {
+                    list.add(jobServer);
+                }
+            }
+        } else {
+            list = jenkinsJob;
+        }
+
+        return list;
+    }
+
     public Job load(Long id) {
         return jobRepository.findById(id).get();
     }
@@ -122,36 +168,44 @@ public class JobService {
     }
 
     @Caching(evict = {
+        @CacheEvict(value = "jobs", allEntries = true),
+        @CacheEvict(value = "jobs_enabled", allEntries = true),
         @CacheEvict(value = "job_count", allEntries = true),
         @CacheEvict(value = "job_count_by_subject", allEntries = true)})
     public Job save(Job job) {
-        //Define the relation between the job and its parents.
+        //Identifies if it has parents. 
         job.getParent().stream().forEach((parent) -> {
+            //Define the relation beetween parent and job. 
             if (parent.getJob() == null) {
                 parent.setJob(job);
             }
         });
 
-        //Define if the job checkup can have a trigger.
+        //Identifies if it has checkouts. 
         if (!job.getCheckup().isEmpty()) {
             job.getCheckup().stream().forEach((checkup) -> {
+                //Define the relation between checkup and parent.
+                if (checkup.getJob() == null) {
+                    checkup.setJob(job);
+                }
+
+                //Identifies if a checkup can trigger an action. 
                 if (!checkup.getAction().equals(Action.REBUILD_TRIGGER)) {
                     checkup.setTrigger(new ArrayList());
                 }
             });
         }
 
-        //Define if rebuilt blocker can be checked. 
+        //Identifies if it has rebuild blockers.  
         job.setRebuildBlocked(
-                job.
-                        getParent().
-                        stream().
-                        filter(parent -> parent.isBlocker()).count() != 0
-        );
+                job.getParent()
+                        .stream()
+                        .filter(parent -> parent.isBlocker()).count() != 0);
 
-        //Identify if the time windows cron expression is valid. 
-        if ((job.getTimeRestriction() != null)
-                && (!job.getTimeRestriction().isEmpty())) {
+        //Check if the time restriction expression is valid. 
+        if (job.getTimeRestriction() != null
+                && !job.getTimeRestriction().isEmpty()) {
+
             new CronParser(
                     CronDefinitionBuilder.instanceDefinitionFor(QUARTZ))
                     .parse(job.getTimeRestriction()).validate();
@@ -168,6 +222,7 @@ public class JobService {
      */
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true),
+        @CacheEvict(value = "jobs_enabled", allEntries = true),
         @CacheEvict(value = "job_count", allEntries = true),
         @CacheEvict(value = "job_count_by_subject", allEntries = true),
         @CacheEvict(value = "propagation", allEntries = true)})
@@ -195,6 +250,7 @@ public class JobService {
 
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true),
+        @CacheEvict(value = "jobs_enabled", allEntries = true),
         @CacheEvict(value = "job_count", allEntries = true),
         @CacheEvict(value = "job_count_by_subject", allEntries = true),
         @CacheEvict(value = "propagation", allEntries = true)})
@@ -205,6 +261,7 @@ public class JobService {
 
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true),
+        @CacheEvict(value = "jobs_enabled", allEntries = true),
         @CacheEvict(value = "job_count", allEntries = true),
         @CacheEvict(value = "job_count_by_subject", allEntries = true),
         @CacheEvict(value = "propagation", allEntries = true)})
@@ -214,6 +271,7 @@ public class JobService {
 
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true),
+        @CacheEvict(value = "jobs_enabled", allEntries = true),
         @CacheEvict(value = "job_count", allEntries = true),
         @CacheEvict(value = "job_count_by_subject", allEntries = true),
         @CacheEvict(value = "propagation", allEntries = true)})
@@ -620,36 +678,5 @@ public class JobService {
      */
     public HashSet<JobParent> getChildrenlist(Job job) {
         return jobParentService.findByParent(job);
-    }
-
-    /**
-     * Get list of only existing jobs at Jenkins.
-     *
-     * @param server Server
-     * @return
-     * @throws URISyntaxException
-     * @throws IOException
-     */
-    public List<String> listNonExistsJobs(Server server) throws URISyntaxException, IOException {
-        List<String> listJobServer = this.jenkinsService.listJob(server);
-        Iterable<Job> listJob = this.listFromCache();
-        List<String> list = new ArrayList<>();
-
-        for (String jobServer : listJobServer) {
-            boolean jobExists = false;
-
-            for (Job job : listJob) {
-                if (jobServer.equalsIgnoreCase(job.getName())) {
-                    jobExists = true;
-                    break;
-                }
-            }
-
-            if (!jobExists) {
-                list.add(jobServer);
-            }
-        }
-
-        return list;
     }
 }

@@ -35,9 +35,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -695,43 +693,6 @@ public class JenkinsService {
     }
 
     /**
-     * Get Jenkins template list.
-     *
-     * @param server Server
-     * @return Job list
-     * @throws URISyntaxException
-     * @throws IOException
-     */
-    //@Cacheable(value = "serverTemplates", key = "#server.id")
-    public List<String> listTemplates(Server server) throws URISyntaxException, IOException {
-        List<String> templates = new ArrayList();
-        JenkinsServer jenkins = this.getJenkinsServer(server);
-
-        if (jenkins != null) {
-            if (jenkins.isRunning()) {
-                String prefix = "TEMPLATE_";
-
-                Map<String, String> filteredJobs = jenkins
-                        .getJobs()
-                        .entrySet()
-                        .stream()
-                        .filter(map -> map.getValue().getName().startsWith(prefix))
-                        .collect(Collectors.toMap(p -> p.getKey(), p -> p.getValue().getName()));
-
-                filteredJobs.keySet().forEach((job) -> {
-                    templates.add(job);
-                });
-
-            } else {
-                throw new URISyntaxException("Jenkins is not running", "Can't import Jenkins template list");
-            }
-            jenkins.close();
-        }
-
-        return templates;
-    }
-
-    /**
      * Retrieves a string with nodes that executes the job
      *
      * @param job Job
@@ -739,7 +700,7 @@ public class JenkinsService {
      */
     public String getAssignedNode(Job job) {
         JenkinsServer jenkins;
-        StringBuffer assignedNode = new StringBuffer();
+        StringBuilder assignedNode = new StringBuilder();
 
         if (job != null) {
             try {
@@ -822,5 +783,46 @@ public class JenkinsService {
         }
 
         return aborted;
+    }
+
+    /**
+     * Get a job build log.
+     *
+     * @param job Job
+     * @return Console output text.
+     */
+    public String getLog(Job job) {
+        String log = "";
+        JenkinsServer jenkins;
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        JobWithDetails jobWithDetails = jenkins.getJob(job.getName());
+
+                        if (jobWithDetails != null) {
+                            Build lastSuccessfulBuild = jobWithDetails.getLastBuild();
+
+                            if (lastSuccessfulBuild != null) {
+                                BuildWithDetails details = lastSuccessfulBuild.details();
+
+                                if (details != null) {
+                                    log = details.getConsoleOutputText();
+                                }
+                            }
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                LOG.log(Level.ERROR, "Fail getting " + job + " log!", ex);
+            }
+        }
+
+        return log;
     }
 }

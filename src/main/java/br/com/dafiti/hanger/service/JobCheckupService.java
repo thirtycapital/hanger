@@ -203,7 +203,13 @@ public class JobCheckupService {
                 for (JobCheckup checkup : checkups) {
                     //Identifies the query scope and if it is enabled. 
                     if (checkup.isEnabled()) {
-                        JobCheckupLog jobCheckupLog = new JobCheckupLog(checkup);
+                        JobCheckupLog checkupLog = new JobCheckupLog();
+
+                        checkupLog.setCheckup(checkup);
+                        checkupLog.setQuery(checkup.getQuery());
+                        checkupLog.setConditional(checkup.getConditional());
+                        checkupLog.setAction(checkup.getAction());
+                        checkupLog.setScope(checkup.getScope());
 
                         //Runs the query. 
                         String value = this.executeQuery(checkup);
@@ -220,7 +226,7 @@ public class JobCheckupService {
 
                             //Executes the checkup command.
                             for (Command command : checkup.getCommand()) {
-                                commandResult = this.executeCommand(checkup, command, jobCheckupLog);
+                                commandResult = this.executeCommand(checkup, command, checkupLog);
 
                                 if (!commandResult) {
                                     break;
@@ -234,13 +240,13 @@ public class JobCheckupService {
                             }
                         }
 
-                        //Defines the checkup status. 
-                        jobCheckupLog.setThreshold(this.getMacro(checkup.getThreshold()));
-                        jobCheckupLog.setValue(value);
-                        jobCheckupLog.setSuccess(validated);
+                        //Defines the checkup status.                         
+                        checkupLog.setThreshold(this.getMacro(checkup.getThreshold()));
+                        checkupLog.setValue(value);
+                        checkupLog.setSuccess(validated);
 
                         //Adds the log to the checkup.
-                        checkup.addLog(jobCheckupLog);
+                        checkup.addLog(checkupLog);
                         this.save(checkup);
 
                         //Identifies if should retry.

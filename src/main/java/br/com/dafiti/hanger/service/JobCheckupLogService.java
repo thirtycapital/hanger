@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import br.com.dafiti.hanger.repository.JobCheckupLogRepository;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -77,7 +78,7 @@ public class JobCheckupLogService {
      * @return JobCheckupLog map of each JobCheckup.
      */
     public Map<JobCheckup, List<JobCheckupLog>> findByJobCheckupAndDateBetween(Job job, Date from, Date to) {
-        Map<JobCheckup, List<JobCheckupLog>> checkupLogs = new HashMap();
+        Map<JobCheckup, List<JobCheckupLog>> checkupLogs = new LinkedHashMap();
 
         job.getCheckup().forEach(checkup -> {
             checkupLogs.put(checkup, jobCheckupLogRepository.findByCheckupAndDateBetweenOrderByDateDesc(checkup, from, to));

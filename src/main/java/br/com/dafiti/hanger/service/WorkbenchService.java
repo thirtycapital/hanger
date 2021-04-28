@@ -38,10 +38,15 @@ import org.springframework.stereotype.Service;
 public class WorkbenchService {
 
     private final ConnectionService connectionService;
+    private final ConfigurationService configurationService;
 
     @Autowired
-    public WorkbenchService(ConnectionService connectionService) {
+    public WorkbenchService(
+            ConnectionService connectionService,
+            ConfigurationService configurationService) {
+
         this.connectionService = connectionService;
+        this.configurationService = configurationService;
     }
 
     /**
@@ -212,7 +217,8 @@ public class WorkbenchService {
         query.append(String.join(",", field));
         query.append(" FROM ");
         query.append(String.join(".", catalogSchema));
-        query.append(" LIMIT 10");
+        query.append(" LIMIT ");
+        query.append(configurationService.getMaxRows());
 
         return query.toString();
     }

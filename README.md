@@ -43,7 +43,7 @@ FLUSH PRIVILEGES;
 
 ```
 # Hanger MySQL
-spring.datasource.url=jdbc:mysql://<host>:<port>/<db>?serverTimezone=GMT-3
+spring.datasource.url=jdbc:mysql://<host>:<port>/<db>?createDatabaseIfNotExist=true&serverTimezone=GMT-3
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.datasource.username=<user>
 spring.datasource.password=<password>

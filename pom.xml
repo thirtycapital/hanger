@@ -281,6 +281,13 @@
             <artifactId>gagawa</artifactId>
             <version>1.0.1</version>
         </dependency>
+        
+        <!-- Flyway -->
+        
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>

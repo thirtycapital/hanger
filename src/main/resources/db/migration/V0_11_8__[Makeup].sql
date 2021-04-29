@@ -377,6 +377,7 @@ CREATE TABLE `job_checkup_log` (
   `job_checkup_id` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `FK1knteuurvf3rswwos1yqceqws` (`job_checkup_id`),
+  KEY `IDX_job_checkup_id_date` (`job_checkup_id`, `date`)
   CONSTRAINT `FK1knteuurvf3rswwos1yqceqws` FOREIGN KEY (`job_checkup_id`) REFERENCES `job_checkup` (`id`)
 );
 

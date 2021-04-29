@@ -26,6 +26,10 @@ package br.com.dafiti.hanger.controller;
 import br.com.dafiti.hanger.service.AuditorService;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,13 +96,8 @@ public class AuditorController {
      * @param model Model
      */
     private void modelDefault(Model model) throws ParseException {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
-        String from = sdfDate.format(new Date()) + " 00:00:00";
-        String to = sdfDate.format(new Date()) + " 23:59:59";
-
-        SimpleDateFormat sdfDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date dateFrom = sdfDateTime.parse(from);
-        Date dateTo = sdfDateTime.parse(to);
+        Date dateFrom = Date.from(LocalDateTime.of(LocalDate.now(), LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant());
+        Date dateTo = Date.from(LocalDateTime.of(LocalDate.now(), LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
 
         this.modelDefault(model, dateFrom, dateTo, null);
     }

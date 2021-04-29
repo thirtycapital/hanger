@@ -29,7 +29,6 @@ import br.com.dafiti.hanger.repository.ConfigurationRepository;
 import br.com.dafiti.hanger.security.PasswordCryptor;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -159,7 +158,7 @@ public class ConfigurationService {
                 "hanger.manager@dafiti.com.br",
                 "text",
                 emailGroup,
-                10,
+                0,
                 255,
                 "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}$"), true);
 
@@ -169,7 +168,7 @@ public class ConfigurationService {
                 "",
                 "password",
                 emailGroup,
-                05,
+                0,
                 50,
                 "*"), true);
 
@@ -265,12 +264,12 @@ public class ConfigurationService {
         return Integer.valueOf(this
                 .findByParameter("WORKBENCH_MAX_ROWS")
                 .getValue());
-    }    
-    
+    }
+
     public String getDataBaseTime() {
         return this.configurationRepository.now();
     }
-    
+
     public String getServerTime() {
         return new LocalDateTime().toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss.SSS"));
     }

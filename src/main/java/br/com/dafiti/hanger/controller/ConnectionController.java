@@ -167,11 +167,11 @@ public class ConnectionController {
 
         try {
             List<ConnectionService.Entity> entity = connectionService.getSchemas(connection);
-            
+
             if (entity.isEmpty()) {
                 entity = connectionService.getCatalogs(connection);
             }
-            
+
             model.addAttribute("connection", connection);
             model.addAttribute("metadata", entity);
         } catch (Exception ex) {
@@ -338,10 +338,12 @@ public class ConnectionController {
         model.addAttribute("connections", connectionService.list());
 
         try {
-            if (connectionService.testConnection(connection)) {
+            String status = connectionService.testConnection(connection);
+
+            if (status.isEmpty()) {
                 model.addAttribute("successMessage", connection.getName() + " is connected!");
             } else {
-                model.addAttribute("errorMessage", connection.getName() + " is not connected!");
+                model.addAttribute("errorMessage", connection.getName() + " is not connected: " + status);
             }
         } catch (Exception ex) {
             model.addAttribute("errorMessage", "Fail connection to database " + new Message().getErrorMessage(ex));

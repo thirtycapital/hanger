@@ -172,21 +172,25 @@ public class JobController {
      * List job of a server.
      *
      * @param server Server
+     * @param incremental Identify if should list only not imported jobs.
      * @return Job list modal
      */
-    @GetMapping(path = "/list/{serverID}")
+    @GetMapping(path = "/list/{server}")
     @ResponseBody
     public List<String> listJobServer(
-            @PathVariable(value = "serverID") Server server) {
+            @PathVariable(value = "server") Server server,
+            @RequestParam(name = "incremental", defaultValue = "true") boolean incremental) {
+
         List<String> jobs = null;
 
         if (server != null) {
             try {
-                jobs = jobService.listNonExistsJobs(server);
+                jobs = jobService.listFromServer(
+                        server,
+                        incremental);
             } catch (URISyntaxException | IOException ex) {
                 LOG.log(Level.ERROR,
-                        "Fail listing jobs from server " + server.getName(),
-                        ex);
+                        "Fail listing jobs from server " + server.getName(), ex);
             }
         }
 
@@ -1223,7 +1227,22 @@ public class JobController {
                         .addData("name", job.getName())
                         .getData());
 
-        return this.jenkinsService.abort(job, jobDetails.getBuildNumber());
+        return jenkinsService.abort(job, jobDetails.getBuildNumber());
 
+    }
+
+    /**
+     * Get a job console log.
+     *
+     * @param model Model
+     * @param job Job
+     * @return Job console log.
+     */
+    @GetMapping(path = "/log/{job}")
+    public String log(
+            Model model,
+            @PathVariable(value = "job") Job job) {
+        model.addAttribute("log", jenkinsService.getLog(job));
+        return "job/log";
     }
 }

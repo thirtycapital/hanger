@@ -45,6 +45,11 @@ label {
     font-size: 13px;
 }
 
+.checkbox-label {
+    color: #373e46;
+    font-weight: normal;
+}
+
 .label-edit-information{
     color: #999999;
     font-size: 12px;
@@ -58,26 +63,26 @@ label {
 }
 
 .label-warning {
-    background-color: #fff8eb;
+    background-color: #FFF8EB;
     color: #b87700;
     font-size: 11px;
 }
 
 .label-danger {
-    background-color: #fbe8e9;
-    color: #dd424a;
+    background-color: #FBE8E9;
+    color: #DD424A;
     font-size: 11px;
 }
 
 .label-neutral, .label-default{
-    background-color: #ececec;
-    color: #6c6c6c;
+    background-color: #ECECEC;
+    color: #6C6C6C;
     font-size: 11px;
 }
 
 .label-primary{
-    background-color: #fffdeb;
-    color: #c4b000;  
+    background-color: #FFFDEB;
+    color: #C4B000;  
     font-size: 11px;
 }
 
@@ -121,6 +126,7 @@ pre[class*="language-"] {
     margin: 0px;
     background-color: transparent !important;
     min-height: 75px;
+    white-space: pre-wrap;
 }
 
 pre[class*="language-free"] {
@@ -184,7 +190,7 @@ code[class*="language-free"] {
 }
 
 .progress-bar-danger {
-    background-color: #dd424a;
+    background-color: #E15759;
 }
 
 .progress-bar-neutral {
@@ -734,14 +740,6 @@ img.media-object{
     padding-left: 5px
 }
 
-input[type=radio] { 
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-    margin-left: 0px;
-}
-
 input[type=radio] + img {
     cursor: pointer;
     margin-left: 0px;
@@ -964,10 +962,10 @@ input[type='file'] {
 
 .div-jstree {
     position: relative; 
-    overflow-y: hidden;
-    overflow-x: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     width: auto; 
-    height: auto;
+    height: 300px;
 }
 
 .form-control-search {
@@ -1072,10 +1070,6 @@ input[type='file'] {
 
 .mb-2 {
     margin-bottom: 5px !important;
-}
-
-.hr-workbench-collapse {
-    margin: 0 0 10px 0;
 }
 
 .col-div-query {

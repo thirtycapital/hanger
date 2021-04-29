@@ -67,7 +67,7 @@
 
                     // Load jobs list only when select server
                     if ($("#select-server").val() !== undefined) {
-                        loadJobList();
+                        loadJobList(importJob);
                     }
 
                     $("input[name=importJob]").on("change", function () {
@@ -89,7 +89,7 @@
 
                             // Refresh component.
                             $('#select-template').selectpicker('refresh');
-                            
+
                             // For new jobs, select template is required.
                             $("#select-job").attr("required", "true");
 
@@ -98,10 +98,6 @@
 
                             // Button Next appear on import operation.
                             $('#partial_load_job').prop('disabled', false);
-
-                            // Loads job list of jenkins
-                            loadJobList();
-
                         } else {
                             // Hide div for import
                             $(".div_import").hide("fast");
@@ -120,104 +116,64 @@
 
                             // Refresh component.
                             $('#select-template').selectpicker('refresh');
-                            
+
                             // When is import, select template is not required.
                             $('#select-job').removeAttr("required");
-                            
+
                             // Refresh component.
                             $('#select-job').selectpicker('refresh');
-                           
-                            // Loads template list of jenkins
-                            loadTemplateList();
                         }
+
+                        loadJobList(importJob);
                     });
 
                     //Identify if is import or create a new job.
                     $("#select-server").on("change", function () {
-                        if (importJob) {
-                            loadJobList();
-                        } else {
-                            loadTemplateList();
-                        }
+                        loadJobList(importJob);
                     });
 
                     /**
-                     * Loads templates related to selected server. 
+                     * Load server jobs. 
+                     * @param {type} isImport
                      * @returns {undefined}
                      */
-                    function loadTemplateList() {
-                        var url = /*[[@{/server/list/templates/}]]*/ "/server/list/templates/";
-                        var server = $("#select-server").val();
-
-                        $.ajax({
-                            type: "GET",
-                            url: url + server,
-                            timeout: 5000,
-                            success: function (templates) {
-                                // If jobs load successfully Nest button appears.
-                                $('#partial_load_job').prop('disabled', false);
-
-                                //Fetch templates jobs and put it into select/option.
-                                for (var index = 0; index < templates.length; index++) {
-                                    $("#select-template").append(new Option(templates[index], templates[index]));
-                                }
-
-                                // Refresh component.
-                                $('#select-template').selectpicker('refresh');
-                            },
-                            error: function (xhr, ajaxOptions, thrownError) {
-                                $('#select-template').empty();
-                                $('#select-template').selectpicker('refresh');
-                                toastr.error("Error trying to get list of templates " + xhr.responseText);
-                            },
-                            beforeSend: function () {
-                                // Before ajax is complete, disable next button
-                                $('#partial_load_job').prop('disabled', true);
-
-                                // Select picket will be feed in case of success
-                                $('#select-template').selectpicker('refresh');
-                                $('#select-template').empty();
-                            }
-                        });
-                    }
-
-                    /**
-                     * Loads jobs related to selected server. 
-                     * @returns {undefined}
-                     */
-                    function loadJobList() {
+                    function loadJobList(isImport) {
                         var url = /*[[@{/job/list/}]]*/ "/job/list/";
                         var server = $("#select-server").val();
 
-                        if ((server !== null) && (server !== undefined)) {
+                        if ((server !== null) && (server !== undefined) && (server !== "")) {
+                            var select;
+
+                            //Identifies wich object should be filled.
+                            if (isImport) {
+                                select = $("#select-job");
+                            } else {
+                                select = $('#select-template');
+                            }
+
                             $.ajax({
                                 type: "GET",
                                 url: url + server,
-                                timeout: 5000,
+                                timeout: 15000,
+                                data: {
+                                    incremental: isImport
+                                },
                                 success: function (jobs) {
-                                    // If jobs load successfully Nest button appears.
-                                    $('#partial_load_job').prop('disabled', false);
-
-                                    //Fetch jobs and put it into select/option.
                                     for (var index = 0; index < jobs.length; index++) {
-                                        $("#select-job").append(new Option(jobs[index], jobs[index]));
+                                        select.append(new Option(jobs[index], jobs[index]));
                                     }
 
-                                    // Refresh component.
-                                    $('#select-job').selectpicker('refresh');
+                                    select.selectpicker('refresh');
                                 },
-                                error: function (xhr, ajaxOptions, thrownError) {
-                                    $('#select-job').empty();
-                                    $('#select-job').selectpicker('refresh');
+                                error: function (xhr) {
+                                    select.empty();
+                                    select.selectpicker('refresh');
+
                                     toastr.error("Error trying to get list of jobs " + xhr.responseText);
                                 },
                                 beforeSend: function () {
-                                    // Before ajax is complete, disable next button
-                                    $('#partial_load_job').prop('disabled', true);
-
-                                    // Select picket will be feed in case of success
-                                    $('#select-job').selectpicker('refresh');
-                                    $('#select-job').empty();
+                                    select.selectpicker('refresh');
+                                    select.empty();
                                 }
                             });
                         }

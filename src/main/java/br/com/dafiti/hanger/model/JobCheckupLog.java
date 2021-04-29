@@ -33,15 +33,20 @@ import java.util.List;
 import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -50,9 +55,12 @@ import javax.persistence.TemporalType;
  * @author Valdiney V GOMES
  */
 @Entity
+@Table(indexes = {
+    @Index(name = "IDX_job_checkup_id_date", columnList = "job_checkup_id,date", unique = false)})
 public class JobCheckupLog implements Serializable {
 
     private Long id;
+    private JobCheckup checkup;
     private Date date = new Date();
     private String query;
     private String threshold;
@@ -63,23 +71,6 @@ public class JobCheckupLog implements Serializable {
     private Scope scope;
     private List<CommandLog> commandLog = new ArrayList();
 
-    public JobCheckupLog() {
-    }
-
-    public JobCheckupLog(JobCheckup jobCheckup) {
-        this(jobCheckup, "", false);
-    }
-
-    public JobCheckupLog(JobCheckup jobCheckup, String value, boolean success) {
-        this.query = jobCheckup.getQuery();
-        this.threshold = jobCheckup.getThreshold();
-        this.conditional = jobCheckup.getConditional();
-        this.action = jobCheckup.getAction();
-        this.scope = jobCheckup.getScope();
-        this.value = value;
-        this.success = success;
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long getId() {
@@ -88,6 +79,16 @@ public class JobCheckupLog implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "job_checkup_id", referencedColumnName = "id", foreignKey = @ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    public JobCheckup getCheckup() {
+        return checkup;
+    }
+
+    public void setCheckup(JobCheckup checkup) {
+        this.checkup = checkup;
     }
 
     @Temporal(TemporalType.TIMESTAMP)

@@ -33,7 +33,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Date;
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -79,7 +78,7 @@ public class JobCheckupController {
         Date dateTo = Date.from(LocalDateTime.of(LocalDate.now(), LocalTime.MAX).atZone(ZoneId.systemDefault()).toInstant());
 
         model.addAttribute("job", job);
-        model.addAttribute("checkups", jobCheckupLogService.findByJobCheckupAndDateBetween(job, dateFrom, dateTo));
+        model.addAttribute("checkups", jobCheckupLogService.findByJobCheckupAndDateBetween(job, dateFrom, dateTo, 10));
         model.addAttribute("approvals", jobApprovalService.findByJobOrderByCreatedAtDesc(job));
         model.addAttribute("dateFrom", simpleDateFormat.format(dateFrom));
         model.addAttribute("dateTo", simpleDateFormat.format(dateTo));
@@ -109,7 +108,7 @@ public class JobCheckupController {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         model.addAttribute("job", job);
-        model.addAttribute("checkups", jobCheckupLogService.findByJobCheckupAndDateBetween(job, dateFrom, dateTo));
+        model.addAttribute("checkups", jobCheckupLogService.findByJobCheckupAndDateBetween(job, dateFrom, dateTo, item));
         model.addAttribute("approvals", jobApprovalService.findByJobOrderByCreatedAtDesc(job));
         model.addAttribute("dateFrom", simpleDateFormat.format(dateFrom));
         model.addAttribute("dateTo", simpleDateFormat.format(dateTo));

@@ -151,10 +151,8 @@
                                             </td>                               
                                             <td th:text="${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}"></td>        
                                             <td th:text="${checkupLog.scope}"></td>  
-                                            <td>
-                                                <span th:text="${#strings.length(checkupLog.query) > 65 ? #strings.substring(checkupLog.query,0,65) : checkupLog.query}"></span>                                
-                                                <div class="btn-group" 
-                                                     th:if="${#strings.length(checkupLog.query) > 65}">                                    
+                                            <td>                          
+                                                <div class="btn-group">    
                                                     <button class="dropdown-toggle close" 
                                                             data-toggle="dropdown">...</button>
                                                     <ul class="dropdown-menu">                                                

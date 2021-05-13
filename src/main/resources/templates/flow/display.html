@@ -279,6 +279,7 @@
                 e.preventDefault();
                 job = this.id;
                 var enabled = isEnabled(job);
+                var rebuild = isRebuild(job);
                 var jobStatus = document.getElementById("span-status-" + job);
 
                 // Build a Job.
@@ -342,6 +343,39 @@
                     $.ajax({
                         type: "GET",
                         url: url + job + "/" + enabled,
+                        async: false,
+                        timeout: 30000,
+                        success: function (result) {
+                            toastr.success('Job successfully updated');
+
+                            setTimeout(function () {
+                                window.location.reload(1);
+                            }, timeout);
+                        },
+                        error: function (e) {
+                            toastr.error('Fail on job update ' + e);
+                        }
+                    });
+                };
+
+                // Set the job as reuildable or non rebuildable.
+                var rebuildable = function () {
+                    var url = /*[[@{/job/rebuildable/}]]*/ "/job/rebuildable/";
+
+                    toastr.options = {
+                        "closeButton": true,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "timeOut": timeout,
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    }
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + job + "/" + rebuild,
                         async: false,
                         timeout: 30000,
                         success: function (result) {
@@ -426,6 +460,7 @@
                             {icon: 'glyphicon glyphicon-play', label: 'Build', action: build, },
                             {icon: 'glyphicon glyphicon-fast-backward', label: 'Build Mesh', action: mesh},
                             {icon: enabled ? 'glyphicon glyphicon-eye-close' : 'glyphicon glyphicon-eye-open', label: enabled ? 'Disable' : 'Enable', action: enable},
+                            {icon: rebuild ? 'glyphicon glyphicon-ban-circle' : 'glyphicon glyphicon-repeat', label: rebuild ? 'Not Rebuildable' : 'Rebuildable', action: rebuildable},
                             {},
                             {icon: 'glyphicon glyphicon-plus', label: 'Parent', submenu: submenuParents},
                             {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren}
@@ -558,6 +593,32 @@
                 });
 
                 return isEnabled;
+            }
+
+            /**
+             * Identify if job is rebuildable.
+             * 
+             * @param {type} job Job id
+             * @returns boolean
+             */
+            function isRebuild(job) {
+                var isRebuildURL = /*[[@{/job/is/rebuild/}]]*/ "/job/is/rebuild/";
+                var isRebuild = true;
+
+                $.ajax({
+                    type: "GET",
+                    async: false,
+                    url: isRebuildURL + job,
+                    timeout: 30000,
+                    success: function (result) {
+                        isRebuild = result;
+                    },
+                    error: function (e) {
+                        isRebuild = true;
+                    }
+                });
+
+                return isRebuild;
             }
 
             /*]]>*/

@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.data.domain.PageRequest;
 
 /**
  *
@@ -74,13 +75,14 @@ public class JobCheckupLogService {
      * @param job Job
      * @param from Date from.
      * @param to Date to.
+     * @param item Item per page.
      * @return JobCheckupLog map of each JobCheckup.
      */
-    public Map<JobCheckup, List<JobCheckupLog>> findByJobCheckupAndDateBetween(Job job, Date from, Date to) {
+    public Map<JobCheckup, List<JobCheckupLog>> findByJobCheckupAndDateBetween(Job job, Date from, Date to, int item) {
         Map<JobCheckup, List<JobCheckupLog>> checkupLogs = new LinkedHashMap();
 
         job.getCheckup().forEach(checkup -> {
-            checkupLogs.put(checkup, jobCheckupLogRepository.findByCheckupAndDateBetweenOrderByDateDesc(checkup, from, to));
+            checkupLogs.put(checkup, jobCheckupLogRepository.findByCheckupAndDateBetweenOrderByDateDesc(checkup, from, to, PageRequest.of(0, item)));
         });
 
         return checkupLogs;

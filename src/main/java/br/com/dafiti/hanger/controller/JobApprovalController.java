@@ -47,7 +47,7 @@ import br.com.dafiti.hanger.service.UserService;
  * Manages all job approval requests.
  *
  * @author Guilherme ALMEIDA
- * @author Helio LEAL
+ * @author Helio Leal
  */
 @Controller
 @RequestMapping("/approval")

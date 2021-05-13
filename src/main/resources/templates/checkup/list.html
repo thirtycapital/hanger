@@ -83,8 +83,8 @@
             <div class="row">
                 <div th:each="checkup, checkupStat : ${checkups}">
                     <div class="space-top" th:classappend="${#maps.size(checkups) == 1 ? 'col-md-12' : 'col-md-6' }">
-                        <span class="label " 
-                              th:classappend="${checkup.key.enabled ? (checkup.key.getLastStatus() ? 'label-success' : 'label-danger') : 'label-default'}" 
+                        <span class="label "                               
+                              th:classappend="${checkup.key.enabled and not #lists.isEmpty(checkup.value) ? (checkup.value[0].success ? 'label-success' : 'label-danger') : 'label-default'}"                               
                               th:text="${ #strings.abbreviate(checkup.key.enabled ?  checkup.key.name : '[DISABLED] ' + checkup.key.name, 50)}"
                               th:title="${checkup.key.name}"></span>
 
@@ -151,10 +151,8 @@
                                             </td>                               
                                             <td th:text="${#dates.format(checkupLog.date, 'yyyy-MM-dd HH:mm:ss')}"></td>        
                                             <td th:text="${checkupLog.scope}"></td>  
-                                            <td>
-                                                <span th:text="${#strings.length(checkupLog.query) > 65 ? #strings.substring(checkupLog.query,0,65) : checkupLog.query}"></span>                                
-                                                <div class="btn-group" 
-                                                     th:if="${#strings.length(checkupLog.query) > 65}">                                    
+                                            <td>                          
+                                                <div class="btn-group">    
                                                     <button class="dropdown-toggle close" 
                                                             data-toggle="dropdown">...</button>
                                                     <ul class="dropdown-menu">                                                

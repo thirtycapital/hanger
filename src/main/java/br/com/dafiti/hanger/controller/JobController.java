@@ -1174,6 +1174,25 @@ public class JobController {
     }
 
     /**
+     * Set a job as rebuildable or non rebuildable.
+     *
+     * @param job Job
+     * @param rebuild
+     * @return Job flow.
+     */
+    @GetMapping(path = "/rebuildable/{job}/{rebuildable}")
+    public String rebuildable(
+            @PathVariable(value = "job") Job job,
+            @PathVariable(value = "rebuildable") boolean rebuild) {
+
+        job.setRebuild(!rebuild);
+        jobService.save(job);
+        jenkinsService.updateJob(job);
+
+        return "flow/display";
+    }
+
+    /**
      * Related email modal.
      *
      * @param job Job
@@ -1209,6 +1228,26 @@ public class JobController {
         }
 
         return isEnabled;
+    }
+
+    /**
+     * Identify if job is rebuildable.
+     *
+     * @param job Job
+     * @return boolean
+     */
+    @GetMapping(path = "/is/rebuild/{job}")
+    @ResponseBody
+    public boolean isRebuildable(
+            @PathVariable(value = "job") Job job) {
+
+        boolean isRebuildable = true;
+
+        if (job != null) {
+            isRebuildable = job.isRebuild();
+        }
+
+        return isRebuildable;
     }
 
     /**

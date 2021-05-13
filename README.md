@@ -178,6 +178,8 @@ Each *job* represented on flow has a  status and the follow information:
 		- **Abort**: Allows to stop the selected *job* execution.
 		- **Build:** Allows to execute the selected *job*. 
 		- **Build Mesh:** Allows to execute all he selected *job* chain.
+		- **Disable:** Allows to disable/enable a *job*.
+		- **Rebuildable** Allows to set rebuildable or not the selected *job*.
 		- **Parent:** Shows a list with all the Jenkins available servers, where it is possible to add one or more parents to the current *job*:	
 			- Click on the chosen server.
 			- A screen with all the available jobs in that server will be displayed.
@@ -188,8 +190,6 @@ Each *job* represented on flow has a  status and the follow information:
 			- A screen with all the available jobs in that server will be displayed.
 			- It is possible to select the jobs on the list or simply type the name of the jobs on Jobs field (comma-separated).
 			- Click on Add to conclude the action.
-
-		- **Disable:** Allows to disable/enable a *job*.
 
 During the Flow view, the available options are:
 

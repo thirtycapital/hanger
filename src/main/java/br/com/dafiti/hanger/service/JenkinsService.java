@@ -505,11 +505,11 @@ public class JenkinsService {
     }
 
     /**
-     * Updates job assigned node on jenkins.
+     * Updates job node on jenkins.
      *
      * @param job Job
      */
-    public void updateAssignedNode(Job job) {
+    public void updateNode(Job job) {
         JenkinsServer jenkins;
 
         if (job != null) {
@@ -521,17 +521,17 @@ public class JenkinsService {
                         String name = job.getName();
                         String config = jenkins.getJobXml(name);
                         
-                        //If the AssignedNode attribute is empty, remove the tag from xml.
-                        if (job.getAssignedNode() == null || job.getAssignedNode().isEmpty()) {
+                        //If the node attribute is empty, remove the tag from xml.
+                        if (job.getNode() == null || job.getNode().isEmpty()) {
                             config = config.replaceAll("(?s)<assignedNode>(.*)</assignedNode>", "");
                             //Check: Restricts where this project can be executed.
                             config = config.replaceAll("(?s)<canRoam>(.*)</canRoam>", "<canRoam>true</canRoam>");
                         } else {
-                            //If you have the AssignedNode attribute, add or update the tag.
+                            //If node attribute exists, add or update the tag.
                             if (config.contains("<assignedNode>")) {
-                                config = config.replaceAll("(?s)<assignedNode>(.*)</assignedNode>", "<assignedNode>" + job.getAssignedNode() + "</assignedNode>");
+                                config = config.replaceAll("(?s)<assignedNode>(.*)</assignedNode>", "<assignedNode>" + job.getNode() + "</assignedNode>");
                             } else {
-                                config = config.replace("</project>", "<assignedNode>" + job.getAssignedNode() + "</assignedNode></project>");
+                                config = config.replace("</project>", "<assignedNode>" + job.getNode() + "</assignedNode></project>");
                             }
                             //Check: Restricts where this project can be executed.
                             config = config.replaceAll("(?s)<canRoam>(.*)</canRoam>", "<canRoam>false</canRoam>");
@@ -542,7 +542,7 @@ public class JenkinsService {
                     }
                 }
             } catch (URISyntaxException | IOException ex) {
-                LOG.log(Level.WARN, "Fail updating Jenkins job assigned node!", ex);
+                LOG.log(Level.WARN, "Fail updating Jenkins job node!", ex);
             }
         }
     }
@@ -741,9 +741,9 @@ public class JenkinsService {
      * @param job Job
      * @return Shell script list.
      */
-    public String getAssignedNode(Job job) {
+    public String getNode(Job job) {
         JenkinsServer jenkins;
-        StringBuilder assignedNode = new StringBuilder();
+        StringBuilder node = new StringBuilder();
 
         if (job != null) {
             try {
@@ -757,7 +757,7 @@ public class JenkinsService {
                             Document document = Jsoup.parse(config);
 
                             document.getElementsByTag("assignedNode").forEach(element -> {
-                                assignedNode.append(element
+                                node.append(element
                                         .wholeText()
                                         .trim()
                                         .replaceAll("\\|\\|", "\\,"));
@@ -768,11 +768,11 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                LOG.log(Level.ERROR, "Fail getting assigned node from job " + job.getName() + "!", ex);
+                LOG.log(Level.ERROR, "Fail getting node from job " + job.getName() + "!", ex);
             }
         }
 
-        return assignedNode.toString();
+        return node.toString();
     }
 
     /**

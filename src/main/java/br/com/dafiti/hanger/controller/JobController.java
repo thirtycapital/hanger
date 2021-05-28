@@ -210,7 +210,7 @@ public class JobController {
             @PathVariable(value = "id") Job job) {
 
         job.setShellScript(jenkinsService.getShellScript(job));
-        job.setAssignedNode(jenkinsService.getAssignedNode(job));
+        job.setNode(jenkinsService.getNode(job));
         this.modelDefault(model, job);
         return "job/edit";
     }
@@ -253,7 +253,7 @@ public class JobController {
             @PathVariable(value = "id") Job job) {
 
         job.setShellScript(jenkinsService.getShellScript(job));
-        job.setAssignedNode(jenkinsService.getAssignedNode(job));
+        job.setNode(jenkinsService.getNode(job));
         this.modelDefault(model, job, false);
         return "job/view";
     }
@@ -463,7 +463,7 @@ public class JobController {
                     job.setShellScript(jenkinsService.getShellScript(job, template));
                 }
 
-                job.setAssignedNode(jenkinsService.getAssignedNode(job));
+                job.setNode(jenkinsService.getNode(job));
                 model.addAttribute("readOnly", true);
             } else {
                 throw new URISyntaxException("Server is not running", "Jenkins");

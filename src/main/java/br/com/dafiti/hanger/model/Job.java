@@ -76,7 +76,7 @@ public class Job extends Tracker<Job> implements Serializable {
     private String alias;
     private String description;
     private String timeRestriction;
-    private String assignedNode;
+    private String node;
     private int retry;
     private int tolerance;
     private int wait;
@@ -281,12 +281,12 @@ public class Job extends Tracker<Job> implements Serializable {
     }
 
     @Transient
-    public String getAssignedNode() {
-        return assignedNode;
+    public String getNode() {
+        return node;
     }
 
-    public void setAssignedNode(String assignedNode) {
-        this.assignedNode = assignedNode;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public boolean isRebuild() {

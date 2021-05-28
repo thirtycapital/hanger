@@ -759,8 +759,7 @@ public class JenkinsService {
                             document.getElementsByTag("assignedNode").forEach(element -> {
                                 node.append(element
                                         .wholeText()
-                                        .trim()
-                                        .replaceAll("\\|\\|", "\\,"));
+                                        .trim());
                             });
                         }
                     }

@@ -505,6 +505,49 @@ public class JenkinsService {
     }
 
     /**
+     * Updates job assigned node on jenkins.
+     *
+     * @param job Job
+     */
+    public void updateAssignedNode(Job job) {
+        JenkinsServer jenkins;
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        String name = job.getName();
+                        String config = jenkins.getJobXml(name);
+                        
+                        //If the AssignedNode attribute is empty, remove the tag from xml.
+                        if (job.getAssignedNode() == null || job.getAssignedNode().isEmpty()) {
+                            config = config.replaceAll("(?s)<assignedNode>(.*)</assignedNode>", "");
+                            //Check: Restricts where this project can be executed.
+                            config = config.replaceAll("(?s)<canRoam>(.*)</canRoam>", "<canRoam>true</canRoam>");
+                        } else {
+                            //If you have the AssignedNode attribute, add or update the tag.
+                            if (config.contains("<assignedNode>")) {
+                                config = config.replaceAll("(?s)<assignedNode>(.*)</assignedNode>", "<assignedNode>" + job.getAssignedNode() + "</assignedNode>");
+                            } else {
+                                config = config.replace("</project>", "<assignedNode>" + job.getAssignedNode() + "</assignedNode></project>");
+                            }
+                            //Check: Restricts where this project can be executed.
+                            config = config.replaceAll("(?s)<canRoam>(.*)</canRoam>", "<canRoam>false</canRoam>");
+                        }
+
+                        //Update Jenkins job. 
+                        jenkins.updateJob(name, config, true);
+                    }
+                }
+            } catch (URISyntaxException | IOException ex) {
+                LOG.log(Level.WARN, "Fail updating Jenkins job assigned node!", ex);
+            }
+        }
+    }
+
+    /**
      * Clone a job template from jenkins.
      *
      * @param job Job

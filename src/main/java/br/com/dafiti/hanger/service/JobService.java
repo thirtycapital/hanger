@@ -227,6 +227,9 @@ public class JobService {
         //Update shell script plugin. 
         jenkinsService.updateShellScript(job);
 
+        //Update assigned node. 
+        jenkinsService.updateAssignedNode(job);
+
         //Update name, notification plugin and enable/disable a job. 
         jenkinsService.updateJob(job);
 

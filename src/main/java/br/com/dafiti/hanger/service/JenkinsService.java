@@ -520,9 +520,9 @@ public class JenkinsService {
                     if (jenkins.isRunning()) {
                         String name = job.getName();
                         String config = jenkins.getJobXml(name);
-                        
+
                         //If the node attribute is empty, remove the tag from xml.
-                        if (job.getNode() == null || job.getNode().isEmpty()) {
+                        if (job.getNode() == null || job.getNode().trim().isEmpty()) {
                             config = config.replaceAll("(?s)<assignedNode>(.*)</assignedNode>", "");
                             //Check: Restricts where this project can be executed.
                             config = config.replaceAll("(?s)<canRoam>(.*)</canRoam>", "<canRoam>true</canRoam>");
@@ -543,6 +543,87 @@ public class JenkinsService {
                 }
             } catch (URISyntaxException | IOException ex) {
                 LOG.log(Level.WARN, "Fail updating Jenkins job node!", ex);
+            }
+        }
+    }
+
+    /**
+     * Updates job cron on jenkins.
+     *
+     * @param job Job
+     */
+    public void updateCron(Job job) {
+        JenkinsServer jenkins;
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        String name = job.getName();
+                        String config = jenkins.getJobXml(name);
+
+                        //If the cron attribute is empty, remove the tag from xml.
+                        if (job.getCron() == null || job.getCron().trim().isEmpty()) {
+                            config = config.replaceAll("(?s)<triggers>(.*)</triggers>", "<triggers/>");
+                        } else {
+                            //If cron attribute exists, add or update the tag.
+                            if (config.contains("<triggers>")) {
+                                config = config.replaceAll("(?s)<spec>(.*)</spec>", "<spec>" + job.getCron() + "</spec>");
+                            } else {
+                                config = config.replace("<triggers/>", "<triggers><hudson.triggers.TimerTrigger><spec>" + job.getCron() + "</spec></hudson.triggers.TimerTrigger></triggers>");
+                            }
+                        }
+
+                        //Update Jenkins job. 
+                        jenkins.updateJob(name, config, true);
+                    }
+                }
+            } catch (URISyntaxException | IOException ex) {
+                LOG.log(Level.WARN, "Fail updating Jenkins job!", ex);
+            }
+        }
+    }
+
+    /**
+     * Updates job blocking jobs on jenkins.
+     *
+     * @param job Job
+     */
+    public void updateBlockingJobs(Job job) {
+        JenkinsServer jenkins;
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        String name = job.getName();
+                        String config = jenkins.getJobXml(name);
+
+                        //If the blocking jobs attribute is empty, remove the tag from xml.
+                        if (job.getBlockingJobs() == null || job.getBlockingJobs().trim().isEmpty()) {
+                            config = config.replaceAll("(?s)<blockingJobs>(.*)</blockingJobs>", "<blockingJobs/>");
+                            config = config.replaceAll("(?s)<useBuildBlocker>(.*)</useBuildBlocker>", "<useBuildBlocker>false</useBuildBlocker>");
+                        } else {
+                            //If blocking jobs attribute exists, add or update the tag.
+                            if (config.contains("<blockingJobs>")) {
+                                config = config.replaceAll("(?s)<blockingJobs>(.*)</blockingJobs>", "<blockingJobs>" + job.getBlockingJobs() + "</blockingJobs>");
+                            } else {
+                                config = config.replace("<blockingJobs/>", "<blockingJobs>" + job.getBlockingJobs() + "</blockingJobs>");
+                            }
+
+                            config = config.replaceAll("(?s)<useBuildBlocker>(.*)</useBuildBlocker>", "<useBuildBlocker>true</useBuildBlocker>");
+                        }
+
+                        //Update Jenkins job. 
+                        jenkins.updateJob(name, config, true);
+                    }
+                }
+            } catch (URISyntaxException | IOException ex) {
+                LOG.log(Level.WARN, "Fail updating Jenkins job!", ex);
             }
         }
     }
@@ -736,10 +817,10 @@ public class JenkinsService {
     }
 
     /**
-     * Retrieves a string with nodes that executes the job
+     * Retrieves a string with nodes that executes the job.
      *
      * @param job Job
-     * @return Shell script list.
+     * @return Assigned node
      */
     public String getNode(Job job) {
         JenkinsServer jenkins;
@@ -772,6 +853,84 @@ public class JenkinsService {
         }
 
         return node.toString();
+    }
+
+    /**
+     * Retrieves a string with crontab that builds the job periodically.
+     *
+     * @param job Job
+     * @return cron
+     */
+    public String getCron(Job job) {
+        JenkinsServer jenkins;
+        StringBuilder cron = new StringBuilder();
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning() && job.getName() != null) {
+                        String config = jenkins.getJobXml(job.getName());
+
+                        if (config != null) {
+                            Document document = Jsoup.parse(config);
+
+                            document.getElementsByTag("triggers").forEach(element -> {
+                                cron.append(element
+                                        .wholeText()
+                                        .trim());
+                            });
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                LOG.log(Level.ERROR, "Fail getting cron from job " + job.getName() + "!", ex);
+            }
+        }
+
+        return cron.toString();
+    }
+
+    /**
+     * Recovers a string with blocking jobs.
+     *
+     * @param job Job
+     * @return Blocking jobs.
+     */
+    public String getBlockingJobs(Job job) {
+        JenkinsServer jenkins;
+        StringBuilder blockingJobs = new StringBuilder();
+
+        if (job != null) {
+            try {
+                jenkins = this.getJenkinsServer(job.getServer());
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning() && job.getName() != null) {
+                        String config = jenkins.getJobXml(job.getName());
+
+                        if (config != null) {
+                            Document document = Jsoup.parse(config);
+
+                            document.getElementsByTag("blockingJobs").forEach(element -> {
+                                blockingJobs.append(element
+                                        .wholeText()
+                                        .trim());
+                            });
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                LOG.log(Level.ERROR, "Fail getting blocking jobs from job " + job.getName() + "!", ex);
+            }
+        }
+
+        return blockingJobs.toString();
     }
 
     /**

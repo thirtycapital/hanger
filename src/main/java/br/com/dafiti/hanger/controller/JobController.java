@@ -211,6 +211,9 @@ public class JobController {
 
         job.setShellScript(jenkinsService.getShellScript(job));
         job.setNode(jenkinsService.getNode(job));
+        job.setCron(jenkinsService.getCron(job));
+        job.setBlockingJobs(jenkinsService.getBlockingJobs(job));
+
         this.modelDefault(model, job);
         return "job/edit";
     }
@@ -254,6 +257,8 @@ public class JobController {
 
         job.setShellScript(jenkinsService.getShellScript(job));
         job.setNode(jenkinsService.getNode(job));
+        job.setCron(jenkinsService.getCron(job));
+        job.setBlockingJobs(jenkinsService.getBlockingJobs(job));
         this.modelDefault(model, job, false);
         return "job/view";
     }

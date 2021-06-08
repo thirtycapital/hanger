@@ -95,6 +95,8 @@ public class Job extends Tracker<Job> implements Serializable {
     private boolean rebuildBlocked;
     private boolean anyScope;
     private boolean checkupNotified;
+    private String cron;
+    private String blockingJobs;
 
     public Job() {
     }
@@ -412,6 +414,24 @@ public class Job extends Tracker<Job> implements Serializable {
 
     public void setCheckupNotified(boolean checkupNotified) {
         this.checkupNotified = checkupNotified;
+    }
+
+    @Transient
+    public String getCron() {
+        return cron;
+    }
+
+    public void setCron(String cron) {
+        this.cron = cron;
+    }
+
+    @Transient
+    public String getBlockingJobs() {
+        return blockingJobs;
+    }
+
+    public void setBlockingJobs(String blockingJobs) {
+        this.blockingJobs = blockingJobs;
     }
 
     @Override

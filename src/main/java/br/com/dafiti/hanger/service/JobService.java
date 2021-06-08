@@ -230,6 +230,12 @@ public class JobService {
         //Update node. 
         jenkinsService.updateNode(job);
 
+        //Update cron.
+        jenkinsService.updateCron(job);
+
+        //Update blocking jobs.
+        jenkinsService.updateBlockingJobs(job);
+
         //Update name, notification plugin and enable/disable a job. 
         jenkinsService.updateJob(job);
 

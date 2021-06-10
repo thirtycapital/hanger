@@ -817,12 +817,23 @@ public class JenkinsService {
     }
 
     /**
-     * Retrieves a string with nodes that executes the job.
+     * Retrieves a string with node that executes the job.
      *
      * @param job Job
      * @return Assigned node
      */
     public String getNode(Job job) {
+        return this.getNode(job, job.getName());
+    }
+
+    /**
+     * Retrieves a string with node that executes the job.
+     *
+     * @param job Job
+     * @param jobName Name of job to get configuration from
+     * @return Assigned node
+     */
+    public String getNode(Job job, String jobName) {
         JenkinsServer jenkins;
         StringBuilder node = new StringBuilder();
 
@@ -831,8 +842,8 @@ public class JenkinsService {
                 jenkins = this.getJenkinsServer(job.getServer());
 
                 if (jenkins != null) {
-                    if (jenkins.isRunning() && job.getName() != null) {
-                        String config = jenkins.getJobXml(job.getName());
+                    if (jenkins.isRunning() && jobName != null) {
+                        String config = jenkins.getJobXml(jobName);
 
                         if (config != null) {
                             Document document = Jsoup.parse(config);
@@ -848,7 +859,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                LOG.log(Level.ERROR, "Fail getting node from job " + job.getName() + "!", ex);
+                LOG.log(Level.ERROR, "Fail getting node from job " + jobName + "!", ex);
             }
         }
 
@@ -856,12 +867,23 @@ public class JenkinsService {
     }
 
     /**
-     * Retrieves a string with crontab that builds the job periodically.
+     * Retrieves a string with cron that builds the job periodically.
      *
      * @param job Job
      * @return cron
      */
     public String getCron(Job job) {
+        return this.getCron(job, job.getName());
+    }
+
+    /**
+     * Retrieves a string with cron that builds the job periodically.
+     *
+     * @param job Job
+     * @param jobName
+     * @return cron
+     */
+    public String getCron(Job job, String jobName) {
         JenkinsServer jenkins;
         StringBuilder cron = new StringBuilder();
 
@@ -870,8 +892,8 @@ public class JenkinsService {
                 jenkins = this.getJenkinsServer(job.getServer());
 
                 if (jenkins != null) {
-                    if (jenkins.isRunning() && job.getName() != null) {
-                        String config = jenkins.getJobXml(job.getName());
+                    if (jenkins.isRunning() && jobName != null) {
+                        String config = jenkins.getJobXml(jobName);
 
                         if (config != null) {
                             Document document = Jsoup.parse(config);
@@ -887,7 +909,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                LOG.log(Level.ERROR, "Fail getting cron from job " + job.getName() + "!", ex);
+                LOG.log(Level.ERROR, "Fail getting cron from job " + jobName + "!", ex);
             }
         }
 
@@ -898,9 +920,20 @@ public class JenkinsService {
      * Recovers a string with blocking jobs.
      *
      * @param job Job
-     * @return Blocking jobs.
+     * @return Blocking jobs
      */
     public String getBlockingJobs(Job job) {
+        return this.getBlockingJobs(job, job.getName());
+    }
+
+    /**
+     * Recovers a string with blocking jobs.
+     *
+     * @param job Job
+     * @param jobName
+     * @return Blocking jobs
+     */
+    public String getBlockingJobs(Job job, String jobName) {
         JenkinsServer jenkins;
         StringBuilder blockingJobs = new StringBuilder();
 
@@ -909,8 +942,8 @@ public class JenkinsService {
                 jenkins = this.getJenkinsServer(job.getServer());
 
                 if (jenkins != null) {
-                    if (jenkins.isRunning() && job.getName() != null) {
-                        String config = jenkins.getJobXml(job.getName());
+                    if (jenkins.isRunning() && jobName != null) {
+                        String config = jenkins.getJobXml(jobName);
 
                         if (config != null) {
                             Document document = Jsoup.parse(config);
@@ -926,7 +959,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                LOG.log(Level.ERROR, "Fail getting blocking jobs from job " + job.getName() + "!", ex);
+                LOG.log(Level.ERROR, "Fail getting blocking jobs from job " + jobName + "!", ex);
             }
         }
 

@@ -100,6 +100,7 @@
                         <textarea 
                             class="form-control" 
                             rows="3" 
+                            placeholder="Blocking Jobs"
                             th:field="*{blockingJobs}"
                             maxlength="65000"></textarea>                           
                         <span th:if="${#fields.hasErrors('blockingJobs')}" class="help-block" th:errors="*{blockingJobs}"></span>

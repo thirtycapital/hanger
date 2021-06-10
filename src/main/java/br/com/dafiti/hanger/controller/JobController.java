@@ -462,13 +462,18 @@ public class JobController {
                 if (importJob) {
                     job.setName(importJobName);
                     job.setShellScript(jenkinsService.getShellScript(job));
+                    job.setNode(jenkinsService.getNode(job));
+                    job.setCron(jenkinsService.getCron(job));
+                    job.setBlockingJobs(jenkinsService.getBlockingJobs(job));
                 } else {
                     job.setName(newJobName);
                     jenkinsService.clone(job, template);
                     job.setShellScript(jenkinsService.getShellScript(job, template));
+                    job.setNode(jenkinsService.getNode(job, template));
+                    job.setCron(jenkinsService.getCron(job, template));
+                    job.setBlockingJobs(jenkinsService.getBlockingJobs(job, template));
                 }
 
-                job.setNode(jenkinsService.getNode(job));
                 model.addAttribute("readOnly", true);
             } else {
                 throw new URISyntaxException("Server is not running", "Jenkins");

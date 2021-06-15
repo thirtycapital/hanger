@@ -65,6 +65,9 @@
                     // Default value is to import jobs.
                     var importJob = true;
 
+                    // Show cron description on startup.
+                    displayCronDescription($('#cron').val());
+
                     // Load jobs list only when select server
                     if ($("#select-server").val() !== undefined) {
                         loadJobList(importJob);
@@ -368,6 +371,37 @@
                         });
 
                         codeMirror.setSize("100%", "200px");
+                    }
+
+                    /*
+                     * Display cron description when change field.
+                     */
+                    $('#cron').change(function () {
+                        displayCronDescription($(this).val());
+                    });
+
+                    /*
+                     * Display cron description.
+                     */
+                    function displayCronDescription(cron) {
+                        var url = /*[[@{/job/cron/description/}]]*/ "/cron/description/";
+
+                        $('#divCronDescription').hide();
+                        $('#cronDescription').text("");
+
+                        if (cron !== "") {
+                            $.ajax({
+                                type: "GET",
+                                url: url + cron,
+                                timeout: 15000,
+                                success: function (cronDescription) {
+                                    if (cronDescription !== "") {
+                                        $('#divCronDescription').show();
+                                        $('#cronDescription').text(cronDescription);
+                                    }
+                                }
+                            });
+                        }
                     }
                 });
             </script>

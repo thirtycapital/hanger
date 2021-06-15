@@ -1294,4 +1294,17 @@ public class JobController {
         model.addAttribute("log", jenkinsService.getLog(job));
         return "job/log";
     }
+
+    /**
+     * Get cron description.
+     *
+     * @param cron
+     * @return String cron description.
+     */
+    @GetMapping(path = "/cron/description/{cron}")
+    @ResponseBody
+    public String getCronDescription(
+            @PathVariable(value = "cron") String cron) {
+        return jobService.getCronDescription(cron);
+    }
 }

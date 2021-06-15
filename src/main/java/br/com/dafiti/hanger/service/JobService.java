@@ -32,7 +32,9 @@ import br.com.dafiti.hanger.option.Action;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.repository.JobRepository;
+import com.cronutils.descriptor.CronDescriptor;
 import static com.cronutils.model.CronType.QUARTZ;
+import static com.cronutils.model.CronType.UNIX;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import java.io.IOException;
@@ -41,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.commons.lang.StringUtils;
@@ -669,5 +672,33 @@ public class JobService {
      */
     public HashSet<JobParent> getChildrenlist(Job job) {
         return jobParentService.findByParent(job);
+    }
+
+    /**
+     * Get cron description.
+     *
+     * @param cron
+     * @return
+     */
+    public String getCronDescription(String cron) {
+        String description = "";
+
+        try {
+            if (cron != null) {
+                if (!cron.isEmpty()) {
+                    description = StringUtils.capitalize(
+                            CronDescriptor
+                                    .instance(Locale.ENGLISH)
+                                    .describe(new CronParser(
+                                            CronDefinitionBuilder.instanceDefinitionFor(UNIX))
+                                            .parse(cron)
+                                    )
+                    );
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        return description;
     }
 }

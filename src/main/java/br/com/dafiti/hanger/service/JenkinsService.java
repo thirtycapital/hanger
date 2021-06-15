@@ -25,6 +25,9 @@ package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.Server;
+import static com.cronutils.model.CronType.UNIX;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.parser.CronParser;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildWithDetails;
@@ -568,6 +571,11 @@ public class JenkinsService {
                         if (job.getCron() == null || job.getCron().trim().isEmpty()) {
                             config = config.replaceAll("(?s)<triggers>(.*)</triggers>", "<triggers/>");
                         } else {
+                            //Identify if cron expression is valid.
+                            new CronParser(
+                                    CronDefinitionBuilder.instanceDefinitionFor(UNIX))
+                                    .parse(job.getCron()).validate();
+
                             //If cron attribute exists, add or update the tag.
                             if (config.contains("<triggers>")) {
                                 config = config.replaceAll("(?s)<spec>(.*)</spec>", "<spec>" + job.getCron() + "</spec>");

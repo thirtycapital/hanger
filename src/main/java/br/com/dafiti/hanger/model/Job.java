@@ -25,6 +25,7 @@ package br.com.dafiti.hanger.model;
 
 import com.cronutils.descriptor.CronDescriptor;
 import static com.cronutils.model.CronType.QUARTZ;
+import static com.cronutils.model.CronType.UNIX;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import java.io.Serializable;
@@ -423,6 +424,26 @@ public class Job extends Tracker<Job> implements Serializable {
 
     public void setCron(String cron) {
         this.cron = cron;
+    }
+
+    @Transient
+    public String getCronDescription() {
+        String description = "";
+
+        if (this.getCron() != null) {
+            if (!this.getCron().isEmpty()) {
+                description = StringUtils.capitalize(
+                        CronDescriptor
+                                .instance(Locale.ENGLISH)
+                                .describe(new CronParser(
+                                        CronDefinitionBuilder.instanceDefinitionFor(UNIX))
+                                        .parse(this.getCron())
+                                )
+                );
+            }
+        }
+
+        return description;
     }
 
     @Transient

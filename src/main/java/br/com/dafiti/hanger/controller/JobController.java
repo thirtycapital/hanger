@@ -208,12 +208,7 @@ public class JobController {
     public String edit(
             Model model,
             @PathVariable(value = "id") Job job) {
-
-        job.setShellScript(jenkinsService.getShellScript(job));
-        job.setNode(jenkinsService.getNode(job));
-        job.setCron(jenkinsService.getCron(job));
-        job.setBlockingJobs(jenkinsService.getBlockingJobs(job));
-
+        this.setJobConfiguration(job);
         this.modelDefault(model, job);
         return "job/edit";
     }
@@ -254,11 +249,7 @@ public class JobController {
     public String view(
             Model model,
             @PathVariable(value = "id") Job job) {
-
-        job.setShellScript(jenkinsService.getShellScript(job));
-        job.setNode(jenkinsService.getNode(job));
-        job.setCron(jenkinsService.getCron(job));
-        job.setBlockingJobs(jenkinsService.getBlockingJobs(job));
+        this.setJobConfiguration(job);
         this.modelDefault(model, job, false);
         return "job/view";
     }
@@ -461,17 +452,11 @@ public class JobController {
                 //Identify if import or create a new job.
                 if (importJob) {
                     job.setName(importJobName);
-                    job.setShellScript(jenkinsService.getShellScript(job));
-                    job.setNode(jenkinsService.getNode(job));
-                    job.setCron(jenkinsService.getCron(job));
-                    job.setBlockingJobs(jenkinsService.getBlockingJobs(job));
+                    this.setJobConfiguration(job);
                 } else {
                     job.setName(newJobName);
                     jenkinsService.clone(job, template);
-                    job.setShellScript(jenkinsService.getShellScript(job, template));
-                    job.setNode(jenkinsService.getNode(job, template));
-                    job.setCron(jenkinsService.getCron(job, template));
-                    job.setBlockingJobs(jenkinsService.getBlockingJobs(job, template));
+                    this.setJobConfiguration(job, template);
                 }
 
                 model.addAttribute("readOnly", true);
@@ -1306,5 +1291,27 @@ public class JobController {
     public String getCronDescription(
             @PathVariable(value = "cron") String cron) {
         return jobService.getCronDescription(cron);
+    }
+
+    /**
+     * Defines jenkins job configuration.
+     *
+     * @param job Job
+     */
+    private void setJobConfiguration(Job job) {
+        this.setJobConfiguration(job, job.getName());
+    }
+
+    /**
+     * Defines jenkins job configuration.
+     *
+     * @param job Job
+     * @param String job name
+     */
+    private void setJobConfiguration(Job job, String jobName) {
+        job.setShellScript(jenkinsService.getShellScript(job, jobName));
+        job.setNode(jenkinsService.getNode(job));
+        job.setCron(jenkinsService.getCron(job));
+        job.setBlockingJobs(jenkinsService.getBlockingJobs(job));
     }
 }

@@ -264,16 +264,6 @@ public class JenkinsService {
      * Retrieves one or more shell script commands related to a job.
      *
      * @param job Job
-     * @return
-     */
-    public List<String> getShellScript(Job job) {
-        return this.getShellScript(job, job.getName());
-    }
-
-    /**
-     * Retrieves one or more shell script commands related to a job.
-     *
-     * @param job Job
      * @param jobName Name of job to get configuration from
      * @return Shell script list.
      */

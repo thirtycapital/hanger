@@ -25,6 +25,7 @@ package br.com.dafiti.hanger.model;
 
 import com.cronutils.descriptor.CronDescriptor;
 import static com.cronutils.model.CronType.QUARTZ;
+import static com.cronutils.model.CronType.UNIX;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import java.io.Serializable;
@@ -76,7 +77,7 @@ public class Job extends Tracker<Job> implements Serializable {
     private String alias;
     private String description;
     private String timeRestriction;
-    private String assignedNode;
+    private String node;
     private int retry;
     private int tolerance;
     private int wait;
@@ -95,6 +96,8 @@ public class Job extends Tracker<Job> implements Serializable {
     private boolean rebuildBlocked;
     private boolean anyScope;
     private boolean checkupNotified;
+    private String cron;
+    private String blockingJobs;
 
     public Job() {
     }
@@ -281,12 +284,12 @@ public class Job extends Tracker<Job> implements Serializable {
     }
 
     @Transient
-    public String getAssignedNode() {
-        return assignedNode;
+    public String getNode() {
+        return node;
     }
 
-    public void setAssignedNode(String assignedNode) {
-        this.assignedNode = assignedNode;
+    public void setNode(String node) {
+        this.node = node;
     }
 
     public boolean isRebuild() {
@@ -412,6 +415,44 @@ public class Job extends Tracker<Job> implements Serializable {
 
     public void setCheckupNotified(boolean checkupNotified) {
         this.checkupNotified = checkupNotified;
+    }
+
+    @Transient
+    public String getCron() {
+        return cron;
+    }
+
+    public void setCron(String cron) {
+        this.cron = cron;
+    }
+
+    @Transient
+    public String getCronDescription() {
+        String description = "";
+
+        if (this.getCron() != null) {
+            if (!this.getCron().isEmpty()) {
+                description = StringUtils.capitalize(
+                        CronDescriptor
+                                .instance(Locale.ENGLISH)
+                                .describe(new CronParser(
+                                        CronDefinitionBuilder.instanceDefinitionFor(UNIX))
+                                        .parse(this.getCron())
+                                )
+                );
+            }
+        }
+
+        return description;
+    }
+
+    @Transient
+    public String getBlockingJobs() {
+        return blockingJobs;
+    }
+
+    public void setBlockingJobs(String blockingJobs) {
+        this.blockingJobs = blockingJobs;
     }
 
     @Override

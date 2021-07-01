@@ -208,9 +208,7 @@ public class JobController {
     public String edit(
             Model model,
             @PathVariable(value = "id") Job job) {
-
-        job.setShellScript(jenkinsService.getShellScript(job));
-        job.setAssignedNode(jenkinsService.getAssignedNode(job));
+        this.setJobConfiguration(job);
         this.modelDefault(model, job);
         return "job/edit";
     }
@@ -251,9 +249,7 @@ public class JobController {
     public String view(
             Model model,
             @PathVariable(value = "id") Job job) {
-
-        job.setShellScript(jenkinsService.getShellScript(job));
-        job.setAssignedNode(jenkinsService.getAssignedNode(job));
+        this.setJobConfiguration(job);
         this.modelDefault(model, job, false);
         return "job/view";
     }
@@ -432,42 +428,126 @@ public class JobController {
     }
 
     /**
-     * Save a job.
+     * Partial save an imported job.
      *
-     * @param job Job
+     * @param job
+     * @param importServer
      * @param importJob
-     * @param newJobName
-     * @param template
-     * @param importJobName
+     * @param action
      * @param model
      * @return Job edit
      */
-    @PostMapping(path = "/save", params = {"partial_load_job"})
+    @PostMapping(path = "/save", params = {"partial_import_job"})
     public String loadJob(
             @Valid @ModelAttribute Job job,
-            @RequestParam(name = "importJob", required = false) boolean importJob,
-            @RequestParam(name = "jobName", required = false) String newJobName,
-            @RequestParam(name = "select-template", required = false) String template,
-            @RequestParam(name = "select-job", required = false) String importJobName,
+            @RequestParam(name = "action", required = false) String action,
+            @RequestParam(name = "importServer", required = false) Server importServer,
+            @RequestParam(name = "importJob", required = false) String importJob,
             Model model) {
 
         try {
-            if (jenkinsService.isRunning(job.getServer())) {
-                //Identify if import or create a new job.
-                if (importJob) {
-                    job.setName(importJobName);
-                    job.setShellScript(jenkinsService.getShellScript(job));
-                } else {
-                    job.setName(newJobName);
-                    jenkinsService.clone(job, template);
-                    job.setShellScript(jenkinsService.getShellScript(job, template));
-                }
-
-                job.setAssignedNode(jenkinsService.getAssignedNode(job));
-                model.addAttribute("readOnly", true);
+            if (jenkinsService.isRunning(importServer)) {
+                job.setServer(importServer);
+                job.setName(importJob);
+                this.setJobConfiguration(job);
             } else {
                 throw new URISyntaxException("Server is not running", "Jenkins");
             }
+            model.addAttribute("readOnly", true);
+
+        } catch (URISyntaxException ex) {
+            job.setServer(null);
+            model.addAttribute("errorMessage", "Fail: " + ex.getMessage());
+        } finally {
+            this.modelDefault(model, job);
+        }
+
+        return "job/edit";
+    }
+
+    /**
+     * Partial save a created job.
+     *
+     * @param job
+     * @param createServer
+     * @param createJob
+     * @param createJobName
+     * @param action
+     * @param model
+     * @return Job edit
+     */
+    @PostMapping(path = "/save", params = {"partial_create_job"})
+    public String loadJob(
+            @Valid @ModelAttribute Job job,
+            @RequestParam(name = "action", required = false) String action,
+            @RequestParam(name = "createServer", required = false) Server createServer,
+            @RequestParam(name = "createJob", required = false) String createJob,
+            @RequestParam(name = "createJobName", required = false) String createJobName,
+            Model model) {
+
+        try {
+            if (jenkinsService.isRunning(createServer)) {
+                job.setServer(createServer);
+                job.setName(createJobName);
+                jenkinsService.clone(job, createJob);
+                this.setJobConfiguration(job, createJob);
+            } else {
+                throw new URISyntaxException("Server is not running", "Jenkins");
+            }
+            model.addAttribute("readOnly", true);
+
+        } catch (URISyntaxException | IOException ex) {
+            job.setServer(null);
+            model.addAttribute("errorMessage", "Fail: " + ex.getMessage());
+        } finally {
+            this.modelDefault(model, job);
+        }
+
+        return "job/edit";
+    }
+
+    /**
+     * Partial save a migrated job.
+     *
+     * @param job
+     * @param migrateSourceServer
+     * @param migrateTargetServer
+     * @param migrateSourceJob
+     * @param migrateTargetJob
+     * @param migrateJobName
+     * @param action
+     * @param model
+     * @return Job edit
+     */
+    @PostMapping(path = "/save", params = {"partial_migrate_job"})
+    public String loadJob(
+            @Valid @ModelAttribute Job job,
+            @RequestParam(name = "action", required = false) String action,
+            @RequestParam(name = "migrateSourceServer", required = false) Server migrateSourceServer,
+            @RequestParam(name = "migrateSourceJob", required = false) String migrateSourceJob,
+            @RequestParam(name = "migrateTargetServer", required = false) Server migrateTargetServer,
+            @RequestParam(name = "migrateTargetJob", required = false) String migrateTargetJob,
+            @RequestParam(name = "migrateJobName", required = false) String migrateJobName,
+            Model model) {
+
+        try {
+            if (jenkinsService.isRunning(migrateSourceServer)
+                    && jenkinsService.isRunning(migrateTargetServer)) {
+                Job sourceJob = new Job();
+                sourceJob.setServer(migrateSourceServer);
+                sourceJob.setName(migrateSourceJob);
+
+                job.setServer(migrateTargetServer);
+                job.setName(migrateJobName);
+                jenkinsService.clone(job, migrateTargetJob);
+                job.setShellScript(jenkinsService.getShellScript(sourceJob, sourceJob.getName()));
+                job.setNode(jenkinsService.getNode(job));
+                job.setCron(jenkinsService.getCron(job));
+                job.setBlockingJobs(jenkinsService.getBlockingJobs(job));
+            } else {
+                throw new URISyntaxException("Server is not running", "Jenkins");
+            }
+            model.addAttribute("readOnly", true);
 
         } catch (URISyntaxException | IOException ex) {
             job.setServer(null);
@@ -1283,5 +1363,40 @@ public class JobController {
             @PathVariable(value = "job") Job job) {
         model.addAttribute("log", jenkinsService.getLog(job));
         return "job/log";
+    }
+
+    /**
+     * Get cron description.
+     *
+     * @param cron
+     * @return String cron description.
+     */
+    @GetMapping(path = "/cron/description/{cron}")
+    @ResponseBody
+    public String getCronDescription(
+            @PathVariable(value = "cron") String cron) {
+        return jobService.getCronDescription(cron);
+    }
+
+    /**
+     * Defines jenkins job configuration.
+     *
+     * @param job Job
+     */
+    private void setJobConfiguration(Job job) {
+        this.setJobConfiguration(job, job.getName());
+    }
+
+    /**
+     * Defines jenkins job configuration.
+     *
+     * @param job Job
+     * @param String job name
+     */
+    private void setJobConfiguration(Job job, String jobName) {
+        job.setShellScript(jenkinsService.getShellScript(job, jobName));
+        job.setNode(jenkinsService.getNode(job));
+        job.setCron(jenkinsService.getCron(job));
+        job.setBlockingJobs(jenkinsService.getBlockingJobs(job));
     }
 }

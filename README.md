@@ -463,7 +463,7 @@ On Hanger, *Jobs* are references to [Jenkins](https://jenkins.io/) *jobs*.
 - If you want to edit a specific *job*, click on ***Edit*** button.
 
 ##### ADD JOB
-Allows to add a new *job*. You can import a *job* from Jenkins or create a new one by Hanger.
+Allows to add a new *job*. You can import a *job* from Jenkins, create a new one by Hanger or migrate one from a specific server to another one.
 
 ##### IMPORT
 - On ***Job*** side menu option, click on the ***down arrow*** and choose the ***Add job*** option.
@@ -478,6 +478,9 @@ Allows to add a new *job*. You can import a *job* from Jenkins or create a new o
 - On ***Time Restriction*** field, inform the allowed period in [cron](http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html) format to execute the *job*.
 - Define the content of the ***Eagerness*** field of the *job* between 0 and 12 hours. For a *job* dependency to be considered attended it must have been successfully carried out at least once a day. If some dependency wants to be executed before midnight, the ***Eagerness*** field must be filled with the number of hours, before midnight, so that, if the *job* runs successfully, the dependency is considered fulfilled.
 - If you want to define a minimum interval to reexcute the *job*, write the minutes on ***Rebuild Interval*** field.
+- On ***Node*** field, inform the node where the *job* will be executed.
+- On ***Cron*** field, inform the trigger period for the job.
+- On ***Blocking jobs*** field, inform the jobs that must be completed so that the job can be executed.
 - On section ***Options***, check the option ***Enabled*** to enable the *job* or uncheck to disable it. 
 - Check the ***Rebuildable*** option if it is necessary to execute the *job* more than once a day. When this option is checked, the *job* will be executed for the first time when all the dependencies are catered and will be executed again always when, during the day all the dependencies are successfully catered. If it is necesssary to execute the *job* again only when all the dependencies are successfully catered again, select which dependencies will be blockers on parents list. For default, a *job* can be executed only once a day.
 - Check the option ***Build on any parent scope*** to allow that the *job* can be pushed, regardless of the parents execution scope.
@@ -592,6 +595,18 @@ This option allows to relate an specific e-mail to the current *job*.
 - Inform the *job* name on ***Name*** field.
 - Click on ***Next*** button to continue.
 - After that, the proccess is pretty similar to the ***Import*** option.
+
+##### MIGRATE
+- On ***Job*** side menu option, click on the ***down arrow*** and choose the ***Add job*** option.
+- On top, select the ***Migrate*** option to migrate a *job* from a server to another.
+- On ***Source server*** field, inform the origin server.
+- On ***Job*** field inform and select the *job* that you want to migrate.
+- On ***Target server*** field, inform the destiny server.
+- On ***Template*** field, select the formatting for the *job*.
+- You can set the *job* name on ***Name*** field.
+- Click on ***Next*** button to continue.
+- After that, the proccess is pretty similar to the ***Import*** option.
+
 
 ##### BUILD 
 This option allows to run a *job*.  

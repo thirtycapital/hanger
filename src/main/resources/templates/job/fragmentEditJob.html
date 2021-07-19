@@ -183,11 +183,7 @@
                 </div>
 
                 <div th:if="${not #lists.isEmpty(job.shellScript)}"> 
-                    <fieldset>
-                        <legend>
-                            Shell Script
-                        </legend>
-                    </fieldset>
+                    <label>Shell Script</label>
 
                     <div th:each="shellScript, shellScriptStat : ${job.shellScript}">
                         <div class="form-group">

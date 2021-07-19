@@ -137,9 +137,9 @@
                                 <code class="language-bash" th:text="*{cron}"></code>                                
                             </pre>
                             <div th:if="${not #strings.isEmpty(job.getCronDescription(true))}" class="alert alert-warning" role="alert" style="margin-bottom: 0">
-	                        	<span th:text="${job.getCronDescription(true)}"></span>
-	                        </div>
-	                     </div>
+                                <span th:text="${job.getCronDescription(true)}"></span>
+                            </div>
+                        </div>
                     </div>
 
                     <label>Blocking Jobs</label>
@@ -152,11 +152,7 @@
                     </div>
 
                     <div th:if="${not #lists.isEmpty(job.shellScript)}"> 
-                        <fieldset>
-                            <legend>
-                                Shell script
-                            </legend>
-                        </fieldset>
+                        <label>Shell Script</label>
 
                         <div th:each="shell : ${job.shellScript}">
                             <div class="form-group">

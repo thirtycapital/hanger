@@ -426,7 +426,7 @@ public class JenkinsService {
      * @param job Job
      * @param name Name
      */
-    public void renameJob(Job job, String name) {
+    public void renameJob(Job job, String name) throws Exception {
         JenkinsServer jenkins;
 
         if (job != null) {
@@ -436,7 +436,12 @@ public class JenkinsService {
 
                     if (jenkins != null) {
                         if (jenkins.isRunning()) {
-                            jenkins.renameJob(name, job.getName(), true);
+                            // If new name exists on jenkins, don't rename.
+                            if (!this.exists(job)) {
+                                jenkins.renameJob(name, job.getName(), true);
+                            } else {
+                                throw new Exception("Job name " + job.getName() + " already exists on Jenkins, please choose another name.");
+                            }
                         }
 
                         jenkins.close();

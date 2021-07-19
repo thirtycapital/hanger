@@ -472,7 +472,7 @@
                                             <label>SQL</label> 
                                             <textarea class="form-control" rows="6" th:field="*{checkup[__${checkupStat.index}__].query}" required="true" placeholder="SQL select statement" maxlength="65000"></textarea>
                                             <div class="alert alert-light" role="alert" style="margin-bottom: 0">
-                                                SQL parameters sintaxe:
+                                                SQL parameters syntax:
                                                 <b>${{checkup ID}}</b> where a checkup ID should refer to check result that are replacing the variable, as: 
                                                 <b>${{checkup ID::{"default":10}}}</b> where <b>::</b> indicate that default value attribute of a variable are being suplied by <b>{"default":10}</b>                                            
                                             </div>

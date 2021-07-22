@@ -214,7 +214,7 @@ public class JobService {
         @CacheEvict(value = "job_count", allEntries = true),
         @CacheEvict(value = "job_count_by_subject", allEntries = true),
         @CacheEvict(value = "propagation", allEntries = true)})
-    public Job saveAndUpdateJobConfig(Job job) {
+    public Job saveAndUpdateJobConfig(Job job) throws Exception {
         Long id = job.getId();
 
         if (id != null) {

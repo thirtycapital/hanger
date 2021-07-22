@@ -191,13 +191,15 @@ public class WorkbenchService {
      * @param catalog
      * @param schema
      * @param table
+     * @param connection
      * @return Query
      */
     public String doQuery(
             List<String> field,
             String catalog,
             String schema,
-            String table) {
+            String table,
+            Connection connection) {
 
         List<String> catalogSchema = new ArrayList();
 
@@ -210,15 +212,33 @@ public class WorkbenchService {
         }
 
         if (table != null && !"null".equals(table) && !table.isEmpty()) {
-            catalogSchema.add(table);
+            if (connection.getTarget().equals(Database.HANA)) {
+                catalogSchema.add('"' + table + '"');
+            } else {
+                catalogSchema.add(table);
+            }
         }
 
         StringBuilder query = new StringBuilder("SELECT ");
-        query.append(String.join(",", field));
-        query.append(" FROM ");
-        query.append(String.join(".", catalogSchema));
-        query.append(" LIMIT ");
-        query.append(configurationService.getMaxRows());
+
+        switch (connection.getTarget()) {
+            case MSSQL:
+            case JTDS:
+                query.append(" TOP ");
+                query.append(configurationService.getMaxRows());
+                query.append(" ");
+                query.append(String.join(",", field));
+                query.append(" FROM ");
+                query.append(String.join(".", catalogSchema));
+                break;
+            default:
+                query.append(String.join(",", field));
+                query.append(" FROM ");
+                query.append(String.join(".", catalogSchema));
+                query.append(" LIMIT ");
+                query.append(configurationService.getMaxRows());
+                break;
+        }
 
         return query.toString();
     }

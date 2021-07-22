@@ -325,11 +325,12 @@
 
                     if (node.parent !== "#") {
                         target = node.a_attr.target;
-
+                        
                         if (target === "HANA") {
                             select = "SELECT * FROM " + node.parent + "." + '"' + node.text + '"' + " LIMIT " + /*[[${maxRows}]]*/  "10";
                         } else if (target === "MSSQL" || target === "JTDS") {
-                            select = "SELECT TOP " + /*[[${maxRows}]]*/ "10" + " * FROM " + node.parent + "." + node.text;
+                            select = "SELECT TOP " + /*[[${maxRows}]]*/ "10";
+                            select = select + " * FROM " + node.parent + "." + node.text;
                         } else {
                             select = "SELECT * FROM " + node.parent + "." + node.text + " LIMIT " + /*[[${maxRows}]]*/  "10";
                         }

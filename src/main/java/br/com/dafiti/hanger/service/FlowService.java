@@ -52,6 +52,7 @@ public class FlowService {
 
 	private Map<String, Step> flow;
 	private Set<JobDetails> reach;
+	private Set<Integer> levels;
 	private final JobParentService jobParentService;
 	private final HttpServletRequest request;
 	private final JobDetailsService jobDetailsService;
@@ -138,6 +139,7 @@ public class FlowService {
 
 		flow = new TreeMap<String, Step>();
 		reach = new HashSet<JobDetails>();
+		levels = new HashSet<Integer>();
 
 		return getFlowStructure(
 				job, 
@@ -220,6 +222,7 @@ public class FlowService {
 
 		// Identifies all job in the flow.
 		reach.add(jobDetails);
+		levels.add(level);
 
 		// Define the job check-up link.
 		A jobCheckupLink = new A();
@@ -370,7 +373,7 @@ public class FlowService {
 							+ "     HTMLclass: \"" + "flow-job-clickable" + "\"" + "}"));
 		}
 
-		return new Flow(flow, reach.size(), level);
+		return new Flow(flow, reach.size(), levels.size());
 	}
 
 	/**
@@ -423,8 +426,8 @@ public class FlowService {
 		private int level;
 		private String configuration;
 
-		public Flow(Map<String, Step> flow, int reach, int level) {
-			this.structure = flow;
+		public Flow(Map<String, Step> structure, int reach, int level) {
+			this.structure = structure;
 			this.reach = reach;
 			this.level = level;
 		}
@@ -433,8 +436,8 @@ public class FlowService {
 			return structure;
 		}
 
-		public void setStructure(Map<String, Step> flow) {
-			this.structure = flow;
+		public void setStructure(Map<String, Step> structure) {
+			this.structure = structure;
 		}
 
 		public int getReach() {

@@ -27,6 +27,7 @@ import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Status;
 import java.util.List;
+import java.util.Objects;
 
 /**
  *
@@ -34,105 +35,118 @@ import java.util.List;
  */
 public class JobDetails {
 
-    private Job job;
-    private Status status;
-    private String scope;
-    private Flow flow;
-    private Phase phase;
-    private int buildNumber;
-    private String buildTime;
-    private List<Job> warning;
-    private boolean approval;
+	private Job job;
+	private Status status;
+	private String scope;
+	private Flow flow;
+	private Phase phase;
+	private int buildNumber;
+	private String buildTime;
+	private List<Job> warning;
+	private boolean approval;
 
-    public JobDetails(
-            Job job,
-            Status status,
-            String scope,
-            Flow flow,
-            Phase phase,
-            int buildNumber,
-            String buildTime,
-            List<Job> warning) {
+	public JobDetails(Job job, Status status, String scope, Flow flow, Phase phase, int buildNumber, String buildTime,
+			List<Job> warning) {
 
-        this.job = job;
-        this.status = status;
-        this.scope = scope;
-        this.flow = flow;
-        this.phase = phase;
-        this.buildNumber = buildNumber;
-        this.buildTime = buildTime;
-        this.warning = warning;
-    }
+		this.job = job;
+		this.status = status;
+		this.scope = scope;
+		this.flow = flow;
+		this.phase = phase;
+		this.buildNumber = buildNumber;
+		this.buildTime = buildTime;
+		this.warning = warning;
+	}
 
-    public Job getJob() {
-        return job;
-    }
+	public Job getJob() {
+		return job;
+	}
 
-    public void setJob(Job job) {
-        this.job = job;
-    }
+	public void setJob(Job job) {
+		this.job = job;
+	}
 
-    public Status getStatus() {
-        return status;
-    }
+	public Status getStatus() {
+		return status;
+	}
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+	public void setStatus(Status status) {
+		this.status = status;
+	}
 
-    public String getScope() {
-        return scope;
-    }
+	public String getScope() {
+		return scope;
+	}
 
-    public void setScope(String scope) {
-        this.scope = scope;
-    }
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
 
-    public Flow getFlow() {
-        return flow;
-    }
+	public Flow getFlow() {
+		return flow;
+	}
 
-    public void setFlow(Flow flow) {
-        this.flow = flow;
-    }
+	public void setFlow(Flow flow) {
+		this.flow = flow;
+	}
 
-    public Phase getPhase() {
-        return phase;
-    }
+	public Phase getPhase() {
+		return phase;
+	}
 
-    public void setPhase(Phase phase) {
-        this.phase = phase;
-    }
+	public void setPhase(Phase phase) {
+		this.phase = phase;
+	}
 
-    public int getBuildNumber() {
-        return buildNumber;
-    }
+	public int getBuildNumber() {
+		return buildNumber;
+	}
 
-    public void setBuildNumber(int buildNumber) {
-        this.buildNumber = buildNumber;
-    }
+	public void setBuildNumber(int buildNumber) {
+		this.buildNumber = buildNumber;
+	}
 
-    public String getBuildTime() {
-        return buildTime;
-    }
+	public String getBuildTime() {
+		return buildTime;
+	}
 
-    public void setBuildTime(String buildTime) {
-        this.buildTime = buildTime;
-    }
+	public void setBuildTime(String buildTime) {
+		this.buildTime = buildTime;
+	}
 
-    public List<Job> getWarning() {
-        return warning;
-    }
+	public List<Job> getWarning() {
+		return warning;
+	}
 
-    public void setWarning(List<Job> warning) {
-        this.warning = warning;
-    }
+	public void setWarning(List<Job> warning) {
+		this.warning = warning;
+	}
 
-    public boolean isApproval() {
-        return approval;
-    }
+	public boolean isApproval() {
+		return approval;
+	}
 
-    public void setApproval(boolean approval) {
-        this.approval = approval;
-    }
+	public void setApproval(boolean approval) {
+		this.approval = approval;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(job);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		
+		if (obj == null)
+			return false;
+		
+		if (getClass() != obj.getClass())
+			return false;
+		
+		JobDetails other = (JobDetails) obj;
+		return Objects.equals(job.getId(), other.job.getId());
+	}
 }

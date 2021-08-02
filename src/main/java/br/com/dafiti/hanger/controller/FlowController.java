@@ -118,7 +118,7 @@ public class FlowController {
             Model model) {
 
         if (job != null) {
-        	Flow flow = flowService.getJobFlow(job, false, false);
+        	Flow flow = flowService.getJobFlow(job, true, false);
 
             model.addAttribute("job", job);
             model.addAttribute("subjectSummary", subjectDetailsService.getSummaryOf(job.getSubject()));

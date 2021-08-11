@@ -214,6 +214,20 @@ Shows the glossary of all the possible status of a *job* with the following info
 - ***Name*:**  Status name. 
 - ***Description*:** Status description.
 
+And the avalaible informations are: 	
+	
+##### LEVEL	
+Shows how many levels a flow has. 	
+	
+##### REACH
+Shows how many distinct jobs there are in a flow.
+	
+##### WARNING
+Shows how many jobs have a unsuccessful status in a flow. Its possible to click in this information to see which jobs have problems.
+	
+##### SUBJECT
+Shows the subjects related to the current job flow and how many jobs are related to each subject. Its possible to click in this information to be redirect to the subject. 
+	
 ## Server
 *Servers* are Jenkins instances that will be managed by Hanger. 
 

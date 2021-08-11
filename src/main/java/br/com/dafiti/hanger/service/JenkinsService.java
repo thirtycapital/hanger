@@ -122,7 +122,7 @@ public class JenkinsService {
      */
     @Cacheable(value = "serverJobs", key = "#server.id")
     public List<String> listJob(Server server) throws URISyntaxException, IOException {
-        List<String> jobs = new ArrayList();
+        List<String> jobs = new ArrayList<>();
         JenkinsServer jenkins = this.getJenkinsServer(server);
 
         if (jenkins != null) {
@@ -233,7 +233,7 @@ public class JenkinsService {
      */
     public List<String> getUpstreamProjects(Job job) {
         JenkinsServer jenkins;
-        List<String> upstreamProjects = new ArrayList();
+        List<String> upstreamProjects = new ArrayList<>();
 
         if (job != null) {
             try {
@@ -269,7 +269,7 @@ public class JenkinsService {
      */
     public List<String> getShellScript(Job job, String jobName) {
         JenkinsServer jenkins;
-        List<String> shellScripts = new ArrayList();
+        List<String> shellScripts = new ArrayList<>();
 
         if (job != null) {
             try {
@@ -329,6 +329,49 @@ public class JenkinsService {
         }
 
         return isInQueue;
+    }
+
+    /**
+     * Identify if a job is running.
+     * 
+     * @param server Jenkins server
+     * @param name Job name
+     * @return Identify if a job is running
+     */
+    public boolean isRunning(Server server, String name) {
+        JenkinsServer jenkins;
+        boolean isRunning = false;
+
+        if (server != null) {
+            try {
+                jenkins = this.getJenkinsServer(server);
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        JobWithDetails jobWithDetails = jenkins.getJob(name);
+
+                        if (jobWithDetails != null) {
+                            Build build = jobWithDetails.getLastBuild();
+
+                            if (build != null) {
+                                BuildWithDetails buildWithDetails = build.details();
+
+                                if (buildWithDetails != null) {
+                                    // Identifies if the job is running.
+                                    isRunning = buildWithDetails.isBuilding();
+                                }
+                            }
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                LOG.log(Level.ERROR, "Fail identifying if a job is building!", ex);
+            }
+        }
+
+        return isRunning;
     }
 
     /**
@@ -436,11 +479,16 @@ public class JenkinsService {
 
                     if (jenkins != null) {
                         if (jenkins.isRunning()) {
-                            // If new name exists on jenkins, don't rename.
+                            //Identifies if the name is already in use. 
                             if (!this.exists(job)) {
-                                jenkins.renameJob(name, job.getName(), true);
+                                //Identifies if the job is running at the rename moment. 
+                                if (!this.isRunning(job.getServer(), name)) {
+                                    jenkins.renameJob(name, job.getName(), true);
+                                }else{
+                                    throw new Exception("This job is building and cannot be renamed, please wait build finish!");
+                                }
                             } else {
-                                throw new Exception("Job name " + job.getName() + " already exists on Jenkins, please choose another name.");
+                                throw new Exception(job.getName() + " is alread in use on Jenkins, please choose another name!");
                             }
                         }
 

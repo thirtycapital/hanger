@@ -332,49 +332,6 @@ public class JenkinsService {
     }
 
     /**
-     * Identify if a job is running.
-     * 
-     * @param server Jenkins server
-     * @param name Job name
-     * @return Identify if a job is running
-     */
-    public boolean isRunning(Server server, String name) {
-        JenkinsServer jenkins;
-        boolean isRunning = false;
-
-        if (server != null) {
-            try {
-                jenkins = this.getJenkinsServer(server);
-
-                if (jenkins != null) {
-                    if (jenkins.isRunning()) {
-                        JobWithDetails jobWithDetails = jenkins.getJob(name);
-
-                        if (jobWithDetails != null) {
-                            Build build = jobWithDetails.getLastBuild();
-
-                            if (build != null) {
-                                BuildWithDetails buildWithDetails = build.details();
-
-                                if (buildWithDetails != null) {
-                                    // Identifies if the job is running.
-                                    isRunning = buildWithDetails.isBuilding();
-                                }
-                            }
-                        }
-                    }
-
-                    jenkins.close();
-                }
-            } catch (IOException | URISyntaxException ex) {
-                LOG.log(Level.ERROR, "Fail identifying if a job is building!", ex);
-            }
-        }
-
-        return isRunning;
-    }
-
-    /**
      * Identify if a job is building.
      *
      * @param job Job
@@ -420,6 +377,48 @@ public class JenkinsService {
         }
 
         return isBuilding;
+    }
+
+    /**
+     * Identify if a job is running.
+     * 
+     * @param server Jenkins server
+     * @param name Job name
+     * @return Identify if a job is running
+     */
+    public boolean isRunning(Server server, String name) {
+        JenkinsServer jenkins;
+        boolean isRunning = false;
+
+        if (server != null) {
+            try {
+                jenkins = this.getJenkinsServer(server);
+
+                if (jenkins != null) {
+                    if (jenkins.isRunning()) {
+                        JobWithDetails jobWithDetails = jenkins.getJob(name);
+
+                        if (jobWithDetails != null) {
+                            Build build = jobWithDetails.getLastBuild();
+
+                            if (build != null) {
+                                BuildWithDetails buildWithDetails = build.details();
+
+                                if (buildWithDetails != null) {
+                                    isRunning = buildWithDetails.isBuilding();
+                                }
+                            }
+                        }
+                    }
+
+                    jenkins.close();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                LOG.log(Level.ERROR, "Fail identifying if a job is building!", ex);
+            }
+        }
+
+        return isRunning;
     }
 
     /**

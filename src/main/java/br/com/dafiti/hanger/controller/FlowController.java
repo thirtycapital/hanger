@@ -27,6 +27,7 @@ import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.service.FlowService;
+import br.com.dafiti.hanger.service.FlowService.Flow;
 import br.com.dafiti.hanger.service.JobApprovalService;
 import br.com.dafiti.hanger.service.JobDetailsService;
 import br.com.dafiti.hanger.service.ServerService;
@@ -87,10 +88,14 @@ public class FlowController {
             Model model) {
 
         if (job != null) {
+        	Flow flow = flowService.getJobFlow(job, false, expanded);
+        	
             model.addAttribute("job", job);
             model.addAttribute("subjectSummary", subjectDetailsService.getSummaryOf(job.getSubject()));
             model.addAttribute("warnings", flowService.getFlowWarning(job));
-            model.addAttribute("chart", flowService.getJobFlow(job, false, expanded));
+            model.addAttribute("chart", flow.getConfiguration());
+            model.addAttribute("reach", flow.getReach());
+            model.addAttribute("level", flow.getLevel());
             model.addAttribute("approval", this.jobApprovalService.hasApproval(job, principal));
             model.addAttribute("servers", this.serverService.list());
         }
@@ -113,9 +118,13 @@ public class FlowController {
             Model model) {
 
         if (job != null) {
+        	Flow flow = flowService.getJobFlow(job, true, false);
+
             model.addAttribute("job", job);
             model.addAttribute("subjectSummary", subjectDetailsService.getSummaryOf(job.getSubject()));
-            model.addAttribute("chart", flowService.getJobFlow(job, true, false));
+            model.addAttribute("chart", flow.getConfiguration());
+            model.addAttribute("reach", flow.getReach());
+            model.addAttribute("level", flow.getLevel());
             model.addAttribute("approval", this.jobApprovalService.hasApproval(job, principal));
             model.addAttribute("servers", this.serverService.list());
         }
@@ -141,7 +150,7 @@ public class FlowController {
 
         return "flow/modalWarning::warning";
     }
-
+    
     /**
      * Show the job parent modal.
      *
@@ -155,7 +164,7 @@ public class FlowController {
             Model model) {
 
         try {
-            List<JobDetails> jobDetails = new ArrayList();
+            List<JobDetails> jobDetails = new ArrayList<JobDetails>();
 
             job.getParent().stream().forEach((parent) -> {
                 jobDetails.add(jobDetailsService.getDetailsOf(parent.getParent()));

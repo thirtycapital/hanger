@@ -615,7 +615,24 @@ public class JenkinsService {
                             if (config.contains("<blockingJobs>")) {
                                 config = config.replaceAll("(?s)<blockingJobs>(.*)</blockingJobs>", "<blockingJobs>" + job.getBlockingJobs() + "</blockingJobs>");
                             } else {
-                                config = config.replace("<blockingJobs/>", "<blockingJobs>" + job.getBlockingJobs() + "</blockingJobs>");
+                                if (config.contains("<blockingJobs/>")) {
+                                    config = config.replace("<blockingJobs/>", "<blockingJobs>" + job.getBlockingJobs() + "</blockingJobs>");
+                                } else {
+                                    //Build Blocker plugin configuration in case the job does not contain.
+                                    String buildBlockerPluginConfig = ""
+                                            + "<hudson.plugins.buildblocker.BuildBlockerProperty plugin=\"build-blocker-plugin@1.7.3\">\n"
+                                            + "     <useBuildBlocker>true</useBuildBlocker>\n"
+                                            + "     <blockLevel>GLOBAL</blockLevel>\n"
+                                            + "     <scanQueueFor>DISABLED</scanQueueFor>\n"
+                                            + "     <blockingJobs>" + job.getBlockingJobs() + "</blockingJobs>\n"
+                                            + "</hudson.plugins.buildblocker.BuildBlockerProperty>\n";
+
+                                    if (config.contains("<properties>")) {
+                                        config = config.replace("</properties>", buildBlockerPluginConfig + "</properties>");
+                                    } else {
+                                        config = config.replace("<properties/>", "<properties>" + buildBlockerPluginConfig + "</properties>");
+                                    }
+                                }
                             }
 
                             config = config.replaceAll("(?s)<useBuildBlocker>(.*)</useBuildBlocker>", "<useBuildBlocker>true</useBuildBlocker>");
@@ -774,6 +791,37 @@ public class JenkinsService {
         }
 
         return notification;
+    }
+
+    /**
+     * Identify if build blocker plugin is deployed.
+     *
+     * @param server Server
+     * @return Identify if build blocker plugin is deployed.
+     */
+    public boolean hasBuildBlockerPlugin(Server server) {
+        boolean hasPlugin = false;
+
+        try {
+            JenkinsServer jenkins = this.getJenkinsServer(server);
+
+            if (jenkins != null) {
+                if (jenkins.isRunning()) {
+                    hasPlugin = jenkins
+                            .getPluginManager()
+                            .getPlugins()
+                            .stream()
+                            .filter(x -> x.getShortName().equals("build-blocker-plugin"))
+                            .count() == 1;
+                }
+
+                jenkins.close();
+            }
+        } catch (URISyntaxException | IOException ex) {
+            LOG.log(Level.ERROR, "Fail getting plugin list!", ex);
+        }
+
+        return hasPlugin;
     }
 
     /**

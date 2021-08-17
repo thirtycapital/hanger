@@ -51,6 +51,7 @@ import org.springframework.stereotype.Service;
 public class FlowService {
 
     private Map<String, Step> flow;
+    private Map<String, String> nodes;
     private Set<JobDetails> reach;
     private Set<Integer> levels;
     private final JobParentService jobParentService;
@@ -90,10 +91,18 @@ public class FlowService {
 
         Flow flow = this.getFlowStructure(job, reverse, expanded);
 
-        // Get its as a key value structure.
+        // Gets its as a key value structure.
         flow.getStructure().entrySet().stream().forEach((entry) -> {
             key.add(entry.getValue().getId());
             value.add(entry.getValue().getVariable());
+        });
+        
+        // Sets job clickable class. 
+        configuration.append("var _class = 'flow-job-clickable'; ");
+               
+        // Sets node info.
+        nodes.entrySet().stream().forEach((entry) -> {
+            configuration.append("var " + entry.getKey() + " = '" + entry.getValue() + "'; ");
         });
 
         // Define TreantJS configuration.
@@ -143,9 +152,10 @@ public class FlowService {
         String jobLineage = "";
         String parentLineage = "";
 
-        flow = new TreeMap<String, Step>();
-        reach = new HashSet<JobDetails>();
-        levels = new HashSet<Integer>();
+        flow = new TreeMap<>();
+        nodes = new TreeMap<>();
+        reach = new HashSet<>();
+        levels = new HashSet<>();
 
         return getFlowStructure(
                 job,
@@ -177,7 +187,7 @@ public class FlowService {
             Scope parentScope) {
 
         Scope scope = null;
-        HashSet<JobParent> childs = new HashSet<JobParent>();
+        HashSet<JobParent> childs = new HashSet<>();
 
         // Identify the step.
         level++;
@@ -346,11 +356,17 @@ public class FlowService {
             jobBuildScope.setCSSClass("node-scope");
 
             node.append(jobBuildScope.write());
+            
+            // Define unique innerHTML variable.
+            if (!nodes.containsKey("__" + job.getId())){
+        	nodes.put("__" + job.getId(), node.toString());
+            }
 
+            // Identify steps.
             flow.put(StringUtils.leftPad(String.valueOf(level), 5, "0"),
                     new Step(jobLineage,
-                            jobLineage + " = " + "{" + "     innerHTML: '" + node.toString() + "'," + "     HTMLid: \""
-                            + job.getId() + "\"," + "     HTMLclass: \"" + "flow-job-clickable" + "\"" + "}"));
+                            jobLineage + " = " + "{" + "     innerHTML: " + ("__" + job.getId()) + "," + "     HTMLid: \""
+                            + job.getId() + "\"," + "     HTMLclass: " + "_class" + "}"));
         } else {
             // Define the job scope paragraph.
             P jobBuildScope = new P();
@@ -368,14 +384,19 @@ public class FlowService {
             jobBuildScope.setCSSClass("node-scope");
             node.append(jobBuildScope.write());
 
+            // Define unique innerHTML variable.
+            if (!nodes.containsKey("__" + job.getId())){
+        	nodes.put("__" + job.getId(), node.toString());
+            }
+            
             // Identify child steps.
             flow.put(
                     StringUtils.leftPad(String.valueOf(level), 5, "0") + StringUtils.leftPad(jobLineage, 100, "0")
                     + StringUtils.leftPad(parentLineage, 100, "0"),
-                    new Step(jobLineage, jobLineage + " = " + "{ parent: " + parentLineage + ", " + "     innerHTML: '"
-                            + node.toString() + "'," + "     HTMLid: \"" + job.getId() + "\"," + "     collapsed: "
+                    new Step(jobLineage, jobLineage + " = " + "{ parent: " + parentLineage + ", " + "     innerHTML: "
+                            + ("__" + job.getId()) + "," + "     HTMLid: \"" + job.getId() + "\"," + "     collapsed: "
                             + (job.getParent().isEmpty() || reverse || expanded ? "false" : "true") + ","
-                            + "     HTMLclass: \"" + "flow-job-clickable" + "\"" + "}"));
+                            + "     HTMLclass: _class }"));
         }
 
         return new Flow(flow, reach.size(), levels.size());

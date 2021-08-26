@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+        <div class="container-fluid main-content">
+            <div th:if="${ errorMessage != null }" class="form-group">
+                <div class="alert alert-danger" role="alert">
+                    <span th:text="${errorMessage}"></span>
+                </div>  
+            </div>
+
+            <div th:if="${ successMessage != null }" class="form-group">
+                <div class="alert alert-success" role="alert">
+                    <span th:text="${successMessage}"></span>
+                </div>  
+            </div>
+
+            <table id="table" class="table table-hover space-top">
+                <thead>
+                    <tr>
+                        <th style="width:30%">Name</th>
+                        <th style="width:35%">Description</th>
+                        <th style="width:35%">Cron</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="triggerDetail : ${triggerDetails}">
+                        <td th:text="${triggerDetail.name}">#</td>
+                        <td th:text="${triggerDetail.description}"></td>
+                        <td th:text="${triggerDetail.cron}">Url</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

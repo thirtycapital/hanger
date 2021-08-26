@@ -191,6 +191,21 @@
                                 </ul>
                             </div>
                         </li>
+                        <li th:classappend="${#httpServletRequest.getRequestURI().contains('/trigger/') ? 'active':''}">
+                            <a class="menu_link_option" th:href="@{/trigger/list}" title="Trigger">
+                                <span class="sub_icon glyphicon glyphicon-fire"></span>Trigger
+                            </a>
+                            <div class="dropdown menu_dropdown">
+                                <button class="btn btn-default dropdown-toggle no-border bg-transparent" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                    <li>
+                                        <a th:href="@{'/trigger/add/'}">Add trigger</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                         <li th:classappend="${#httpServletRequest.getRequestURI().contains('/configuration/') ? 'active':''}"><a th:href="@{/configuration/edit}" title="Configuration"><span class="sub_icon glyphicon glyphicon-cog"></span>Configuration</a></li>                        
                     </ul>
 

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+        <div class="container-fluid main-content">
+            <div>           
+                <form class="form-horizontal" th:object="${triggerDetail}" th:action="@{/trigger/save}" method="post">
+                    <div class="form-group">
+                        <div class="col-sm-10">                            
+                        </div>
+                    </div>
+
+                    <div th:if="${ errorMessage != null }" class="form-group">
+                        <!--Validation-->
+                        <div class="col-sm-10">
+                            <div class="alert alert-danger" role="alert">
+                                <span th:text="${errorMessage}"></span>
+                            </div>  
+                        </div> 
+                    </div> 
+
+                    <label>Name</label> 
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" maxlength="50" th:field="*{name}" placeholder="Trigger name"/>
+                            <span th:if="${#fields.hasErrors('name')}" class="help-block" th:errors="*{name}"></span>
+                        </div>
+                    </div>
+
+                    <label>Description</label> 
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" maxlength="50" th:field="*{description}" placeholder="Trigger description"/>
+                            <span th:if="${#fields.hasErrors('description')}" class="help-block" th:errors="*{description}"></span>
+                        </div>
+                    </div>
+
+                    <label>Cron Expression</label> 
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" maxlength="50" th:field="*{cron}" placeholder="Trigger cron"/>
+                            <span th:if="${#fields.hasErrors('cron')}" class="help-block" th:errors="*{cron}"></span>
+                        </div>
+                    </div>
+                    <hr/>
+
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <button type="submit" 
+                                    class="btn btn-generic btn-sm">
+                                <span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+                                Save
+                            </button>  
+
+                            <div class="btn-group pull-right btn-space dropup">
+                                <button type="button" class="btn btn-generic btn-sm" th:id="'modal_add_parent_' + ${servers[0].id}" th:value="${servers[0].id}">
+                                    <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Parent
+                                </button>
+
+                                <button type="button" class="btn btn-generic btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="caret"></span>
+                                    <span class="sr-only"></span>
+                                </button>
+
+                                <ul class="dropdown-menu">                                                                             
+                                    <li th:each="server : ${servers}" th:id="'modal_add_parent_' + ${server.id}" th:value="${server.id}">
+                                        <a th:inline= "text" class="btn btn-sm pull-left">
+                                            <span  class="glyphicon glyphicon-tasks" aria-hidden="true"></span> [[${server.name}]]
+                                        </a>
+                                    </li>
+                                </ul>                       
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

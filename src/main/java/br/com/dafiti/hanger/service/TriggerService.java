@@ -98,7 +98,10 @@ public class TriggerService {
                 .build();
 
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put("14", "job 14");        
+
+        triggerDetail.getJobs().forEach((job) -> {
+            jobDataMap.put(String.valueOf(job.getId()), job.getName());
+        });
 
         Trigger trigger = TriggerBuilder.newTrigger()
                 .forJob(jobDetail)

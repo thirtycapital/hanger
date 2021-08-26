@@ -24,9 +24,11 @@
 package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.exception.Message;
+import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.TriggerDetail;
-import br.com.dafiti.hanger.service.ServerService;
+import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.TriggerService;
+import java.util.List;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,6 +38,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -46,14 +49,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class TriggerController {
 
     private final TriggerService triggerService;
-    private final ServerService serverService;
+    private final JobService jobService;
 
     @Autowired
     public TriggerController(
             TriggerService triggerService,
-            ServerService serverService) {
+            JobService jobService) {
         this.triggerService = triggerService;
-        this.serverService = serverService;
+        this.jobService = jobService;
     }
 
     /**
@@ -77,8 +80,6 @@ public class TriggerController {
     @GetMapping(path = "/add")
     public String add(Model model) {
         model.addAttribute("triggerDetail", new TriggerDetail());
-        model.addAttribute("servers", serverService.list());
-
         return "trigger/edit";
     }
 
@@ -106,5 +107,39 @@ public class TriggerController {
         }
 
         return "redirect:/trigger/list";
+    }
+
+    /**
+     * Job list modal.
+     *
+     * @param model Model
+     * @return Job list modal
+     */
+    @GetMapping(path = "/modal/list")
+    public String jobListModal(Model model) {
+        model.addAttribute("jobs", jobService.listFromCache());
+        return "trigger/modalJobList::job";
+    }
+
+    /**
+     * Add a parent.
+     *
+     * @param triggerDetail
+     * @param jobList
+     * @param bindingResult
+     * @param model model
+     * @return Job edit
+     */
+    @PostMapping(path = "/save", params = {"partial_add_job"})
+    public String addParent(
+            @ModelAttribute TriggerDetail triggerDetail,
+            @RequestParam(value = "jobList", required = false) List<Job> jobList,
+            BindingResult bindingResult,
+            Model model) {
+        jobList.forEach((job) -> {
+            triggerDetail.addJob(job);
+        });
+
+        return "trigger/edit";
     }
 }

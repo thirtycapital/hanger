@@ -56,27 +56,44 @@
                             </button>  
 
                             <div class="btn-group pull-right btn-space dropup">
-                                <button type="button" class="btn btn-generic btn-sm" th:id="'modal_add_parent_' + ${servers[0].id}" th:value="${servers[0].id}">
-                                    <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Parent
-                                </button>
-
-                                <button type="button" class="btn btn-generic btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <span class="caret"></span>
-                                    <span class="sr-only"></span>
-                                </button>
-
-                                <ul class="dropdown-menu">                                                                             
-                                    <li th:each="server : ${servers}" th:id="'modal_add_parent_' + ${server.id}" th:value="${server.id}">
-                                        <a th:inline= "text" class="btn btn-sm pull-left">
-                                            <span  class="glyphicon glyphicon-tasks" aria-hidden="true"></span> [[${server.name}]]
-                                        </a>
-                                    </li>
-                                </ul>                       
+                                <button type="button" class="btn btn-generic btn-sm" th:id="modal_add_job" th:value="modal_add_job">
+                                    <span class="glyphicon glyphicon-file" aria-hidden="true"></span> Jobs
+                                </button>                                                     
                             </div>
                         </div>
                     </div>
+
+                    <!--AJAX Job modal --> 
+                    <div id="modalHolder"></div> 
                 </form>
             </div>
+
+            <script th:inline="javascript">
+                $(document).ready(function () {
+
+                    /**
+                     * Show job list modal. 
+                     * @returns {undefined}
+                     */
+                    $("#modal_add_job").click(function () {
+                        var url = /*[[@{/trigger/modal/list/}]]*/ "/trigger/modal/list";                 
+
+                        $.ajax({
+                            type: "GET",
+                            url: url,
+                            timeout: 30000,
+                            success: function (result) {
+                                $("#modalHolder").html(result);
+                                $("#modalJobList").modal({backdrop: 'static', keyboard: false});
+                                $('.selectpicker').selectpicker();
+                            },
+                            error: function (e) {
+                                alert("Error loading jobs from Jenkins " + e);
+                            }
+                        });
+                    });
+                });
+            </script>
         </div>
     </body>
 </html>

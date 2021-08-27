@@ -39,6 +39,7 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
+import static org.quartz.TriggerKey.triggerKey;
 import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -87,7 +88,7 @@ public class TriggerService {
 
     @Caching(evict = {
         @CacheEvict(value = "triggers", allEntries = true)})
-    public void save(TriggerDetail triggerDetail) {
+    public void save(TriggerDetail triggerDetail) throws Exception {
 
         JobDetail jobDetail = JobBuilder
                 .newJob()
@@ -114,7 +115,17 @@ public class TriggerService {
         try {
             scheduler.scheduleJob(trigger).toString();
         } catch (SchedulerException ex) {
-            System.out.println("erro para schedular" + ex);
+            throw new Exception("Error on scheduling: " + ex.getMessage());
+        }
+    }
+
+    @Caching(evict = {
+        @CacheEvict(value = "triggers", allEntries = true)})
+    public void delete(String triggerName) throws Exception {
+        try {
+            this.scheduler.unscheduleJob(triggerKey(triggerName));
+        } catch (SchedulerException ex) {
+            throw new Exception("Error on unscheduling trigger: " + ex.getMessage());
         }
     }
 }

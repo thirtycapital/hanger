@@ -22,8 +22,10 @@
                 <thead>
                     <tr>
                         <th style="width:30%">Name</th>
-                        <th style="width:35%">Description</th>
-                        <th style="width:35%">Cron</th>
+                        <th style="width:30%">Description</th>
+                        <th style="width:30%">Cron</th>
+                        <th class="no-sort"></th>
+                        <th class="no-sort"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -31,9 +33,83 @@
                         <td th:text="${triggerDetail.name}">#</td>
                         <td th:text="${triggerDetail.description}"></td>
                         <td th:text="${triggerDetail.cron}">Url</td>
+                        <td>
+                            <div th:if="${#authorization.expression('hasRole(''HERO'')')}">
+                                <a th:href="@{'/trigger/edit/' + ${triggerDetail.name}}" class="btn btn-generic btn-xs">
+                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                            <div th:if="${#authorization.expression('hasRole(''HERO'')')}">
+                                <a class="btn btn-xs btn-delete" data-toggle="modal" th:attr="onclick='deleteTriggerModal(\''+${triggerDetail.name}+'\');'" href="">
+                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>Delete
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
+        <script th:inline="javascript">
+            /**
+             * Display delete triggermodal.
+             * 
+             * @param {type} triggerName
+             */
+            function deleteTriggerModal(triggerName) {
+                bootbox.confirm({
+                    title: triggerName + " Trigger",
+                    message: "You are about to delete trigger " + triggerName + ", are you sure?",
+                    callback: function (result) {
+                        if (result) {
+                            deleteTrigger(triggerName);
+                        }
+                    }
+                });
+            }
+
+            /**
+             * Delete a trigger.
+             * 
+             * @param {type} triggerName
+             */
+            function deleteTrigger(triggerName) {
+                var url = /*[[@{/trigger/delete/}]]*/ "/trigger/delete/";
+
+                toastr.options = {
+                    "closeButton": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "timeOut": "2500",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+
+                $.ajax({
+                    type: "GET",
+                    url: url + triggerName,
+                    timeout: 30000,
+                    success: function (result) {
+                        if (result) {
+                            toastr.success("Trigger deleted successfully.");
+                        } else {
+                            toastr.error("Error deleting trigger " + triggerName);
+                        }
+
+                        setTimeout(function () {
+                            window.location.reload(1);
+                        }, 2500);
+                    },
+                    error: function (e) {
+                        toastr.error('Error on delete request of trigger ' + triggerName);
+                    }
+                });
+            }
+
+        </script> 
     </body>
 </html>

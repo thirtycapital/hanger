@@ -36,9 +36,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  *
@@ -141,5 +144,28 @@ public class TriggerController {
         });
 
         return "trigger/edit";
+    }
+
+    /**
+     * Delete a trigger.
+     *
+     * @param redirectAttributes RedirectAttributes
+     * @param triggerName String trigger name
+     * @return Redirect to job list
+     */
+    @GetMapping(path = "/delete/{triggerName}")
+    @ResponseBody
+    public boolean delete(
+            RedirectAttributes redirectAttributes,
+            @PathVariable(name = "triggerName") String triggerName) {
+
+        try {
+            this.triggerService.delete(triggerName);
+            return true;
+        } catch (Exception ex) {
+            redirectAttributes.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+        }
+
+        return false;
     }
 }

@@ -25,9 +25,7 @@ package br.com.dafiti.hanger.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.validation.constraints.NotEmpty;
 import org.springframework.stereotype.Component;
 

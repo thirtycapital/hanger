@@ -26,6 +26,10 @@ package br.com.dafiti.hanger.scheduler;
 import br.com.dafiti.hanger.controller.JobController;
 import br.com.dafiti.hanger.service.JobService;
 import java.util.Set;
+import java.util.UUID;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -42,6 +46,8 @@ public class JobSpark implements Job {
     private final JobController jobController;
     private final JobService jobService;
 
+    private static final Logger LOG = LogManager.getLogger(JobSpark.class.getName());
+
     @Autowired
     public JobSpark(
             JobController jobController,
@@ -52,11 +58,15 @@ public class JobSpark implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
+        UUID uuid = UUID.randomUUID();
         JobDataMap jobDataMap = context.getMergedJobDataMap();
         Set<String> jobKeys = jobDataMap.keySet();
+        String trigger = context.getTrigger().getKey().getName();
+
+        LOG.log(Level.INFO, "[" + uuid + "] Trigger " + trigger + " sparked");
 
         for (String jobKey : jobKeys) {
-            System.out.println("job: " + jobKey + " will be built by scheuler");
+            LOG.log(Level.INFO, "[" + uuid + "] Job number " + jobKey + " sparked by trigger " + trigger);
             this.jobController.build(this.jobService.load(Long.valueOf(jobKey)));
         }
     }

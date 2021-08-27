@@ -24,7 +24,9 @@
 package br.com.dafiti.hanger.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.validation.constraints.NotEmpty;
 import org.springframework.stereotype.Component;
@@ -39,7 +41,7 @@ public class TriggerDetail extends Tracker<TriggerDetail> implements Serializabl
     private String name;
     private String description;
     private String cron;
-    private Set<Job> jobs = new HashSet();
+    private List<Job> jobs = new ArrayList();
 
     @NotEmpty
     public String getName() {
@@ -68,11 +70,11 @@ public class TriggerDetail extends Tracker<TriggerDetail> implements Serializabl
         this.cron = cron;
     }
 
-    public Set<Job> getJobs() {
+    public List<Job> getJobs() {
         return jobs;
     }
 
-    public void setJobs(Set<Job> jobs) {
+    public void setJobs(List<Job> jobs) {
         this.jobs = jobs;
     }
 

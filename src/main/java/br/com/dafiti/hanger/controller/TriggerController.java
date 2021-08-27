@@ -92,7 +92,7 @@ public class TriggerController {
      * @return Trigger list template.
      */
     @PostMapping(path = "/save")
-    public String saveServer(@Valid @ModelAttribute TriggerDetail triggerDetail, BindingResult bindingResult, Model model) {
+    public String save(@Valid @ModelAttribute TriggerDetail triggerDetail, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("triggerDetail", triggerDetail);
             return "trigger/edit";
@@ -122,7 +122,7 @@ public class TriggerController {
     }
 
     /**
-     * Add a parent.
+     * Add a job.
      *
      * @param triggerDetail
      * @param jobList
@@ -131,7 +131,7 @@ public class TriggerController {
      * @return Job edit
      */
     @PostMapping(path = "/save", params = {"partial_add_job"})
-    public String addParent(
+    public String addJob(
             @ModelAttribute TriggerDetail triggerDetail,
             @RequestParam(value = "jobList", required = false) List<Job> jobList,
             BindingResult bindingResult,

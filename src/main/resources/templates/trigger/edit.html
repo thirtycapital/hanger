@@ -45,6 +45,41 @@
                             <span th:if="${#fields.hasErrors('cron')}" class="help-block" th:errors="*{cron}"></span>
                         </div>
                     </div>
+                    
+                    <div th:if="${not #lists.isEmpty(triggerDetail.jobs)}">
+                        <fieldset>
+                            <legend>
+                                Jobs
+                            </legend>
+                        </fieldset> 
+
+                        <table class="table">
+                            <tr>
+                                <th style="width:5%">#</th>
+                                <th style="width:72.5%">Name</th>
+                                <th></th>
+                            </tr>
+                            <tr th:each="jobs, jobStat : ${triggerDetail.jobs}">
+                                <input type="hidden" th:field="*{jobs[__${jobStat.index}__]}"/> 
+                                <td> 
+                                    <span th:text="*{jobs[__${jobStat.index}__].id}"></span>
+                                </td>
+                                <td>
+                                    <span th:text="*{jobs[__${jobStat.index}__].name}"></span>
+                                </td>
+                                <td>
+                                    <button type="submit" 
+                                            name="partial_remove_job" 
+                                            th:value="${jobStat.index}" 
+                                            class="btn btn-delete btn-xs"
+                                            th:classappend="${#authorization.expression('hasRole(''HERO'')') ? '':'dispDef'}">
+                                        <span class="glyphicon glyphicon-trash" 
+                                              aria-hidden="true"></span> Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div> 
                     <hr/>
 
                     <div class="form-group">

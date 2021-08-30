@@ -30,6 +30,7 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Build;
+import com.offbytwo.jenkins.model.BuildResult;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import java.io.IOException;
@@ -381,7 +382,7 @@ public class JenkinsService {
 
     /**
      * Identify if a job is running.
-     * 
+     *
      * @param server Jenkins server
      * @param name Job name
      * @return Identify if a job is running
@@ -483,7 +484,7 @@ public class JenkinsService {
                                 //Identifies if the job is running at the rename moment. 
                                 if (!this.isRunning(job.getServer(), name)) {
                                     jenkins.renameJob(name, job.getName(), true);
-                                }else{
+                                } else {
                                     throw new Exception("This job is building and cannot be renamed, please wait build finish!");
                                 }
                             } else {
@@ -1123,7 +1124,7 @@ public class JenkinsService {
      * @param job Job
      * @return Console output text.
      */
-    public String getLog(Job job) {
+    public String getLog(Job job) throws Exception {
         String log = "";
         JenkinsServer jenkins;
 
@@ -1141,8 +1142,12 @@ public class JenkinsService {
                             if (lastSuccessfulBuild != null) {
                                 BuildWithDetails details = lastSuccessfulBuild.details();
 
-                                if (details != null) {
+                                BuildResult result = details.getResult();
+
+                                if ((!result.equals(BuildResult.NOT_BUILT)) && (!result.equals(BuildResult.CANCELLED))) {
                                     log = details.getConsoleOutputText();
+                                } else {
+                                    throw new Exception("The job " + job.getName() + " hasn't a log.");
                                 }
                             }
                         }
@@ -1151,7 +1156,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                LOG.log(Level.ERROR, "Fail getting " + job + " log!", ex);
+                LOG.log(Level.ERROR, "Fail getting " + job + " log!", ex);;
             }
         }
 

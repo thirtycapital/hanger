@@ -1361,7 +1361,13 @@ public class JobController {
     public String log(
             Model model,
             @PathVariable(value = "job") Job job) {
-        model.addAttribute("log", jenkinsService.getLog(job));
+
+        try {
+            model.addAttribute("log", jenkinsService.getLog(job));
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", "Fail: " + ex.getMessage());
+        }
+
         return "job/log";
     }
 

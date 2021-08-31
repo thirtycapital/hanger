@@ -23,10 +23,12 @@
  */
 package br.com.dafiti.hanger.service;
 
+import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.TriggerDetail;
 import br.com.dafiti.hanger.scheduler.JobSpark;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.quartz.CronScheduleBuilder;
@@ -86,10 +88,84 @@ public class TriggerService {
         return triggerDetails;
     }
 
+    /**
+     * Inserts a trigger.
+     *
+     * @param triggerDetail
+     * @throws Exception
+     */
     @Caching(evict = {
         @CacheEvict(value = "triggers", allEntries = true)})
     public void save(TriggerDetail triggerDetail) throws Exception {
+        scheduler.scheduleJob(this.buildTrigger(triggerDetail));
+    }
 
+    /**
+     * Unshedule a trigger.
+     *
+     * @param triggerName String
+     * @throws Exception
+     */
+    @Caching(evict = {
+        @CacheEvict(value = "triggers", allEntries = true)})
+    public void delete(String triggerName) throws Exception {
+        try {
+            this.scheduler.unscheduleJob(triggerKey(triggerName));
+        } catch (SchedulerException ex) {
+            throw new Exception("Error on unscheduling trigger: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Gets a trigger
+     *
+     * @param triggerName String
+     * @return TriggerDetail
+     * @throws Exception
+     */
+    public TriggerDetail get(String triggerName) throws Exception {
+        TriggerDetail triggerDetail = new TriggerDetail();
+
+        for (String group : this.scheduler.getTriggerGroupNames()) {
+            for (TriggerKey triggerKey : this.scheduler.getTriggerKeys(groupEquals(group))) {
+                if (triggerKey.getName().trim().toLowerCase().equals(triggerName.trim().toLowerCase())) {
+                    CronTrigger cronTrigger = (CronTrigger) scheduler.getTrigger(triggerKey);
+                    triggerDetail.setName(triggerKey.getName());
+                    triggerDetail.setCron(cronTrigger.getCronExpression());
+                    triggerDetail.setDescription(cronTrigger.getDescription());
+
+                    for (Entry<String, Object> entry : cronTrigger.getJobDataMap().entrySet()) {
+                        Job job = new Job(Long.valueOf(entry.getKey()));
+                        job.setName(String.valueOf(entry.getValue()));
+                        triggerDetail.addJob(job);
+                    }
+                    break;
+                }
+            }
+        }
+
+        return triggerDetail;
+    }
+
+    /**
+     * Update existing trigger
+     *
+     * @param triggerDetail TriggerDetail
+     * @throws Exception
+     */
+    @Caching(evict = {
+        @CacheEvict(value = "triggers", allEntries = true)})
+    public void update(TriggerDetail triggerDetail) throws Exception {
+        scheduler.rescheduleJob(triggerKey(triggerDetail.getName()), this.buildTrigger(triggerDetail));
+    }
+
+    /**
+     * Prepare trigger setup.
+     *
+     * @param triggerDetail
+     * @return
+     */
+    private Trigger buildTrigger(TriggerDetail triggerDetail) {
         JobDetail jobDetail = JobBuilder
                 .newJob()
                 .ofType(JobSpark.class)
@@ -104,28 +180,12 @@ public class TriggerService {
             jobDataMap.put(String.valueOf(job.getId()), job.getName());
         });
 
-        Trigger trigger = TriggerBuilder.newTrigger()
+        return TriggerBuilder.newTrigger()
                 .forJob(jobDetail)
                 .withIdentity(triggerDetail.getName())
                 .withDescription(triggerDetail.getDescription())
                 .withSchedule(CronScheduleBuilder.cronSchedule(triggerDetail.getCron()))
                 .usingJobData(jobDataMap)
                 .build();
-
-        try {
-            scheduler.scheduleJob(trigger).toString();
-        } catch (SchedulerException ex) {
-            throw new Exception("Error on scheduling: " + ex.getMessage());
-        }
-    }
-
-    @Caching(evict = {
-        @CacheEvict(value = "triggers", allEntries = true)})
-    public void delete(String triggerName) throws Exception {
-        try {
-            this.scheduler.unscheduleJob(triggerKey(triggerName));
-        } catch (SchedulerException ex) {
-            throw new Exception("Error on unscheduling trigger: " + ex.getMessage());
-        }
     }
 }

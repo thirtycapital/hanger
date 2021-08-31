@@ -82,7 +82,7 @@ public class TriggerController {
      */
     @GetMapping(path = "/add")
     public String add(Model model) {
-        model.addAttribute("triggerDetail", new TriggerDetail());
+        this.modelDefault(model, new TriggerDetail());
         return "trigger/edit";
     }
 
@@ -91,20 +91,32 @@ public class TriggerController {
      *
      * @param triggerDetail TriggerDetail
      * @param bindingResult BindingResult
+     * @param redirectAttributes RedirectAttributes
      * @param model Model
+     * @param insert Identify action between insert or update.
      * @return Trigger list template.
      */
     @PostMapping(path = "/save")
-    public String save(@Valid @ModelAttribute TriggerDetail triggerDetail, BindingResult bindingResult, Model model) {
+    public String save(
+            @Valid @ModelAttribute TriggerDetail triggerDetail,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes,
+            Model model,
+            @RequestParam(name = "insert", required = false) boolean insert) {
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("triggerDetail", triggerDetail);
             return "trigger/edit";
         }
 
         try {
-            this.triggerService.save(triggerDetail);
+            if (insert) {
+                this.triggerService.save(triggerDetail);
+            } else {
+                this.triggerService.update(triggerDetail);
+            }
         } catch (Exception ex) {
-            model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+            redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(ex));
         } finally {
             model.addAttribute("triggerDetails", this.triggerService.list());
         }
@@ -131,18 +143,21 @@ public class TriggerController {
      * @param jobList
      * @param bindingResult
      * @param model model
+     * @param insert Identify action between insert or update
      * @return Job edit
      */
     @PostMapping(path = "/save", params = {"partial_add_job"})
     public String addJob(
             @ModelAttribute TriggerDetail triggerDetail,
             @RequestParam(value = "jobList", required = false) List<Job> jobList,
+            @RequestParam(name = "insert", required = false) boolean insert,
             BindingResult bindingResult,
             Model model) {
         jobList.forEach((job) -> {
             triggerDetail.addJob(job);
         });
 
+        this.modelDefault(model, triggerDetail, insert);
         return "trigger/edit";
     }
 
@@ -167,5 +182,49 @@ public class TriggerController {
         }
 
         return false;
+    }
+
+    /**
+     * Edit a trigger.
+     *
+     * @param model Model
+     * @param redirectAttributes
+     * @param triggerName
+     * @return trigger edit
+     */
+    @GetMapping(path = "/edit/{triggerName}")
+    public String edit(
+            Model model,
+            RedirectAttributes redirectAttributes,
+            @PathVariable(value = "triggerName") String triggerName) {
+        try {
+            this.modelDefault(model, this.triggerService.get(triggerName), false);
+        } catch (Exception ex) {
+            redirectAttributes.addAttribute("errorMessage", new Message().getErrorMessage(ex));
+        }
+
+        return "trigger/edit";
+    }
+
+    /**
+     * Default model.
+     *
+     * @param model Model
+     * @triggerDetail TriggerDetail
+     */
+    private void modelDefault(Model model, TriggerDetail triggerDetail) {
+        this.modelDefault(model, triggerDetail, true);
+    }
+
+    /**
+     * Default model
+     *
+     * @param model Model
+     * @triggerDetail TriggerDetail
+     * @param insert boolean
+     */
+    private void modelDefault(Model model, TriggerDetail triggerDetail, boolean insert) {
+        model.addAttribute("triggerDetail", triggerDetail);
+        model.addAttribute("insert", insert);
     }
 }

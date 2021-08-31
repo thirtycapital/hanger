@@ -9,7 +9,8 @@
             <div>           
                 <form class="form-horizontal" th:object="${triggerDetail}" th:action="@{/trigger/save}" method="post">
                     <div class="form-group">
-                        <div class="col-sm-10">                            
+                        <div class="col-sm-10">   
+                            <input type="hidden" th:id="insert" th:name="insert" th:value="${insert}"/>
                         </div>
                     </div>
 
@@ -45,7 +46,7 @@
                             <span th:if="${#fields.hasErrors('cron')}" class="help-block" th:errors="*{cron}"></span>
                         </div>
                     </div>
-                    
+
                     <div th:if="${not #lists.isEmpty(triggerDetail.jobs)}">
                         <fieldset>
                             <legend>
@@ -111,7 +112,7 @@
                      * @returns {undefined}
                      */
                     $("#modal_add_job").click(function () {
-                        var url = /*[[@{/trigger/modal/list/}]]*/ "/trigger/modal/list";                 
+                        var url = /*[[@{/trigger/modal/list/}]]*/ "/trigger/modal/list";
 
                         $.ajax({
                             type: "GET",

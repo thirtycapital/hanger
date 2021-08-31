@@ -105,7 +105,7 @@ public class TriggerController {
             @RequestParam(name = "insert", required = false) boolean insert) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("triggerDetail", triggerDetail);
+            this.modelDefault(model, triggerDetail, insert);
             return "trigger/edit";
         }
 

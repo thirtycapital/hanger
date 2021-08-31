@@ -21,9 +21,9 @@
             <table id="table" class="table table-hover space-top">
                 <thead>
                     <tr>
-                        <th style="width:30%">Name</th>
+                        <th style="width:15%">Name</th>
                         <th style="width:30%">Description</th>
-                        <th style="width:30%">Cron</th>
+                        <th style="width:50%">Cron</th>
                         <th class="no-sort"></th>
                         <th class="no-sort"></th>
                     </tr>
@@ -32,7 +32,7 @@
                     <tr th:each="triggerDetail : ${triggerDetails}">
                         <td th:text="${triggerDetail.name}">#</td>
                         <td th:text="${triggerDetail.description}"></td>
-                        <td th:text="${triggerDetail.cron}">Url</td>
+                        <td th:text="${triggerDetail.getCronDescription()}">Url</td>
                         <td>
                             <div th:if="${#authorization.expression('hasRole(''HERO'')')}">
                                 <a th:href="@{'/trigger/edit/' + ${triggerDetail.name}}" class="btn btn-generic btn-xs">

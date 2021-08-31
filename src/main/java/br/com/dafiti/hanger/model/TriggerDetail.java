@@ -23,10 +23,18 @@
  */
 package br.com.dafiti.hanger.model;
 
+import com.cronutils.descriptor.CronDescriptor;
+import static com.cronutils.model.CronType.QUARTZ;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.parser.CronParser;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -42,6 +50,7 @@ public class TriggerDetail extends Tracker<TriggerDetail> implements Serializabl
     private List<Job> jobs = new ArrayList();
 
     @NotEmpty
+    @Size(min = 5, max = 70)
     public String getName() {
         return name;
     }
@@ -51,6 +60,7 @@ public class TriggerDetail extends Tracker<TriggerDetail> implements Serializabl
     }
 
     @NotEmpty
+    @Size(min = 5, max = 255)
     public String getDescription() {
         return description;
     }
@@ -60,6 +70,7 @@ public class TriggerDetail extends Tracker<TriggerDetail> implements Serializabl
     }
 
     @NotEmpty
+    @Size(min = 13, max = 50)
     public String getCron() {
         return cron;
     }
@@ -78,6 +89,26 @@ public class TriggerDetail extends Tracker<TriggerDetail> implements Serializabl
 
     public void addJob(Job job) {
         this.jobs.add(job);
+    }
+
+    @Transient
+    public String getCronDescription() {
+        String verbose = "";
+
+        if (this.getCron() != null) {
+            if (!this.getCron().isEmpty()) {
+                verbose = StringUtils.capitalize(
+                        CronDescriptor
+                                .instance(Locale.ENGLISH)
+                                .describe(new CronParser(
+                                        CronDefinitionBuilder.instanceDefinitionFor(QUARTZ))
+                                        .parse(this.getCron())
+                                )
+                );
+            }
+        }
+
+        return verbose;
     }
 
 }

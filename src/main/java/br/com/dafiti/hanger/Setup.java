@@ -31,6 +31,7 @@ import br.com.dafiti.hanger.service.JobNotificationService;
 import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.PrivilegeService;
 import br.com.dafiti.hanger.service.RoleService;
+import br.com.dafiti.hanger.service.TriggerService;
 import br.com.dafiti.hanger.service.UserService;
 import java.util.Date;
 import org.apache.logging.log4j.Level;
@@ -57,6 +58,7 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
     private final JobNotificationService jobNotificationService;
     private final ConfigurationService configurationService;
     private final PrivilegeService privilegeService;
+    private final TriggerService triggerService;
 
     private static final Logger LOG = LogManager.getLogger(Setup.class.getName());
 
@@ -71,7 +73,8 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
             JobApprovalService jobApprovalService,
             JobService jobService,
             JobNotificationService jobNotificationService,
-            PrivilegeService privilegeService) {
+            PrivilegeService privilegeService,
+            TriggerService triggerService) {
 
         this.jobNotificationService = jobNotificationService;
         this.userService = userService;
@@ -81,6 +84,7 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
         this.jobService = jobService;
         this.configurationService = configurationService;
         this.privilegeService = privilegeService;
+        this.triggerService = triggerService;
     }
 
     /**
@@ -91,7 +95,7 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     public void onApplicationEvent(ContextRefreshedEvent e) {
         int logRetention;
-        
+
         if (!this.setup) {
             //Setup the configuration table. 
             configurationService.createConfigurationIfNotExists();
@@ -118,6 +122,9 @@ public class Setup implements ApplicationListener<ContextRefreshedEvent> {
                 userService.save(user);
             }
 
+            //Setup the scheduler JobDetails.
+            this.triggerService.createJobDetailsIfNotExists();
+            
             this.setup = true;
         }
 

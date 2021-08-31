@@ -36,6 +36,7 @@ import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
@@ -166,14 +167,6 @@ public class TriggerService {
      * @return
      */
     private Trigger buildTrigger(TriggerDetail triggerDetail) {
-        JobDetail jobDetail = JobBuilder
-                .newJob()
-                .ofType(JobSpark.class)
-                .storeDurably()
-                .withIdentity("sampleJobSpark")
-                .withDescription("description JobSpark")
-                .build();
-
         JobDataMap jobDataMap = new JobDataMap();
 
         triggerDetail.getJobs().forEach((job) -> {
@@ -181,11 +174,39 @@ public class TriggerService {
         });
 
         return TriggerBuilder.newTrigger()
-                .forJob(jobDetail)
+                .forJob(this.buildJobDetail())
                 .withIdentity(triggerDetail.getName())
                 .withDescription(triggerDetail.getDescription())
                 .withSchedule(CronScheduleBuilder.cronSchedule(triggerDetail.getCron()))
                 .usingJobData(jobDataMap)
                 .build();
+    }
+
+    /**
+     * Prepare job detail setup.
+     *
+     * @return
+     */
+    private JobDetail buildJobDetail() {
+        return JobBuilder
+                .newJob()
+                .ofType(JobSpark.class)
+                .storeDurably()
+                .withIdentity("JobSpark")
+                .withDescription("JobSpark is responsible to fire a list of hanger jobs.")
+                .build();
+    }
+
+    /**
+     * Create job details if not exists.
+     */
+    public void createJobDetailsIfNotExists() {
+        try {
+            if (!this.scheduler.checkExists(JobKey.jobKey("JobSpark"))) {
+                this.scheduler.addJob(this.buildJobDetail(), true);
+            }
+        } catch (SchedulerException ex) {
+            Logger.getLogger(TriggerService.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

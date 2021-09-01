@@ -81,7 +81,7 @@ public class TemplateService {
      */
     public Map<String, Map<String, String>> getParameters(String template) {
         Map<String, Map<String, String>> parameter = new HashMap();
-        Matcher m = Pattern.compile("\\$\\{\\{(.+)\\}\\}").matcher(template);
+        Matcher m = Pattern.compile("\\$\\{\\{(.*?(::\\{.*?\\})?)\\}\\}").matcher(template);
 
         while (m.find()) {
             String name = m.group(1);

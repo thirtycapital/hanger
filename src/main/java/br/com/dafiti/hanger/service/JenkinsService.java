@@ -381,7 +381,7 @@ public class JenkinsService {
 
     /**
      * Identify if a job is running.
-     * 
+     *
      * @param server Jenkins server
      * @param name Job name
      * @return Identify if a job is running
@@ -483,7 +483,7 @@ public class JenkinsService {
                                 //Identifies if the job is running at the rename moment. 
                                 if (!this.isRunning(job.getServer(), name)) {
                                     jenkins.renameJob(name, job.getName(), true);
-                                }else{
+                                } else {
                                     throw new Exception("This job is building and cannot be renamed, please wait build finish!");
                                 }
                             } else {
@@ -1142,7 +1142,10 @@ public class JenkinsService {
                                 BuildWithDetails details = lastSuccessfulBuild.details();
 
                                 if (details != null) {
-                                    log = details.getConsoleOutputText();
+
+                                    if (details.getId() != null) {
+                                        log = details.getConsoleOutputText();
+                                    }
                                 }
                             }
                         }

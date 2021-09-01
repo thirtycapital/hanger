@@ -30,7 +30,6 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.model.Build;
-import com.offbytwo.jenkins.model.BuildResult;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import java.io.IOException;
@@ -1124,7 +1123,7 @@ public class JenkinsService {
      * @param job Job
      * @return Console output text.
      */
-    public String getLog(Job job) throws Exception {
+    public String getLog(Job job) {
         String log = "";
         JenkinsServer jenkins;
 
@@ -1142,12 +1141,11 @@ public class JenkinsService {
                             if (lastSuccessfulBuild != null) {
                                 BuildWithDetails details = lastSuccessfulBuild.details();
 
-                                BuildResult result = details.getResult();
+                                if (details != null) {
 
-                                if ((!result.equals(BuildResult.NOT_BUILT)) && (!result.equals(BuildResult.CANCELLED))) {
-                                    log = details.getConsoleOutputText();
-                                } else {
-                                    throw new Exception("The job " + job.getName() + " hasn't a log.");
+                                    if (details.getId() != null) {
+                                        log = details.getConsoleOutputText();
+                                    }
                                 }
                             }
                         }
@@ -1156,7 +1154,7 @@ public class JenkinsService {
                     jenkins.close();
                 }
             } catch (IOException | URISyntaxException ex) {
-                LOG.log(Level.ERROR, "Fail getting " + job + " log!", ex);;
+                LOG.log(Level.ERROR, "Fail getting " + job + " log!", ex);
             }
         }
 

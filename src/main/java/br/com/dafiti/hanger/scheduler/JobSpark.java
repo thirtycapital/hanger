@@ -70,7 +70,7 @@ public class JobSpark implements Job {
 
         for (JobTrigger jobTrigger : jobTriggers) {
             if (jobTrigger.isEnabled()) {
-                LOG.log(Level.INFO, "[" + uuid + "] [Priority: "+ Priority.of(jobTrigger.getPriority())+"] Job " + jobTrigger.getJob().getName() + " sparked by trigger " + triggerName);
+                LOG.log(Level.INFO, "[" + uuid + "] [Priority: " + Priority.of(jobTrigger.getPriority()) + "] Job " + jobTrigger.getJob().getName() + " sparked by trigger " + triggerName);
                 this.jobController.build(jobTrigger.getJob());
             }
         }

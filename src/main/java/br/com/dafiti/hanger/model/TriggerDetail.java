@@ -42,12 +42,12 @@ import org.springframework.stereotype.Component;
  * @author Helio Leal
  */
 @Component
-public class TriggerDetail extends Tracker<TriggerDetail> implements Serializable {
+public class TriggerDetail implements Serializable {
 
     private String name;
     private String description;
     private String cron;
-    private List<Job> jobs = new ArrayList();
+    private List<JobTrigger> jobTriggers = new ArrayList();
 
     @NotEmpty
     @Size(min = 5, max = 70)
@@ -79,16 +79,16 @@ public class TriggerDetail extends Tracker<TriggerDetail> implements Serializabl
         this.cron = cron;
     }
 
-    public List<Job> getJobs() {
-        return jobs;
+    public List<JobTrigger> getJobTriggers() {
+        return jobTriggers;
     }
 
-    public void setJobs(List<Job> jobs) {
-        this.jobs = jobs;
-    }
+    public void setJobTriggers(List<JobTrigger> jobTriggers) {
+        this.jobTriggers = jobTriggers;
+    }    
 
-    public void addJob(Job job) {
-        this.jobs.add(job);
+    public void addJobTrigger(JobTrigger jobTrigger) {
+        this.jobTriggers.add(jobTrigger);
     }
 
     @Transient

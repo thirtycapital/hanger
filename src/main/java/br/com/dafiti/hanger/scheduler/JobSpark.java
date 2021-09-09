@@ -24,14 +24,15 @@
 package br.com.dafiti.hanger.scheduler;
 
 import br.com.dafiti.hanger.controller.JobController;
+import br.com.dafiti.hanger.model.JobTrigger;
 import br.com.dafiti.hanger.service.JobService;
-import java.util.Set;
+import br.com.dafiti.hanger.service.JobTriggerService;
+import java.util.List;
 import java.util.UUID;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
-import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,30 +45,31 @@ import org.springframework.stereotype.Component;
 public class JobSpark implements Job {
 
     private final JobController jobController;
-    private final JobService jobService;
+    private final JobTriggerService jobTriggerService;
 
     private static final Logger LOG = LogManager.getLogger(JobSpark.class.getName());
 
     @Autowired
     public JobSpark(
             JobController jobController,
-            JobService jobService) {
+            JobService jobService,
+            JobTriggerService jobTriggerService) {
         this.jobController = jobController;
-        this.jobService = jobService;
+        this.jobTriggerService = jobTriggerService;
     }
 
     @Override
     public void execute(JobExecutionContext context) {
         UUID uuid = UUID.randomUUID();
-        JobDataMap jobDataMap = context.getMergedJobDataMap();
-        Set<String> jobKeys = jobDataMap.keySet();
-        String trigger = context.getTrigger().getKey().getName();
+        String triggerName=  context.getTrigger().getKey().getName();
 
-        LOG.log(Level.INFO, "[" + uuid + "] Trigger " + trigger + " sparked");
+        LOG.log(Level.INFO, "[" + uuid + "] Trigger " + triggerName + " sparked");
+        
+        List<JobTrigger> jobTriggers = this.jobTriggerService.findByTriggerName(triggerName);
 
-        for (String jobKey : jobKeys) {
-            LOG.log(Level.INFO, "[" + uuid + "] Job number " + jobKey + " sparked by trigger " + trigger);
-            this.jobController.build(this.jobService.load(Long.valueOf(jobKey)));
+        for (JobTrigger jobTrigger : jobTriggers) {
+            LOG.log(Level.INFO, "[" + uuid + "] Job " + jobTrigger.getJob().getName() + " sparked by trigger " + triggerName);
+            this.jobController.build(jobTrigger.getJob());
         }
     }
 }

@@ -23,18 +23,15 @@
  */
 package br.com.dafiti.hanger.service;
 
-import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.TriggerDetail;
 import br.com.dafiti.hanger.scheduler.JobSpark;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -58,10 +55,14 @@ import org.springframework.stereotype.Service;
 public class TriggerService {
 
     private final Scheduler scheduler;
+    private final JobTriggerService jobTriggerService;
 
     @Autowired
-    public TriggerService(Scheduler scheduler) {
+    public TriggerService(
+            Scheduler scheduler,
+            JobTriggerService jobTriggerService) {
         this.scheduler = scheduler;
+        this.jobTriggerService = jobTriggerService;
     }
 
     @Cacheable(value = "triggers")
@@ -98,7 +99,8 @@ public class TriggerService {
     @Caching(evict = {
         @CacheEvict(value = "triggers", allEntries = true)})
     public void save(TriggerDetail triggerDetail) throws Exception {
-        scheduler.scheduleJob(this.buildTrigger(triggerDetail));
+        this.jobTriggerService.deleteAndSaveAll(triggerDetail.getJobTriggers());
+        this.scheduler.scheduleJob(this.buildTrigger(triggerDetail));
     }
 
     /**
@@ -134,12 +136,7 @@ public class TriggerService {
                     triggerDetail.setName(triggerKey.getName());
                     triggerDetail.setCron(cronTrigger.getCronExpression());
                     triggerDetail.setDescription(cronTrigger.getDescription());
-
-                    for (Entry<String, Object> entry : cronTrigger.getJobDataMap().entrySet()) {
-                        Job job = new Job(Long.valueOf(entry.getKey()));
-                        job.setName(String.valueOf(entry.getValue()));
-                        triggerDetail.addJob(job);
-                    }
+                    triggerDetail.setJobTriggers(this.jobTriggerService.findByTriggerName(triggerKey.getName().trim()));
                     break;
                 }
             }
@@ -157,6 +154,7 @@ public class TriggerService {
     @Caching(evict = {
         @CacheEvict(value = "triggers", allEntries = true)})
     public void update(TriggerDetail triggerDetail) throws Exception {
+        this.jobTriggerService.deleteAndSaveAll(triggerDetail.getJobTriggers());
         scheduler.rescheduleJob(triggerKey(triggerDetail.getName()), this.buildTrigger(triggerDetail));
     }
 
@@ -167,18 +165,11 @@ public class TriggerService {
      * @return
      */
     private Trigger buildTrigger(TriggerDetail triggerDetail) {
-        JobDataMap jobDataMap = new JobDataMap();
-
-        triggerDetail.getJobs().forEach((job) -> {
-            jobDataMap.put(String.valueOf(job.getId()), job.getName());
-        });
-
         return TriggerBuilder.newTrigger()
                 .forJob(this.buildJobDetail())
                 .withIdentity(triggerDetail.getName())
                 .withDescription(triggerDetail.getDescription())
                 .withSchedule(CronScheduleBuilder.cronSchedule(triggerDetail.getCron()))
-                .usingJobData(jobDataMap)
                 .build();
     }
 

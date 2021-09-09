@@ -25,6 +25,7 @@ package br.com.dafiti.hanger.controller;
 
 import br.com.dafiti.hanger.exception.Message;
 import br.com.dafiti.hanger.model.Job;
+import br.com.dafiti.hanger.model.JobTrigger;
 import br.com.dafiti.hanger.model.TriggerDetail;
 import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.TriggerService;
@@ -154,7 +155,11 @@ public class TriggerController {
             BindingResult bindingResult,
             Model model) {
         jobList.forEach((job) -> {
-            triggerDetail.addJob(job);
+            JobTrigger jobTrigger = new JobTrigger();
+            jobTrigger.setTriggerName(triggerDetail.getName());
+            jobTrigger.setJob(job);
+
+            triggerDetail.addJobTrigger(jobTrigger);
         });
 
         this.modelDefault(model, triggerDetail, insert);

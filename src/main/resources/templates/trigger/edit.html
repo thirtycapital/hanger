@@ -47,7 +47,7 @@
                         </div>
                     </div>
 
-                    <div th:if="${not #lists.isEmpty(triggerDetail.jobs)}">
+                    <div th:if="${not #lists.isEmpty(triggerDetail.jobTriggers)}">
                         <fieldset>
                             <legend>
                                 Jobs
@@ -60,18 +60,21 @@
                                 <th style="width:72.5%">Name</th>
                                 <th></th>
                             </tr>
-                            <tr th:each="jobs, jobStat : ${triggerDetail.jobs}">
-                                <input type="hidden" th:field="*{jobs[__${jobStat.index}__]}"/> 
+                            <tr th:each="jobTriggers, jobTriggersStat : ${triggerDetail.jobTriggers}">
+                                <input type="hidden" th:field="*{jobTriggers[__${jobTriggersStat.index}__].id}" />
+                                <input type="hidden" th:field="*{jobTriggers[__${jobTriggersStat.index}__].job}" />
+                                <input type="hidden" th:field="*{jobTriggers[__${jobTriggersStat.index}__].triggerName}" />
+
                                 <td> 
-                                    <span th:text="*{jobs[__${jobStat.index}__].id}"></span>
+                                    <span th:text="*{jobTriggers[__${jobTriggersStat.index}__].job.id}"></span>
                                 </td>
                                 <td>
-                                    <span th:text="*{jobs[__${jobStat.index}__].name}"></span>
+                                    <span th:text="*{jobTriggers[__${jobTriggersStat.index}__].job.name}"></span>
                                 </td>
                                 <td>
                                     <button type="submit" 
                                             name="partial_remove_job" 
-                                            th:value="${jobStat.index}" 
+                                            th:value="${jobTriggersStat.index}" 
                                             class="btn btn-delete btn-xs"
                                             th:classappend="${#authorization.expression('hasRole(''HERO'')') ? '':'dispDef'}">
                                         <span class="glyphicon glyphicon-trash" 

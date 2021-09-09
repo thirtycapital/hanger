@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public interface JobTriggerRepository extends CrudRepository<JobTrigger, Long> {
 
-    public List<JobTrigger> findByTriggerName(String triggerName);
+    public List<JobTrigger> findByTriggerNameOrderByPriorityDesc(String triggerName);
 
     @Transactional
     Long deleteByTriggerName(String triggerName);

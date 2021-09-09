@@ -58,7 +58,8 @@
                             <tr>
                                 <th style="width:5%">#</th>
                                 <th style="width:2.5%"><span class="glyphicon glyphicon-play" title="Enabled"></span></th>
-                                <th style="width:70%">Name</th>
+                                <th style="width:65%">Name</th>
+                                <th style="width:5%">Priority</th>
                                 <th></th>
                             </tr>
                             <tr th:each="jobTriggers, jobTriggersStat : ${triggerDetail.jobTriggers}">
@@ -79,6 +80,19 @@
                                 </td>
                                 <td>
                                     <span th:text="*{jobTriggers[__${jobTriggersStat.index}__].job.name}"></span>
+                                </td>
+                                <td>
+                                    <select class="selectpicker form-control low" 
+                                            data-style="btn btn-generic btn-xs" 
+                                            data-live-search="true" 
+                                            th:field="*{jobTriggers[__${jobTriggersStat.index}__].priority}" 
+                                            required="true">
+
+                                        <option th:each="priority : ${T(br.com.dafiti.hanger.option.Priority).values()}" 
+                                                th:value="${priority.priority}" 
+                                                th:text="${priority}">
+                                        </option>
+                                    </select>
                                 </td>
                                 <td>
                                     <button type="submit" 

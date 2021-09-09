@@ -21,35 +21,35 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * 
  */
-package br.com.dafiti.hanger.service;
+package br.com.dafiti.hanger.option;
 
-import br.com.dafiti.hanger.model.JobTrigger;
-import br.com.dafiti.hanger.repository.JobTriggerRepository;
-import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.util.stream.Stream;
 
 /**
  *
  * @author Helio Leal
  */
-@Service
-public class JobTriggerService {
+public enum Priority {
+    LOWEST(1),
+    LOW(2),
+    NORMAL(3),
+    HIGH(4),
+    HIGHEST(5);
 
-    private final JobTriggerRepository jobTriggerRepository;
+    private int priority;
 
-    @Autowired
-    public JobTriggerService(JobTriggerRepository jobTriggerRepository) {
-        this.jobTriggerRepository = jobTriggerRepository;
+    private Priority(int priority) {
+        this.priority = priority;
     }
 
-    void deleteAndSaveAll(String triggerName, List<JobTrigger> jobTriggers) {
-        this.jobTriggerRepository.deleteByTriggerName(triggerName);
-        this.jobTriggerRepository.saveAll(jobTriggers);
+    public int getPriority() {
+        return priority;
     }
 
-    public List<JobTrigger> findByTriggerNameOrderByPriorityDesc(String triggerName) {
-        return this.jobTriggerRepository.findByTriggerNameOrderByPriorityDesc(triggerName);
+    public static Priority of(int priority) {
+        return Stream.of(Priority.values())
+                .filter(p -> p.getPriority() == priority)
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
     }
-
 }

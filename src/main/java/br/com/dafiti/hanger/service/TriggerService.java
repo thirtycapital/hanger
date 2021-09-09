@@ -136,7 +136,7 @@ public class TriggerService {
                     triggerDetail.setName(triggerKey.getName());
                     triggerDetail.setCron(cronTrigger.getCronExpression());
                     triggerDetail.setDescription(cronTrigger.getDescription());
-                    triggerDetail.setJobTriggers(this.jobTriggerService.findByTriggerName(triggerKey.getName().trim()));
+                    triggerDetail.setJobTriggers(this.jobTriggerService.findByTriggerNameOrderByPriorityDesc(triggerKey.getName().trim()));
                     break;
                 }
             }

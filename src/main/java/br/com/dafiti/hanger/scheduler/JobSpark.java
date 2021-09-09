@@ -25,6 +25,7 @@ package br.com.dafiti.hanger.scheduler;
 
 import br.com.dafiti.hanger.controller.JobController;
 import br.com.dafiti.hanger.model.JobTrigger;
+import br.com.dafiti.hanger.option.Priority;
 import br.com.dafiti.hanger.service.JobService;
 import br.com.dafiti.hanger.service.JobTriggerService;
 import java.util.List;
@@ -65,11 +66,11 @@ public class JobSpark implements Job {
 
         LOG.log(Level.INFO, "[" + uuid + "] Trigger " + triggerName + " sparked");
 
-        List<JobTrigger> jobTriggers = this.jobTriggerService.findByTriggerName(triggerName);
+        List<JobTrigger> jobTriggers = this.jobTriggerService.findByTriggerNameOrderByPriorityDesc(triggerName);
 
         for (JobTrigger jobTrigger : jobTriggers) {
             if (jobTrigger.isEnabled()) {
-                LOG.log(Level.INFO, "[" + uuid + "] Job " + jobTrigger.getJob().getName() + " sparked by trigger " + triggerName);
+                LOG.log(Level.INFO, "[" + uuid + "] [Priority: "+ Priority.of(jobTrigger.getPriority())+"] Job " + jobTrigger.getJob().getName() + " sparked by trigger " + triggerName);
                 this.jobController.build(jobTrigger.getJob());
             }
         }

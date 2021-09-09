@@ -99,7 +99,7 @@ public class TriggerService {
     @Caching(evict = {
         @CacheEvict(value = "triggers", allEntries = true)})
     public void save(TriggerDetail triggerDetail) throws Exception {
-        this.jobTriggerService.deleteAndSaveAll(triggerDetail.getJobTriggers());
+        this.jobTriggerService.deleteAndSaveAll(triggerDetail.getName(), triggerDetail.getJobTriggers());
         this.scheduler.scheduleJob(this.buildTrigger(triggerDetail));
     }
 
@@ -154,7 +154,7 @@ public class TriggerService {
     @Caching(evict = {
         @CacheEvict(value = "triggers", allEntries = true)})
     public void update(TriggerDetail triggerDetail) throws Exception {
-        this.jobTriggerService.deleteAndSaveAll(triggerDetail.getJobTriggers());
+        this.jobTriggerService.deleteAndSaveAll(triggerDetail.getName(), triggerDetail.getJobTriggers());
         scheduler.rescheduleJob(triggerKey(triggerDetail.getName()), this.buildTrigger(triggerDetail));
     }
 

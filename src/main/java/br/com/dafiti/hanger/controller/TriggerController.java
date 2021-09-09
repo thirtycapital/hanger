@@ -167,6 +167,27 @@ public class TriggerController {
     }
 
     /**
+     * Remove a job.
+     *
+     * @param triggerDetail
+     * @param index index
+     * @param insert
+     * @param model Model
+     * @return Job edit
+     */
+    @PostMapping(path = "/save", params = {"partial_remove_job"})
+    public String removeJob(
+            @ModelAttribute TriggerDetail triggerDetail,
+            @RequestParam(value = "partial_remove_job", required = false) int index,
+            @RequestParam(name = "insert", required = false) boolean insert,
+            Model model) {
+        triggerDetail.getJobTriggers().remove(index);
+
+        this.modelDefault(model, triggerDetail, insert);
+        return "trigger/edit";
+    }
+
+    /**
      * Delete a trigger.
      *
      * @param redirectAttributes RedirectAttributes

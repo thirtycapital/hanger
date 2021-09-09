@@ -43,8 +43,8 @@ public class JobTriggerService {
         this.jobTriggerRepository = jobTriggerRepository;
     }
 
-    void deleteAndSaveAll(List<JobTrigger> jobTriggers) {
-        this.jobTriggerRepository.deleteAll(jobTriggers);
+    void deleteAndSaveAll(String triggerName, List<JobTrigger> jobTriggers) {
+        this.jobTriggerRepository.deleteByTriggerName(triggerName);
         this.jobTriggerRepository.saveAll(jobTriggers);
     }
 

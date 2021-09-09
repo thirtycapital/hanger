@@ -26,6 +26,7 @@ package br.com.dafiti.hanger.repository;
 import br.com.dafiti.hanger.model.JobTrigger;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -34,4 +35,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface JobTriggerRepository extends CrudRepository<JobTrigger, Long> {
 
     public List<JobTrigger> findByTriggerName(String triggerName);
+
+    @Transactional
+    Long deleteByTriggerName(String triggerName);
 }

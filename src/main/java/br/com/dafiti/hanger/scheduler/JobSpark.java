@@ -61,15 +61,17 @@ public class JobSpark implements Job {
     @Override
     public void execute(JobExecutionContext context) {
         UUID uuid = UUID.randomUUID();
-        String triggerName=  context.getTrigger().getKey().getName();
+        String triggerName = context.getTrigger().getKey().getName();
 
         LOG.log(Level.INFO, "[" + uuid + "] Trigger " + triggerName + " sparked");
-        
+
         List<JobTrigger> jobTriggers = this.jobTriggerService.findByTriggerName(triggerName);
 
         for (JobTrigger jobTrigger : jobTriggers) {
-            LOG.log(Level.INFO, "[" + uuid + "] Job " + jobTrigger.getJob().getName() + " sparked by trigger " + triggerName);
-            this.jobController.build(jobTrigger.getJob());
+            if (jobTrigger.isEnabled()) {
+                LOG.log(Level.INFO, "[" + uuid + "] Job " + jobTrigger.getJob().getName() + " sparked by trigger " + triggerName);
+                this.jobController.build(jobTrigger.getJob());
+            }
         }
     }
 }

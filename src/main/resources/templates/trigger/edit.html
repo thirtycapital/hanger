@@ -57,7 +57,8 @@
                         <table class="table">
                             <tr>
                                 <th style="width:5%">#</th>
-                                <th style="width:72.5%">Name</th>
+                                <th style="width:2.5%"><span class="glyphicon glyphicon-play" title="Enabled"></span></th>
+                                <th style="width:70%">Name</th>
                                 <th></th>
                             </tr>
                             <tr th:each="jobTriggers, jobTriggersStat : ${triggerDetail.jobTriggers}">
@@ -67,6 +68,14 @@
 
                                 <td> 
                                     <span th:text="*{jobTriggers[__${jobTriggersStat.index}__].job.id}"></span>
+                                </td>
+                                <td>
+                                    <input  
+                                        id="enabled" 
+                                        name="enabled"
+                                        type="checkbox" 
+                                        th:field="*{jobTriggers[__${jobTriggersStat.index}__].enabled}" 
+                                        th:checked="*{jobTriggers[__${jobTriggersStat.index}__].enabled}"/>
                                 </td>
                                 <td>
                                     <span th:text="*{jobTriggers[__${jobTriggersStat.index}__].job.name}"></span>

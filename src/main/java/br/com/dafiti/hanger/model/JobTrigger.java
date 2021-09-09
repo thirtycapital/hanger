@@ -42,6 +42,8 @@ public class JobTrigger extends Tracker<JobTrigger> implements Serializable {
     private Long id;
     private Job job;
     private String triggerName;
+    private boolean enabled = true;
+    private int priority;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,4 +73,20 @@ public class JobTrigger extends Tracker<JobTrigger> implements Serializable {
     public void setTriggerName(String triggerName) {
         this.triggerName = triggerName;
     }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }    
 }

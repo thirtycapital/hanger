@@ -349,7 +349,7 @@ public class FlowService {
         node.append(jobBuildTime.write());
 
         // Unique key for InnerHTML.
-        String keyInnerHtml = (scope == null) ? "__" + job.getId() : "__" + job.getId() + "_" + scope;
+        String innerHtmlKey = (scope == null) ? "__" + job.getId() : "__" + job.getId() + "_" + scope;
 
         // Identify root step.
         if (parent == null) {
@@ -361,14 +361,14 @@ public class FlowService {
             node.append(jobBuildScope.write());
 
             // Define unique innerHTML variable.
-            if (!nodes.containsKey(keyInnerHtml)) {
-                nodes.put(keyInnerHtml, node.toString());
+            if (!nodes.containsKey(innerHtmlKey)) {
+                nodes.put(innerHtmlKey, node.toString());
             }
 
             // Identify steps.
             flow.put(StringUtils.leftPad(String.valueOf(level), 5, "0"),
                     new Step(jobLineage,
-                            jobLineage + " = " + "{" + "     innerHTML: " + keyInnerHtml + "," + "     HTMLid: \""
+                            jobLineage + " = " + "{" + "     innerHTML: " + innerHtmlKey + "," + "     HTMLid: \""
                             + job.getId() + "\"," + "     HTMLclass: " + "_class" + "}"));
         } else {
             // Define the job scope paragraph.
@@ -388,8 +388,8 @@ public class FlowService {
             node.append(jobBuildScope.write());
 
             // Define unique innerHTML variable.
-            if (!nodes.containsKey(keyInnerHtml)) {
-                nodes.put(keyInnerHtml, node.toString());
+            if (!nodes.containsKey(innerHtmlKey)) {
+                nodes.put(innerHtmlKey, node.toString());
             }
 
             // Identify child steps.
@@ -397,7 +397,7 @@ public class FlowService {
                     StringUtils.leftPad(String.valueOf(level), 5, "0") + StringUtils.leftPad(jobLineage, 100, "0")
                     + StringUtils.leftPad(parentLineage, 100, "0"),
                     new Step(jobLineage, jobLineage + " = " + "{ parent: " + parentLineage + ", " + "     innerHTML: "
-                            + keyInnerHtml + "," + "     HTMLid: \"" + job.getId() + "\"," + "     collapsed: "
+                            + innerHtmlKey + "," + "     HTMLid: \"" + job.getId() + "\"," + "     collapsed: "
                             + (job.getParent().isEmpty() || reverse || expanded ? "false" : "true") + ","
                             + "     HTMLclass: _class }"));
         }

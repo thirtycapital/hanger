@@ -91,6 +91,7 @@ public class Job extends Tracker<Job> implements Serializable {
     private List<JobApproval> approval = new ArrayList();
     private List<WorkbenchEmail> email = new ArrayList();
     private List<String> shellScript = new ArrayList();
+    private List<JobTrigger> jobTrigger = new ArrayList();
     private Set<String> channel = new HashSet();
     private boolean enabled = true;
     private boolean notify;
@@ -430,29 +431,29 @@ public class Job extends Tracker<Job> implements Serializable {
 
     @Transient
     public String getCronDescription() {
-    	return this.getCronDescription(false);
+        return this.getCronDescription(false);
     }
-    
+
     @Transient
     public String getCronDescription(boolean secure) {
-		String cronDescription = "";
+        String cronDescription = "";
 
-		if (this.getCron() != null && !this.getCron().isEmpty()) {
-			CronParser parser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(UNIX));
-			CronDescriptor descriptor = CronDescriptor.instance(Locale.ENGLISH);
+        if (this.getCron() != null && !this.getCron().isEmpty()) {
+            CronParser parser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(UNIX));
+            CronDescriptor descriptor = CronDescriptor.instance(Locale.ENGLISH);
 
-			if (secure) {
-				try {
-					cronDescription = descriptor.describe(parser.parse(this.getCron()));
-				} catch (IllegalArgumentException e) {
-					cronDescription = e.getMessage();
-				}
-			} else {
-				cronDescription = descriptor.describe(parser.parse(this.getCron()));
-			}
-		}
+            if (secure) {
+                try {
+                    cronDescription = descriptor.describe(parser.parse(this.getCron()));
+                } catch (IllegalArgumentException e) {
+                    cronDescription = e.getMessage();
+                }
+            } else {
+                cronDescription = descriptor.describe(parser.parse(this.getCron()));
+            }
+        }
 
-		return StringUtils.capitalize(cronDescription);
+        return StringUtils.capitalize(cronDescription);
     }
 
     @Transient
@@ -462,6 +463,15 @@ public class Job extends Tracker<Job> implements Serializable {
 
     public void setBlockingJobs(String blockingJobs) {
         this.blockingJobs = blockingJobs;
+    }
+
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    public List<JobTrigger> getJobTrigger() {
+        return jobTrigger;
+    }
+
+    public void setJobTrigger(List<JobTrigger> jobTrigger) {
+        this.jobTrigger = jobTrigger;
     }
 
     @Override

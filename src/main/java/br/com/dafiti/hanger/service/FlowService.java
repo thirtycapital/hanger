@@ -26,6 +26,7 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.JobParent;
+import br.com.dafiti.hanger.model.JobTrigger;
 import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Scope;
 
@@ -51,6 +52,7 @@ import org.springframework.stereotype.Service;
 public class FlowService {
 
     private Map<String, Step> flow;
+    private Map<String, String> nodes;
     private Set<JobDetails> reach;
     private Set<Integer> levels;
     private final JobParentService jobParentService;
@@ -90,10 +92,18 @@ public class FlowService {
 
         Flow flow = this.getFlowStructure(job, reverse, expanded);
 
-        // Get its as a key value structure.
+        // Gets its as a key value structure.
         flow.getStructure().entrySet().stream().forEach((entry) -> {
             key.add(entry.getValue().getId());
             value.add(entry.getValue().getVariable());
+        });
+
+        // Sets job clickable class. 
+        configuration.append("var _class = 'flow-job-clickable'; ");
+
+        // Sets node info.
+        nodes.entrySet().stream().forEach((entry) -> {
+            configuration.append("var " + entry.getKey() + " = '" + entry.getValue() + "'; ");
         });
 
         // Define TreantJS configuration.
@@ -143,9 +153,10 @@ public class FlowService {
         String jobLineage = "";
         String parentLineage = "";
 
-        flow = new TreeMap<String, Step>();
-        reach = new HashSet<JobDetails>();
-        levels = new HashSet<Integer>();
+        flow = new TreeMap<>();
+        nodes = new TreeMap<>();
+        reach = new HashSet<>();
+        levels = new HashSet<>();
 
         return getFlowStructure(
                 job,
@@ -177,7 +188,7 @@ public class FlowService {
             Scope parentScope) {
 
         Scope scope = null;
-        HashSet<JobParent> childs = new HashSet<JobParent>();
+        HashSet<JobParent> childs = new HashSet<>();
 
         // Identify the step.
         level++;
@@ -338,6 +349,9 @@ public class FlowService {
         node.append(jobStatus.write());
         node.append(jobBuildTime.write());
 
+        // Unique key for InnerHTML.
+        String innerHtmlKey = (scope == null) ? "__" + job.getId() : "__" + job.getId() + "_" + scope;
+
         // Identify root step.
         if (parent == null) {
             // Define the job scope paragraph.
@@ -347,10 +361,51 @@ public class FlowService {
 
             node.append(jobBuildScope.write());
 
+            // Define unique innerHTML variable.
+            if (!nodes.containsKey(innerHtmlKey)) {
+                nodes.put(innerHtmlKey, node.toString());
+            }
+
+            // Identify steps.
             flow.put(StringUtils.leftPad(String.valueOf(level), 5, "0"),
                     new Step(jobLineage,
-                            jobLineage + " = " + "{" + "     innerHTML: '" + node.toString() + "'," + "     HTMLid: \""
-                            + job.getId() + "\"," + "     HTMLclass: \"" + "flow-job-clickable" + "\"" + "}"));
+                            jobLineage + " = " + "{" + "     innerHTML: " + innerHtmlKey + "," + "     HTMLid: \""
+                            + job.getId() + "\"," + "     HTMLclass: " + "_class" + "}"));
+
+            // Identify if job has triggers
+            if (!job.getJobTrigger().isEmpty()) {
+                for (JobTrigger jobTrigger : job.getJobTrigger()) {
+
+                    // Define the trigger name link.
+                    A triggerName = new A();
+                    triggerName.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/job/view/" + job.getId());
+                    triggerName.setTarget("_blank");
+                    triggerName.setCSSClass("node-name");
+                    triggerName.appendText(jobTrigger.getTriggerName());
+
+                    // Define the node HTML content.
+                    StringBuilder triggerNode = new StringBuilder();
+                    triggerNode.append(triggerName.write());
+
+                    // Identify the lineage.
+                    // __T to represent a trigger
+                    String triggerLineage = jobLineage + "__T" + jobTrigger.getTriggerName();
+
+                    String innerHtmlKeyTRIGGER = "__T" + jobTrigger.getTriggerName();
+
+                    // Define unique innerHTML variable.
+                    if (!nodes.containsKey(innerHtmlKeyTRIGGER)) {
+                        nodes.put(innerHtmlKeyTRIGGER, triggerNode.toString());
+                    }
+
+                    // Identify child steps.
+                    flow.put(
+                            StringUtils.leftPad(String.valueOf(level), 5, "0") + StringUtils.leftPad(triggerLineage, 100, "0")
+                            + StringUtils.leftPad(jobLineage, 100, "0"),
+                            new Step(triggerLineage, triggerLineage + " = { parent: " + jobLineage + ",      innerHTML: " + innerHtmlKeyTRIGGER + ",     HTMLid: \"T" + jobTrigger.getTriggerName() + "\",     collapsed: false,     HTMLclass: _class }"));
+                }
+            }
+
         } else {
             // Define the job scope paragraph.
             P jobBuildScope = new P();
@@ -368,14 +423,59 @@ public class FlowService {
             jobBuildScope.setCSSClass("node-scope");
             node.append(jobBuildScope.write());
 
+            // Define unique innerHTML variable.
+            if (!nodes.containsKey(innerHtmlKey)) {
+                nodes.put(innerHtmlKey, node.toString());
+            }
+
             // Identify child steps.
             flow.put(
                     StringUtils.leftPad(String.valueOf(level), 5, "0") + StringUtils.leftPad(jobLineage, 100, "0")
                     + StringUtils.leftPad(parentLineage, 100, "0"),
-                    new Step(jobLineage, jobLineage + " = " + "{ parent: " + parentLineage + ", " + "     innerHTML: '"
-                            + node.toString() + "'," + "     HTMLid: \"" + job.getId() + "\"," + "     collapsed: "
+                    new Step(jobLineage, jobLineage + " = " + "{ parent: " + parentLineage + ", " + "     innerHTML: "
+                            + innerHtmlKey + "," + "     HTMLid: \"" + job.getId() + "\"," + "     collapsed: "
                             + (job.getParent().isEmpty() || reverse || expanded ? "false" : "true") + ","
-                            + "     HTMLclass: \"" + "flow-job-clickable" + "\"" + "}"));
+                            + "     HTMLclass: _class }"));
+
+            System.out.println(jobLineage + " = " + "{ parent: " + parentLineage + ", " + "     innerHTML: "
+                    + innerHtmlKey + "," + "     HTMLid: \"" + job.getId() + "\"," + "     collapsed: "
+                    + (job.getParent().isEmpty() || reverse || expanded ? "false" : "true") + ","
+                    + "     HTMLclass: _class }");
+
+            // Identify if job has triggers
+            if (!job.getJobTrigger().isEmpty()) {
+                for (JobTrigger jobTrigger : job.getJobTrigger()) {
+
+                    // Define the trigger name link.
+                    A triggerName = new A();
+                    triggerName.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/job/view/" + job.getId());
+                    triggerName.setTarget("_blank");
+                    triggerName.setCSSClass("node-name");
+                    triggerName.appendText(jobTrigger.getTriggerName());
+
+                    // Define the node HTML content.
+                    StringBuilder triggerNode = new StringBuilder();
+                    triggerNode.append(triggerName.write());
+
+                    // Identify the lineage.
+                    // __T to represent a trigger
+                    String triggerLineage = jobLineage + "__T" + jobTrigger.getTriggerName();
+
+                    String innerHtmlKeyTRIGGER = "__T" + jobTrigger.getTriggerName();
+
+                    // Define unique innerHTML variable.
+                    if (!nodes.containsKey(innerHtmlKeyTRIGGER)) {
+                        nodes.put(innerHtmlKeyTRIGGER, triggerNode.toString());
+                    }
+
+                    // Identify child steps.
+                    flow.put(
+                            StringUtils.leftPad(String.valueOf(level), 5, "0") + StringUtils.leftPad(triggerLineage, 100, "0")
+                            + StringUtils.leftPad(jobLineage, 100, "0"),
+                            new Step(triggerLineage, triggerLineage + " = { parent: " + jobLineage + ",      innerHTML: " + innerHtmlKeyTRIGGER + ",     HTMLid: \"T" + jobTrigger.getTriggerName() + "\",     collapsed: false,     HTMLclass: _class }"));
+                }
+            }
+
         }
 
         return new Flow(flow, reach.size(), levels.size());

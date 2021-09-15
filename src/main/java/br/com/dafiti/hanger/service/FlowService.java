@@ -96,10 +96,10 @@ public class FlowService {
             key.add(entry.getValue().getId());
             value.add(entry.getValue().getVariable());
         });
-        
+
         // Sets job clickable class. 
         configuration.append("var _class = 'flow-job-clickable'; ");
-               
+
         // Sets node info.
         nodes.entrySet().stream().forEach((entry) -> {
             configuration.append("var " + entry.getKey() + " = '" + entry.getValue() + "'; ");
@@ -348,6 +348,9 @@ public class FlowService {
         node.append(jobStatus.write());
         node.append(jobBuildTime.write());
 
+        // Unique key for InnerHTML.
+        String innerHtmlKey = (scope == null) ? "__" + job.getId() : "__" + job.getId() + "_" + scope;
+
         // Identify root step.
         if (parent == null) {
             // Define the job scope paragraph.
@@ -356,16 +359,16 @@ public class FlowService {
             jobBuildScope.setCSSClass("node-scope");
 
             node.append(jobBuildScope.write());
-            
+
             // Define unique innerHTML variable.
-            if (!nodes.containsKey("__" + job.getId())){
-        	nodes.put("__" + job.getId(), node.toString());
+            if (!nodes.containsKey(innerHtmlKey)) {
+                nodes.put(innerHtmlKey, node.toString());
             }
 
             // Identify steps.
             flow.put(StringUtils.leftPad(String.valueOf(level), 5, "0"),
                     new Step(jobLineage,
-                            jobLineage + " = " + "{" + "     innerHTML: " + ("__" + job.getId()) + "," + "     HTMLid: \""
+                            jobLineage + " = " + "{" + "     innerHTML: " + innerHtmlKey + "," + "     HTMLid: \""
                             + job.getId() + "\"," + "     HTMLclass: " + "_class" + "}"));
         } else {
             // Define the job scope paragraph.
@@ -385,16 +388,16 @@ public class FlowService {
             node.append(jobBuildScope.write());
 
             // Define unique innerHTML variable.
-            if (!nodes.containsKey("__" + job.getId())){
-        	nodes.put("__" + job.getId(), node.toString());
+            if (!nodes.containsKey(innerHtmlKey)) {
+                nodes.put(innerHtmlKey, node.toString());
             }
-            
+
             // Identify child steps.
             flow.put(
                     StringUtils.leftPad(String.valueOf(level), 5, "0") + StringUtils.leftPad(jobLineage, 100, "0")
                     + StringUtils.leftPad(parentLineage, 100, "0"),
                     new Step(jobLineage, jobLineage + " = " + "{ parent: " + parentLineage + ", " + "     innerHTML: "
-                            + ("__" + job.getId()) + "," + "     HTMLid: \"" + job.getId() + "\"," + "     collapsed: "
+                            + innerHtmlKey + "," + "     HTMLid: \"" + job.getId() + "\"," + "     collapsed: "
                             + (job.getParent().isEmpty() || reverse || expanded ? "false" : "true") + ","
                             + "     HTMLclass: _class }"));
         }

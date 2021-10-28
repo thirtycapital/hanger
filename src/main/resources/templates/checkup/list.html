@@ -6,15 +6,27 @@
     <body>       
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
+            <div class="space-top">
+                <div style="margin-bottom:5px">
+                    <span th:text="${job.name}" class="checkup-title"></span>
+                    <a href="javascript:;" id="btn_job_description">
+                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                    </a>
+                </div>
+                <div id="job_description" class="markdown d-none" th:utext="${job.getHTMLDescription()}"></div>
+            </div>
+
+            <hr style="margin-top: 8px"/>
+
             <form class="form-horizontal" th:action="@{'/checkup/job/' + ${job.id} + '/list'}" method="POST">
-                <div class="space-top">
+                <div>
                     <div class="form-group">
                         <div class="col-sm-9">
                             <input type="text" name="dateRange" id="dateRange" class="form-control date-range" readonly="readonly" />
                             <input type="hidden" name="dateFrom" id="dateFrom" th:value="${dateFrom}" />
                             <input type="hidden" name="dateTo" id="dateTo" th:value="${dateTo}" />
                         </div>
-                        <div class="col-md-3 p-1">
+                        <div class="col-md-3">
                             <select class="selectpicker form-control" 
                                     name="item"
                                     title="Logs per page">
@@ -39,8 +51,6 @@
                     </div>
                 </div>                 
             </form>
-
-            <hr/>
 
             <div th:if="${ errorMessage != null }" class="form-group">
                 <div class="alert alert-danger" role="alert">
@@ -381,6 +391,10 @@
                 });
 
                 new ClipboardJS('.btn-copy');
+
+                $("#btn_job_description").click(function () {
+                    $("#job_description").slideToggle();
+                });
             });
             /*]]>*/
         </script>

@@ -1146,3 +1146,14 @@ label.radio-generic:hover
     margin-bottom: 0;
     display: none;
 }
+
+.checkup-title {
+    font-size: 18px;
+    color: #337ab7;
+    font-weight: bold;
+    margin-right: 6px;
+}
+
+.d-none {
+    display: none;
+}

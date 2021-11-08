@@ -665,6 +665,27 @@ public class JobService {
     }
 
     /**
+     * Remove child job.
+     *
+     * @param job Job current job
+     * @param childJob Job child job
+     * @return Job
+     */
+    public Job removeChild(
+            Job job,
+            Job childJob) {
+        //Position and remove parent job from child job list.
+        for (JobParent jobParent : childJob.getParent()) {
+            if (jobParent.getParent().equals(job)) {
+                childJob.removeParent(jobParent);
+                break;
+            }
+        }
+
+        return this.save(childJob);
+    }
+
+    /**
      * Get children by parent.
      *
      * @param job Job

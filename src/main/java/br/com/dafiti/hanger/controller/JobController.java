@@ -1399,4 +1399,52 @@ public class JobController {
         job.setCron(jenkinsService.getCron(job));
         job.setBlockingJobs(jenkinsService.getBlockingJobs(job));
     }
+
+    /**
+     * Remove parent job.
+     *
+     * @param job Job
+     * @param index int parent index
+     * @param redirectAttributes RedirectAttributes
+     * @return Job view
+     */
+    @PostMapping(path = "/remove/parent")
+    @ResponseBody
+    public String removeParent(
+            @RequestParam(name = "id") Job job,
+            @RequestParam(name = "index") int index,
+            RedirectAttributes redirectAttributes) {
+        try {
+            job.getParent().remove(index);
+            jobService.save(job);
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(ex));
+        }
+
+        return "job/view";
+    }
+
+    /**
+     * Remove child job.
+     *
+     * @param job Job
+     * @param childJob Job
+     * @param redirectAttributes
+     * @return Job view
+     */
+    @PostMapping(path = "/remove/child")
+    @ResponseBody
+    public String removeChild(
+            @RequestParam(name = "id") Job job,
+            @RequestParam(name = "childID") Job childJob,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            jobService.removeChild(job, childJob);
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(ex));
+        }
+
+        return "job/view";
+    }
 }

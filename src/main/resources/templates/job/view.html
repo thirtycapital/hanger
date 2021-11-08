@@ -219,7 +219,17 @@
                                         <td>
                                             <span th:text="*{parent[__${stat.index}__].scope}"></span>
                                         </td>
-                                        <td></td>
+                                        <td>
+                                            <div th:if="${#authorization.expression('isAuthenticated()')}">
+                                                <button 
+                                                    type="button" 
+                                                    class="btn btn-delete btn-xs"
+                                                    th:attr="data-id=${job.id},data-name=*{parent[__${stat.index}__].parent.name},data-index=${stat.index}"
+                                                    onclick="confirmRemoveParent(this)">
+                                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove
+                                                </button>
+                                            </div>                                            
+                                        </td>
                                     </tr>
                                 </table>
                             </div> 
@@ -266,7 +276,17 @@
                                         <td>
                                             <span th:text="${child.scope}"></span>
                                         </td>
-                                        <td></td>
+                                        <td>
+                                            <div th:if="${#authorization.expression('isAuthenticated()')}">
+                                                <button 
+                                                    type="button" 
+                                                    class="btn btn-delete btn-xs"
+                                                    th:attr="data-id=${job.id},data-child-id=${child.job.id},data-name=${child.job.name}"
+                                                    onclick="confirmRemoveChild(this)">
+                                                    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Remove
+                                                </button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </table>
                             </div>
@@ -726,6 +746,82 @@
                     });
                 });
             });
+
+            /**
+             * Set header CSRF Token.
+             * @returns {undefined}
+             */
+            $.ajaxSetup({
+                headers: {'X-CSRF-Token': $('#_csrf').attr('content')}
+            });
+
+            /**
+             * Display confirmation modal to remove parent.
+             * 
+             * @param {type} component
+             * @returns {undefined}
+             */
+            function confirmRemoveParent(component) {
+                var id = $(component).data("id");
+                var name = $(component).data("name");
+                var index = $(component).data("index");
+                var url = /*[[@{/job/remove/parent}]]*/ "/job/remove/parent";
+
+                bootbox.confirm({
+                    title: "Remove parent " + name,
+                    message: "You will remove parent " + name + ", are you sure?",
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                type: "POST",
+                                url: url,
+                                data: {id: id, index: index},
+                                timeout: 30000,
+                                success: function (result) {
+                                    document.location.reload(result);
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    alert("Failed to remove parent job: " + errorThrown);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+            /**
+             * Display confirmation modal to remove child.
+             * 
+             * @param {type} component
+             * @returns {undefined}
+             */
+            function confirmRemoveChild(component) {
+                var id = $(component).data("id");
+                var childID = $(component).data("child-id");
+                var name = $(component).data("name");
+                var url = /*[[@{/job/remove/child}]]*/ "/job/remove/child";
+
+                bootbox.confirm({
+                    title: "Remove child " + name,
+                    message: "You will remove child " + name + ", are you sure?",
+                    callback: function (result) {
+                        if (result) {
+                            $.ajax({
+                                type: "POST",
+                                url: url,
+                                data: {id: id, childID: childID},
+                                timeout: 30000,
+                                success: function (result) {
+                                    document.location.reload(result);
+                                },
+                                error: function (jqXHR, textStatus, errorThrown) {
+                                    alert("Failed to remove child job: " + errorThrown);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
         </script>
     </body>
 </html>

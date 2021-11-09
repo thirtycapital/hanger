@@ -1403,8 +1403,8 @@ public class JobController {
     /**
      * Remove parent job.
      *
-     * @param job Job
-     * @param index int parent index
+     * @param job Job current
+     * @param index int index parent
      * @param redirectAttributes RedirectAttributes
      * @return Job view
      */
@@ -1427,9 +1427,9 @@ public class JobController {
     /**
      * Remove child job.
      *
-     * @param job Job
-     * @param childJob Job
-     * @param redirectAttributes
+     * @param job Job current
+     * @param childJob Job child
+     * @param redirectAttributes RedirectAttributes
      * @return Job view
      */
     @PostMapping(path = "/remove/child")

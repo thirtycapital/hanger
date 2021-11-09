@@ -61,16 +61,16 @@
                                         <td th:case="true"> 
                                             <button 
                                                 class="btn btn-link btn-sm hanger-no-border" 
-                                                th:text="${ #strings.abbreviate( jobDetail.job.displayName, 65 ) }" 
+                                                th:text="${ #strings.abbreviate( jobDetail.job.displayName, 75 ) }" 
                                                 th:title="${'Show dependencies status of ' + jobDetail.job.displayName}" 
                                                 th:id="'modal_parents_details_' + ${jobDetail.job.id}" 
                                                 th:attr="onclick='showParentsDetails(' + ${jobDetail.job.id} + ');'"
-                                                th:value="${jobDetail.job.id}">                                    
+                                                th:value="${jobDetail.job.id}">
                                             </button>
                                         </td>
 
                                         <td th:case="false" 
-                                            th:text="${ #strings.abbreviate( jobDetail.job.displayName, 65 ) }"
+                                            th:text="${ #strings.abbreviate( jobDetail.job.displayName, 75 ) }"
                                             th:title="${jobDetail.job.displayName}"> Job 
                                         </td>
                                     </th:block>

@@ -1404,7 +1404,7 @@ public class JobController {
      * Remove parent job.
      *
      * @param job Job current
-     * @param index int index parent
+     * @param index int parent index
      * @param redirectAttributes RedirectAttributes
      * @return Job view
      */

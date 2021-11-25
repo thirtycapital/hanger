@@ -1447,4 +1447,62 @@ public class JobController {
 
         return "job/view";
     }
+
+    /**
+     * Remove relative job.
+     *
+     * @param job Job current
+     * @param relativeJob List
+     * @param isChildren boolean
+     * @param request Request
+     * @param redirectAttributes RedirectAttributes
+     * @return Job view
+     */
+    @PostMapping(path = "/remove/relative")
+    public String removeRelative(
+            @RequestParam(name = "id") Job job,
+            @RequestParam(name = "fields", required = true) List<Job> relativeJob,
+            @RequestParam(name = "isChildren") boolean isChildren,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+        try {
+            if (isChildren) {
+                jobService.removeChild(job, relativeJob);
+                redirectAttributes.addFlashAttribute("successMessage", "Child jobs have been removed.");
+            } else {
+                jobService.removeParent(job, relativeJob);
+                redirectAttributes.addFlashAttribute("successMessage", "Parent jobs have been removed.");
+            }
+
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(ex));
+        }
+
+        return "redirect:" + request.getHeader("referer");
+    }
+
+    /**
+     * Relative list modal.
+     *
+     * @param job Job
+     * @param isChildren boolean
+     * @param model Model
+     * @return Relative modal
+     */
+    @GetMapping(path = "/modal/relative/{id}/{isChildren}")
+    public String relativeListModal(
+            @PathVariable(value = "id") Job job,
+            @PathVariable(value = "isChildren") boolean isChildren,
+            Model model) {
+        model.addAttribute("job", job);
+        model.addAttribute("isChildren", isChildren);
+
+        if (isChildren) {
+            model.addAttribute("relatives", jobService.getChildrenlist(job));
+        } else {
+            model.addAttribute("relatives", job.getParent());
+        }
+
+        return "flow/modalRemoveRelative::relative";
+    }
 }

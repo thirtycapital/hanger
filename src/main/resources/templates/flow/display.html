@@ -9,18 +9,18 @@
             <div style="text-align:center">          
                 <ul class="nav nav-pills space-top">
                     <li role="presentation" class="pull-right disabled">  
-                   		 <a>                                                 
-	                         REACH 
-	                         <span class="badge" th:text="${reach}"></span>
-                         </a>
-                    </li>
-                    <li role="presentation" class="pull-right disabled"> 
-                    	<a>                                                  
-	                         LEVEL
-	                         <span class="badge" th:text="${level}"></span>
+                        <a>                                                 
+                            REACH 
+                            <span class="badge" th:text="${reach}"></span>
                         </a>
                     </li>
-                   <li role="presentation" class="pull-right" th:each="subjects : ${subjectSummary}">
+                    <li role="presentation" class="pull-right disabled"> 
+                        <a>                                                  
+                            LEVEL
+                            <span class="badge" th:text="${level}"></span>
+                        </a>
+                    </li>
+                    <li role="presentation" class="pull-right" th:each="subjects : ${subjectSummary}">
                         <a th:href="@{'/detail/' + ${subjects.subject.id}}" th:inline="text">                                                     
                             [[${subjects.subject.name}]] 
                             <span class="badge" th:text="${subjects.jobCount}"></span>
@@ -262,7 +262,7 @@
                     }
                 });
             });
-           
+
             /**
              * Modal email action.                 
              */
@@ -428,6 +428,29 @@
                     });
                 };
 
+                /**
+                 * Remove relative modal.
+                 * 
+                 * @param boolean isChildren
+                 * @returns {undefined}
+                 */
+                function removeRelative(isChildren) {
+                    var url = /*[[@{/job/modal/relative/}]]*/ "/job/modal/relative/";
+
+                    $.ajax({
+                        type: "GET",
+                        url: url + job + "/" + isChildren,
+                        timeout: 30000,
+                        success: function (result) {
+                            $("#modalHolder").html(result);
+                            $("#modalRemoveRelative").modal({backdrop: 'static', keyboard: true});
+                        },
+                        error: function (e) {
+                            alert("Fail to remove relative " + e);
+                        }
+                    });
+                }
+
                 var servers = /*[[${servers}]]*/ '';
                 var submenuParents = [];
                 var submenuChildren = [];
@@ -469,13 +492,21 @@
                         disabled: !isAuthenticated,
                         submenu: [
                             {icon: 'glyphicon glyphicon-stop', label: 'Abort', action: abort, disabled: jobStatus.textContent !== "RUNNING"},
-                            {icon: 'glyphicon glyphicon-play', label: 'Build', action: build, },
+                            {icon: 'glyphicon glyphicon-play', label: 'Build', action: build},
                             {icon: 'glyphicon glyphicon-fast-backward', label: 'Build Mesh', action: mesh},
                             {icon: enabled ? 'glyphicon glyphicon-eye-close' : 'glyphicon glyphicon-eye-open', label: enabled ? 'Disable' : 'Enable', action: enable},
                             {icon: rebuild ? 'glyphicon glyphicon-ban-circle' : 'glyphicon glyphicon-repeat', label: rebuild ? 'Not Rebuildable' : 'Rebuildable', action: rebuildable},
                             {},
                             {icon: 'glyphicon glyphicon-plus', label: 'Parent', submenu: submenuParents},
-                            {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren}
+                            {icon: 'glyphicon glyphicon-minus', label: 'Parent', action: function () {
+                                    removeRelative(false);
+                                }
+                            },
+                            {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren},
+                            {icon: 'glyphicon glyphicon-minus', label: 'Children', action: function () {
+                                    removeRelative(true);
+                                }
+                            }
                         ]
                     }
                 ];

@@ -1401,54 +1401,6 @@ public class JobController {
     }
 
     /**
-     * Remove parent job.
-     *
-     * @param job Job current
-     * @param index int parent index
-     * @param redirectAttributes RedirectAttributes
-     * @return Job view
-     */
-    @PostMapping(path = "/remove/parent")
-    @ResponseBody
-    public String removeParent(
-            @RequestParam(name = "id") Job job,
-            @RequestParam(name = "index") int index,
-            RedirectAttributes redirectAttributes) {
-        try {
-            job.getParent().remove(index);
-            jobService.save(job);
-        } catch (Exception ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(ex));
-        }
-
-        return "job/view";
-    }
-
-    /**
-     * Remove child job.
-     *
-     * @param job Job current
-     * @param childJob Job child
-     * @param redirectAttributes RedirectAttributes
-     * @return Job view
-     */
-    @PostMapping(path = "/remove/child")
-    @ResponseBody
-    public String removeChild(
-            @RequestParam(name = "id") Job job,
-            @RequestParam(name = "childID") Job childJob,
-            RedirectAttributes redirectAttributes) {
-
-        try {
-            jobService.removeChild(job, childJob);
-        } catch (Exception ex) {
-            redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(ex));
-        }
-
-        return "job/view";
-    }
-
-    /**
      * Remove relative job.
      *
      * @param job Job current

@@ -92,6 +92,9 @@
                     </form>
                     <script th:inline="javascript">
                         $(function () {
+                            //Start checking selections.
+                            checkSelection();
+
                             /**
                              * Check or Uncheck all fields.
                              */
@@ -101,12 +104,20 @@
                                 });
                             });
 
-                            $("#remove").click(function () {
-                                if ($('input[name="fields"]:checked').length == 0) {
-                                    bootbox.alert("No jobs selected. Check job you want to remove.");
-                                    return false;
-                                }
+                            $("input[name=fields], #select_fields").change(function () {
+                                checkSelection();
                             });
+
+                            /**
+                             * Check selection to enable or disable remove button.
+                             */
+                            function checkSelection() {
+                                if ($("input[name=fields]").is(':checked')) {
+                                    $("#remove").prop("disabled", false);
+                                } else {
+                                    $("#remove").prop("disabled", true);
+                                }
+                            }
                         });
                     </script>
                 </div>

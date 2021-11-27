@@ -292,6 +292,8 @@
                 job = this.id;
                 var enabled = isEnabled(job);
                 var rebuild = isRebuild(job);
+                var _hasParent = hasParent(job);
+                var _hasChildren = hasChildren(job);
                 var jobStatus = document.getElementById("span-status-" + job);
 
                 // Build a Job.
@@ -498,12 +500,12 @@
                             {icon: rebuild ? 'glyphicon glyphicon-ban-circle' : 'glyphicon glyphicon-repeat', label: rebuild ? 'Not Rebuildable' : 'Rebuildable', action: rebuildable},
                             {},
                             {icon: 'glyphicon glyphicon-plus', label: 'Parent', submenu: submenuParents},
-                            {icon: 'glyphicon glyphicon-minus', label: 'Parent', action: function () {
+                            {icon: 'glyphicon glyphicon-minus', label: 'Parent', disabled: !_hasParent, action: function () {
                                     removeRelative(false);
                                 }
                             },
                             {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren},
-                            {icon: 'glyphicon glyphicon-minus', label: 'Children', action: function () {
+                            {icon: 'glyphicon glyphicon-minus', label: 'Children', disabled: !_hasChildren, action: function () {
                                     removeRelative(true);
                                 }
                             }
@@ -662,6 +664,52 @@
                 });
 
                 return isRebuild;
+            }
+
+            /**
+             * Identify if job has parent.
+             * 
+             * @param {type} job Job id
+             * @returns boolean
+             */
+            function hasParent(job) {
+                var url = /*[[@{/job/has/parent/}]]*/ "/job/has/parent/";
+                var hasParent = true;
+
+                $.ajax({
+                    type: "GET",
+                    async: false,
+                    url: url + job,
+                    timeout: 30000,
+                    success: function (result) {
+                        hasParent = result;
+                    }
+                });
+
+                return hasParent;
+            }
+
+            /**
+             * Identify if job has children.
+             * 
+             * @param {type} job Job id
+             * @returns boolean
+             */
+            function hasChildren(job) {
+                var url = /*[[@{/job/has/children/}]]*/ "/job/has/children/";
+                var hasChildren = true;
+
+                $.ajax({
+                    type: "GET",
+                    async: false,
+                    url: url + job,
+                    timeout: 30000,
+                    success: function (result) {
+                        hasChildren = result;
+                    }
+                });
+
+                return hasChildren;
             }
 
             /*]]>*/

@@ -1457,4 +1457,32 @@ public class JobController {
 
         return "flow/modalRemoveRelative::relative";
     }
+
+    /**
+     * Identify if job has parent.
+     *
+     * @param job Job
+     * @return boolean
+     */
+    @GetMapping(path = "/has/parent/{job}")
+    @ResponseBody
+    public boolean hasParent(
+            @PathVariable(value = "job") Job job) {
+
+        return job.getParent().size() > 0;
+    }
+
+    /**
+     * Identify if job has children.
+     *
+     * @param job Job
+     * @return boolean
+     */
+    @GetMapping(path = "/has/children/{job}")
+    @ResponseBody
+    public boolean hasChildren(
+            @PathVariable(value = "job") Job job) {
+
+        return jobService.getChildrenlist(job).size() > 0;
+    }
 }

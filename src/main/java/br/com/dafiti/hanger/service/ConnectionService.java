@@ -38,6 +38,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -495,7 +497,8 @@ public class ConnectionService {
 
             //Sets default security behavior. 
             if (connection.getTarget().equals(Database.POSTGRES)
-                    || connection.getTarget().equals(Database.ATHENA)) {
+                    || connection.getTarget().equals(Database.ATHENA)
+                    || connection.getTarget().equals(Database.REDSHIFT)) {
                 query = this.evaluate(query);
             }
 
@@ -561,14 +564,6 @@ public class ConnectionService {
                 inflight.remove(user.getUsername());
             });
 
-            //Log.
-            auditorService.publish(
-                    "QUERY",
-                    new AuditorData()
-                            .addData("connection", connection.getName())
-                            .addData("sql", query)
-                            .getData());
-
             //Gets query elapsed time.
             queryResultSet.setElapsedTime(watch.getTotalTimeMillis());
 
@@ -579,6 +574,14 @@ public class ConnectionService {
 
             LOG.log(Level.ERROR, "Query error: ", ex);
         } finally {
+            //Log.
+            auditorService.publish(
+                    "QUERY",
+                    new AuditorData()
+                            .addData("connection", connection.getName())
+                            .addData("sql", query)
+                            .getData());
+
             try {
                 //Close the connection. 
                 jdbcTemplate.getDataSource().getConnection().close();
@@ -662,6 +665,20 @@ public class ConnectionService {
         String limit = " limit "
                 + String.valueOf(this.configurationService.getMaxRows());
 
+        String[] blacklist = {
+            "CREATE", "ALTER", "DROP", // DDL
+            "INSERT", "DELETE", "UPDATE", // DML
+            "BEGIN", "COMMIT", "ROLLBACK", // DTL
+            "GRANT", "REVOKE", "DENY" // DCL
+        };
+
+        //Identifies if instruction is a select.
+        if (Arrays.stream(blacklist).anyMatch(query.toUpperCase()::contains)) {
+            throw new DataAccessException("This instruction can not be executed, only select is allowed.") {
+            };
+        }
+
+        //Identifies if query has limit.
         if (!query.toLowerCase().contains("limit")) {
             if (query.endsWith(";")) {
                 query = query.replaceAll(";", limit);
@@ -741,6 +758,7 @@ public class ConnectionService {
         }
 
         return index;
+
     }
 
     /**

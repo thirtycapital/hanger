@@ -574,12 +574,15 @@ public class ConnectionService {
             LOG.log(Level.ERROR, "Query error: ", ex);
         } finally {
             //Log.
-            auditorService.publish(
-                    "QUERY",
-                    new AuditorData()
-                            .addData("connection", connection.getName())
-                            .addData("sql", query)
-                            .getData());
+            AuditorData auditorData = new AuditorData()
+                    .addData("connection", connection.getName())
+                    .addData("sql", query);
+
+            if (queryResultSet.hasError()) {
+                auditorData.addData("error", queryResultSet.getError());
+            }
+
+            auditorService.publish("QUERY", auditorData.getData());
 
             try {
                 //Close the connection. 
@@ -667,13 +670,13 @@ public class ConnectionService {
         String[] blacklist = {
             "CREATE ", "ALTER ", "DROP ", // DDL
             "INSERT ", "DELETE ", "UPDATE ", // DML
-            "BEGIN ", "COMMIT ", "ROLLBACK ", // DTL
+            "BEGIN ", "COMMIT ", "ROLLBACK ", "CANCEL ", // DTL
             "GRANT ", "REVOKE ", "DENY " // DCL
         };
 
         //Identifies if instruction is a select.
         if (Arrays.stream(blacklist).anyMatch(query.toUpperCase()::contains)) {
-            throw new DataAccessException("This instruction can not be executed, only select is allowed.") {
+            throw new DataAccessException("This instruction can not be executed, only SELECT is allowed.") {
             };
         }
 

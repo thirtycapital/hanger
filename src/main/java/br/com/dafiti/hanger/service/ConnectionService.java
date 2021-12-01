@@ -49,7 +49,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.persistence.Transient;
 import javax.sql.DataSource;
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -666,10 +665,10 @@ public class ConnectionService {
                 + String.valueOf(this.configurationService.getMaxRows());
 
         String[] blacklist = {
-            "CREATE", "ALTER", "DROP", // DDL
-            "INSERT", "DELETE", "UPDATE", // DML
-            "BEGIN", "COMMIT", "ROLLBACK", // DTL
-            "GRANT", "REVOKE", "DENY" // DCL
+            "CREATE ", "ALTER ", "DROP ", // DDL
+            "INSERT ", "DELETE ", "UPDATE ", // DML
+            "BEGIN ", "COMMIT ", "ROLLBACK ", // DTL
+            "GRANT ", "REVOKE ", "DENY " // DCL
         };
 
         //Identifies if instruction is a select.
@@ -756,7 +755,6 @@ public class ConnectionService {
                 LOG.log(Level.ERROR, "Fail closing connection", ex.getMessage());
             }
         }
-
         return index;
 
     }

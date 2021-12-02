@@ -36,7 +36,7 @@ GRANT ALL PRIVILEGES on hanger.* to 'hanger'@'localhost' identified by 'SetYourP
 
 # Update permitions
 FLUSH PRIVILEGES;
-```		
+```
 
 
 - Create the ~/.hanger/hanger.properties file with the follow content:

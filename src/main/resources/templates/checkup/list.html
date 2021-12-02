@@ -9,7 +9,7 @@
             <div class="space-top">
                 <div style="margin-bottom:5px">
                     <span th:text="${job.name}" class="checkup-title"></span>
-                    <a href="javascript:;" id="btn_job_description">
+                    <a href="javascript:;" id="btn_job_description" th:if="${job.description != ''}">
                         <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
                     </a>
                 </div>

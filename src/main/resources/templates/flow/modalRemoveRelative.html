@@ -108,6 +108,13 @@
                                 checkSelection();
                             });
 
+                            $("#remove").click(function () {
+                                if ($("input[name='fields']:checked").length == 0) {
+                                    bootbox.alert("Select job you want to remove from the chain.");
+                                    return false;
+                                }
+                            });
+
                             /**
                              * Check selection to enable or disable remove button.
                              */

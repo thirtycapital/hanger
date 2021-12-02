@@ -1413,17 +1413,17 @@ public class JobController {
     @PostMapping(path = "/remove/relative")
     public String removeRelative(
             @RequestParam(name = "id") Job job,
-            @RequestParam(name = "fields", required = true) List<Job> relativeJob,
+            @RequestParam(name = "fields") List<Job> relativeJob,
             @RequestParam(name = "isChildren") boolean isChildren,
             HttpServletRequest request,
             RedirectAttributes redirectAttributes) {
         try {
             if (isChildren) {
                 jobService.removeChild(job, relativeJob);
-                redirectAttributes.addFlashAttribute("successMessage", "Child jobs have been removed.");
+                redirectAttributes.addFlashAttribute("successMessage", "Child jobs were removed from chain.");
             } else {
                 jobService.removeParent(job, relativeJob);
-                redirectAttributes.addFlashAttribute("successMessage", "Parent jobs have been removed.");
+                redirectAttributes.addFlashAttribute("successMessage", "Parent jobs were removed from chain.");
             }
 
         } catch (Exception ex) {

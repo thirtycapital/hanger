@@ -500,11 +500,11 @@
                             {icon: rebuild ? 'glyphicon glyphicon-ban-circle' : 'glyphicon glyphicon-repeat', label: rebuild ? 'Not Rebuildable' : 'Rebuildable', action: rebuildable},
                             {},
                             {icon: 'glyphicon glyphicon-plus', label: 'Parent', submenu: submenuParents},
+                            {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren},
                             {icon: 'glyphicon glyphicon-minus', label: 'Parent', disabled: !_hasParent, action: function () {
                                     removeRelative(false);
                                 }
                             },
-                            {icon: 'glyphicon glyphicon-plus', label: 'Children', submenu: submenuChildren},
                             {icon: 'glyphicon glyphicon-minus', label: 'Children', disabled: !_hasChildren, action: function () {
                                     removeRelative(true);
                                 }

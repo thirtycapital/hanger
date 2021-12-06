@@ -1426,6 +1426,17 @@ public class JobController {
                 redirectAttributes.addFlashAttribute("successMessage", "Parent jobs were removed from chain.");
             }
 
+            List<String> relativeList = new ArrayList();
+            relativeJob.forEach(relative -> {
+                relativeList.add(relative.getName());
+            });
+
+            auditorService.publish((isChildren) ? "REMOVE_CHILDREN" : "REMOVE_PARENT",
+                    new AuditorData()
+                            .addData("name", "Job: " + job.getName())
+                            .addData("relative_removed", "Removed: " + relativeList.toString())
+                            .getData());
+
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(ex));
         }

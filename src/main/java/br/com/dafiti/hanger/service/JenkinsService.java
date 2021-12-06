@@ -45,6 +45,7 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -1045,12 +1046,18 @@ public class JenkinsService {
 
                         if (config != null) {
                             Document document = Jsoup.parse(config);
+                            Elements useBuildBlocker = document.getElementsByTag("useBuildBlocker");
 
-                            document.getElementsByTag("blockingJobs").forEach(element -> {
-                                blockingJobs.append(element
-                                        .wholeText()
-                                        .trim());
-                            });
+                            if (useBuildBlocker.size() > 0) {
+                                //Load blocking jobs only if the option is enabled in Jenkins.
+                                if (useBuildBlocker.text().toLowerCase().equals("true")) {
+                                    document.getElementsByTag("blockingJobs").forEach(element -> {
+                                        blockingJobs.append(element
+                                                .wholeText()
+                                                .trim());
+                                    });
+                                }
+                            }
                         }
                     }
 

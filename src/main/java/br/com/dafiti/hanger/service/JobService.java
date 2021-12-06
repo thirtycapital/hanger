@@ -665,6 +665,78 @@ public class JobService {
     }
 
     /**
+     * Remove child.
+     *
+     * @param job Job current job
+     * @param childJob Job child job
+     * @return Job
+     */
+    public Job removeChild(
+            Job job,
+            Job childJob) {
+        //Position and remove parent job from child job list.
+        for (JobParent jobParent : childJob.getParent()) {
+            if (jobParent.getParent().equals(job)) {
+                childJob.removeParent(jobParent);
+                break;
+            }
+        }
+
+        return this.save(childJob);
+    }
+
+    /**
+     * Remove child.
+     *
+     * @param job Job current job
+     * @param childrenJob children list
+     */
+    public void removeChild(
+            Job job,
+            List<Job> childrenJob) {
+
+        for (Job childJob : childrenJob) {
+            this.removeChild(job, childJob);
+        }
+    }
+
+    /**
+     * Remove parent.
+     *
+     * @param job Job current job
+     * @param parentJob Job parent
+     * @return
+     */
+    public Job removeParent(
+            Job job,
+            Job parentJob) {
+        //Position parent to be removed from list.
+        for (JobParent parent : job.getParent()) {
+            if (parent.getParent().equals(parentJob)) {
+                job.removeParent(parent);
+                break;
+            }
+        }
+
+        return this.save(job);
+    }
+
+    /**
+     * Remove parent.
+     *
+     * @param job Job current job
+     * @param parentJob Job parent list
+     */
+    public void removeParent(
+            Job job,
+            List<Job> parentJob) {
+        for (Job parent : parentJob) {
+            this.removeParent(job, parent);
+        }
+
+    }
+
+    /**
      * Get children by parent.
      *
      * @param job Job

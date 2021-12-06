@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+    <head lang="en" th:replace="base/header :: head">
+        <title>Hanger</title>
+    </head>
+    <body>
+        <th:block th:include="base/header :: navbar"></th:block>
+        <div class="container">
+            <!--OPTION FRAGMENT BEGIN-->
+            <div class="modal fade" id="modalRemoveRelative" tabindex="-1" role="dialog" aria-labelledby="modalRemoveRelativeLabel" th:fragment="relative">
+                <div class="modal-dialog modal-lg" role="document">
+                    <form method="POST" th:object="${job}" th:action="@{/job/remove/relative}" class="form-horizontal">
+                        <!--  Job ID -->
+                        <input type="hidden" name="id" id="id" th:value="*{id}"/>
+                        <input type="hidden" name="isChildren" id="id" th:value="${isChildren}"/>
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="modalRemoveRelativeLabel">
+                                    <span th:if="${isChildren}">Remove children</span>
+                                    <span th:if="!${isChildren}">Remove parent</span>
+                                </h4>
+                            </div>
+                            <div class="modal-body">                            
+
+                                <table id="table" class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:5%">
+                                                <input type="checkbox"
+                                                       name="select_fields"
+                                                       id="select_fields"
+                                                       title="Select all fields"/>
+                                            </th>
+                                            <th style="width:10%">id</th>
+                                            <th>Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="relative, stat : ${relatives}">
+                                            <td>
+                                                <input type="checkbox"
+                                                       name="fields"
+                                                       th:if="${isChildren}"
+                                                       th:id="${'field_' + stat.index}"
+                                                       th:value="${relative.job.id}" />
+                                                <input type="checkbox"
+                                                       name="fields"
+                                                       th:if="!${isChildren}"
+                                                       th:id="${'field_' + stat.index}"
+                                                       th:value="${relative.parent.id}" />
+                                            </td>                                        
+                                            <td>
+                                                <label th:for="${'field_' + stat.index}"
+                                                       th:if="${isChildren}"
+                                                       th:text="${relative.job.id}"
+                                                       class="span-field">
+                                                </label>
+                                                <label th:for="${'field_' + stat.index}"
+                                                       th:if="!${isChildren}"
+                                                       th:text="${relative.parent.id}"
+                                                       class="span-field">
+                                                </label>
+                                            </td>                                        
+                                            <td>
+                                                <label th:for="${'field_' + stat.index}"
+                                                       th:if="${isChildren}"
+                                                       th:text="${relative.job.name}"
+                                                       class="span-field">
+                                                </label>
+                                                <label th:for="${'field_' + stat.index}"
+                                                       th:if="${!isChildren}"
+                                                       th:text="${relative.parent.name}"
+                                                       class="span-field">
+                                                </label>                                                       
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                            <div class="modal-footer">                                
+                                <button type="button" class="btn btn-generic btn-sm" data-dismiss="modal">
+                                    <span aria-hidden="true"></span> Close
+                                </button>
+
+                                <button type="submit" id="remove" class="btn btn-danger btn-sm">
+                                    <span aria-hidden="true"></span> Remove selected
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <script th:inline="javascript">
+                        $(function () {
+                            //Start checking selections.
+                            checkSelection();
+
+                            /**
+                             * Check or Uncheck all fields.
+                             */
+                            $('#select_fields').on('click', function (e) {
+                                $("input[name='fields']").each(function () {
+                                    $(this).prop('checked', $("#select_fields").is(":checked"));
+                                });
+                            });
+
+                            $("input[name=fields], #select_fields").change(function () {
+                                checkSelection();
+                            });
+
+                            $("#remove").click(function () {
+                                if ($("input[name='fields']:checked").length == 0) {
+                                    bootbox.alert("Select job you want to remove from the chain.");
+                                    return false;
+                                }
+                            });
+
+                            /**
+                             * Check selection to enable or disable remove button.
+                             */
+                            function checkSelection() {
+                                if ($("input[name=fields]").is(':checked')) {
+                                    $("#remove").prop("disabled", false);
+                                } else {
+                                    $("#remove").prop("disabled", true);
+                                }
+                            }
+                        });
+                    </script>
+                </div>
+            </div>
+            <!--OPTION FRAGMENT END-->
+        </div>
+    </body>
+</html>

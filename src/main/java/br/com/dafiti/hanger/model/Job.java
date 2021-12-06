@@ -27,7 +27,6 @@ import com.cronutils.descriptor.CronDescriptor;
 import static com.cronutils.model.CronType.QUARTZ;
 import static com.cronutils.model.CronType.UNIX;
 
-import com.cronutils.model.Cron;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import java.io.Serializable;
@@ -222,6 +221,10 @@ public class Job extends Tracker<Job> implements Serializable {
 
     public void addParent(JobParent parent) {
         this.parent.add(parent);
+    }
+
+    public void removeParent(JobParent parent) {
+        this.parent.remove(parent);
     }
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -430,29 +433,29 @@ public class Job extends Tracker<Job> implements Serializable {
 
     @Transient
     public String getCronDescription() {
-    	return this.getCronDescription(false);
+        return this.getCronDescription(false);
     }
-    
+
     @Transient
     public String getCronDescription(boolean secure) {
-		String cronDescription = "";
+        String cronDescription = "";
 
-		if (this.getCron() != null && !this.getCron().isEmpty()) {
-			CronParser parser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(UNIX));
-			CronDescriptor descriptor = CronDescriptor.instance(Locale.ENGLISH);
+        if (this.getCron() != null && !this.getCron().isEmpty()) {
+            CronParser parser = new CronParser(CronDefinitionBuilder.instanceDefinitionFor(UNIX));
+            CronDescriptor descriptor = CronDescriptor.instance(Locale.ENGLISH);
 
-			if (secure) {
-				try {
-					cronDescription = descriptor.describe(parser.parse(this.getCron()));
-				} catch (IllegalArgumentException e) {
-					cronDescription = e.getMessage();
-				}
-			} else {
-				cronDescription = descriptor.describe(parser.parse(this.getCron()));
-			}
-		}
+            if (secure) {
+                try {
+                    cronDescription = descriptor.describe(parser.parse(this.getCron()));
+                } catch (IllegalArgumentException e) {
+                    cronDescription = e.getMessage();
+                }
+            } else {
+                cronDescription = descriptor.describe(parser.parse(this.getCron()));
+            }
+        }
 
-		return StringUtils.capitalize(cronDescription);
+        return StringUtils.capitalize(cronDescription);
     }
 
     @Transient

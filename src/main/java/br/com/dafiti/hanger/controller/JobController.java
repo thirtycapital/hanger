@@ -1399,4 +1399,101 @@ public class JobController {
         job.setCron(jenkinsService.getCron(job));
         job.setBlockingJobs(jenkinsService.getBlockingJobs(job));
     }
+
+    /**
+     * Remove relative job.
+     *
+     * @param job Job current
+     * @param relativeJob List
+     * @param isChildren boolean
+     * @param request Request
+     * @param redirectAttributes RedirectAttributes
+     * @return Job view
+     */
+    @PostMapping(path = "/remove/relative")
+    public String removeRelative(
+            @RequestParam(name = "id") Job job,
+            @RequestParam(name = "fields") List<Job> relativeJob,
+            @RequestParam(name = "isChildren") boolean isChildren,
+            HttpServletRequest request,
+            RedirectAttributes redirectAttributes) {
+        try {
+            if (isChildren) {
+                jobService.removeChild(job, relativeJob);
+                redirectAttributes.addFlashAttribute("successMessage", "Child jobs were removed from chain.");
+            } else {
+                jobService.removeParent(job, relativeJob);
+                redirectAttributes.addFlashAttribute("successMessage", "Parent jobs were removed from chain.");
+            }
+
+            List<String> relativeList = new ArrayList();
+            relativeJob.forEach(relative -> {
+                relativeList.add(relative.getName());
+            });
+
+            auditorService.publish((isChildren) ? "REMOVE_CHILDREN" : "REMOVE_PARENT",
+                    new AuditorData()
+                            .addData("name", "Job: " + job.getName())
+                            .addData("relative_removed", "Removed: " + relativeList.toString())
+                            .getData());
+
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", new Message().getErrorMessage(ex));
+        }
+
+        return "redirect:" + request.getHeader("referer");
+    }
+
+    /**
+     * Relative list modal.
+     *
+     * @param job Job
+     * @param isChildren boolean
+     * @param model Model
+     * @return Relative modal
+     */
+    @GetMapping(path = "/modal/relative/{id}/{isChildren}")
+    public String relativeListModal(
+            @PathVariable(value = "id") Job job,
+            @PathVariable(value = "isChildren") boolean isChildren,
+            Model model) {
+        model.addAttribute("job", job);
+        model.addAttribute("isChildren", isChildren);
+
+        if (isChildren) {
+            model.addAttribute("relatives", jobService.getChildrenlist(job));
+        } else {
+            model.addAttribute("relatives", job.getParent());
+        }
+
+        return "flow/modalRemoveRelative::relative";
+    }
+
+    /**
+     * Identify if job has parent.
+     *
+     * @param job Job
+     * @return boolean
+     */
+    @GetMapping(path = "/has/parent/{job}")
+    @ResponseBody
+    public boolean hasParent(
+            @PathVariable(value = "job") Job job) {
+
+        return job.getParent().size() > 0;
+    }
+
+    /**
+     * Identify if job has children.
+     *
+     * @param job Job
+     * @return boolean
+     */
+    @GetMapping(path = "/has/children/{job}")
+    @ResponseBody
+    public boolean hasChildren(
+            @PathVariable(value = "job") Job job) {
+
+        return jobService.getChildrenlist(job).size() > 0;
+    }
 }

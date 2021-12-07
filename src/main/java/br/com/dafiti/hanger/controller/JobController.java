@@ -1431,10 +1431,11 @@ public class JobController {
                 relativeList.add(relative.getName());
             });
 
-            auditorService.publish((isChildren) ? "REMOVE_CHILDREN" : "REMOVE_PARENT",
+            auditorService.publish("UPDATE_JOB",
                     new AuditorData()
-                            .addData("name", "Job: " + job.getName())
-                            .addData("relative_removed", "Removed: " + relativeList.toString())
+                            .addData("name", job.getName())
+                            .addData("action", (isChildren) ? "REMOVE_CHILDREN" : "REMOVE_PARENT")
+                            .addData("javascript", relativeList.toString())
                             .getData());
 
         } catch (Exception ex) {

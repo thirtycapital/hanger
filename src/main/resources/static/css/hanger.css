@@ -1023,6 +1023,7 @@ input[type='file'] {
 .nav>li>a {
     padding: 10px 10px;
     color: #373e46;
+    font-weight: bold;
 }
 
 .nav>li>a:hover{    

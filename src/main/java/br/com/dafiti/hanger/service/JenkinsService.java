@@ -534,8 +534,9 @@ public class JenkinsService {
                         }
 
                         //Identifies if job has builders tag for update shell script
-                        if (config.contains("<builders>") && config.contains("<hudson.tasks.Shell>")) {
-                            config = config.replaceAll("(?s)<builders>(.*)</builders>", "<builders>" + shellScripts + "</builders>");
+                        if (config.contains("<builders>")) {
+                            config = config.replaceAll("(?s)<hudson.tasks.Shell>(.*)</hudson.tasks.Shell>", "");
+                            config = config.replaceAll("</builders>", shellScripts + "</builders>");
                         } else if (job.getShellScript().size() > 0) {
                             config = config.replaceAll("(?s)<builders/>", "<builders>" + shellScripts + "</builders>");
                         }

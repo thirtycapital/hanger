@@ -125,7 +125,7 @@ public class JobDetailsService {
                     if (!jobBuildStatusService.isTimeRestrictionMatch(job.getTimeRestriction())) {
                         status = Status.RESTRICTED;
                         phase = Phase.NONE;
-                        building.append("Last build at ")
+                        building.append("Builded at ")
                                 .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobBuild.getDate()));
                         //Identifies if is a current day build.  
                     } else if (today || (yesterday && eagerness)) {
@@ -135,9 +135,8 @@ public class JobDetailsService {
                                 status = Status.valueOf(jobStatus.getFlow().toString());
                                 phase = Phase.NONE;
                                 building
-                                        .append("Last build ")
-                                        .append((yesterday ? "( - " + tolerance + " hours) yesterday" : "today"))
-                                        .append(" at ")
+                                        .append("Builded ")
+                                        .append((yesterday ? "( - " + tolerance + " hours) yesterday at " : ""))
                                         .append(new SimpleDateFormat("HH:mm:ss").format(jobBuild.getDate()));
                                 break;
 
@@ -149,8 +148,7 @@ public class JobDetailsService {
                             case CHECKUP:
                                 status = Status.valueOf(jobStatus.getFlow().toString());
                                 building
-                                        .append((yesterday ? "( - " + tolerance + " hours ) Yesterday" : "Today"))
-                                        .append(" at ")
+                                        .append((yesterday ? "( - " + tolerance + " hours ) Yesterday at " : ""))
                                         .append(new SimpleDateFormat("HH:mm:ss").format(jobBuild.getDate()));
                                 break;
 
@@ -181,8 +179,7 @@ public class JobDetailsService {
                                 phase = jobBuild.getPhase();
 
                                 building
-                                        .append((yesterday ? "( - " + tolerance + " hours ) Yesterday" : "Today"))
-                                        .append(" at ")
+                                        .append((yesterday ? "( - " + tolerance + " hours ) Yesterday at " : ""))
                                         .append(new SimpleDateFormat("HH:mm:ss").format(jobBuild.getDate()));
                                 break;
                         }
@@ -191,7 +188,7 @@ public class JobDetailsService {
                         status = Status.valueOf(jobStatus.getFlow().toString());
                         phase = Phase.NONE;
                         building
-                                .append("Last build at ")
+                                .append("Builded at ")
                                 .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobBuild.getDate()));
                     } else {
                         //Identify the last build flow. 
@@ -236,12 +233,12 @@ public class JobDetailsService {
                     status = Status.valueOf(jobStatus.getFlow().toString());
                     phase = Phase.NONE;
                     building
-                            .append("Building now");
+                            .append("Building");
                 } else if (!jobBuildStatusService.isTimeRestrictionMatch(job.getTimeRestriction())) {
                     //Identifies if the job match a time restriction. 
                     status = Status.RESTRICTED;
                     phase = Phase.NONE;
-                    building.append("Never build");
+                    building.append("Never built");
                 } else {
                     try {
                         status = Status.valueOf(jobStatus.getFlow().toString());
@@ -262,7 +259,7 @@ public class JobDetailsService {
                 //Identifi if the job scope. 
                 scope
                         .append(job.isAnyScope() ? " FREE SCOPE " : "")
-                        .append(job.isRebuild() ? " REBUILD " + (job.isRebuildBlocked() ? "after all blockers ready " : "") + (job.getWait() != 0 ? "once every " + job.getWait() + " min" : "") : "")
+                        .append(job.isRebuild() ? " REBUILD " + (job.isRebuildBlocked() ? "after all blockers " : "") + (job.getWait() != 0 ? "once every " + job.getWait() + " min" : "") : "")
                         .append((job.getTimeRestriction() == null || job.getTimeRestriction().isEmpty()) ? "" : " " + job.getTimeRestrictionDescription().toLowerCase());
 
                 //Identify the number of build retries. 
@@ -283,7 +280,7 @@ public class JobDetailsService {
         //Identify if the job was never built.
         if (building.length() == 0) {
             building
-                    .append("Never build");
+                    .append("Never built");
         }
 
         return new JobDetails(

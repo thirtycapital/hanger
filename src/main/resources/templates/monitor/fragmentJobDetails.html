@@ -97,7 +97,7 @@
                                                 <span class="caret"></span></button>
                                             <ul class="dropdown-menu">
                                                 <li>
-                                                    <a class="link node-link" th:href="@{'/job/log/' + ${jobDetail.job.id}}"> Log</a>
+                                                    <a class="link node-link" th:href="@{'/job/log/' + ${jobDetail.job.id}}" target="_blank"> Log</a>
                                                 </li>
                                                 <li>
                                                     <a class="link node-link" th:href="@{ ${jobDetail.job.server.url} + 'job/' + ${jobDetail.job.name}}" target="_blank"> Job</a>

@@ -26,7 +26,6 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.JobParent;
-import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Scope;
 
 import com.hp.gagawa.java.elements.A;
@@ -253,7 +252,7 @@ public class FlowService {
         A jobPhaseLink = new A();
 
         jobPhaseLink.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/job/log/" + job.getId());
-        jobPhaseLink.setTarget("_self");
+        jobPhaseLink.setTarget("_blank");
         jobPhaseLink.setCSSClass("node-phase");
         jobPhaseLink.appendText("LOG");
 

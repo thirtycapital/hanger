@@ -6,7 +6,19 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <div class="form-group space-top">
+            <div class="space-top">
+                <div style="margin-bottom:5px">
+                    <span th:text="${job.name}" class="checkup-title"></span>
+                    <a href="javascript:;" id="btn_job_description" th:if="${job.description != ''}">
+                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                    </a>
+                </div>
+                <div id="job_description" class="markdown d-none" th:utext="${job.getHTMLDescription()}"></div>
+            </div>
+
+            <hr style="margin-top: 8px"/>
+
+            <div class="form-group">
                 <fieldset>
                     <legend>Log</legend>
                     <div class="col-sm-12">
@@ -15,14 +27,6 @@
                         </pre>
                     </div>
                 </fieldset>
-            </div>
-
-            <hr/>
-
-            <div class="form-group">  
-                <a href="javascript:history.back()" class="btn btn-link btn-sm">
-                    <span class="glyphicon glyphicon-backward" aria-hidden="true"></span> Go back
-                </a>
             </div>
         </div>
 

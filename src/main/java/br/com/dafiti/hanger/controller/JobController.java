@@ -1361,6 +1361,8 @@ public class JobController {
     public String log(
             Model model,
             @PathVariable(value = "job") Job job) {
+        
+        model.addAttribute("job", job);
         model.addAttribute("log", jenkinsService.getLog(job));
         return "job/log";
     }

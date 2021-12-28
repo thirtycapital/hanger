@@ -28,6 +28,20 @@
                     </div>
                 </fieldset>
             </div>
+
+            <hr/>  
+
+            <a th:href="@{'/job/view/' + ${job.id}}" th:title="${job.name}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-file"></span> Job
+            </a>
+
+            <a th:href="@{'/flow/job/' + ${job.id}}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-random"></span> Flow
+            </a>
+
+            <a th:href="@{'/propagation/job/' + ${job.id}}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-transfer"></span> Propagation
+            </a>
         </div>
 
         <script>
@@ -36,6 +50,12 @@
                 'remove-indent': true,
                 'left-trim': true,
                 'right-trim': true,
+            });
+
+            $(function () {
+                $("#btn_job_description").click(function () {
+                    $("#job_description").slideToggle();
+                });
             });
         </script>
     </body>

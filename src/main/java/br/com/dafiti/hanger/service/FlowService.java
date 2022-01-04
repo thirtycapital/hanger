@@ -26,7 +26,6 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.JobParent;
-import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Scope;
 
 import com.hp.gagawa.java.elements.A;
@@ -249,15 +248,13 @@ public class FlowService {
             jobCheckupLink.appendText("CHECKUP");
         }
 
-        // Define the job phase link.
+        // Define the job log link.
         A jobPhaseLink = new A();
 
-        if (!jobDetails.getPhase().equals(Phase.NONE)) {
-            jobPhaseLink.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/job/log/" + job.getId());
-            jobPhaseLink.setTarget("_self");
-            jobPhaseLink.setCSSClass("node-phase");
-            jobPhaseLink.appendText(jobDetails.getPhase().toString());
-        }
+        jobPhaseLink.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/job/log/" + job.getId());
+        jobPhaseLink.setTarget("_blank");
+        jobPhaseLink.setCSSClass("node-phase");
+        jobPhaseLink.appendText("LOG");
 
         // Identify optional scope.
         if (parentScope != null) {

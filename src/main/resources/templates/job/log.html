@@ -6,9 +6,20 @@
     <body>
         <th:block th:include="base/header :: navbar"></th:block>
         <div class="container-fluid main-content">
-            <div class="form-group space-top">
+            <div class="space-top">
+                <div style="margin-bottom:5px">
+                    <span th:text="${job.name}" class="checkup-title"></span>
+                    <a href="javascript:;" id="btn_job_description" th:if="${job.description != ''}">
+                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                    </a>
+                </div>
+                <div id="job_description" class="markdown d-none" th:utext="${job.getHTMLDescription()}"></div>
+            </div>
+
+            <hr style="margin-top: 8px"/>
+
+            <div class="form-group">
                 <fieldset>
-                    <legend>Log</legend>
                     <div class="col-sm-12">
                         <pre class="line-numbers no-border">
                             <code class="language-log" th:text="${log}"></code>
@@ -17,13 +28,19 @@
                 </fieldset>
             </div>
 
-            <hr/>
+            <hr/>  
 
-            <div class="form-group">  
-                <a href="javascript:history.back()" class="btn btn-link btn-sm">
-                    <span class="glyphicon glyphicon-backward" aria-hidden="true"></span> Go back
-                </a>
-            </div>
+            <a th:href="@{'/job/view/' + ${job.id}}" th:title="${job.name}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-file"></span> Job
+            </a>
+
+            <a th:href="@{'/flow/job/' + ${job.id}}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-random"></span> Flow
+            </a>
+
+            <a th:href="@{'/propagation/job/' + ${job.id}}" class="btn btn-link btn-sm">
+                <span class="glyphicon glyphicon-transfer"></span> Propagation
+            </a>
         </div>
 
         <script>
@@ -32,6 +49,12 @@
                 'remove-indent': true,
                 'left-trim': true,
                 'right-trim': true,
+            });
+
+            $(function () {
+                $("#btn_job_description").click(function () {
+                    $("#job_description").slideToggle();
+                });
             });
         </script>
     </body>

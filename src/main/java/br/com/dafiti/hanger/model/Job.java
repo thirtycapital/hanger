@@ -170,7 +170,7 @@ public class Job extends Tracker<Job> implements Serializable {
     @Transient
     public String getHTMLDescription() {
         Parser parser = Parser.builder().build();
-        Node document = parser.parse(this.getDescription());
+        Node document = parser.parse(this.getDescription() == null ? "" : this.getDescription());
         HtmlRenderer renderer = HtmlRenderer.builder().build();
 
         return renderer.render(document);

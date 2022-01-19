@@ -26,7 +26,6 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobDetails;
 import br.com.dafiti.hanger.model.JobParent;
-import br.com.dafiti.hanger.model.JobTrigger;
 import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Scope;
 
@@ -436,56 +435,64 @@ public class FlowService {
     }
 
     /**
+     * Draws job triggers in the flow.
      *
-     * @param job
-     * @param jobLineage
-     * @param level
+     * @param job Job
+     * @param jobLineage String
+     * @param level int
      */
     private void drawTriggers(Job job, String jobLineage, int level) {
 
-        // Identify if job has triggers
+        // Identify if job has triggers.
         if (!job.getJobTrigger().isEmpty()) {
-            for (JobTrigger jobTrigger : job.getJobTrigger()) {
+            job.getJobTrigger().forEach((jobTrigger) -> {
 
-                // Define the trigger name link.
-                A triggerName = new A();
-                triggerName.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/trigger/edit/" + jobTrigger.getTriggerName());
-                triggerName.setTarget("_blank");
-                triggerName.setCSSClass("node-name");
-                triggerName.appendText(jobTrigger.getTriggerName());
+                // Define the trigger link.
+                A link = new A();
+                link.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/trigger/edit/" + jobTrigger.getTriggerName());
+                link.setTarget("_blank");
+                link.setCSSClass("node-name");
+                link.appendText(jobTrigger.getTriggerName());
 
-                // Define the node HTML content.
-                StringBuilder triggerNode = new StringBuilder();
-                triggerNode.append(triggerName.write());
+                // Define trigger label.
+                Span span = new Span();
+                span.setCSSClass("label label-info");
+                span.setTitle("trigger");
+                span.appendText("TRIGGER");
+                span.setId("span-status-" + jobTrigger.getTriggerName());
 
-                Span spanStatusTrigger = new Span();
-                spanStatusTrigger.setCSSClass("label label-info");
-                spanStatusTrigger.setTitle("trigger");
-                spanStatusTrigger.appendText("TRIGGER");
-                spanStatusTrigger.setId("span-status-" + job.getId());
+                // Define paragraph.
+                P p = new P();
+                p.appendChild(span);
 
-                P jobStatusTrigger = new P();
-                jobStatusTrigger.appendChild(spanStatusTrigger);
+                // Define the job build time paragraph.
+                P cronDescription = new P();
+                cronDescription.appendText("teste");
+                cronDescription.setCSSClass("node-cron-description");
 
-                triggerNode.append(jobStatusTrigger.write());
+                // Define node HTML content.
+                StringBuilder node = new StringBuilder();
+                node.append(link.write());
+                node.append(p.write());
+                node.append(cronDescription.write());
 
-                // Identify the lineage.
-                // __T to represent a trigger
-                String triggerLineage = jobLineage + "__T" + jobTrigger.getTriggerName();
-
-                String innerHtmlKeyTRIGGER = "__T" + jobTrigger.getTriggerName();
+                // Define the lineage, __T to represent a trigger.
+                String lineage = jobLineage + "__T" + jobTrigger.getTriggerName();
 
                 // Define unique innerHTML variable.
-                if (!nodes.containsKey(innerHtmlKeyTRIGGER)) {
-                    nodes.put(innerHtmlKeyTRIGGER, triggerNode.toString());
+                String innerHtmlKey = "__T" + jobTrigger.getTriggerName();
+
+                // Identifies unique innerHTML variable.
+                if (!nodes.containsKey(innerHtmlKey)) {
+                    nodes.put(innerHtmlKey, node.toString());
                 }
 
-                // Identify child steps.
+                // Identify trigger steps.
                 flow.put(
-                        StringUtils.leftPad(String.valueOf(level), 5, "0") + StringUtils.leftPad(triggerLineage, 100, "0")
+                        StringUtils.leftPad(String.valueOf(level), 5, "0") + StringUtils.leftPad(lineage, 100, "0")
                         + StringUtils.leftPad(jobLineage, 100, "0"),
-                        new Step(triggerLineage, triggerLineage + " = { parent: " + jobLineage + ",      innerHTML: " + innerHtmlKeyTRIGGER + ",     HTMLid: \"T" + jobTrigger.getTriggerName() + "\",     collapsed: false,     HTMLclass: _class }"));
-            }
+                        new Step(lineage, lineage + " = { parent: " + jobLineage + ",      innerHTML: " + innerHtmlKey + ",     HTMLid: \"T" + jobTrigger.getTriggerName() + "\",     collapsed: false,     HTMLclass: _class }"));
+            });
         }
     }
 

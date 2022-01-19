@@ -372,38 +372,10 @@ public class FlowService {
                             jobLineage + " = " + "{" + "     innerHTML: " + innerHtmlKey + "," + "     HTMLid: \""
                             + job.getId() + "\"," + "     HTMLclass: " + "_class" + "}"));
 
-            // Identify if job has triggers
-            if (!job.getJobTrigger().isEmpty()) {
-                for (JobTrigger jobTrigger : job.getJobTrigger()) {
-
-                    // Define the trigger name link.
-                    A triggerName = new A();
-                    triggerName.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/job/view/" + job.getId());
-                    triggerName.setTarget("_blank");
-                    triggerName.setCSSClass("node-name");
-                    triggerName.appendText(jobTrigger.getTriggerName());
-
-                    // Define the node HTML content.
-                    StringBuilder triggerNode = new StringBuilder();
-                    triggerNode.append(triggerName.write());
-
-                    // Identify the lineage.
-                    // __T to represent a trigger
-                    String triggerLineage = jobLineage + "__T" + jobTrigger.getTriggerName();
-
-                    String innerHtmlKeyTRIGGER = "__T" + jobTrigger.getTriggerName();
-
-                    // Define unique innerHTML variable.
-                    if (!nodes.containsKey(innerHtmlKeyTRIGGER)) {
-                        nodes.put(innerHtmlKeyTRIGGER, triggerNode.toString());
-                    }
-
-                    // Identify child steps.
-                    flow.put(
-                            StringUtils.leftPad(String.valueOf(level), 5, "0") + StringUtils.leftPad(triggerLineage, 100, "0")
-                            + StringUtils.leftPad(jobLineage, 100, "0"),
-                            new Step(triggerLineage, triggerLineage + " = { parent: " + jobLineage + ",      innerHTML: " + innerHtmlKeyTRIGGER + ",     HTMLid: \"T" + jobTrigger.getTriggerName() + "\",     collapsed: false,     HTMLclass: _class }"));
-                }
+            // Triggers are not displayed in propagation.
+            if (!reverse) {
+                // Adds triggers to flow.
+                this.drawTriggers(job, jobLineage, level);
             }
 
         } else {
@@ -437,45 +409,11 @@ public class FlowService {
                             + (job.getParent().isEmpty() || reverse || expanded ? "false" : "true") + ","
                             + "     HTMLclass: _class }"));
 
-            System.out.println(jobLineage + " = " + "{ parent: " + parentLineage + ", " + "     innerHTML: "
-                    + innerHtmlKey + "," + "     HTMLid: \"" + job.getId() + "\"," + "     collapsed: "
-                    + (job.getParent().isEmpty() || reverse || expanded ? "false" : "true") + ","
-                    + "     HTMLclass: _class }");
-
-            // Identify if job has triggers
-            if (!job.getJobTrigger().isEmpty()) {
-                for (JobTrigger jobTrigger : job.getJobTrigger()) {
-
-                    // Define the trigger name link.
-                    A triggerName = new A();
-                    triggerName.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/job/view/" + job.getId());
-                    triggerName.setTarget("_blank");
-                    triggerName.setCSSClass("node-name");
-                    triggerName.appendText(jobTrigger.getTriggerName());
-
-                    // Define the node HTML content.
-                    StringBuilder triggerNode = new StringBuilder();
-                    triggerNode.append(triggerName.write());
-
-                    // Identify the lineage.
-                    // __T to represent a trigger
-                    String triggerLineage = jobLineage + "__T" + jobTrigger.getTriggerName();
-
-                    String innerHtmlKeyTRIGGER = "__T" + jobTrigger.getTriggerName();
-
-                    // Define unique innerHTML variable.
-                    if (!nodes.containsKey(innerHtmlKeyTRIGGER)) {
-                        nodes.put(innerHtmlKeyTRIGGER, triggerNode.toString());
-                    }
-
-                    // Identify child steps.
-                    flow.put(
-                            StringUtils.leftPad(String.valueOf(level), 5, "0") + StringUtils.leftPad(triggerLineage, 100, "0")
-                            + StringUtils.leftPad(jobLineage, 100, "0"),
-                            new Step(triggerLineage, triggerLineage + " = { parent: " + jobLineage + ",      innerHTML: " + innerHtmlKeyTRIGGER + ",     HTMLid: \"T" + jobTrigger.getTriggerName() + "\",     collapsed: false,     HTMLclass: _class }"));
-                }
+            // Triggers are not displayed in propagation.
+            if (!reverse) {
+                // Adds triggers to flow.
+                this.drawTriggers(job, jobLineage, level);
             }
-
         }
 
         return new Flow(flow, reach.size(), levels.size());
@@ -495,6 +433,60 @@ public class FlowService {
         }
 
         return jobDetails;
+    }
+
+    /**
+     *
+     * @param job
+     * @param jobLineage
+     * @param level
+     */
+    private void drawTriggers(Job job, String jobLineage, int level) {
+
+        // Identify if job has triggers
+        if (!job.getJobTrigger().isEmpty()) {
+            for (JobTrigger jobTrigger : job.getJobTrigger()) {
+
+                // Define the trigger name link.
+                A triggerName = new A();
+                triggerName.setHref(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()) + "/trigger/edit/" + jobTrigger.getTriggerName());
+                triggerName.setTarget("_blank");
+                triggerName.setCSSClass("node-name");
+                triggerName.appendText(jobTrigger.getTriggerName());
+
+                // Define the node HTML content.
+                StringBuilder triggerNode = new StringBuilder();
+                triggerNode.append(triggerName.write());
+
+                Span spanStatusTrigger = new Span();
+                spanStatusTrigger.setCSSClass("label label-info");
+                spanStatusTrigger.setTitle("trigger");
+                spanStatusTrigger.appendText("TRIGGER");
+                spanStatusTrigger.setId("span-status-" + job.getId());
+
+                P jobStatusTrigger = new P();
+                jobStatusTrigger.appendChild(spanStatusTrigger);
+
+                triggerNode.append(jobStatusTrigger.write());
+
+                // Identify the lineage.
+                // __T to represent a trigger
+                String triggerLineage = jobLineage + "__T" + jobTrigger.getTriggerName();
+
+                String innerHtmlKeyTRIGGER = "__T" + jobTrigger.getTriggerName();
+
+                // Define unique innerHTML variable.
+                if (!nodes.containsKey(innerHtmlKeyTRIGGER)) {
+                    nodes.put(innerHtmlKeyTRIGGER, triggerNode.toString());
+                }
+
+                // Identify child steps.
+                flow.put(
+                        StringUtils.leftPad(String.valueOf(level), 5, "0") + StringUtils.leftPad(triggerLineage, 100, "0")
+                        + StringUtils.leftPad(jobLineage, 100, "0"),
+                        new Step(triggerLineage, triggerLineage + " = { parent: " + jobLineage + ",      innerHTML: " + innerHtmlKeyTRIGGER + ",     HTMLid: \"T" + jobTrigger.getTriggerName() + "\",     collapsed: false,     HTMLclass: _class }"));
+            }
+        }
     }
 
     /**

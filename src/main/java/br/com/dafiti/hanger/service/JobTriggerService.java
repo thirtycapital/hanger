@@ -52,4 +52,7 @@ public class JobTriggerService {
         return this.jobTriggerRepository.findByTriggerNameOrderByPriorityDesc(triggerName);
     }
 
+    public void deleteByTriggerName(String triggerName) {
+        this.jobTriggerRepository.deleteByTriggerName(triggerName);
+    }
 }

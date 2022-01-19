@@ -113,6 +113,7 @@ public class TriggerService {
         @CacheEvict(value = "triggers", allEntries = true)})
     public void delete(String triggerName) throws Exception {
         try {
+            this.jobTriggerService.deleteByTriggerName(triggerName);
             this.scheduler.unscheduleJob(triggerKey(triggerName));
         } catch (SchedulerException ex) {
             throw new Exception("Error on unscheduling trigger: " + ex.getMessage());

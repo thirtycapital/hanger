@@ -49,15 +49,17 @@ public class SubjectDetailsService {
 
     private final JobNotificationService jobNotificationService;
     private final JobService jobService;
+    private final JobBuildStatusService jobBuildStatusService;
 
     @Autowired
     public SubjectDetailsService(
             JobNotificationService jobNotificationService,
-            JobService jobService) {
+            JobService jobService,
+            JobBuildStatusService jobBuildStatusService) {
 
         this.jobNotificationService = jobNotificationService;
         this.jobService = jobService;
-
+        this.jobBuildStatusService = jobBuildStatusService;
     }
 
     /**
@@ -78,7 +80,10 @@ public class SubjectDetailsService {
         int total = 0;
 
         for (Job job : subjectJobs) {
-            if (job.isEnabled()) {
+            //Identifies if a job is enable and without time based restriction.
+            if (job.isEnabled()
+                    && jobBuildStatusService.isTimeRestrictionMatch(job.getTimeRestriction())) {
+
                 total += 1;
                 JobStatus jobStatus = job.getStatus();
 

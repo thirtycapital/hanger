@@ -125,22 +125,25 @@ public class TriggerService {
      *
      * @param triggerName String
      * @return TriggerDetail
-     * @throws Exception
      */
-    public TriggerDetail get(String triggerName) throws Exception {
+    public TriggerDetail get(String triggerName) {
         TriggerDetail triggerDetail = new TriggerDetail();
 
-        for (String group : this.scheduler.getTriggerGroupNames()) {
-            for (TriggerKey triggerKey : this.scheduler.getTriggerKeys(groupEquals(group))) {
-                if (triggerKey.getName().trim().toLowerCase().equals(triggerName.trim().toLowerCase())) {
-                    CronTrigger cronTrigger = (CronTrigger) scheduler.getTrigger(triggerKey);
-                    triggerDetail.setName(triggerKey.getName());
-                    triggerDetail.setCron(cronTrigger.getCronExpression());
-                    triggerDetail.setDescription(cronTrigger.getDescription());
-                    triggerDetail.setJobTriggers(this.jobTriggerService.findByTriggerNameOrderByPriorityDesc(triggerKey.getName().trim()));
-                    break;
+        try {
+            for (String group : this.scheduler.getTriggerGroupNames()) {
+                for (TriggerKey triggerKey : this.scheduler.getTriggerKeys(groupEquals(group))) {
+                    if (triggerKey.getName().trim().toLowerCase().equals(triggerName.trim().toLowerCase())) {
+                        CronTrigger cronTrigger = (CronTrigger) scheduler.getTrigger(triggerKey);
+                        triggerDetail.setName(triggerKey.getName());
+                        triggerDetail.setCron(cronTrigger.getCronExpression());
+                        triggerDetail.setDescription(cronTrigger.getDescription());
+                        triggerDetail.setJobTriggers(this.jobTriggerService.findByTriggerNameOrderByPriorityDesc(triggerKey.getName().trim()));
+                        break;
+                    }
                 }
             }
+        } catch (SchedulerException ex) {
+            Logger.getLogger(TriggerService.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return triggerDetail;

@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,18 +60,21 @@ public class FlowService {
     private final HttpServletRequest request;
     private final JobDetailsService jobDetailsService;
     private final JobNotificationService jobNotificationService;
+    private final TriggerService triggerService;
 
     @Autowired
     public FlowService(
             JobParentService jobParentService,
             HttpServletRequest request,
             JobDetailsService jobDetailsService,
-            JobNotificationService jobNotificationService) {
+            JobNotificationService jobNotificationService,
+            TriggerService triggerService) {
 
         this.jobParentService = jobParentService;
         this.request = request;
         this.jobDetailsService = jobDetailsService;
         this.jobNotificationService = jobNotificationService;
+        this.triggerService = triggerService;
     }
 
     /**
@@ -467,7 +472,7 @@ public class FlowService {
 
                 // Define the job build time paragraph.
                 P cronDescription = new P();
-                cronDescription.appendText("teste");
+                cronDescription.appendText(this.triggerService.get(jobTrigger.getTriggerName()).getCronDescription());
                 cronDescription.setCSSClass("node-cron-description");
 
                 // Define node HTML content.

@@ -141,7 +141,7 @@ public class User extends Tracker<User> implements Serializable, UserDetails {
     }
 
     @Column(name = "email", unique = true)
-    @Pattern(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}$")
+    @Pattern(regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$")
     public String getEmail() {
         return email;
     }

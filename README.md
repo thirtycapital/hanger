@@ -1,3 +1,4 @@
+
 # Hanger [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 ### Hanger is a graphical tool for process orchestration and data quality, responsible for the execution of [ETL](https://pt.wikipedia.org/wiki/Extract,_transform,_load) processes, dependency control and data validation.
 
@@ -71,17 +72,6 @@ logging.level.org.hibernate.SQL=WARN
 spring.jackson.time-zone=America/Sao_Paulo
 spring.jpa.properties.hibername.jdbc.time_zone=GMT-3
 ```
-
-> Slack Integration:
->  Hanger integration for slack is through Slack Bot. Its configuration is simple, quick and easy by following the steps below:
-> - A) - Slack bot registration in Workspace:
-> - - 1 - Open the slack page by clicking the link https://bluemetrics.slack.com/apps .
-> - - 2 - Select your workspace in the upper right corner.
-> - - 3 - In the log search bar below, search for the word Bots and select the option called Bots.
-> - - 4 - Click Add to Slack.
-> - - 5 - Name your bot, in this manual we will call it hanger-bot, but you can call it whatever you want and you can add an image if you want. Click on Add bot integration and at the bottom of the page click on save integration.
-> - - 6 - Copy the token that was generated in a notebook, we will use it to configure the hanger application.
-
 ##### DEPLOY
 Using [Apache Tomcat](http://tomcat.apache.org/):
 
@@ -747,15 +737,39 @@ This option allows the user to change their own password.
 In *Configuration* are all the global Hanger configurations. To set according to your need, follow the guidelines below:
 
 - On side menu, click on ***Configuration***.
+##### E-mail
 - On ***Host*** field, inform the server used to send e-mails.
 - Write the e-mail server port on the field ***Port***.
 - On ***Address*** field, inform the e-mail address.
 - Write the password on the ***Password*** field.
-- On Log Retention field it is possible to define, in days, the period for cleaning the approvals and data validation log.
+
+##### Others
+
+- On ***Log Retention*** field it is possible to define, in days, the period for cleaning the approvals and data validation log.
+
+#####  Slack
+
 - On ***Default Channel*** field, inform the default channel that will be used by Slack.
+- On ***Bot token*** field, inform the token of the bot you want to use. To generate a token, follow these steps: 
+
+> - Open Slack custom integrations page [here](https://my.slack.com/apps/manage/custom-integrations).
+> - Select your workspace in the upper right corner.
+> - In ***Manage*** select ***Custom Integrations*** and then click on **Bots**
+> - Click on **Add to Slack**.
+> - Give your bot a name and then click on **Add bot integration**.  
+> - Click on **Save Integration**
+> - A bot and its token has been generated. Copy the token and paste it on **Bot token** field.
+
+- On ***Incoming WebHooks URL*** field, inform a Slack's Incoming WebHooks URL. To generate it, follow the steps described [here](https://api.slack.com/messaging/webhooks#getting_started).
+
+#####  Workbench
+
 - On ***Schema and table searchable*** field, define the maximum number of entities allowed on Workbench.
 - Set the allowed domains to send e-mails on the ***E-mail filter (RegExp)*** field. If it is empty, any domain is allowed.  
 - Define the maximum number of rows per query on the ***Max rows per query field***.
+
+#####  Options
+
 - Click on ***Update Logo*** button to change the tool logo to any image file.
 - Click on ***Update cache*** button if you want to update the cache.
 - Click on ***Update plugin*** button to update the notification plugin.

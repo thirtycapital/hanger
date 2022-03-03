@@ -72,9 +72,15 @@ spring.jackson.time-zone=America/Sao_Paulo
 spring.jpa.properties.hibername.jdbc.time_zone=GMT-3
 ```
 
-> To enable the slack integration, follow these documents:
-> - Habilitar Slack bot e pegar token.
-> - Habilitar Slack WebHook e pegar URL.
+> Slack Integration:
+>  Hanger integration for slack is through Slack Bot. Its configuration is simple, quick and easy by following the steps below:
+> - A) - Slack bot registration in Workspace:
+> - - 1 - Open the slack page by clicking the link https://bluemetrics.slack.com/apps .
+> - - 2 - Select your workspace in the upper right corner.
+> - - 3 - In the log search bar below, search for the word Bots and select the option called Bots.
+> - - 4 - Click Add to Slack.
+> - - 5 - Name your bot, in this manual we will call it hanger-bot, but you can call it whatever you want and you can add an image if you want. Click on Add bot integration and at the bottom of the page click on save integration.
+> - - 6 - Copy the token that was generated in a notebook, we will use it to configure the hanger application.
 
 ##### DEPLOY
 Using [Apache Tomcat](http://tomcat.apache.org/):

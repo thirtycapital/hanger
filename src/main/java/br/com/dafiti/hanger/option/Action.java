@@ -32,5 +32,6 @@ public enum Action {
     REBUILD,
     REBUILD_MESH,
     REBUILD_TRIGGER,
-    LOG_AND_CONTINUE;
+    LOG_AND_CONTINUE, 
+    RESTRICT;
 }

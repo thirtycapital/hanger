@@ -26,6 +26,7 @@ package br.com.dafiti.hanger.service;
 import br.com.dafiti.hanger.model.Job;
 import br.com.dafiti.hanger.model.JobBuild;
 import br.com.dafiti.hanger.model.JobStatus;
+import br.com.dafiti.hanger.option.Action;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Phase;
 import br.com.dafiti.hanger.option.Scope;
@@ -163,19 +164,28 @@ public class EyeService {
 
             //Add the trigger and status to the job. 
             if (update) {
-                boolean healthy = true;
+                JobCheckupService.EvaluationInfo evaluationInfo = null;
 
                 if (jobBuild.getPhase().equals(Phase.FINALIZED)
                         && jobBuild.getStatus().equals(Status.SUCCESS)) {
 
                     //Evaluates the job checkup. 
-                    healthy = jobCheckupService.evaluate(job, jobStatus.getScope());
+                    evaluationInfo = jobCheckupService.evaluate(job, jobStatus.getScope());
                 }
 
                 jobStatus.setDate(new Date());
                 jobStatus.setBuild(jobBuild);
                 jobStatus.setScope(jobStatus.getScope() == null ? Scope.FULL : jobStatus.getScope());
-                jobStatus.setFlow(healthy ? Flow.NORMAL : Flow.UNHEALTHY);
+                
+                if (evaluationInfo == null || evaluationInfo.isEvaluated()){
+                     jobStatus.setFlow(Flow.NORMAL);
+                }else{
+                    if (evaluationInfo.getAction().equals(Action.RESTRICT)){
+                        jobStatus.setFlow(Flow.RESTRICTED);
+                    }else{
+                        jobStatus.setFlow(Flow.NORMAL);
+                    }
+                }   
 
                 //Save the job status.
                 jobStatus = jobStatusService.save(jobStatus);

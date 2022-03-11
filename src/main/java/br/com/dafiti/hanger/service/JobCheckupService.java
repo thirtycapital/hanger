@@ -169,9 +169,9 @@ public class JobCheckupService {
      *
      * @param job Job.
      * @param scope Scope.
-     * @return Identify if job is healthy.
+     * @return Evaluation details.
      */
-    public boolean evaluate(Job job, Scope scope) {
+    public EvaluationInfo evaluate(Job job, Scope scope) {
         return this.evaluate(job, false, scope);
     }
 
@@ -181,11 +181,14 @@ public class JobCheckupService {
      * @param job Job.
      * @param prevalidation Identify if is a prevalidation.
      * @param scope Scope.
-     * @return Identify if job is healthy.
+     * @return Evaluation details.
      */
-    public boolean evaluate(Job job, boolean prevalidation, Scope scope) {
+    public EvaluationInfo evaluate(Job job, boolean prevalidation, Scope scope) {
         boolean log;
-        boolean validated = true;
+        boolean evaluated = true;
+
+        //Defines a default evaluation info. 
+        EvaluationInfo evaluationInfo = new EvaluationInfo(evaluated);
 
         //Identifies if the job has checkup.
         if (!job.getCheckup().isEmpty()) {
@@ -221,13 +224,13 @@ public class JobCheckupService {
                         String value = this.executeQuery(checkup);
 
                         //Compares value and threshold. 
-                        validated = this.check(checkup, value);
+                        evaluated = this.check(checkup, value);
 
                         //Identifies if is just a log. 
                         log = checkup.getAction().equals(Action.LOG_AND_CONTINUE);
 
                         //Identifies if should execute something. 
-                        if (!validated) {
+                        if (!evaluated) {
                             boolean commandResult = false;
 
                             //Executes the checkup command.
@@ -242,14 +245,14 @@ public class JobCheckupService {
                             //Identifies if should revalidate the checkup.
                             if (commandResult) {
                                 value = this.executeQuery(checkup);
-                                validated = this.check(checkup, value);
+                                evaluated = this.check(checkup, value);
                             }
                         }
 
                         //Defines the checkup status.                         
                         checkupLog.setThreshold(this.getMacro(checkup.getThreshold()));
                         checkupLog.setValue(value);
-                        checkupLog.setSuccess(validated);
+                        checkupLog.setSuccess(evaluated);
 
                         //Adds the log to the checkup.
                         checkup.addLog(checkupLog);
@@ -257,7 +260,7 @@ public class JobCheckupService {
 
                         //Identifies if should retry.
                         if (retry < (job.getRetry() == 0 ? 1 : job.getRetry())) {
-                            if (!validated && !log) {
+                            if (!evaluated && !log) {
                                 //Increases the retry counter.
                                 retryService.increase(job);
 
@@ -268,8 +271,12 @@ public class JobCheckupService {
                             retryService.remove(job);
                         }
 
+                        //Sets evaluation status. 
+                        evaluationInfo.setEvaluated(evaluated);
+                        evaluationInfo.setAction(checkup.getAction());
+
                         //Verify if this check failed. 
-                        if (!validated) {
+                        if (!evaluated) {
                             this.notify(checkup, value);
 
                             if (!log) {
@@ -279,12 +286,12 @@ public class JobCheckupService {
 
                         //Checked will be always true when is LOG_AND_CONTINUE.
                         if (log) {
-                            validated = true;
+                            evaluationInfo.setEvaluated(true);
                         }
                     }
                 }
 
-                if (validated) {
+                if (evaluated) {
                     retryService.remove(job);
                 }
             }
@@ -293,7 +300,7 @@ public class JobCheckupService {
             LOG.log(Level.INFO, "{} status after checkup evaluation", new Object[]{job.getName()});
         }
 
-        return validated;
+        return evaluationInfo;
     }
 
     /**
@@ -496,7 +503,7 @@ public class JobCheckupService {
             tmp.setWritable(true);
 
             //Write shell command to sh file.
-            try (FileWriter writer = new FileWriter(tmp)) {
+            try ( FileWriter writer = new FileWriter(tmp)) {
                 writer
                         .write(
                                 this.replaceParameter(command.getCommand()).replaceAll("\r", "")
@@ -698,21 +705,9 @@ public class JobCheckupService {
     public void notify(JobCheckup checkup, String value) {
         Job job = checkup.getJob();
 
-        //Identifies if the job has approver. 
-        if (job.getApprover() != null) {
-            Blueprint blueprint = new Blueprint(job.getApprover().getEmail(), "Hanger Checkup failure", "checkupFailure");
-            blueprint.addVariable("approver", job.getApprover().getFirstName());
-            blueprint.addVariable("job", job.getName());
-            blueprint.addVariable("checkup", checkup.getDescription());
-
-            mailService.send(blueprint, checkup.getJob().getName());
-        }
-
-        //Identifies if checkup notification is enabled.
-        if (job.isCheckupNotified()) {
-            StringBuilder message = new StringBuilder();
-
-            message
+        //Identifies if should notify by Slack. 
+        if (!checkup.getChannel().isEmpty() || job.isCheckupNotified()) {
+            StringBuilder message = new StringBuilder()
                     .append(":syringe: *")
                     .append(job.getDisplayName())
                     .append("* > *")
@@ -730,7 +725,59 @@ public class JobCheckupService {
                     .append(checkup.getThreshold())
                     .append("*");
 
-            slackService.send(message.toString(), job.getChannel());
+            //Channels related to a checkup.
+            if (!checkup.getChannel().isEmpty()) {
+                slackService.send(message.toString(), checkup.getChannel());
+            }
+
+            //Channels related to a entire job.
+            if (job.isCheckupNotified()) {
+                slackService.send(message.toString(), job.getChannel());
+            }
+        }
+
+        //Identifies if should notify the job approver by e-mail. 
+        if (job.getApprover() != null) {
+            Blueprint blueprint = new Blueprint(job.getApprover().getEmail(), "Hanger Checkup failure", "checkupFailure");
+            blueprint.addVariable("approver", job.getApprover().getFirstName());
+            blueprint.addVariable("job", job.getName());
+            blueprint.addVariable("checkup", checkup.getDescription());
+
+            mailService.send(blueprint, checkup.getJob().getName());
+        }
+    }
+
+    /**
+     * Evaluation information.
+     */
+    public class EvaluationInfo {
+
+        private boolean evaluated;
+        private Action action;
+
+        public EvaluationInfo(boolean evaluated) {
+            this.evaluated = evaluated;
+        }
+
+        public EvaluationInfo(boolean evaluated, Action action) {
+            this.evaluated = evaluated;
+            this.action = action;
+        }
+
+        public boolean isEvaluated() {
+            return evaluated;
+        }
+
+        public void setEvaluated(boolean evaluated) {
+            this.evaluated = evaluated;
+        }
+
+        public Action getAction() {
+            return action;
+        }
+
+        public void setAction(Action action) {
+            this.action = action;
         }
     }
 }

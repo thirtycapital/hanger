@@ -37,5 +37,6 @@ public enum Flow {
     DISAPPROVED,
     BLOCKED,
     CHECKUP,
-    QUEUED;
+    QUEUED,
+    RESTRICTED;
 }

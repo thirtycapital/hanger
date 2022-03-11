@@ -148,7 +148,7 @@ public class JobBuildService {
                     }
 
                     //Prevalidation checkup.
-                    healthy = checkupService.evaluate(job, true, scope);
+                    healthy = checkupService.evaluate(job, true, scope).isEvaluated();
                 }
 
                 //Identifies if a job is healthy. 

@@ -105,7 +105,7 @@ public class JobNotificationService {
 
         if (job.isEnabled()) {
             JobStatus jobStatus = job.getStatus();
-            
+
             if (jobStatus != null) {
                 JobBuild jobBuild = jobStatus.getBuild();
 
@@ -129,9 +129,9 @@ public class JobNotificationService {
                             if (job.isNotify()) {
                                 if (job.getParent().isEmpty()) {
                                     message
-                                            .append(":star-struck: The job *")
+                                            .append(":star-struck: Job *")
                                             .append(job.getDisplayName())
-                                            .append("* finished *successfully*");
+                                            .append("* has been finished *successfully*");
                                 } else {
                                     job.getParent().stream().forEach((parent) -> {
                                         if (!jobBuildStatusService.isBuilt(parent.getParent())) {
@@ -141,14 +141,14 @@ public class JobNotificationService {
 
                                     if (pendencies.isEmpty()) {
                                         message
-                                                .append(":star-struck: The job *")
+                                                .append(":star-struck: Job *")
                                                 .append(job.getDisplayName())
-                                                .append("* and its dependencies has finished *successfully*");
+                                                .append("* and its dependencies have been finished *successfully*");
                                     } else {
                                         message
-                                                .append(":worried: The job *")
+                                                .append(":worried: Job *")
                                                 .append(job.getDisplayName())
-                                                .append("* has finished *successfully*, but the following dependencies was not finished yet: ");
+                                                .append("* has been finished *successfully*, but the following dependencies was not finished yet: ");
 
                                         pendencies.stream().forEach((parent) -> {
                                             message
@@ -165,6 +165,7 @@ public class JobNotificationService {
                                                 .append(" warning(s) in the job flow!)");
                                     }
                                 }
+                                
                                 slackService.send(message.toString(), job.getChannel());
                             }
                         }

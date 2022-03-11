@@ -208,6 +208,7 @@ public class JobService {
      *
      * @param job Job
      * @return Job
+     * @throws java.lang.Exception
      */
     @Caching(evict = {
         @CacheEvict(value = "jobs", allEntries = true),
@@ -310,7 +311,7 @@ public class JobService {
         if (parentUpstream) {
             List<String> upstreamJobs = jenkinsService.getUpstreamProjects(job);
 
-            if (upstreamJobs.size() > 0) {
+            if (!upstreamJobs.isEmpty()) {
                 for (String upstreamName : upstreamJobs) {
                     parentJobList.add(upstreamName);
                 }

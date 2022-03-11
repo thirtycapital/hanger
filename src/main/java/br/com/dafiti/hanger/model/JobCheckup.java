@@ -28,13 +28,18 @@ import br.com.dafiti.hanger.option.Conditional;
 import br.com.dafiti.hanger.option.Scope;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -69,6 +74,7 @@ public class JobCheckup implements Serializable {
     private List<Job> trigger = new ArrayList();
     private List<Command> command = new ArrayList();
     private List<JobCheckupLog> log = new ArrayList();
+    private Set<String> channel = new HashSet();
     private boolean enabled = true;
     private boolean prevalidation = false;
 
@@ -221,6 +227,21 @@ public class JobCheckup implements Serializable {
         this.log.add(log);
     }
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "job_checkup_channel", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "channel")
+    public Set<String> getChannel() {
+        return channel;
+    }
+
+    public void setChannel(Set<String> channel) {
+        this.channel = channel;
+    }
+
+    public void addChannel(String channel) {
+        this.channel.add(channel);
+    }
+
     public boolean isEnabled() {
         return enabled;
     }
@@ -240,10 +261,10 @@ public class JobCheckup implements Serializable {
     @Transient
     public boolean getLastStatus() {
         boolean status = true;
-        List<JobCheckupLog> log = this.getLog();
+        List<JobCheckupLog> logs = this.getLog();
 
-        if (!log.isEmpty()) {
-            JobCheckupLog jobCheckupLog = log.get(0);
+        if (!logs.isEmpty()) {
+            JobCheckupLog jobCheckupLog = logs.get(0);
 
             if (jobCheckupLog != null) {
                 status = jobCheckupLog.isSuccess();

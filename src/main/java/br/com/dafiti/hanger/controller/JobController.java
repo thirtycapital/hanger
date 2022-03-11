@@ -787,6 +787,55 @@ public class JobController {
     }
 
     /**
+     * Add checkup Slack channels.
+     *
+     * @param job Job
+     * @param checkupIndex
+     * @param slackChannelList Slack channel list.
+     * @param bindingResult
+     * @param model Model
+     * @return Job edit.
+     */
+    @PostMapping(path = "/save", params = {"partial_add_job_checkup_slack_channel"})
+    public String addCheckupSlackChannel(
+            @Valid @ModelAttribute Job job,
+            @RequestParam(value = "checkupIndex", required = true) int checkupIndex,
+            @RequestParam(value = "slackChannelList", required = false) Set<String> slackChannelList,
+            BindingResult bindingResult,
+            Model model) {
+
+        job.getCheckup().get(checkupIndex).getChannel().addAll(slackChannelList);
+        this.modelDefault(model, job);
+
+        return "job/edit";
+    }
+
+    /**
+     * Remove a checkup Slack Channel.
+     *
+     * @param job Job
+     * @param checkupChannelIndex
+     * @param model Model
+     * @return Job edit
+     */
+    @PostMapping(path = "/save", params = {"partial_remove_job_checkup_slack_channel"})
+    public String removeCheckupSlackChannel(
+            @Valid @ModelAttribute Job job,
+            @RequestParam("partial_remove_job_checkup_slack_channel") List<String> checkupChannelIndex,
+            Model model) {
+
+        if (checkupChannelIndex.size() == 2) {
+            int checkupIndex = Integer.parseInt(checkupChannelIndex.get(0));
+            String channel = checkupChannelIndex.get(1);
+
+            job.getCheckup().get(checkupIndex).getChannel().remove(channel);
+        }
+
+        this.modelDefault(model, job);
+        return "job/edit";
+    }
+
+    /**
      * Add a checkup.
      *
      * @param job Job
@@ -835,7 +884,7 @@ public class JobController {
      * @return Job edit
      */
     @PostMapping(path = "/save", params = {"partial_add_job_checkup_trigger"})
-    public String addTrigger(
+    public String addCheckupTrigger(
             @Valid @ModelAttribute Job job,
             @RequestParam("partial_add_job_checkup_trigger") int checkupIndex,
             @RequestParam(value = "triggers", required = false) List<String> triggers,
@@ -861,7 +910,7 @@ public class JobController {
      * @return Job edit
      */
     @PostMapping(path = "/save", params = {"partial_remove_job_checkup_trigger"})
-    public String removeTrigger(
+    public String removeCheckupTrigger(
             @Valid @ModelAttribute Job job,
             @RequestParam("partial_remove_job_checkup_trigger") List<Integer> checkupTriggerIndex,
             Model model) {
@@ -1006,6 +1055,27 @@ public class JobController {
     @GetMapping(path = "/modal/channel")
     public String slackChannelListModal(Model model) {
         model.addAttribute("channels", slackService.getChannels());
+        model.addAttribute("target", "partial_add_slack_channel");
+
+        return "job/modalSlackChannel::channel";
+    }
+
+    /**
+     * Slack channel list modal.
+     *
+     * @param checkupIndex
+     * @param model Model
+     * @return Slack channel modal
+     */
+    @GetMapping(path = "/modal/checkup/channel/{checkupIndex}")
+    public String slackCheckupChannelListModal(
+            @PathVariable(value = "checkupIndex") int checkupIndex,
+            Model model) {
+
+        model.addAttribute("channels", slackService.getChannels());
+        model.addAttribute("target", "partial_add_job_checkup_slack_channel");
+        model.addAttribute("checkupIndex", checkupIndex);
+
         return "job/modalSlackChannel::channel";
     }
 
@@ -1361,7 +1431,7 @@ public class JobController {
     public String log(
             Model model,
             @PathVariable(value = "job") Job job) {
-        
+
         model.addAttribute("job", job);
         model.addAttribute("log", jenkinsService.getLog(job));
         return "job/log";
@@ -1483,7 +1553,7 @@ public class JobController {
     public boolean hasParent(
             @PathVariable(value = "job") Job job) {
 
-        return job.getParent().size() > 0;
+        return !job.getParent().isEmpty();
     }
 
     /**
@@ -1497,6 +1567,6 @@ public class JobController {
     public boolean hasChildren(
             @PathVariable(value = "job") Job job) {
 
-        return jobService.getChildrenlist(job).size() > 0;
+        return !jobService.getChildrenlist(job).isEmpty();
     }
 }

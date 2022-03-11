@@ -125,7 +125,7 @@ public class JobDetailsService {
                     if (!jobBuildStatusService.isTimeRestrictionMatch(job.getTimeRestriction())) {
                         status = Status.RESTRICTED;
                         phase = Phase.NONE;
-                        building.append("Builded at ")
+                        building.append("(Time restriction) Builded at ")
                                 .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobBuild.getDate()));
                         //Identifies if is a current day build.  
                     } else if (today || (yesterday && eagerness)) {
@@ -151,7 +151,13 @@ public class JobDetailsService {
                                         .append((yesterday ? "( - " + tolerance + " hours ) Yesterday at " : ""))
                                         .append(new SimpleDateFormat("HH:mm:ss").format(jobBuild.getDate()));
                                 break;
+                            case RESTRICTED:
+                                status = Status.RESTRICTED;
+                                phase = Phase.NONE;
+                                building.append("(Check-up restriction) Builded at ")
+                                        .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobBuild.getDate()));
 
+                                break;
                             default:
                                 //Identifies if the build is running. 
                                 if (jobBuild.getPhase().equals(Phase.FINALIZED)

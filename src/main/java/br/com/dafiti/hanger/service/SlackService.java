@@ -23,11 +23,12 @@
  */
 package br.com.dafiti.hanger.service;
 
-import com.ullink.slack.simpleslackapi.SlackChannel;
-import com.ullink.slack.simpleslackapi.SlackSession;
-import com.ullink.slack.simpleslackapi.impl.SlackSessionFactory;
+import com.slack.api.Slack;
+import com.slack.api.methods.MethodsClient;
+import com.slack.api.methods.SlackApiException;
+import com.slack.api.methods.response.conversations.ConversationsListResponse;
+import com.slack.api.model.Conversation;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.springframework.stereotype.Service;
@@ -52,46 +53,15 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class SlackService {
 
+    private final Slack slack;
     private final ConfigurationService configurationService;
-    private SlackSession slackSession;
+
     private static final Logger LOG = LogManager.getLogger(SlackService.class.getName());
 
     @Autowired
     public SlackService(ConfigurationService configurationService) {
+        this.slack = Slack.getInstance();
         this.configurationService = configurationService;
-    }
-
-    /**
-     * Verify if slack session is connected.
-     *
-     * @return Identify if is connected.
-     */
-    private boolean isConnected() {
-        return (this.slackSession != null
-                && this.slackSession.isConnected());
-    }
-
-    /**
-     * Connect to Slack API
-     *
-     * @return connected Identify if is connected
-     */
-    private boolean connect() {
-        boolean connected = this.isConnected();
-
-        if (!connected) {
-            try {
-                if (!configurationService.findByParameter("SLACK_BOT_TOKEN").getValue().isEmpty()) {
-                    this.slackSession = SlackSessionFactory.createWebSocketSlackSession(configurationService.findByParameter("SLACK_BOT_TOKEN").getValue());
-                    this.slackSession.connect();
-                    connected = this.slackSession.isConnected();
-                }
-            } catch (IOException ex) {
-                LOG.log(Level.ERROR, "Fail connecting to slack", ex);
-            }
-        }
-
-        return connected;
     }
 
     /**
@@ -101,28 +71,23 @@ public class SlackService {
      */
     @Cacheable(value = "slackChannels")
     public Set<String> getChannels() {
+        MethodsClient client = slack.methods();
         Set<String> channels = new HashSet();
 
-        if (this.connect()) {
-            Collection<SlackChannel> slackChannels = slackSession.getChannels();
+        try {
+            ConversationsListResponse result = client.conversationsList(r -> r.token(configurationService.findByParameter("SLACK_BOT_TOKEN").getValue()));
 
-            slackChannels.stream().forEach((channel) -> {
+            for (Conversation channel : result.getChannels()) {
                 if (channel.getName() != null) {
                     channels.add(channel.getName());
                 }
-            });
+            }
+        } catch (IOException
+                | SlackApiException ex) {
+            LOG.log(Level.ERROR, "Fail getting slack channels", ex);
         }
 
         return channels;
-    }
-
-    /**
-     * send method overload
-     *
-     * @param message Slack message.
-     */
-    public void send(String message) {
-        this.send(message, new HashSet());
     }
 
     /**
@@ -139,40 +104,51 @@ public class SlackService {
     }
 
     /**
-     * If connected to Slack API, send a message to a channel.
+     * Sends a message to a default Slack channel.
+     *
+     * @param message Slack message.
+     */
+    public void send(String message) {
+        HashSet<String> channel = new HashSet<>();
+        channel.add(configurationService.findByParameter("SLACK_CHANNEL").getValue());
+
+        this.send(message, channel);
+    }
+
+    /**
+     * Sends a message to a Slack channel.
      *
      * @param message Slack message.
      * @param channels Slack channels.
      */
     @Async
     public void send(String message, Set<String> channels) {
-        SlackChannel slackChannel;
+        MethodsClient client = slack.methods();
 
-        if (this.connect()) {
-            if (channels.isEmpty()) {
-                channels.add(configurationService.findByParameter("SLACK_CHANNEL").getValue());
-            }
+        if (channels.isEmpty()) {
+            channels.add(configurationService.findByParameter("SLACK_CHANNEL").getValue());
+        }
 
-            for (String channel : channels) {
-                slackChannel = slackSession.findChannelByName(channel);
+        for (String channel : channels) {
+            try {
+                client.chatPostMessage(r -> r
+                        .token(configurationService.findByParameter("SLACK_BOT_TOKEN").getValue())
+                        .channel(channel)
+                        .text(message)
+                );
 
-                if (slackChannel != null) {
-                    slackSession.sendMessage(slackChannel, message);
-                }
+                LOG.log(Level.INFO, "Slack message posted to " + channel);
+            } catch (IOException | SlackApiException ex) {
+                LOG.log(Level.ERROR, "Fail posting message to channel" + channel, ex);
             }
         }
     }
 
+    /**
+     *
+     */
     @Caching(evict = {
         @CacheEvict(value = "slackChannels", allEntries = true)})
     public void refresh() {
-        try {
-            if (this.slackSession != null) {
-                this.slackSession.disconnect();
-            }
-        } catch (IOException ex) {
-            LOG.log(Level.ERROR, "Fail disconnecting from slack", ex);
-        }
     }
-
 }

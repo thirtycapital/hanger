@@ -16,6 +16,10 @@
                         </div>
                         <div class="modal-body">                            
                             <div class="form-group">
+                                <!--Checkup Index, 
+                                only applies when it is a checkup notification channel-->
+                                <input type="hidden" name="checkupIndex" id="checkupIndex" th:th:value="${checkupIndex}"/>
+
                                 <div class="col-sm-12">
                                     <select 
                                         class="selectpicker form-control col-xs-6" 
@@ -39,7 +43,7 @@
                                 <span aria-hidden="true"></span> Close
                             </button>
 
-                            <button type="submit" name="partial_add_slack_channel" class="btn btn-generic btn-sm">
+                            <button type="submit" th:name="${target}" class="btn btn-generic btn-sm">
                                 <span aria-hidden="true"></span> Add
                             </button>
                         </div>

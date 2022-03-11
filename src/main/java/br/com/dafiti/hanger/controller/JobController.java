@@ -805,7 +805,7 @@ public class JobController {
             Model model) {
 
         job.getCheckup().get(checkupIndex).getChannel().addAll(slackChannelList);
-        this.modelDefault(model, job);
+        this.modelDefault(model, job, checkupIndex);
 
         return "job/edit";
     }
@@ -824,14 +824,15 @@ public class JobController {
             @RequestParam("partial_remove_job_checkup_slack_channel") List<String> checkupChannelIndex,
             Model model) {
 
-        if (checkupChannelIndex.size() == 2) {
-            int checkupIndex = Integer.parseInt(checkupChannelIndex.get(0));
-            String channel = checkupChannelIndex.get(1);
+        int checkupIndex = -1;
 
+        if (checkupChannelIndex.size() == 2) {
+            checkupIndex = Integer.parseInt(checkupChannelIndex.get(0));
+            String channel = checkupChannelIndex.get(1);
             job.getCheckup().get(checkupIndex).getChannel().remove(channel);
         }
 
-        this.modelDefault(model, job);
+        this.modelDefault(model, job, checkupIndex);
         return "job/edit";
     }
 
@@ -895,7 +896,7 @@ public class JobController {
         } catch (Exception ex) {
             model.addAttribute("errorMessage", new Message().getErrorMessage(ex));
         } finally {
-            this.modelDefault(model, job);
+            this.modelDefault(model, job, checkupIndex);
         }
 
         return "job/edit";
@@ -915,13 +916,15 @@ public class JobController {
             @RequestParam("partial_remove_job_checkup_trigger") List<Integer> checkupTriggerIndex,
             Model model) {
 
+        int checkupIndex = -1;
+
         if (checkupTriggerIndex.size() == 2) {
-            int checkupIndex = checkupTriggerIndex.get(0);
+            checkupIndex = checkupTriggerIndex.get(0);
             int triggerIndex = checkupTriggerIndex.get(1);
             job.getCheckup().get(checkupIndex).getTrigger().remove(triggerIndex);
         }
 
-        this.modelDefault(model, job);
+        this.modelDefault(model, job, checkupIndex);
 
         return "job/edit";
     }
@@ -959,13 +962,15 @@ public class JobController {
             @RequestParam("partial_remove_job_checkup_command") List<Integer> checkupCommandIndex,
             Model model) {
 
+        int checkupIndex = -1;
+
         if (checkupCommandIndex.size() == 2) {
-            int checkupIndex = checkupCommandIndex.get(0);
+            checkupIndex = checkupCommandIndex.get(0);
             int commandIndex = checkupCommandIndex.get(1);
             job.getCheckup().get(checkupIndex).getCommand().remove(commandIndex);
         }
 
-        this.modelDefault(model, job);
+        this.modelDefault(model, job, checkupIndex);
 
         return "job/edit";
     }

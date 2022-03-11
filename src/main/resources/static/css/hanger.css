@@ -942,6 +942,7 @@ input[type='file'] {
 
 .panel-default>.panel-heading{
     background-color: #f6faff;
+    font-weight: bold;
 }
 
 .panel-heading-height {

@@ -24,6 +24,13 @@
 package br.com.dafiti.hanger.service;
 
 import br.com.dafiti.hanger.model.SubjectDetails;
+import com.slack.api.model.block.HeaderBlock;
+import com.slack.api.model.block.LayoutBlock;
+import com.slack.api.model.block.SectionBlock;
+import com.slack.api.model.block.composition.MarkdownTextObject;
+import com.slack.api.model.block.composition.PlainTextObject;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import org.json.JSONArray;
@@ -66,9 +73,12 @@ public class SubjectNotificationService {
                 = subjectDetailsService.getDetailsOf(subjectService.findAllByOrderByName());
 
         for (SubjectDetails detail : subjectDetails) {
-            //Identify if should notify this subject. 
+            //Identifies if should notify this subject. 
             if (detail.getSubject().isNotified()) {
-                //Identify the channels to notify. 
+                String status = "";
+                List<LayoutBlock> message = new ArrayList();
+
+                //Identifies the channels to notify. 
                 Set<String> channels = detail.getSubject().getChannel();
 
                 //Identify if should notify only the default channel. 
@@ -76,62 +86,54 @@ public class SubjectNotificationService {
                     channels.add(configurationService.findByParameter("SLACK_CHANNEL").getValue());
                 }
 
-                //Notify each channel. 
-                for (String channel : channels) {
-                    JSONObject payload = new JSONObject();
-                    JSONArray metrics = new JSONArray();
-                    String color = "";
-
-                    //Identify the subject metrics. 
-                    JSONObject waiting = new JSONObject();
-                    waiting.put("title", "Waiting");
-                    waiting.put("value", detail.getWaitingPercent() + "%");
-                    waiting.put("short", true);
-                    metrics.put(waiting);
-
-                    JSONObject success = new JSONObject();
-                    success.put("title", "Success");
-                    success.put("value", detail.getSuccessPercent() + "%");
-                    success.put("short", true);
-                    metrics.put(success);
-
-                    JSONObject failure = new JSONObject();
-                    failure.put("title", "Failure");
-                    failure.put("value", detail.getFailurePercent() + "%");
-                    failure.put("short", true);
-                    metrics.put(failure);
-
-                    JSONObject warning = new JSONObject();
-                    warning.put("title", "Warning");
-                    warning.put("value", detail.getWarningPercent() + "%");
-                    warning.put("short", true);
-                    metrics.put(warning);
-
-                    JSONObject building = new JSONObject();
-                    building.put("title", "Building");
-                    building.put("value", detail.getBuildingPercent() + "%" + " (" + (detail.getBuilding()) + " jobs)");
-                    building.put("short", true);
-                    metrics.put(building);
-
-                    //Identify subject color.
-                    if (detail.getFailurePercent() > 0) {
-                        color = "#cd5c5c";
-                    } else if (detail.getSuccessPercent() == 100) {
-                        color = "#20b2aa";
-                    } else if (detail.getWarningPercent() == 100) {
-                        color = "#ffa500";
-                    }
-
-                    //Build the payload. 
-                    payload.put("pretext", "*" + detail.getSubject().getName() + "* hourly report");
-                    payload.put("channel", channel);
-                    payload.put("fields", metrics);
-                    payload.put("color", color);
-                    payload.put("mrkdwn_in", "[\"pretext\"]");
-
-                    //Send the notification. 
-                    slackService.send(payload);
+                //Identifies subject status.
+                if (detail.getFailurePercent() > 0) {
+                    status = ":red_circle:";
+                } else if (detail.getSuccessPercent() == 100) {
+                    status = ":green_circle:";
+                } else if (detail.getWarningPercent() == 100) {
+                    status = "gray_circle";
                 }
+
+                //Slack message blocks.
+                message.add(
+                        HeaderBlock
+                                .builder()
+                                .text(PlainTextObject
+                                        .builder()
+                                        .text(status + "*" + detail.getSubject().getName() + "*")
+                                        .emoji(Boolean.TRUE)
+                                        .build())
+                                .build());
+
+                message.add(
+                        SectionBlock
+                                .builder()
+                                .fields(Arrays.asList(
+                                        MarkdownTextObject
+                                                .builder()
+                                                .text("*Waiting:* \n " + String.format("%.2f", detail.getWaitingPercent()) + "%")
+                                                .build(),
+                                        MarkdownTextObject
+                                                .builder()
+                                                .text("*Success:* \n " + String.format("%.2f", detail.getSuccessPercent()) + "%")
+                                                .build(),
+                                        MarkdownTextObject
+                                                .builder()
+                                                .text("*Failure:* \n " + String.format("%.2f", detail.getFailurePercent()) + "%")
+                                                .build(),
+                                        MarkdownTextObject
+                                                .builder()
+                                                .text("*Warning:* \n " + String.format("%.2f", detail.getWarningPercent()) + "%")
+                                                .build(),
+                                        MarkdownTextObject
+                                                .builder()
+                                                .text("*Building:* \n " + String.format("%.2f", detail.getBuildingPercent()) + "%" + " (" + (detail.getBuilding()) + " jobs)")
+                                                .build()))
+                                .build());
+
+                //Send the notification. 
+                slackService.send(message, channels);
             }
         }
     }

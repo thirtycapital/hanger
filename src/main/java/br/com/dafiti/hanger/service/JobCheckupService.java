@@ -34,6 +34,12 @@ import br.com.dafiti.hanger.option.CommandType;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.repository.JobCheckupRepository;
+import com.slack.api.model.block.DividerBlock;
+import com.slack.api.model.block.HeaderBlock;
+import com.slack.api.model.block.LayoutBlock;
+import com.slack.api.model.block.SectionBlock;
+import com.slack.api.model.block.composition.MarkdownTextObject;
+import com.slack.api.model.block.composition.PlainTextObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -43,6 +49,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -707,38 +715,69 @@ public class JobCheckupService {
 
         //Identifies if should notify by Slack. 
         if (!checkup.getChannel().isEmpty() || job.isCheckupNotified()) {
-            StringBuilder message = new StringBuilder()
-                    .append(":syringe: *")
-                    .append(job.getDisplayName())
-                    .append("* > *")
-                    .append(checkup.getDescription())
-                    .append("* > ")
-                    .append(checkup.isPrevalidation() ? "PRE_VALIDATION" : "POST_VALIDATION")
-                    .append(" > ")
-                    .append(checkup.getAction())
-                    .append(" > ")
-                    .append("failed because the result was *")
-                    .append(value)
-                    .append("* but the expected is ")
-                    .append(checkup.getConditional())
-                    .append(" *")
-                    .append(checkup.getThreshold())
-                    .append("*");
+            List<LayoutBlock> message = new ArrayList();
+
+            message.add(
+                    HeaderBlock
+                            .builder()
+                            .text(PlainTextObject
+                                    .builder()
+                                    .text(":red_circle: *" + job.getName() + " check-up failure*")
+                                    .emoji(Boolean.TRUE)
+                                    .build())
+                            .build());
+
+            message.add(
+                    SectionBlock
+                            .builder()
+                            .text(MarkdownTextObject
+                                    .builder()
+                                    .text(checkup.getDescription())
+                                    .build())
+                            .build());
+
+            message.add(
+                    SectionBlock
+                            .builder()
+                            .fields(Arrays.asList(
+                                    MarkdownTextObject
+                                            .builder()
+                                            .text("*Job:* \n " + job.getName())
+                                            .build(),
+                                    MarkdownTextObject
+                                            .builder()
+                                            .text("*Check-up:* \n " + checkup.getName())
+                                            .build()))
+                            .build());
+
+            message.add(
+                    SectionBlock
+                            .builder()
+                            .fields(Arrays.asList(
+                                    MarkdownTextObject
+                                            .builder()
+                                            .text("*Threshold:* \n " + checkup.getConditional() + " " + checkup.getThreshold())
+                                            .build(),
+                                    MarkdownTextObject
+                                            .builder()
+                                            .text("*Result:* \n " + value)
+                                            .build()))
+                            .build());
 
             //Channels related to a checkup.
             if (!checkup.getChannel().isEmpty()) {
-                slackService.send(message.toString(), checkup.getChannel());
+                slackService.send(message, checkup.getChannel());
             }
 
             //Channels related to a entire job.
             if (job.isCheckupNotified()) {
-                slackService.send(message.toString(), job.getChannel());
+                slackService.send(message, job.getChannel());
             }
         }
 
         //Identifies if should notify the job approver by e-mail. 
         if (job.getApprover() != null) {
-            Blueprint blueprint = new Blueprint(job.getApprover().getEmail(), "Hanger Checkup failure", "checkupFailure");
+            Blueprint blueprint = new Blueprint(job.getApprover().getEmail(), "Hanger check-up failure", "checkupFailure");
             blueprint.addVariable("approver", job.getApprover().getFirstName());
             blueprint.addVariable("job", job.getName());
             blueprint.addVariable("checkup", checkup.getDescription());

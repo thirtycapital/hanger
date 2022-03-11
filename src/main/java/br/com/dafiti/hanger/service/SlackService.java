@@ -28,8 +28,10 @@ import com.slack.api.methods.MethodsClient;
 import com.slack.api.methods.SlackApiException;
 import com.slack.api.methods.response.conversations.ConversationsListResponse;
 import com.slack.api.model.Conversation;
+import com.slack.api.model.block.LayoutBlock;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.apache.logging.log4j.Level;
@@ -104,7 +106,7 @@ public class SlackService {
     }
 
     /**
-     * Sends a message to a default Slack channel.
+     * Posts a text nessage in a default Slack channel.
      *
      * @param message Slack message.
      */
@@ -116,13 +118,45 @@ public class SlackService {
     }
 
     /**
-     * Sends a message to a Slack channel.
+     * Posts a blocks nessage in a default Slack channel.
+     *
+     * @param message Slack message.
+     */
+    public void send(List<LayoutBlock> message) {
+        HashSet<String> channel = new HashSet<>();
+        channel.add(configurationService.findByParameter("SLACK_CHANNEL").getValue());
+
+        this.send(message, channel);
+    }
+
+    /**
+     * Posts a blocks message in a Slack channel.
+     *
+     * @param message Slack message.
+     */
+    void send(List<LayoutBlock> message, Set<String> channels) {
+        this.send(message, channels, true);
+    }
+
+    /**
+     * Posts a text message in a Slack channel.
      *
      * @param message Slack message.
      * @param channels Slack channels.
      */
-    @Async
     public void send(String message, Set<String> channels) {
+        this.send(message, channels, false);
+    }
+
+    /**
+     * Posts a message in a Slack channel.
+     *
+     * @param message Slack message.
+     * @param channels Slack channels.
+     * @param blocks Identifies if it is a blocks message.
+     */
+    @Async
+    public void send(Object message, Set<String> channels, boolean blocks) {
         MethodsClient client = slack.methods();
 
         if (channels.isEmpty()) {
@@ -131,11 +165,19 @@ public class SlackService {
 
         for (String channel : channels) {
             try {
-                client.chatPostMessage(r -> r
-                        .token(configurationService.findByParameter("SLACK_BOT_TOKEN").getValue())
-                        .channel(channel)
-                        .text(message)
-                );
+                if (blocks) {
+                    client.chatPostMessage(r -> r
+                            .token(configurationService.findByParameter("SLACK_BOT_TOKEN").getValue())
+                            .channel(channel)
+                            .blocks((List<LayoutBlock>) message)
+                    );
+                } else {
+                    client.chatPostMessage(r -> r
+                            .token(configurationService.findByParameter("SLACK_BOT_TOKEN").getValue())
+                            .channel(channel)
+                            .text((String) message)
+                    );
+                }
 
                 LOG.log(Level.INFO, "Slack message posted to " + channel);
             } catch (IOException | SlackApiException ex) {

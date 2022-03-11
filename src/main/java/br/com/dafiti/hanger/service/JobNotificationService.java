@@ -165,7 +165,7 @@ public class JobNotificationService {
                                                 .append(" warning(s) in the job flow!)");
                                     }
                                 }
-                                
+
                                 slackService.send(message.toString(), job.getChannel());
                             }
                         }

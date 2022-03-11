@@ -125,7 +125,7 @@ public class JobDetailsService {
                     if (!jobBuildStatusService.isTimeRestrictionMatch(job.getTimeRestriction())) {
                         status = Status.RESTRICTED;
                         phase = Phase.NONE;
-                        building.append("(Time restriction) Builded at ")
+                        building.append("(Time restriction) Built at ")
                                 .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobBuild.getDate()));
                         //Identifies if is a current day build.  
                     } else if (today || (yesterday && eagerness)) {
@@ -135,7 +135,7 @@ public class JobDetailsService {
                                 status = Status.valueOf(jobStatus.getFlow().toString());
                                 phase = Phase.NONE;
                                 building
-                                        .append("Builded ")
+                                        .append("Built ")
                                         .append((yesterday ? "( - " + tolerance + " hours) yesterday at " : ""))
                                         .append(new SimpleDateFormat("HH:mm:ss").format(jobBuild.getDate()));
                                 break;
@@ -154,7 +154,7 @@ public class JobDetailsService {
                             case RESTRICTED:
                                 status = Status.RESTRICTED;
                                 phase = Phase.NONE;
-                                building.append("(Check-up restriction) Builded at ")
+                                building.append("(Check-up restriction) Built at ")
                                         .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobBuild.getDate()));
 
                                 break;
@@ -166,7 +166,7 @@ public class JobDetailsService {
                                     status = jobBuild.getStatus();
 
                                     if (jobBuild.getStatus().equals(Status.SUCCESS)) {
-                                        //Identifies it was builded partially.
+                                        //Identifies it was built partially.
                                         if (jobStatus.getScope().equals(Scope.PARTIAL)) {
                                             status = Status.PARTIAL;
                                         } else {
@@ -194,7 +194,7 @@ public class JobDetailsService {
                         status = Status.valueOf(jobStatus.getFlow().toString());
                         phase = Phase.NONE;
                         building
-                                .append("Builded at ")
+                                .append("Built at ")
                                 .append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(jobBuild.getDate()));
                     } else {
                         //Identify the last build flow. 

@@ -37,19 +37,17 @@ import org.springframework.stereotype.Service;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * Manage Slack API.
  *
  * @author Helio Leal
+ * @author Valdiney V GOMES
  *
  */
 @Service
@@ -90,19 +88,6 @@ public class SlackService {
         }
 
         return channels;
-    }
-
-    /**
-     * Send a message to slack from a incoming WebHook.
-     *
-     * @param payload JSON payload.
-     * @return HTTP Response.
-     */
-    @Async
-    public String send(JSONObject payload) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpEntity<String> request = new HttpEntity<>(payload.toString());
-        return restTemplate.postForObject(configurationService.findByParameter("SLACK_WEBHOOK_URL").getValue(), request, String.class);
     }
 
     /**

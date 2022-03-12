@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -83,7 +81,10 @@ public class SubjectNotificationService {
 
                 //Identify if should notify only the default channel. 
                 if (channels.isEmpty()) {
-                    channels.add(configurationService.findByParameter("SLACK_CHANNEL").getValue());
+                    channels.add(
+                            configurationService
+                                    .findByParameter("SLACK_CHANNEL")
+                                    .getValue());
                 }
 
                 //Identifies subject status.
@@ -92,7 +93,7 @@ public class SubjectNotificationService {
                 } else if (detail.getSuccessPercent() == 100) {
                     status = ":green_circle:";
                 } else if (detail.getWarningPercent() == 100) {
-                    status = "gray_circle";
+                    status = ":gray_circle:";
                 }
 
                 //Slack message blocks.

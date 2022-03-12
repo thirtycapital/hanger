@@ -75,7 +75,12 @@ public class SlackService {
         Set<String> channels = new HashSet();
 
         try {
-            ConversationsListResponse result = client.conversationsList(r -> r.token(configurationService.findByParameter("SLACK_BOT_TOKEN").getValue()));
+            ConversationsListResponse result = client
+                    .conversationsList(
+                            r -> r.token(
+                                    configurationService
+                                            .findByParameter("SLACK_BOT_TOKEN")
+                                            .getValue()));
 
             for (Conversation channel : result.getChannels()) {
                 if (channel.getName() != null) {
@@ -96,10 +101,7 @@ public class SlackService {
      * @param message Slack message.
      */
     public void send(String message) {
-        HashSet<String> channel = new HashSet<>();
-        channel.add(configurationService.findByParameter("SLACK_CHANNEL").getValue());
-
-        this.send(message, channel);
+        this.send(message, new HashSet<>());
     }
 
     /**
@@ -108,10 +110,7 @@ public class SlackService {
      * @param message Slack message.
      */
     public void send(List<LayoutBlock> message) {
-        HashSet<String> channel = new HashSet<>();
-        channel.add(configurationService.findByParameter("SLACK_CHANNEL").getValue());
-
-        this.send(message, channel);
+        this.send(message, new HashSet<>());
     }
 
     /**
@@ -145,20 +144,29 @@ public class SlackService {
         MethodsClient client = slack.methods();
 
         if (channels.isEmpty()) {
-            channels.add(configurationService.findByParameter("SLACK_CHANNEL").getValue());
+            channels.add(
+                    configurationService
+                            .findByParameter("SLACK_CHANNEL")
+                            .getValue());
         }
 
         for (String channel : channels) {
             try {
                 if (blocks) {
                     client.chatPostMessage(r -> r
-                            .token(configurationService.findByParameter("SLACK_BOT_TOKEN").getValue())
+                            .token(
+                                    configurationService
+                                            .findByParameter("SLACK_BOT_TOKEN")
+                                            .getValue())
                             .channel(channel)
                             .blocks((List<LayoutBlock>) message)
                     );
                 } else {
                     client.chatPostMessage(r -> r
-                            .token(configurationService.findByParameter("SLACK_BOT_TOKEN").getValue())
+                            .token(
+                                    configurationService
+                                            .findByParameter("SLACK_BOT_TOKEN")
+                                            .getValue())
                             .channel(channel)
                             .text((String) message)
                     );

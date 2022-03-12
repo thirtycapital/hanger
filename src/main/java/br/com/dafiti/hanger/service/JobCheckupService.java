@@ -34,7 +34,6 @@ import br.com.dafiti.hanger.option.CommandType;
 import br.com.dafiti.hanger.option.Flow;
 import br.com.dafiti.hanger.option.Scope;
 import br.com.dafiti.hanger.repository.JobCheckupRepository;
-import com.slack.api.model.block.DividerBlock;
 import com.slack.api.model.block.HeaderBlock;
 import com.slack.api.model.block.LayoutBlock;
 import com.slack.api.model.block.SectionBlock;
@@ -279,8 +278,8 @@ public class JobCheckupService {
                             retryService.remove(job);
                         }
 
-                        //Sets evaluation status. 
-                        evaluationInfo.setEvaluated(evaluated);
+                        //Sets evaluation status (will be always true when is LOG_AND_CONTINUE).
+                        evaluationInfo.setEvaluated(log || evaluated);
                         evaluationInfo.setAction(checkup.getAction());
 
                         //Verify if this check failed. 
@@ -290,11 +289,6 @@ public class JobCheckupService {
                             if (!log) {
                                 break;
                             }
-                        }
-
-                        //Checked will be always true when is LOG_AND_CONTINUE.
-                        if (log) {
-                            evaluationInfo.setEvaluated(true);
                         }
                     }
                 }
@@ -326,7 +320,7 @@ public class JobCheckupService {
                 jobStatusService.updateFlow(job.getStatus(), Flow.QUEUED);
                 jenkinsService.build(job);
             } catch (Exception ex) {
-                LogManager.getLogger(EyeService.class).log(Level.ERROR, "Fail building job: " + job.getName(), ex);
+                LOG.log(Level.ERROR, "Fail building job: " + job.getName(), ex);
             }
 
             break;
@@ -340,7 +334,7 @@ public class JobCheckupService {
                         jenkinsService.build(meshParent);
                     }
                 } catch (Exception ex) {
-                    LogManager.getLogger(EyeService.class).log(Level.ERROR, "Fail building job mesh: " + job.getName(), ex);
+                    LOG.log(Level.ERROR, "Fail building job mesh: " + job.getName(), ex);
                 }
 
                 break;
@@ -363,7 +357,7 @@ public class JobCheckupService {
                         }
                     }
                 } catch (Exception ex) {
-                    LogManager.getLogger(EyeService.class).log(Level.ERROR, "Fail building trigger: " + job.getName(), ex);
+                    LOG.log(Level.ERROR, "Fail building trigger: " + job.getName(), ex);
                 }
 
                 break;
@@ -384,7 +378,9 @@ public class JobCheckupService {
 
         try {
             //Set a connection to database.
-            jdbcTemplate.setDataSource(connectionService.getDataSource(checkup.getConnection()));
+            jdbcTemplate.setDataSource(
+                    connectionService
+                            .getDataSource(checkup.getConnection()));
             jdbcTemplate.setMaxRows(1);
 
             //Execute a query. 
@@ -445,14 +441,12 @@ public class JobCheckupService {
             jdbcTemplate
                     .setDataSource(
                             connectionService
-                                    .getDataSource(checkup.getConnection())
-                    );
+                                    .getDataSource(checkup.getConnection()));
 
             //Execute a query.
             affected = jdbcTemplate
                     .update(
-                            this.replaceParameter(command.getCommand())
-                    );
+                            this.replaceParameter(command.getCommand()));
 
             //Log the affected rows.
             log = "Affected record[s]: " + affected;
@@ -514,8 +508,7 @@ public class JobCheckupService {
             try ( FileWriter writer = new FileWriter(tmp)) {
                 writer
                         .write(
-                                this.replaceParameter(command.getCommand()).replaceAll("\r", "")
-                        );
+                                this.replaceParameter(command.getCommand()).replaceAll("\r", ""));
             }
 
             //Parse the command to run.

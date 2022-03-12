@@ -152,21 +152,19 @@ public class SlackService {
 
         for (String channel : channels) {
             try {
+                String token = configurationService
+                        .findByParameter("SLACK_BOT_TOKEN")
+                        .getValue();
+
                 if (blocks) {
                     client.chatPostMessage(r -> r
-                            .token(
-                                    configurationService
-                                            .findByParameter("SLACK_BOT_TOKEN")
-                                            .getValue())
+                            .token(token)
                             .channel(channel)
                             .blocks((List<LayoutBlock>) message)
                     );
                 } else {
                     client.chatPostMessage(r -> r
-                            .token(
-                                    configurationService
-                                            .findByParameter("SLACK_BOT_TOKEN")
-                                            .getValue())
+                            .token(token)
                             .channel(channel)
                             .text((String) message)
                     );

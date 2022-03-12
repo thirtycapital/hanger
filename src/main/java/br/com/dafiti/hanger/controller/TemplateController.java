@@ -108,7 +108,7 @@ public class TemplateController {
         model.addAttribute("templates", templateService.list());
         return "template/list";
     }
-    
+
     /**
      * View a template.
      *
@@ -120,7 +120,7 @@ public class TemplateController {
     public String viewTemplate(Model model, @PathVariable(value = "id") Long id) {
         model.addAttribute("template", templateService.load(id));
         return "template/view";
-    }    
+    }
 
     /**
      * Edit a template.

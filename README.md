@@ -21,7 +21,7 @@ Using [Maven](https://maven.apache.org/):
 
 ##### CONFIGURATION
 
-- Create a database on Mysql/MariaDB and an user with full permition only for the database that will receive the Hanger's metadata.
+- Create a database on Mysql/MariaDB and an user with full permition only for the database that will receive Hanger's metadata.
 
 ```
 # Example to run using Mysql/MariaDB root/admin user
@@ -486,7 +486,7 @@ Allows to add a new *job*. You can import a *job* from Jenkins, create a new one
 - If you want, on ***Description*** field, define the *job* description.
 	> You can use ***Markdown*** to type the description text.
 - On ***Time Restriction*** field, inform the allowed period in [cron](http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html) format to execute the *job*.
-- Define the content of the ***Eagerness*** field of the *job* between 0 and 12 hours. For a *job* dependency to be considered attended it must have been successfully carried out at least once a day. If some dependency wants to be executed before midnight, the ***Eagerness*** field must be filled with the number of hours, before midnight, so that, if the *job* runs successfully, the dependency is considered fulfilled.
+- Define the content of the ***Lookback window*** field of the *job* between 0 and 12 hours. For a *job* dependency to be considered attended it must have been successfully carried out at least once a day. If some dependency wants to be executed before midnight, the ***Lookback window*** field must be filled with the number of hours, before midnight, so that, if the *job* runs successfully, the dependency is considered fulfilled.
 - If you want to define a minimum interval to reexcute the *job*, write the minutes on ***Rebuild Interval*** field.
 - On ***Node*** field, inform the node where the *job* will be executed.
 - On ***Cron*** field, inform the trigger period for the job.
@@ -569,10 +569,12 @@ If it is necessary execute the validation of the data from *job* execution, on t
 	- ***REBUILD_MESH***:  if it is a pos validation, all the *job* dependencies and the dependencies of each dependency are executed again. Otherwise, it has the same effect of NOTHING.
 	- ***REBUILD_TRIGGER***: if it is a pos validation, all the specific dependencies are executed again by clicking on Add Trigger button. Otherwise, it has the same effect of NOTHING.
 	- ***LOG_AND_CONTINUE***: record the checkup execution result and notify the selected Slack channels Slack. However, it does not block the chain execution.
+        - ***RESTRICT***: Set the job as RESTRICTED and block the chain execution.
 
 	***Note***: To actions like ***NOTHING*** or ***LOG_AND_CONTINUE*** there is not attempts number.
 
 - If the chosen option is ***REBUILD_TRIGGER***, click on ***Add Trigger*** button. The modal ***Trigger*** will be displayed and will be possible to select which dependencies must be executed again.
+- If you would like post a message in one or more Slack channel on a check-up failure, click on ***Add Slack channel*** button. The modal ***Slack channel*** will be displayed and will be possible to select one or more Slack channels.
 - If it is necessary to execute some comand when the checkup fails, click on ***Add Command*** button. The new section, ***Script on failure*** will be displayed:
 	> Select the action between ***SHELL*** or ***SQL*** to be executed.
 	> On ***Script*** field, inform the action to be executed. It is possible to reference the result of another ckeckup, using the following sintax: ${{checkup ID}}

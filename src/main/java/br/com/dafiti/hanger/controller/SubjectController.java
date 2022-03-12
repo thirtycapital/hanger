@@ -91,11 +91,11 @@ public class SubjectController {
     /**
      * Save a subject.
      *
-     * @param subject
-     * @param bindingResult
-     * @param model
-     * @param principal
-     * @return
+     * @param subject Subject
+     * @param bindingResult BindingResult
+     * @param model Model
+     * @param principal Principal
+     * @return Subject list view
      */
     @PostMapping(path = "/save")
     public String saveSubject(@Valid @ModelAttribute Subject subject,
@@ -131,8 +131,8 @@ public class SubjectController {
     /**
      * Add a subject.
      *
-     * @param model
-     * @return
+     * @param model Model
+     * @return Subject edit view
      */
     @GetMapping(path = "/add")
     public String addSubject(Model model) {
@@ -145,7 +145,7 @@ public class SubjectController {
      *
      * @param model
      * @param authentication
-     * @return
+     * @return Subject list.
      */
     @GetMapping(path = "/list")
     public String listSubject(Model model, Authentication authentication) {
@@ -156,9 +156,9 @@ public class SubjectController {
     /**
      * Edit a subject.
      *
-     * @param model
-     * @param id
-     * @return
+     * @param model Model
+     * @param id Subject ID
+     * @return Subject edit view
      */
     @GetMapping(path = "/edit/{id}")
     public String editSubject(Model model, @PathVariable(value = "id") Long id) {
@@ -169,9 +169,9 @@ public class SubjectController {
     /**
      * Delete a subject.
      *
-     * @param id
-     * @param model
-     * @return
+     * @param id Subject ID
+     * @param model Model
+     * @return Subject list view
      */
     @GetMapping(path = "/delete/{id}")
     public String deleteSubject(@PathVariable(name = "id") Long id, Model model) {
@@ -262,6 +262,7 @@ public class SubjectController {
     }
 
     /**
+     * Add a Swimlane
      *
      * @param subject Subject.
      * @param key Swimlane name.
@@ -292,6 +293,7 @@ public class SubjectController {
     }
 
     /**
+     * Remove a Swimlane
      *
      * @param subject Subject
      * @param key Swimlane name.
@@ -340,10 +342,10 @@ public class SubjectController {
     /**
      * Subscribe logged user in a subject.
      *
-     * @param response
-     * @param request
-     * @param model
-     * @param id
+     * @param response HttpServletResponse
+     * @param request HttpServletRequest
+     * @param model Model
+     * @param id Subject ID
      */
     @PostMapping("/subscribe/")
     public void subscribe(
@@ -368,10 +370,10 @@ public class SubjectController {
     /**
      * Unsubscribe logged user in a subject.
      *
-     * @param response
-     * @param request
-     * @param model
-     * @param id
+     * @param response HttpServletResponse
+     * @param request HttpServletRequest
+     * @param model Model
+     * @param id Subject ID
      */
     @PostMapping("/unsubscribe/")
     public void unsubscribe(

@@ -137,7 +137,7 @@ public class JobApprovalController {
 
         //Identifies the job flow.
         Flow flow = job.getStatus().getFlow();
-        
+
         //Runs the approbation process.
         this.jobApprovalService.approve(jobApproval, job, true);
 

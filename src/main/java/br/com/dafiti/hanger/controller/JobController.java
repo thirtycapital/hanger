@@ -189,8 +189,7 @@ public class JobController {
                         server,
                         incremental);
             } catch (URISyntaxException | IOException ex) {
-                LOG.log(Level.ERROR,
-                        "Fail listing jobs from server " + server.getName(), ex);
+                LOG.log(Level.ERROR, "Fail listing jobs from server " + server.getName(), ex);
             }
         }
 
@@ -428,27 +427,25 @@ public class JobController {
     }
 
     /**
-     * Partial save an imported job.
+     * Imported a Job.
      *
-     * @param job
-     * @param importServer
-     * @param importJob
-     * @param action
-     * @param model
+     * @param job job
+     * @param server Source server
+     * @param name Source job name.
+     * @param model Model
      * @return Job edit
      */
     @PostMapping(path = "/save", params = {"partial_import_job"})
-    public String loadJob(
+    public String importJob(
             @Valid @ModelAttribute Job job,
-            @RequestParam(name = "action", required = false) String action,
-            @RequestParam(name = "importServer", required = false) Server importServer,
-            @RequestParam(name = "importJob", required = false) String importJob,
+            @RequestParam(name = "importServer", required = false) Server server,
+            @RequestParam(name = "importJob", required = false) String name,
             Model model) {
 
         try {
-            if (jenkinsService.isRunning(importServer)) {
-                job.setServer(importServer);
-                job.setName(importJob);
+            if (jenkinsService.isRunning(server)) {
+                job.setServer(server);
+                job.setName(name);
                 this.setJobConfiguration(job);
             } else {
                 throw new URISyntaxException("Server is not running", "Jenkins");
@@ -466,31 +463,29 @@ public class JobController {
     }
 
     /**
-     * Partial save a created job.
+     * Created a job.
      *
-     * @param job
-     * @param createServer
-     * @param createJob
-     * @param createJobName
-     * @param action
-     * @param model
+     * @param job Job
+     * @param server Target server.
+     * @param template Template job.
+     * @param name Target job name.
+     * @param model Model.
      * @return Job edit
      */
     @PostMapping(path = "/save", params = {"partial_create_job"})
-    public String loadJob(
+    public String createJob(
             @Valid @ModelAttribute Job job,
-            @RequestParam(name = "action", required = false) String action,
-            @RequestParam(name = "createServer", required = false) Server createServer,
-            @RequestParam(name = "createJob", required = false) String createJob,
-            @RequestParam(name = "createJobName", required = false) String createJobName,
+            @RequestParam(name = "createServer", required = false) Server server,
+            @RequestParam(name = "createJob", required = false) String template,
+            @RequestParam(name = "createJobName", required = false) String name,
             Model model) {
 
         try {
-            if (jenkinsService.isRunning(createServer)) {
-                job.setServer(createServer);
-                job.setName(createJobName);
-                jenkinsService.clone(job, createJob);
-                this.setJobConfiguration(job, createJob);
+            if (jenkinsService.isRunning(server)) {
+                job.setServer(server);
+                job.setName(name);
+                jenkinsService.clone(job, template);
+                this.setJobConfiguration(job, template);
             } else {
                 throw new URISyntaxException("Server is not running", "Jenkins");
             }
@@ -507,27 +502,25 @@ public class JobController {
     }
 
     /**
-     * Partial save a migrated job.
+     * Migrated a job.
      *
-     * @param job
-     * @param migrateSourceServer
-     * @param migrateTargetServer
-     * @param migrateSourceJob
-     * @param migrateTargetJob
-     * @param migrateJobName
-     * @param action
-     * @param model
+     * @param job Job
+     * @param migrateSourceServer Source server.
+     * @param migrateTargetServer Target server.
+     * @param migrateSourceJob Source job.
+     * @param migrateTargetJob Target job.
+     * @param name Target job name.
+     * @param model Model
      * @return Job edit
      */
     @PostMapping(path = "/save", params = {"partial_migrate_job"})
-    public String loadJob(
+    public String migrateJob(
             @Valid @ModelAttribute Job job,
-            @RequestParam(name = "action", required = false) String action,
             @RequestParam(name = "migrateSourceServer", required = false) Server migrateSourceServer,
             @RequestParam(name = "migrateSourceJob", required = false) String migrateSourceJob,
             @RequestParam(name = "migrateTargetServer", required = false) Server migrateTargetServer,
             @RequestParam(name = "migrateTargetJob", required = false) String migrateTargetJob,
-            @RequestParam(name = "migrateJobName", required = false) String migrateJobName,
+            @RequestParam(name = "migrateJobName", required = false) String name,
             Model model) {
 
         try {
@@ -538,7 +531,7 @@ public class JobController {
                 sourceJob.setName(migrateSourceJob);
 
                 job.setServer(migrateTargetServer);
-                job.setName(migrateJobName);
+                job.setName(name);
                 jenkinsService.clone(job, migrateTargetJob);
                 job.setShellScript(jenkinsService.getShellScript(sourceJob, sourceJob.getName()));
                 job.setNode(jenkinsService.getNode(job));
@@ -662,10 +655,11 @@ public class JobController {
     }
 
     /**
+     * Shell script template modal.
      *
-     * @param template
-     * @param model
-     * @return
+     * @param template Template ID
+     * @param model Modal
+     * @return Shell script template modal
      */
     @GetMapping(path = "/modal/template/{id}")
     public String shellScriptTemplateModal(
@@ -978,8 +972,8 @@ public class JobController {
     /**
      * Add e-mail list.
      *
-     * @param job
-     * @param emailList
+     * @param job Job
+     * @param emailList Email list.
      * @param bindingResult BindingResult
      * @param model Model
      * @return Subject edit
@@ -1009,7 +1003,7 @@ public class JobController {
      * Remove an e-mail.
      *
      * @param job Job
-     * @param index index
+     * @param index Index
      * @param bindingResult BindingResult
      * @param model Model
      * @return Job edit

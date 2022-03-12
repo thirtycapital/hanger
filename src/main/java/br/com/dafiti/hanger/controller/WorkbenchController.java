@@ -252,7 +252,7 @@ public class WorkbenchController {
             @RequestParam(name = "table", required = false) String table,
             Model model) {
 
-        if (fields != null && fields.size() > 0) {
+        if (fields != null && !fields.isEmpty()) {
             model.addAttribute("connection", connection);
             model.addAttribute("query", this.workbenchService.doQuery(fields, catalog, schema, table,connection));
         }

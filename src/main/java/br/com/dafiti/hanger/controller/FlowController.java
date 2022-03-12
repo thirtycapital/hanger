@@ -88,8 +88,8 @@ public class FlowController {
             Model model) {
 
         if (job != null) {
-        	Flow flow = flowService.getJobFlow(job, false, expanded);
-        	
+            Flow flow = flowService.getJobFlow(job, false, expanded);
+
             model.addAttribute("job", job);
             model.addAttribute("subjectSummary", subjectDetailsService.getSummaryOf(job.getSubject()));
             model.addAttribute("warnings", flowService.getFlowWarning(job));
@@ -118,7 +118,7 @@ public class FlowController {
             Model model) {
 
         if (job != null) {
-        	Flow flow = flowService.getJobFlow(job, true, false);
+            Flow flow = flowService.getJobFlow(job, true, false);
 
             model.addAttribute("job", job);
             model.addAttribute("subjectSummary", subjectDetailsService.getSummaryOf(job.getSubject()));
@@ -150,7 +150,7 @@ public class FlowController {
 
         return "flow/modalWarning::warning";
     }
-    
+
     /**
      * Show the job parent modal.
      *
@@ -164,7 +164,7 @@ public class FlowController {
             Model model) {
 
         try {
-            List<JobDetails> jobDetails = new ArrayList<JobDetails>();
+            List<JobDetails> jobDetails = new ArrayList<>();
 
             job.getParent().stream().forEach((parent) -> {
                 jobDetails.add(jobDetailsService.getDetailsOf(parent.getParent()));

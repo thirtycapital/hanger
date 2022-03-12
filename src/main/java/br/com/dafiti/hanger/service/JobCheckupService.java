@@ -715,7 +715,7 @@ public class JobCheckupService {
                             .builder()
                             .text(PlainTextObject
                                     .builder()
-                                    .text(":red_circle: *" + job.getName() + " check-up failure*")
+                                    .text(":red_circle: " + job.getName() + " check-up failure")
                                     .emoji(Boolean.TRUE)
                                     .build())
                             .build());

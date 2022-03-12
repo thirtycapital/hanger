@@ -102,7 +102,7 @@ public class SubjectNotificationService {
                                 .builder()
                                 .text(PlainTextObject
                                         .builder()
-                                        .text(status + "*" + detail.getSubject().getName() + "*")
+                                        .text(status + " " + detail.getSubject().getName())
                                         .emoji(Boolean.TRUE)
                                         .build())
                                 .build());

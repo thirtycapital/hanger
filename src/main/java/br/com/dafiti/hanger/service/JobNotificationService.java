@@ -129,7 +129,7 @@ public class JobNotificationService {
                             if (job.isNotify()) {
                                 if (job.getParent().isEmpty()) {
                                     message
-                                            .append(":star-struck: Job *")
+                                            .append(":green_circle: Job *")
                                             .append(job.getDisplayName())
                                             .append("* has been finished *successfully*");
                                 } else {
@@ -141,14 +141,14 @@ public class JobNotificationService {
 
                                     if (pendencies.isEmpty()) {
                                         message
-                                                .append(":star-struck: Job *")
+                                                .append(":green_circle: Job *")
                                                 .append(job.getDisplayName())
                                                 .append("* and its dependencies have been finished *successfully*");
                                     } else {
                                         message
-                                                .append(":worried: Job *")
+                                                .append(":yellow_circle: Job *")
                                                 .append(job.getDisplayName())
-                                                .append("* has been finished *successfully*, but the following dependencies was not finished yet: ");
+                                                .append("* has been finished *successfully*, but the following dependencies was not finished yet");
 
                                         pendencies.stream().forEach((parent) -> {
                                             message
@@ -182,7 +182,7 @@ public class JobNotificationService {
                             //Identifies if job notification is enabled.
                             if (job.isNotify()) {
                                 message
-                                        .append(":fire: Something wrong happened to the job *")
+                                        .append(":red_circle: Something wrong happened to the job *")
                                         .append(job.getDisplayName())
                                         .append("*");
 

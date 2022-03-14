@@ -740,13 +740,7 @@ public class JobCheckupService {
                                     MarkdownTextObject
                                             .builder()
                                             .text("*Check-up:* \n " + checkup.getName())
-                                            .build()))
-                            .build());
-
-            message.add(
-                    SectionBlock
-                            .builder()
-                            .fields(Arrays.asList(
+                                            .build(),
                                     MarkdownTextObject
                                             .builder()
                                             .text("*Threshold:* \n " + checkup.getConditional() + " " + checkup.getThreshold())

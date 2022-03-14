@@ -93,6 +93,8 @@ public class SubjectNotificationService {
                 } else if (detail.getSuccessPercent() == 100) {
                     status = ":large_green_circle:";
                 } else if (detail.getWarningPercent() == 100) {
+                    status = ":large_orange_circle:";
+                }else{
                     status = ":white_circle:";
                 }
 

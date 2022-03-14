@@ -172,9 +172,9 @@ public class Watchdog {
             StringBuilder message = new StringBuilder();
             if (status.getStatus().equals(Status.FAILURE)) {
                 message
-                        .append(":broken_heart: The connection ")
+                        .append(":red_circle: Connection *")
                         .append(status.getConnection().getName())
-                        .append(" is broken!");
+                        .append("* is broken!");
 
                 slackService.send(message.toString());
             }
@@ -195,7 +195,7 @@ public class Watchdog {
             jobBuildService.build(job);
 
             //Log on console. 
-            LOG.log(Level.INFO, "The watchdog catched " + status + " job " + job.getName());
+            LOG.log(Level.INFO, "Watchdog catched " + status + " job " + job.getName());
 
             //Log on auditor. 
             auditorService.publish("WATCHDOG",
@@ -206,17 +206,17 @@ public class Watchdog {
 
             //Log on Slack.
             slackService.send(message
-                    .append(":dog: The watchdog catched job ")
+                    .append(":dog: Watchdog catched job ")
                     .append("*")
                     .append(job.getDisplayName())
                     .append("*").toString());
         } catch (Exception ex) {
             //Log on console. 
-            LOG.log(Level.ERROR, "The watchdog fail building " + job.getName(), ex);
+            LOG.log(Level.ERROR, "Watchdog fail building " + job.getName(), ex);
 
             //Log on Slack.
             slackService.send(message
-                    .append(":hotdog: The watchdog fail building ")
+                    .append(":dog: Watchdog fail building ")
                     .append("*")
                     .append(job.getDisplayName())
                     .append("*").toString());

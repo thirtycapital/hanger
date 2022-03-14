@@ -1049,9 +1049,19 @@ input[type='file'] {
     color: #929292;
 }
 
+.breadcrumb {
+    font-weight: bold;
+    background-color: #000000;
+}
+
 .breadcrumb-connection {
     margin-top: 10px;
     margin-bottom: 10px;
+    color: #FFFFFF;
+}
+
+.breadcrumb-connection>li>a {
+    color: #FFFFFF;
 }
 
 .icon-copy {

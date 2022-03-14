@@ -6,7 +6,7 @@
     <artifactId>hanger</artifactId>
     <version>0.12.8 [Makeup]</version>
     <packaging>war</packaging>
-
+   
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>

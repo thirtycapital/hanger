@@ -122,7 +122,7 @@
                         </legend>
                     </fieldset>
 
-                    <label>Node <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Assign node where this job will execute"></span></label>
+                    <label>Node</label>
                     <div class="form-group">
                         <div class="col-sm-10">
                             <input type="text" class="form-control" th:value="*{node}" readonly="true"/>
@@ -130,7 +130,7 @@
                         </div>
                     </div>
 
-                    <label>Cron <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Cron expression that defines when the job will be built"></span></label>
+                    <label>Cron</label>
                     <div class="form-group">
                         <div class="col-sm-10">
                             <pre class="line-numbers">                                
@@ -174,7 +174,7 @@
 
                         <ul class="nav nav-pills">
                             <li class="active" th:if="${not #lists.isEmpty(job.parent)}">
-                                <a data-toggle="tab" href="#parent">PARENT 
+                                <a data-toggle="tab" href="#parent">PARENT
                                     <span class="badge" th:text="${#lists.size(job.parent)}"></span>
                                 </a>                                
                             </li>

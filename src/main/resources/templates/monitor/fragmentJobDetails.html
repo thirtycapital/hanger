@@ -12,10 +12,14 @@
                         <legend 
                             th:id="${swimlane.key}" 
                             th:if="${swimlane.key != 'ALL'}" 
-                            class="space-top swinlane">
+                            class="space-top swinlane">                            
+
+                            <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
+
                             <span th:text="${swimlane.key}"
                                   data-toggle="tooltip" 
-                                  data-placement="left"></span>
+                                  data-placement="left">
+                            </span>
 
                             <span sec:authorize="isAuthenticated()">
                                 <button class="btn btn-link btn-xs"
@@ -27,8 +31,6 @@
                                 </button>
                             </span>
                         </legend>
-
-                        <label th:if="${swimlane.key != 'ALL'}" th:inline="text" class="label-edit-information">[[*{rules.get(swimlane.key)}]]</label>
 
                         <table 
                             th:id="'table_search_' + ${swimlaneStat.index}" 

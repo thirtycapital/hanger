@@ -85,11 +85,6 @@
                             <div class="col-sm-10">
                                 <input type="text" maxlength="255" class="form-control" th:field="*{timeRestriction}" placeholder="Cron expression"/>
                                 <span th:if="${#fields.hasErrors('timeRestriction')}" class="help-block" th:errors="*{timeRestriction}"></span>
-                                <div class="alert alert-light" role="alert" style="margin-bottom: 0">
-                                    Sintaxe:
-                                    <b>&lt;Seconds&gt; &lt;Minutes&gt; &lt;Hours&gt; &lt;Day of month&gt; &lt;Month&gt; &lt;Day of week&gt; [Year]</b> where, for instance,
-                                    <b>* * 11-12 ? * * *</b> allows a job to be build at <b>every hour between 11 and 12</b>. For more details visit: <a href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html" target="_blank">QUARTZ Cron Trigger Tutorial</a>
-                                </div>
                             </div>
                         </div>
 
@@ -180,7 +175,7 @@
                             </legend>
                         </fieldset>
 
-                        <label>Node <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Assign node where this job will execute"></span></label>
+                        <label>Node</label>
                         <div class="form-group">
                             <div class="col-sm-10">
                                 <input type="text" maxlength="255" class="form-control" th:field="*{node}" placeholder="Node"/>
@@ -188,7 +183,7 @@
                             </div>
                         </div>
 
-                        <label>Cron <span class="glyphicon glyphicon-info-sign" aria-hidden="true" title="Cron expression that defines when the job will be built"></span></label>
+                        <label>Cron</label>
                         <div class="form-group">
                             <div class="col-sm-10">
                                 <input type="text" maxlength="150" class="form-control" th:field="*{cron}" placeholder="Cron"/>
@@ -240,7 +235,7 @@
 
                             <ul class="nav nav-pills">
                                 <li class="active" th:if="${not #lists.isEmpty(job.parent)}">
-                                    <a data-toggle="tab" href="#parent">PARENT 
+                                    <a data-toggle="tab" href="#parent">PARENT
                                         <span class="badge" th:text="${#lists.size(job.parent)}"></span>
                                     </a>                                
                                 </li>

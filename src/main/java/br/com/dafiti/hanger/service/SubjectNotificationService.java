@@ -91,9 +91,9 @@ public class SubjectNotificationService {
                 if (detail.getFailurePercent() > 0) {
                     status = ":red_circle:";
                 } else if (detail.getSuccessPercent() == 100) {
-                    status = ":green_circle:";
+                    status = ":large_green_circle:";
                 } else if (detail.getWarningPercent() == 100) {
-                    status = ":gray_circle:";
+                    status = ":white_circle:";
                 }
 
                 //Slack message blocks.

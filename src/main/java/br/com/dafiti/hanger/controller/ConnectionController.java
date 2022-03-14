@@ -172,11 +172,12 @@ public class ConnectionController {
                 entity = connectionService.getCatalogs(connection);
             }
 
-            model.addAttribute("connection", connection);
             model.addAttribute("metadata", entity);
         } catch (Exception ex) {
             model.addAttribute("errorMessage", "Fail listing schema " + new Message().getErrorMessage(ex));
         }
+
+        model.addAttribute("connection", connection);
 
         return "connection/schema";
     }

@@ -35,7 +35,10 @@ import br.com.dafiti.hanger.service.ConnectionService;
 import br.com.dafiti.hanger.service.JobDetailsService;
 import br.com.dafiti.hanger.service.WorkbenchEmailService;
 import br.com.dafiti.hanger.service.UserService;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
@@ -63,6 +66,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  */
 @Controller
 @RequestMapping(path = "/email")
+@Tag(name = "Workbench")
 public class WorkbenchEmailController {
 
     private final UserService userService;
@@ -199,7 +203,8 @@ public class WorkbenchEmailController {
      * @return
      * @throws java.io.IOException
      */
-    @ApiOperation(value = "Send a workbench saved e-mail")
+    @Operation(summary = "Sends a workbench saved e-mail")
+    @Parameter(name = "id", schema = @Schema(description = "Workbench E-mail ID", type = "integer"))
     @PostMapping(path = "/api/send/{id}")
     public ResponseEntity send(
             @PathVariable(name = "id") WorkbenchEmail workbenchEmail,

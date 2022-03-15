@@ -38,11 +38,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import java.util.concurrent.TimeUnit;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.plugins.Docket;
 
 /**
  *
@@ -63,7 +61,7 @@ public class Application extends SpringBootServletInitializer {
     }
 
     /**
-     * Define the cache manager.
+     * Defines the cache manager.
      *
      * @return guavaCacheManager
      */
@@ -78,7 +76,7 @@ public class Application extends SpringBootServletInitializer {
     }
 
     /**
-     * Define the password encoder.
+     * Defines the password encoder.
      *
      * @return bCryptPasswordEncoder
      */
@@ -89,7 +87,7 @@ public class Application extends SpringBootServletInitializer {
     }
 
     /**
-     * Define the asyncronous executor.
+     * Defines the asyncronous executor.
      *
      * @return executor.
      */
@@ -104,16 +102,13 @@ public class Application extends SpringBootServletInitializer {
     }
 
     /**
-     * Define the api documentation strategy.
+     * Defines the Open API.
      *
-     * @return Swagger docket.
+     * @return OpenAPI
      */
     @Bean
-    public Docket swagger() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(PathSelectors.ant("/**/api/**"))
-                .build();
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                .info(new Info().title("Hanger API").description("A really simple API"));
     }
 }

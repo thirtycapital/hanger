@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <head lang="en" th:replace="base/header :: head">
         <title>Hanger</title>
     </head>
@@ -21,8 +21,8 @@
                                         <div class="alert alert-info" role="alert">
                                             <span id="token" th:text="${'Bearer ' + token}"></span>
                                         </div>  
-                                        
-                                        <a th:href="@{/swagger-ui/}" title="API Docs" target="_blank">
+
+                                        <a th:href="@{/swagger-ui/api-docs.html}" title="API Docs" target="_blank">
                                             <span class="glyphicon glyphicon-file"></span> API Docs
                                         </a>
                                     </div>

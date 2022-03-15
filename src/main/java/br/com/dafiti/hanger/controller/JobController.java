@@ -51,7 +51,10 @@ import br.com.dafiti.hanger.service.SubjectService;
 import br.com.dafiti.hanger.service.TemplateService;
 import br.com.dafiti.hanger.service.UserService;
 import br.com.dafiti.hanger.service.WorkbenchEmailService;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.Principal;
@@ -87,6 +90,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  */
 @Controller
 @RequestMapping(path = "/job")
+@Tag(name = "Job")
 public class JobController {
 
     private final JobService jobService;
@@ -289,11 +293,12 @@ public class JobController {
     /**
      * Build a job.
      *
-     * @param model
-     * @param job
+     * @param model Model
+     * @param job Job
      * @return Identifies if the job was built successfully.
      */
-    @ApiOperation(value = "Build a job")
+    @Operation(summary = "Builds a job")
+    @Parameter(name = "id", schema = @Schema(description = "Job ID", type = "integer"))
     @PostMapping(path = "/api/build/{id}")
     @ResponseBody
     public ResponseEntity build(

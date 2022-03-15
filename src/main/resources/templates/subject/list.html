@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <head lang="en" th:replace="base/header :: head">
         <title>Hanger</title>
     </head>
@@ -54,7 +54,7 @@
                                    class="text-center profile-icon profile-icon-indoor-sm" 
                                    data-toggle="tooltip" 
                                    data-placement="top" 
-                                   th:classappend="'profile-icon-color-' + ${ T(Math).abs( user.id % 5 ) }">
+                                   th:classappend="'profile-icon-color-' + ${ T(java.lang.Math).abs( user.id % 5 ) }">
                                 </p>
                             </div>
                         </td>

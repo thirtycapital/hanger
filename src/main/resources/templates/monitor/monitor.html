@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <head lang="en" th:replace="base/header :: head">
         <title>Hanger</title>
     </head>
@@ -171,17 +171,20 @@
 
             <div class="tab-content">
                 <div th:if="${#httpServletRequest.getRequestURI().contains('/detail/') }">
-                    <ul th:if="${not #lists.isEmpty(swimlanes)}" class="pager">
-                        <li th:if="${swimlane.key != 'ALL'}" th:each="swimlane, swimlaneStat: ${swimlanes}">
-                            <a th:href="${'#' + swimlane.key}" th:text="${swimlane.key}" class="pager-item"></a>
-                        </li>
-                    </ul>  
+                    <th:block th:if="${not #lists.isEmpty(swimlanes) and #lists.size(swimlanes) > 1} ">
+                        <ul class="pager">
+                            <li th:if="${swimlane.key != 'ALL'}" th:each="swimlane, swimlaneStat: ${swimlanes}">
+                                <a th:href="${'#' + swimlane.key}" th:text="${swimlane.key}" class="pager-item"></a>
+                            </li>
+                        </ul> 
+                    </th:block>
 
-                    <div th:if="${currentSubject.description != null and currentSubject.description != ''}">
+                    <th:block th:if="${currentSubject.description != null and currentSubject.description != ''}">
                         <div 
                             class="markdown" 
-                            th:utext="${currentSubject.getHTMLDescription()}"></div>
-                    </div>
+                            th:utext="${currentSubject.getHTMLDescription()}">                                
+                        </div>
+                    </th:block>
 
                     <!-- Job details list-->
                     <th:block th:include="monitor/fragmentJobDetails :: jobDetails"></th:block>

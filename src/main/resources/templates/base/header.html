@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <head lang="en" th:fragment="head" >
         <!--HEAD FRAGMENT BEGIN-->
         <title>Hanger</title>
 
-        <meta http-equiv="Content-Type" content="text/html" charset="UTF-8"/>        
+        <meta http-equiv="Content-Type" content="text/html"/>        
 
         <!--CSFR Token-->
         <meta id="_csrf" name="_csrf" th:content="${_csrf.token}"/>
@@ -195,11 +195,13 @@
                     </ul>
 
                     <div class="wrapper-bottom">
-                        <span sec:authorize="isAuthenticated()">
+                        <div sec:authorize="isAuthenticated()">
+
                             <p th:attr="data-letters=${#authentication.getPrincipal().getFirstName().substring(0, 1) + #authentication.getPrincipal().getLastName().substring(0, 1)}" 
                                class="text-center profile-icon" 
-                               th:classappend="'profile-icon-color-' + ${T(Math).abs(#authentication.getPrincipal().getId() % 5)}">
+                               th:classappend="'profile-icon-color-' + ${T(java.lang.Math).abs(#authentication.getPrincipal().getId() % 5)}">
                             </p>
+
                             <p th:inline="text" 
                                class="text-center">
                                 <a class="menu_link_option" 
@@ -223,15 +225,16 @@
                                        name="${_csrf.parameterName}"
                                        value="${_csrf.token}" />
                             </form>   
-                        </span>
+                        </div>
 
-                        <span sec:authorize="!isAuthenticated()">
+                        <div sec:authorize="!isAuthenticated()">
                             <div>
                                 <a th:href="@{/login}" th:inline="text" title="Login">
                                     <div class="text-center">Login<span class="glyphicon glyphicon-log-in" style="margin-left:5px"></span></div>
                                 </a>
                             </div>
-                        </span>
+                        </div>
+
                         <div class="hanger-version">
                             <a href="https://github.com/dafiti-group/hanger/releases" 
                                target="_blank" 

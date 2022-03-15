@@ -8,8 +8,9 @@
 
 .markdown{
     padding: 10px;
-    border-left: 7.5px solid  #F4F5F7;
-    color: #999999;
+    border-left: 5px solid #e9ebef;
+    color: #000000;
+    background: #F8F8F8;
 }
 
 .markdown > p{
@@ -42,7 +43,7 @@ body{
 label {
     color: #000000;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .checkbox-label {
@@ -101,7 +102,7 @@ label {
 legend{
     color: #808080;
     font-weight: bold;
-    font-size: 15px;
+    font-size: 14px;
     margin-bottom: 10px;
 }
 
@@ -266,6 +267,12 @@ code[class*="language-free"] {
     color: #8a6d3b;
     background-color: transparent;
     border-color: #faebcc;
+}
+
+.alert-info {
+    color: #31708f;
+    background-color: transparent;
+    border-color: #bce8f1;
 }
 
 .link_bold{
@@ -923,23 +930,28 @@ p.profile-icon-indoor-sm{
 }
 
 .profile-icon-color-0:before{
-    background:#cd5c5c;
+    background:#F8F8F8;
+    color:#cd5c5c;
 }
 
 .profile-icon-color-1:before{
-    background:#2e8b57;
+    background:#F8F8F8;
+    color:#2e8b57;
 }
 
 .profile-icon-color-2:before{
-    background:#4682b4;
+    background:#F8F8F8;
+    color:#4682b4;
 }
 
 .profile-icon-color-3:before{
-    background:#f0e68c;
+    background:#F8F8F8;
+    color:#ffa500;
 }
 
 .profile-icon-color-4:before{
-    background:#7559AF;
+    background:#F8F8F8;
+    color:#7559AF;
 }
 
 .modal-title{
@@ -1178,7 +1190,7 @@ input[type='file'] {
     line-height:30px;
     padding:0px 15px;
     border: none;
-    background-color: #F4F5F7;
+    background-color: #F8F8F8;
     color: #000000;
 }
 
@@ -1194,7 +1206,7 @@ div.dataTables_wrapper > div > * {
 
 .jstree-default,
 .jstree-anchor {
-    color:  #858585;
+    color: #000000;
 }
 
 .back_top {

@@ -220,6 +220,11 @@ code[class*="language-free"] {
     margin-right: 0px;
 }
 
+.default-row{
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
 .footer-button {
     padding-top: 15px;
     padding-bottom: 15px;

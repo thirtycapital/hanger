@@ -171,17 +171,22 @@
 
             <div class="tab-content">
                 <div th:if="${#httpServletRequest.getRequestURI().contains('/detail/') }">
-                    <ul th:if="${not #lists.isEmpty(swimlanes)}" class="pager">
-                        <li th:if="${swimlane.key != 'ALL'}" th:each="swimlane, swimlaneStat: ${swimlanes}">
-                            <a th:href="${'#' + swimlane.key}" th:text="${swimlane.key}" class="pager-item"></a>
-                        </li>
-                    </ul>  
+                    <ht:block th:if="${not #lists.isEmpty(swimlanes) and #lists.size(swimlanes) > 1}" >
+                        <ul  class="pager">
+                            <li th:if="${swimlane.key != 'ALL'}" th:each="swimlane, swimlaneStat: ${swimlanes}">
+                                <a th:href="${'#' + swimlane.key}" th:text="${swimlane.key}" class="pager-item"></a>
+                            </li>
+                        </ul>  
+                    </ht:block>
 
-                    <div th:if="${currentSubject.description != null and currentSubject.description != ''}">
-                        <div 
-                            class="markdown" 
-                            th:utext="${currentSubject.getHTMLDescription()}"></div>
-                    </div>
+                    <ht:block th:if="${currentSubject.description != null and currentSubject.description != ''}" >
+                        <div >
+                            <div 
+                                class="markdown" 
+                                th:utext="${currentSubject.getHTMLDescription()}">                                    
+                            </div>
+                        </div>
+                    </ht:block>        
 
                     <!-- Job details list-->
                     <th:block th:include="monitor/fragmentJobDetails :: jobDetails"></th:block>

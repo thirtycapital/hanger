@@ -269,6 +269,12 @@ code[class*="language-free"] {
     border-color: #faebcc;
 }
 
+.alert-info {
+    color: #31708f;
+    background-color: transparent;
+    border-color: #bce8f1;
+}
+
 .link_bold{
     font-weight: bold;
 }

@@ -1018,6 +1018,12 @@ input[type='file'] {
     font-weight: bold;
 }
 
+.panel-default>.panel-heading>div>a.link>span{
+    color: #FFFFFF;
+    background-color: transparent;
+    font-weight: bold;
+}
+
 .panel-default>.panel-heading{
     color: #FFFFFF;
     background-color: #000000;

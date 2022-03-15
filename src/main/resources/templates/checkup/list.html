@@ -152,7 +152,7 @@
                                     </thead>
 
                                     <tbody>
-                                        <tr class="checkup-row" th:each="checkupLog, checkupLogStat : ${checkup.value}" th:unless="${checkupLogStat.index >= item}">
+                                        <tr class="row" th:each="checkupLog, checkupLogStat : ${checkup.value}" th:unless="${checkupLogStat.index >= item}">
                                             <td>
                                                 <th:block th:switch="${checkupLog.success}">
                                                     <span th:case="true" class="label label-success" th:title="SUCCESS" th:text="SUCCESS"></span>

@@ -708,14 +708,22 @@ public class JobCheckupService {
 
         //Identifies if should notify by Slack. 
         if (!checkup.getChannel().isEmpty() || job.isCheckupNotified()) {
+            String text;
             List<LayoutBlock> message = new ArrayList();
+
+            //Identifies if it a restriction or a failure.
+            if (checkup.getAction().equals(Action.RESTRICT)) {
+                text = ":white_circle:  " + job.getName() + " check-up restriction";
+            } else {
+                text = ":red_circle: " + job.getName() + " check-up failure";
+            }
 
             message.add(
                     HeaderBlock
                             .builder()
                             .text(PlainTextObject
                                     .builder()
-                                    .text(":red_circle: " + job.getName() + " check-up failure")
+                                    .text(text)
                                     .emoji(Boolean.TRUE)
                                     .build())
                             .build());

@@ -101,8 +101,21 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     public class AplicationWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
         @Override
+        public void configure(WebSecurity web) throws Exception {
+            web
+                    .expressionHandler(permissionHandler(web))
+                    .ignoring()
+                    .antMatchers(
+                            "/observer",
+                            "/webjars/**",
+                            "/css/**",
+                            "/js/**",
+                            "/images/**",
+                            "/customization/**");
+        }
+
+        @Override
         protected void configure(HttpSecurity http) throws Exception {
-            //Identifies if anonymous access is enabled.
             if (anonymousEnabled) {
                 http
                         .authorizeRequests()
@@ -125,13 +138,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             http
                     .authorizeRequests()
                     .expressionHandler(permissionHandler())
-                    .antMatchers(
-                            "/observer",
-                            "/webjars/**",
-                            "/css/**",
-                            "/js/**",
-                            "/images/**",
-                            "/customization/**").permitAll()
                     .antMatchers(
                             "/template/**",
                             "/user/add/",

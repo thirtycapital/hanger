@@ -171,7 +171,7 @@
 
             <div class="tab-content">
                 <div th:if="${#httpServletRequest.getRequestURI().contains('/detail/') }">
-                    <th:block th:if="${not #lists.isEmpty(swimlanes) and #lists.size(swimlanes) > 1} ">
+                    <th:block th:if="${#maps.size(swimlanes) > 1} ">
                         <ul class="pager">
                             <li th:if="${swimlane.key != 'ALL'}" th:each="swimlane, swimlaneStat: ${swimlanes}">
                                 <a th:href="${'#' + swimlane.key}" th:text="${swimlane.key}" class="pager-item"></a>

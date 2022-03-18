@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -57,11 +58,11 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private UserService userService;
+    private CustomPermissionEvaluator customPermissionEvaluator;
 
     @Autowired
-    private UserService userService;
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     private JwtService jwtService;
@@ -75,7 +76,14 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     int maximumSessions;
 
     @Autowired
-    private CustomPermissionEvaluator customPermissionEvaluator;
+    public void setUserService(@Lazy UserService userService) {
+        this.userService = userService;
+    }
+
+    @Autowired
+    public void setCustomPermissionEvaluator(@Lazy CustomPermissionEvaluator customPermissionEvaluator) {
+        this.customPermissionEvaluator = customPermissionEvaluator;
+    }
 
     @Configuration
     @Order(1)

@@ -40,11 +40,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class CustomPermissionEvaluator implements PermissionEvaluator {
 
-    @Autowired
     private UserService userService;
 
     @Autowired
     private PrivilegeService privilegeService;
+
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
     @Override
     public boolean hasPermission(Authentication authentication,

@@ -76,7 +76,7 @@ label {
 }
 
 .label-neutral, .label-default{
-    background-color: #ECECEC;
+    background-color: #f2f2f2;
     color: #6C6C6C;
     font-size: 11px;
 }
